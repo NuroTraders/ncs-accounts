@@ -56,7 +56,8 @@ td.cb{font-weight:600}.pos{color:var(--pos)}.neg{color:var(--neg)}.zero{color:va
 form{padding:16px}
 .g{display:grid;grid-template-columns:repeat(12,1fr);gap:10px;align-items:end}
 .g>div:nth-child(1){grid-column:span 2}.g>div:nth-child(2){grid-column:span 3}.g>div:nth-child(3){grid-column:span 7}
-.g>div:nth-child(n+4):nth-child(-n+7){grid-column:span 3}.g>.act{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.g>div:nth-child(n+4):nth-child(-n+7){grid-column:span 3}.g>.pp{grid-column:span 6}.pp[hidden]{display:none}.g>.pp{grid-column:span 6}.pp[hidden]{display:none}
+.g>.act{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
 label{display:block;font-size:12.5px;color:var(--mut);margin-bottom:5px}
 .prev{display:flex;flex-wrap:wrap;gap:4px 18px;font-size:13.5px;color:var(--mut);font-variant-numeric:tabular-nums}
 .prev b{color:var(--ink);font-weight:600}
@@ -95,6 +96,7 @@ label{display:block;font-size:12.5px;color:var(--mut);margin-bottom:5px}
 @media(max-width:760px){.stats{grid-template-columns:1fr 1fr}.g>div{grid-column:span 6!important}.g>div:nth-child(3){grid-column:1/-1!important}.cashp .sp{margin-left:0}h1{font-size:24px}}
 </style>
 <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#2F5D3A"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes">
+<script src="config.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -127,6 +129,7 @@ label{display:block;font-size:12.5px;color:var(--mut);margin-bottom:5px}
     <div><label for="fp">Payment method</label><select id="fp"><option>Cash</option><option>Mobile Banking</option><option>Bank</option><option>Due</option></select></div>
     <div><label for="fa">Amount</label><input id="fa" type="number" inputmode="decimal" step="any" min="0" required placeholder="0"></div>
     <div><label for="fx">Actual cash counted (optional) <button type="button" class="lnk adj" id="cnt">Count</button></label><input id="fx" type="number" inputmode="decimal" step="any" min="0" placeholder="0"></div>
+    <div class="pp" id="ppn" hidden><label for="fpn" id="fpl">Customer name</label><input id="fpn" list="pl" maxlength="60" autocomplete="off"><datalist id="pl"></datalist></div><div class="pp" id="ppt" hidden><label for="fph">Phone (optional)</label><input id="fph" type="tel" maxlength="20" autocomplete="off"></div>
     <div class="act"><div class="prev" id="prev"></div><div><button type="button" class="ghost" id="cancel" style="display:none">Cancel edit</button> <button class="go" id="go" type="submit">Add entry</button></div></div>
   </div></form></section>
 
@@ -149,7 +152,8 @@ const seed=()=>({start:0,theme:'auto',dayStart:'06:00',dayEnd:'18:00',entries:[
  E(6,'23:47','Sale','Sales till 11:47 PM','Computer Service',4610),
  E(7,'23:47','Purchase','Tea & snacks','Other',10,{act:55280})]});
 let S;try{const r=localStorage.getItem(KEY);S=r?JSON.parse(r):seed()}catch(e){S=seed()}
-S.names=S.names||{};
+S.names=S.names||{};S.parties=S.parties||{};
+if(window.NCS_CONFIG&&/^https:\/\//.test(NCS_CONFIG.url||'')&&NCS_CONFIG.key)S.sync={url:NCS_CONFIG.url,key:NCS_CONFIG.key};
 const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
 const save=()=>{S.rev=(S.rev||0)+1;persist();schedule()};
 const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
@@ -180,15 +184,17 @@ function render(){
   else $('tbl').innerHTML='<table><thead><tr><th>Sl</th><th>Time</th><th>Description</th><th>Sell</th><th>Buy</th><th>Previous Cash</th><th>Cash Balance</th><th>Actual Cash</th><th>Difference</th><th></th></tr></thead><tbody>'+tv.map((e,i)=>{
     const r=m[e.id],v=e.void,inn=e.type==='Sale'||e.type==='Deposit'||(e.type==='Adjustment'&&e.amt>0),amt=Math.abs(e.amt);
     const badge=(e.type!=='Sale'&&e.type!=='Purchase'?`<span class="b o">${e.type==='Adjustment'?'Adjustment':e.type==='Deposit'?'Deposit':'Withdrawal'}</span>`:'')+(e.pay!=='Cash'&&(e.type==='Sale'||e.type==='Purchase')?`<span class="b">${e.pay}</span>`:'')+(v?'<span class="b v">Void</span>':'');
-    const sub=v?`Reason: ${esc(e.vr)}`:(f?sd(e.d)+' · ':'')+esc(e.cat)+(e.by?' · '+esc(e.by):'');
+    const sub=v?`Reason: ${esc(e.vr)}`:(f?sd(e.d)+' · ':'')+esc(e.cat)+(e.party?' · '+esc(e.party)+(e.phone?' ('+esc(e.phone)+')':''):'')+(e.by?' · '+esc(e.by):'');
     const dfc=!v&&r.df!=null?`<span class="${dc(r.df)}">${dif(r.df)}</span>${e.adj?' <span class="b">Adjusted</span>':''}`:'–';
     const acts=(v||f||!isA()||closed())?'':`<button class="lnk" data-a="e" data-i="${e.id}">Edit</button><button class="lnk" data-a="v" data-i="${e.id}">Void</button>`+(r.df&&!e.adj?`<button class="lnk adj" data-a="a" data-i="${e.id}">Adjust</button>`:'');
-    return `<tr class="${v?'void':''}"><td>${i+1}</td><td>${t12(e.t)}</td><td class="d">${badge}${esc(e.desc)}<small>${sub}</small></td><td>${inn?money(amt):'–'}</td><td>${inn?'–':money(amt)}</td><td>${v?'–':n(r.p)}</td><td class="cb">${v?'–':n(r.bal)}</td><td>${!v&&e.act!=null?n(e.act):'–'}</td><td>${dfc}</td><td>${acts}</td></tr>`}).join('')+'</tbody></table>';
+    return `<tr class="${v?'void':''}"><td>${i+1}</td><td>${t12(e.t)}</td><td class="d">${badge}${esc(e.desc)}<small>${sub}</small></td><td>${inn?money(amt):'–'}</td><td>${inn?'–':money(amt)}</td><td>${v||!r.p?'–':n(r.p)}</td><td class="cb">${v?'–':n(r.bal)}</td><td>${!v&&e.act!=null?n(e.act):'–'}</td><td>${dfc}</td><td>${acts}</td></tr>`}).join('')+'</tbody></table>';
   preview();dayBar();
 }
 
 function cats(){const c=CATS[$('fy').value];$('fc').innerHTML=c?c.map(x=>`<option>${x}</option>`).join(''):'<option value="">—</option>';$('fc').disabled=!c;
-  const nc=['Sale','Purchase'].includes($('fy').value);$('fp').disabled=!nc;if(!nc)$('fp').value='Cash';$('fa').min=$('fy').value==='Adjustment'?'':'0'}
+  const nc=['Sale','Purchase'].includes($('fy').value);$('fp').disabled=!nc;if(!nc)$('fp').value='Cash';$('fa').min=$('fy').value==='Adjustment'?'':'0';party()}
+function party(){const d=$('fp').value==='Due'&&['Sale','Purchase'].includes($('fy').value);$('ppn').hidden=$('ppt').hidden=!d;$('fpn').required=d;$('fpl').textContent=$('fy').value==='Purchase'?'Supplier name':'Customer name';const L=S.parties[$('fy').value]||{};$('pl').innerHTML=Object.keys(L).map(k=>`<option value="${esc(k)}">`).join('')}
+$('fpn').addEventListener('input',()=>{const L=S.parties[$('fy').value]||{},v=$('fpn').value.trim();if(v in L&&!$('fph').value)$('fph').value=L[v]});
 function preview(){
   const t=$('ft').value||'00:00',p=prevFor(cur,t),ty=$('fy').value,a=+$('fa').value||0,pay=$('fp').value;
   const eff=cash({type:ty,pay,amt:a}),bal=p+eff;
@@ -200,11 +206,12 @@ function preview(){
 function reset(){editing=null;$('form').reset();$('fy').value='Sale';cats();const x=new Date();$('ft').value=String(x.getHours()).padStart(2,'0')+':'+String(x.getMinutes()).padStart(2,'0');$('go').textContent='Add entry';$('cancel').style.display='none';$('sg').hidden=true}
 
 $('form').addEventListener('submit',ev=>{ev.preventDefault();
-  const o={d:cur,t:$('ft').value,type:$('fy').value,desc:$('fd').value.trim(),cat:$('fc').value,pay:$('fp').value,amt:+$('fa').value,act:$('fx').value===''?null:+$('fx').value};
+  const o={d:cur,t:$('ft').value,type:$('fy').value,desc:$('fd').value.trim(),cat:$('fc').value,pay:$('fp').value,amt:+$('fa').value,act:$('fx').value===''?null:+$('fx').value,party:$('fpn').value.trim(),phone:$('fph').value.trim()};
   if(!o.t||!o.desc||isNaN(o.amt))return;
+  if(o.pay==='Due'&&['Sale','Purchase'].includes(o.type)){(S.parties[o.type]=S.parties[o.type]||{})[o.party]=o.phone}else{o.party='';o.phone=''}
   if(closed())return;snap();remember(o,!editing);if(editing){const e=S.entries.find(e=>e.id===editing);lg('Edit entry',`${e.type} ${e.amt} "${e.desc}" → ${o.type} ${o.amt} "${o.desc}"`);Object.assign(e,o)}else{o.by=U.name;S.entries.push({id:Date.now(),...o});lg('Add entry',`${o.type} ${o.amt} "${o.desc}"`)}
   save();reset();render();$('fd').focus()});
-['ft','fy','fp','fa','fx'].forEach(id=>$(id).addEventListener('input',()=>{if(id==='fy'){cats();$('sg').hidden=true}preview()}));
+['ft','fy','fp','fa','fx'].forEach(id=>$(id).addEventListener('input',()=>{if(id==='fy'){cats();$('sg').hidden=true}if(id==='fp')party();preview()}));
 $('cancel').onclick=()=>{reset();render()};
 
 function remember(o,inc){if(o.type==='Adjustment')return;const L=S.names[o.type]=S.names[o.type]||{};
@@ -227,7 +234,7 @@ function ask(title,body,onOk,okText,wide){$('ov').firstElementChild.classList.to
   $('ok').onclick=async()=>{if(await onOk()!==false)$('ov').hidden=true};const f=$('ob').querySelector('input,select');if(f)f.focus()}
 $('oc').onclick=()=>$('ov').hidden=true;
 $('tbl').addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b)return;const e=S.entries.find(x=>x.id==b.dataset.i);
-  if(b.dataset.a==='e'){editing=e.id;$('ft').value=e.t;$('fy').value=e.type;cats();$('fd').value=e.desc;$('fc').value=e.cat;$('fp').value=e.pay;$('fa').value=e.amt;$('fx').value=e.act??'';$('go').textContent='Save changes';$('cancel').style.display='';preview();$('form').scrollIntoView({behavior:'smooth',block:'center'})}
+  if(b.dataset.a==='e'){editing=e.id;$('ft').value=e.t;$('fy').value=e.type;cats();$('fd').value=e.desc;$('fc').value=e.cat;$('fp').value=e.pay;$('fa').value=e.amt;$('fx').value=e.act??'';party();$('fpn').value=e.party||'';$('fph').value=e.phone||'';$('go').textContent='Save changes';$('cancel').style.display='';preview();$('form').scrollIntoView({behavior:'smooth',block:'center'})}
   if(b.dataset.a==='v')ask('Void entry',`<div class="f"><label>Reason (required)</label><input id="vr" maxlength="100"></div>`,()=>{const r=$('vr').value.trim();if(!r)return false;snap();e.void=1;e.vr=r;lg('Void entry',`${e.type} ${e.amt} "${e.desc}" — ${r}`);save();render()},'Void');
   if(b.dataset.a==='a'){const df=calc()[e.id].df;ask('Adjust cash',`<div class="f"><label>Account will change by <b>${dif(df)}</b> to match counted cash</label><select id="ar"><option>${df>0?'Extra cash':'Cash short'}</option><option>Other</option></select></div>`,()=>{snap();S.entries.push({id:Date.now(),d:e.d,t:e.t,type:'Adjustment',desc:'Cash adjustment · '+$('ar').value,cat:'',pay:'Cash',amt:df});e.adj=1;lg('Cash adjust',`${dif(df)} on "${e.desc}"`);save();render()},'Adjust')}});
 
@@ -240,11 +247,11 @@ function applyTheme(){const m=S.theme||'auto';let v=null;if(m==='light'||m==='da
   if(v)document.documentElement.dataset.theme=v;else delete document.documentElement.dataset.theme;$('theme').textContent=MODES.find(x=>x[0]===m)[1]}
 $('theme').onclick=()=>{S.theme=MODES[(MODES.findIndex(x=>x[0]===(S.theme||'auto'))+1)%4][0];save();applyTheme()};
 setInterval(applyTheme,60000);
-$('set').onclick=()=>ask('Settings',`<div class="f"><label>Starting cash (first day only)</label><input id="s1" type="number" step="any" value="${S.start||0}"></div><div class="f"><label>Day starts (Day/Night theme)</label><input id="s2" type="time" value="${S.dayStart}"></div><div class="f"><label>Night starts</label><input id="s3" type="time" value="${S.dayEnd}"></div><div class="f"><label>Google Sheet sync URL</label><input id="s4" value="${esc(S.sync?S.sync.url:'')}"></div><div class="f"><label>Sync key</label><input id="s5" type="password" value="${esc(S.sync?S.sync.key:'')}"></div>`,()=>{S.start=+$('s1').value||0;S.dayStart=$('s2').value||'06:00';S.dayEnd=$('s3').value||'18:00';S.sync=$('s4').value.trim()&&$('s5').value.trim()?{url:$('s4').value.trim(),key:$('s5').value.trim()}:null;save();pull();applyTheme();render()},'Save');
+$('set').onclick=()=>ask('Settings',`<div class="f"><label>Starting cash (first day only)</label><input id="s1" type="number" step="any" value="${S.start||0}"></div><div class="f"><label>Day starts (Day/Night theme)</label><input id="s2" type="time" value="${S.dayStart}"></div><div class="f"><label>Night starts</label><input id="s3" type="time" value="${S.dayEnd}"></div><div class="f"><label>Google Sheet sync URL</label><input id="s4" value="${esc(S.sync?S.sync.url:'')}"></div><div class="f"><label>Sync key</label><input id="s5" type="password" value="${esc(S.sync?S.sync.key:'')}"></div><button type="button" class="ghost" id="sfr" style="color:var(--neg)">Start fresh (erase all entries)</button>`,()=>{S.start=+$('s1').value||0;S.dayStart=$('s2').value||'06:00';S.dayEnd=$('s3').value||'18:00';S.sync=$('s4').value.trim()&&$('s5').value.trim()?{url:$('s4').value.trim(),key:$('s5').value.trim()}:null;save();pull();applyTheme();render()},'Save');
 
 $('csv').onclick=async()=>{const m=calc(),q=s=>'"'+String(s??'').replace(/"/g,'""')+'"';
-  const rows=[['Date','Time','Type','Description','Category','Payment','Amount','Previous Cash','Cash Balance','Actual Cash','Difference','Status'].join(',')];
-  sorted().forEach(e=>{const r=m[e.id]||{};rows.push([e.d,e.t,e.type,q(e.desc),q(e.cat),e.pay,e.amt,r.p??'',r.bal??'',e.act??'',r.df??'',e.void?q('Void: '+e.vr):'Active'].join(','))});
+  const rows=[['Date','Time','Type','Description','Category','Payment','Amount','Previous Cash','Cash Balance','Actual Cash','Difference','Status','Party','Phone'].join(',')];
+  sorted().forEach(e=>{const r=m[e.id]||{};rows.push([e.d,e.t,e.type,q(e.desc),q(e.cat),e.pay,e.amt,r.p??'',r.bal??'',e.act??'',r.df??'',e.void?q('Void: '+e.vr):'Active',q(e.party),q(e.phone)].join(','))});
   await dlFile('NCS_Daily_Accounts.csv',rows.join('\n'))};
 
 S.users=S.users||null;S.days=S.days||{};S.log=S.log||[];
@@ -284,7 +291,7 @@ function lockUI(mode,msg){
 }
 function enter(){$('lk').hidden=true;$('lk').innerHTML='';$('set').hidden=$('stf').hidden=$('logb').hidden=$('rpb').hidden=!isA();$('who').textContent=U.name+' · '+(isA()?'Admin':'Staff');reset();render();bump();pull()}
 function lock(){U=null;$('ov').hidden=true;if(S.users)lockUI('login')}
-const bump=()=>{clearTimeout(it);if(U)it=setTimeout(lock,300000)};
+const bump=()=>{clearTimeout(it);if(U)it=setTimeout(lock,18000000)};
 ['click','keydown','touchstart'].forEach(e=>document.addEventListener(e,bump));
 $('lockb').onclick=lock;
 
@@ -312,7 +319,7 @@ $('prt').onclick=()=>{lg('Print',label(cur));save();try{window.print()}catch(e){
 applyTheme();
 const sd=d=>d.slice(8)+'.'+d.slice(5,7)+'.'+d.slice(0,4);
 function flt(){const f={q:$('sq').value.trim().toLowerCase(),t:$('sty').value,p:$('spy').value,a:$('sfa').value,b:$('sfb').value};return(f.q||f.t||f.p||f.a||f.b)?f:null}
-const match=(e,f)=>(!f.q||(e.desc+' '+e.cat).toLowerCase().includes(f.q))&&(!f.t||e.type===f.t)&&(!f.p||e.pay===f.p)&&(!f.a||e.d>=f.a)&&(!f.b||e.d<=f.b);
+const match=(e,f)=>(!f.q||(e.desc+' '+e.cat+' '+(e.party||'')).toLowerCase().includes(f.q))&&(!f.t||e.type===f.t)&&(!f.p||e.pay===f.p)&&(!f.a||e.d>=f.a)&&(!f.b||e.d<=f.b);
 $('fb').addEventListener('input',render);
 $('sclr').onclick=()=>{['sq','sty','spy','sfa','sfb'].forEach(i=>$(i).value='');render()};
 
@@ -343,7 +350,7 @@ $('ob').addEventListener('click',async e=>{
     await dlFile('NCS_Report_'+RR.a+'.csv',r.map(x=>'"'+x[0]+'",'+x[1]).join('\n'))}});
 
 S.lang=S.lang||'en';
-const BN={'Daily Accounts':'দৈনিক হিসাব','Nur Computer & Stationary':'নূর কম্পিউটার এন্ড স্টেশনারী','Today':'আজ','Settings':'সেটিংস','Lock':'লক','Total Sell':'মোট বিক্রয়','Total Buy':'মোট ক্রয়','Difference (pending)':'পার্থক্য (বাকি)','Counted vs account':'গণনা বনাম হিসাব','Cash Balance':'ক্যাশ ব্যালেন্স','Account balance now':'বর্তমান হিসাবের ব্যালেন্স','Opening Cash':'প্রারম্ভিক ক্যাশ','Closing Cash':'সমাপনী ক্যাশ','Adjustments today':'আজকের সমন্বয়','Prepared':'প্রস্তুতকারী','Checked':'যাচাইকারী','Open':'খোলা','Closed':'বন্ধ','Close Day':'দিন বন্ধ করুন','Reopen':'পুনরায় খুলুন','Sl':'ক্র.','Time':'সময়','Description':'বিবরণ','Sell':'বিক্রয়','Buy':'ক্রয়','Previous Cash':'পূর্বের ক্যাশ','Actual Cash':'প্রকৃত ক্যাশ','Difference':'পার্থক্য','Type':'ধরন','Category':'ক্যাটাগরি','Payment method':'পেমেন্ট পদ্ধতি','Amount':'পরিমাণ','Actual cash counted (optional)':'গণনা করা প্রকৃত ক্যাশ (ঐচ্ছিক)','Count':'গণনা','Add entry':'এন্ট্রি যোগ করুন','Save changes':'পরিবর্তন সংরক্ষণ','Cancel edit':'সম্পাদনা বাতিল','Staff':'কর্মী','Change Log':'পরিবর্তন লগ','Print':'প্রিন্ট','Export CSV':'CSV এক্সপোর্ট','Reports':'রিপোর্ট','Undo':'পূর্বাবস্থা','Edit':'সম্পাদনা','Void':'বাতিল','Adjust':'সমন্বয়','Adjusted':'সমন্বিত','Sale':'বিক্রয়','Purchase / Expense':'ক্রয় / খরচ','Owner Deposit':'মালিকের জমা','Owner Withdrawal':'মালিকের উত্তোলন','Cash Adjustment (±)':'ক্যাশ সমন্বয় (±)','Cash':'নগদ','Mobile Banking':'মোবাইল ব্যাংকিং','Bank':'ব্যাংক','Due':'বাকি','All types':'সব ধরন','All payments':'সব পেমেন্ট','Clear':'মুছুন','No entries for this date':'এই তারিখে কোনো এন্ট্রি নেই','Previous':'পূর্বের','Sign in':'সাইন ইন','User':'ব্যবহারকারী','Unlock':'আনলক','Admin':'অ্যাডমিন','Close':'বন্ধ করুন','Cancel':'বাতিল','Confirm':'নিশ্চিত করুন','Day':'দিন','Week (Sat–Fri)':'সপ্তাহ (শনি–শুক্র)','Month':'মাস','Net (Sell − Buy)':'নিট (বিক্রয় − ক্রয়)','Adjustments':'সমন্বয়','Sales by category':'ক্যাটাগরি অনুযায়ী বিক্রয়','Expenses by category':'ক্যাটাগরি অনুযায়ী খরচ','Total':'মোট','Use total':'মোট ব্যবহার করুন','Cash Counter':'ক্যাশ কাউন্টার','PIN':'পিন','Forgot admin PIN':'অ্যাডমিন পিন ভুলে গেছেন','☀ Light':'☀ লাইট','☾ Dark':'☾ ডার্ক','◐ Auto':'◐ অটো','◷ Day/Night':'◷ দিন/রাত'};
+const BN={'Daily Accounts':'দৈনিক হিসাব','Nur Computer & Stationary':'নূর কম্পিউটার এন্ড স্টেশনারী','Today':'আজ','Settings':'সেটিংস','Lock':'লক','Total Sell':'মোট বিক্রয়','Total Buy':'মোট ক্রয়','Difference (pending)':'পার্থক্য (বাকি)','Counted vs account':'গণনা বনাম হিসাব','Cash Balance':'ক্যাশ ব্যালেন্স','Account balance now':'বর্তমান হিসাবের ব্যালেন্স','Opening Cash':'প্রারম্ভিক ক্যাশ','Closing Cash':'সমাপনী ক্যাশ','Adjustments today':'আজকের সমন্বয়','Prepared':'প্রস্তুতকারী','Checked':'যাচাইকারী','Open':'খোলা','Closed':'বন্ধ','Close Day':'দিন বন্ধ করুন','Reopen':'পুনরায় খুলুন','Sl':'ক্র.','Time':'সময়','Description':'বিবরণ','Sell':'বিক্রয়','Buy':'ক্রয়','Previous Cash':'পূর্বের ক্যাশ','Actual Cash':'প্রকৃত ক্যাশ','Difference':'পার্থক্য','Type':'ধরন','Category':'ক্যাটাগরি','Payment method':'পেমেন্ট পদ্ধতি','Amount':'পরিমাণ','Actual cash counted (optional)':'গণনা করা প্রকৃত ক্যাশ (ঐচ্ছিক)','Count':'গণনা','Add entry':'এন্ট্রি যোগ করুন','Save changes':'পরিবর্তন সংরক্ষণ','Cancel edit':'সম্পাদনা বাতিল','Staff':'কর্মী','Change Log':'পরিবর্তন লগ','Print':'প্রিন্ট','Export CSV':'CSV এক্সপোর্ট','Reports':'রিপোর্ট','Undo':'পূর্বাবস্থা','Edit':'সম্পাদনা','Void':'বাতিল','Adjust':'সমন্বয়','Adjusted':'সমন্বিত','Sale':'বিক্রয়','Purchase / Expense':'ক্রয় / খরচ','Owner Deposit':'মালিকের জমা','Owner Withdrawal':'মালিকের উত্তোলন','Cash Adjustment (±)':'ক্যাশ সমন্বয় (±)','Cash':'নগদ','Mobile Banking':'মোবাইল ব্যাংকিং','Bank':'ব্যাংক','Due':'বাকি','All types':'সব ধরন','All payments':'সব পেমেন্ট','Clear':'মুছুন','No entries for this date':'এই তারিখে কোনো এন্ট্রি নেই','Previous':'পূর্বের','Sign in':'সাইন ইন','User':'ব্যবহারকারী','Unlock':'আনলক','Admin':'অ্যাডমিন','Close':'বন্ধ করুন','Cancel':'বাতিল','Confirm':'নিশ্চিত করুন','Day':'দিন','Week (Sat–Fri)':'সপ্তাহ (শনি–শুক্র)','Month':'মাস','Net (Sell − Buy)':'নিট (বিক্রয় − ক্রয়)','Adjustments':'সমন্বয়','Sales by category':'ক্যাটাগরি অনুযায়ী বিক্রয়','Expenses by category':'ক্যাটাগরি অনুযায়ী খরচ','Total':'মোট','Use total':'মোট ব্যবহার করুন','Cash Counter':'ক্যাশ কাউন্টার','Customer name':'গ্রাহকের নাম','Supplier name':'সরবরাহকারীর নাম','Phone (optional)':'ফোন (ঐচ্ছিক)','PIN':'পিন','Forgot admin PIN':'অ্যাডমিন পিন ভুলে গেছেন','☀ Light':'☀ লাইট','☾ Dark':'☾ ডার্ক','◐ Auto':'◐ অটো','◷ Day/Night':'◷ দিন/রাত'};
 const orig=new WeakMap();
 function tx(root){const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let x;while(x=w.nextNode()){if(!orig.has(x))orig.set(x,x.nodeValue);const o=orig.get(x);
   x.nodeValue=S.lang==='bn'?o.split(' · ').map(q=>{const t=q.trim();return BN[t]?q.replace(t,BN[t]):q}).join(' · '):o}}
@@ -357,14 +364,15 @@ const SY=()=>!!(S.sync&&S.sync.url&&S.sync.key),isDirty=()=>(S.rev||0)!==(S.sync
 let st='off',tm,busy=false;
 function setSt(x){st=x;$('sync').textContent='Sync: '+{off:'Off',ok:'Synced',pend:'Pending',offl:'Offline',conf:'Conflict'}[x]}
 function schedule(){if(!SY())return;setSt('pend');clearTimeout(tm);tm=setTimeout(()=>push(),2000)}
-function rowsOut(){const m=calc();return sorted().map(e=>{const r=m[e.id]||{};return[e.d,e.t,e.type,e.desc,e.cat||'',e.pay,e.amt,r.p??'',r.bal??'',e.act??'',r.df??'',e.void?'Void: '+e.vr:'Active',e.by||'']})}
+const HEAD=['Date','Time','Type','Description','Category','Payment','Amount','Previous Cash','Cash Balance','Actual Cash','Difference','Status','Entered by','Party','Phone'];
+function rowsOut(){const m=calc();return sorted().map(e=>{const r=m[e.id]||{};return[e.d,e.t,e.type,e.desc,e.cat||'',e.pay,e.amt,r.p??'',r.bal??'',e.act??'',r.df??'',e.void?'Void: '+e.vr:'Active',e.by||'',e.party||'',e.phone||'']})}
 function stateOut(){const o={};for(const k in S)if(!LOCAL.includes(k))o[k]=S[k];return o}
 const getRemote=async()=>(await fetch(S.sync.url+(S.sync.url.includes('?')?'&':'?')+'action=pull&key='+encodeURIComponent(S.sync.key))).json();
 async function push(force){
   if(!SY()||!U||busy)return;busy=true;
   try{
     const sn=Object.keys(S.days).filter(d=>S.days[d].closed&&!(S.snaps||[]).includes(d)),nl=S.log.filter(l=>l.i>(S.logSent||0)).reverse(),rev=S.rev;
-    const r=await(await fetch(S.sync.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({key:S.sync.key,base:S.synced||0,force:!!force,rev,state:JSON.stringify(stateOut()),rows:rowsOut(),log:nl.map(l=>[l.ts,l.u,l.a,l.d]),snaps:sn})})).json();
+    const r=await(await fetch(S.sync.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({key:S.sync.key,base:S.synced||0,force:!!force,rev,state:JSON.stringify(stateOut()),head:HEAD,rows:rowsOut(),log:nl.map(l=>[l.ts,l.u,l.a,l.d]),snaps:sn})})).json();
     if(r.conflict){setSt('conf');busy=false;return}
     if(!r.ok)throw 0;
     S.synced=rev;S.snaps=[...(S.snaps||[]),...sn];if(S.log.length)S.logSent=Math.max(...S.log.map(l=>l.i));persist();setSt(isDirty()?'pend':'ok');if(isDirty())schedule()
@@ -378,6 +386,10 @@ async function pull(){
     else if(isDirty())push();else setSt('ok')
   }catch(e){setSt('offl')}}
 $('sync').onclick=()=>{if(st==='conf')ask('Sync conflict','<p>This device and the Google Sheet both have new changes. Choose which to keep.</p><div class="oa" style="justify-content:flex-start"><button class="ghost" id="scp">Use Sheet data</button><button class="ghost" id="scf">Keep this device</button></div>',()=>{},'Close');else if(SY())pull();else setSt('off')};
+$('ob').addEventListener('click',e=>{if(e.target.id!=='sfr')return;
+  ask('Start fresh','<p>This erases all entries, day status and remembered names on this and every synced device. Staff, PINs and settings are kept. You can Undo once right after.</p><div class="f"><label>Admin PIN</label><input id="sfp" type="password" inputmode="numeric"></div>',async()=>{
+    if(!(await ck(S.users.admin,$('sfp').value))){$('sfp').value='';$('sfp').placeholder='Wrong PIN';return false}
+    snap();S.entries=[];S.days={};S.names={};S.parties={};lg('Start fresh','All entries erased');save();reset();render()},'Erase everything')});
 $('ob').addEventListener('click',async e=>{
   if(e.target.id==='scp'){try{const r=await getRemote();if(r.ok&&r.rev)applyRemote(r)}catch(x){setSt('offl')}$('ov').hidden=true}
   if(e.target.id==='scf'){$('ov').hidden=true;await push(true)}});
@@ -385,7 +397,8 @@ setInterval(()=>{if(U)pull()},30000);
 addEventListener('online',()=>{if(U)pull()});
 document.addEventListener('visibilitychange',()=>{if(U&&!document.hidden)pull()});
 setSt(SY()?(isDirty()?'pend':'ok'):'off');
-applyLang();S.users?lockUI('login'):lockUI('first');
+async function start(){if(!S.users&&SY()){try{const r=await getRemote();if(r.ok&&r.rev&&r.state)applyRemote(r)}catch(e){}}S.users?lockUI('login'):lockUI('first')}
+applyLang();start();
 if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js'));
 </script>
 </body>
