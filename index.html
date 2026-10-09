@@ -128,7 +128,7 @@ label{display:block;font-size:12.5px;color:var(--mut);margin-bottom:5px}
     <div><label for="fc">Category</label><select id="fc"></select></div>
     <div><label for="fp">Payment method</label><select id="fp"><option>Cash</option><option>Mobile Banking</option><option>Bank</option><option>Due</option></select></div>
     <div><label for="fa">Amount</label><input id="fa" type="number" inputmode="decimal" step="any" min="0" required placeholder="0"></div>
-    <div><label for="fx">Actual cash counted (optional) <button type="button" class="lnk adj" id="cnt">Count</button></label><input id="fx" type="number" inputmode="decimal" step="any" min="0" placeholder="0"></div>
+    <div><label for="fx">Actual cash (optional) <button type="button" class="lnk adj" id="cnt">Count</button></label><input id="fx" type="number" inputmode="decimal" step="any" min="0" placeholder="0"></div>
     <div class="pp" id="ppn" hidden><label for="fpn" id="fpl">Customer name</label><input id="fpn" list="pl" maxlength="60" autocomplete="off"><datalist id="pl"></datalist></div><div class="pp" id="ppt" hidden><label for="fph">Phone (optional)</label><input id="fph" type="tel" maxlength="20" autocomplete="off"></div>
     <div class="act"><div class="prev" id="prev"></div><div><button type="button" class="ghost" id="cancel" style="display:none">Cancel edit</button> <button class="go" id="go" type="submit">Add entry</button></div></div>
   </div></form></section>
@@ -153,7 +153,8 @@ const seed=()=>({start:0,theme:'auto',dayStart:'06:00',dayEnd:'18:00',entries:[
  E(7,'23:47','Purchase','Tea & snacks','Other',10,{act:55280})]});
 let S;try{const r=localStorage.getItem(KEY);S=r?JSON.parse(r):seed()}catch(e){S=seed()}
 S.names=S.names||{};S.parties=S.parties||{};
-if(window.NCS_CONFIG&&/^https:\/\//.test(NCS_CONFIG.url||'')&&NCS_CONFIG.key)S.sync={url:NCS_CONFIG.url,key:NCS_CONFIG.key};
+const ENC=(window.NCS_CONFIG||{}).enc;
+if(!S.sync&&window.NCS_CONFIG&&/^https:\/\//.test(NCS_CONFIG.url||'')&&NCS_CONFIG.key)S.sync={url:NCS_CONFIG.url,key:NCS_CONFIG.key};
 const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
 const save=()=>{S.rev=(S.rev||0)+1;persist();schedule()};
 const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
@@ -247,7 +248,7 @@ function applyTheme(){const m=S.theme||'auto';let v=null;if(m==='light'||m==='da
   if(v)document.documentElement.dataset.theme=v;else delete document.documentElement.dataset.theme;$('theme').textContent=MODES.find(x=>x[0]===m)[1]}
 $('theme').onclick=()=>{S.theme=MODES[(MODES.findIndex(x=>x[0]===(S.theme||'auto'))+1)%4][0];save();applyTheme()};
 setInterval(applyTheme,60000);
-$('set').onclick=()=>ask('Settings',`<div class="f"><label>Starting cash (first day only)</label><input id="s1" type="number" step="any" value="${S.start||0}"></div><div class="f"><label>Day starts (Day/Night theme)</label><input id="s2" type="time" value="${S.dayStart}"></div><div class="f"><label>Night starts</label><input id="s3" type="time" value="${S.dayEnd}"></div><div class="f"><label>Google Sheet sync URL</label><input id="s4" value="${esc(S.sync?S.sync.url:'')}"></div><div class="f"><label>Sync key</label><input id="s5" type="password" value="${esc(S.sync?S.sync.key:'')}"></div><button type="button" class="ghost" id="sfr" style="color:var(--neg)">Start fresh (erase all entries)</button>`,()=>{S.start=+$('s1').value||0;S.dayStart=$('s2').value||'06:00';S.dayEnd=$('s3').value||'18:00';S.sync=$('s4').value.trim()&&$('s5').value.trim()?{url:$('s4').value.trim(),key:$('s5').value.trim()}:null;save();pull();applyTheme();render()},'Save');
+$('set').onclick=()=>ask('Settings',`<div class="f"><label>Starting cash (first day only)</label><input id="s1" type="number" step="any" value="${S.start||0}"></div><div class="f"><label>Day starts (Day/Night theme)</label><input id="s2" type="time" value="${S.dayStart}"></div><div class="f"><label>Night starts</label><input id="s3" type="time" value="${S.dayEnd}"></div><div class="f"><label>Google Sheet sync URL</label><input id="s4" value="${esc(S.sync?S.sync.url:'')}"></div><div class="f"><label>Sync key</label><input id="s5" type="password" value="${esc(S.sync?S.sync.key:'')}"></div><button type="button" class="ghost" id="ssu">Secure sync setup</button> <button type="button" class="ghost" id="sfr" style="color:var(--neg)">Start fresh (erase all entries)</button>`,()=>{S.start=+$('s1').value||0;S.dayStart=$('s2').value||'06:00';S.dayEnd=$('s3').value||'18:00';S.sync=$('s4').value.trim()&&$('s5').value.trim()?{url:$('s4').value.trim(),key:$('s5').value.trim()}:null;save();pull();applyTheme();render()},'Save');
 
 $('csv').onclick=async()=>{const m=calc(),q=s=>'"'+String(s??'').replace(/"/g,'""')+'"';
   const rows=[['Date','Time','Type','Description','Category','Payment','Amount','Previous Cash','Cash Balance','Actual Cash','Difference','Status','Party','Phone'].join(',')];
@@ -255,7 +256,7 @@ $('csv').onclick=async()=>{const m=calc(),q=s=>'"'+String(s??'').replace(/"/g,'"
   await dlFile('NCS_Daily_Accounts.csv',rows.join('\n'))};
 
 S.users=S.users||null;S.days=S.days||{};S.log=S.log||[];
-let U=null,it;
+let U=null,it,exp=0;const SESS='ncs_session_v1';
 const isA=()=>!!U&&U.role==='admin',closed=()=>!!(S.days[cur]&&S.days[cur].closed);
 const stamp=()=>{const x=new Date();return x.getDate()+'.'+String(x.getMonth()+1).padStart(2,'0')+'.'+x.getFullYear()+' '+t12(String(x.getHours()).padStart(2,'0')+':'+String(x.getMinutes()).padStart(2,'0'))};
 function lg(a,d){S.log.unshift({i:Date.now()+Math.random(),ts:stamp(),u:U?U.name:'—',a,d});S.log=S.log.slice(0,500)}
@@ -268,30 +269,32 @@ function lockUI(mode,msg){
   const lk=$('lk');lk.hidden=false;
   const F=(id,l,t)=>`<div class="f"><label>${l}</label><input id="${id}" type="${t||'password'}" ${t?'':'inputmode="numeric" '}autocomplete="off"></div>`;
   let h,btn='Unlock',title='Sign in';
-  if(mode==='first'){title='Create admin PIN';btn='Create';h=F('p1','Admin PIN (4+ digits)')+F('p2','Confirm PIN')}
+  if(mode==='connect'){title='Connect to shop';btn='Connect';h='<p>Enter the shop passphrase to connect this device. You only need to do this once.</p>'+F('pw','Shop passphrase','password')}
+  else if(mode==='first'){title='Create admin PIN';btn='Create';h=F('p1','Admin PIN (4+ digits)')+F('p2','Confirm PIN')}
   else if(mode==='recover'){title='Reset admin PIN';btn='Reset';h=F('rc','Recovery code','text')+F('p1','New PIN')+F('p2','Confirm PIN')}
   else if(mode==='code'){title='Recovery code';btn='Continue';h=`<p>Write this code down. It is the only way to reset the admin PIN.</p><h2 style="letter-spacing:.15em;text-align:center">${msg}</h2>`}
   else h=`<div class="f"><label>User</label><select id="lu"><option value="admin">Admin</option>${S.users.staff.filter(x=>x.on).map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('')}</select></div>`+F('p1','PIN');
   lk.innerHTML=`<div class="dlg"><h3>${title}</h3>${h}<div id="le" class="neg"></div><div class="oa">${mode==='login'?'<button class="ghost" id="fg">Forgot admin PIN</button>':''}<button class="go" id="lgo">${btn}</button></div></div>`;
   const err=t=>$('le').textContent=t,v=id=>$(id)?$(id).value:'';
-  if($('p1'))$('p1').focus();else if($('rc'))$('rc').focus();
+  if($('p1'))$('p1').focus();else if($('rc'))$('rc').focus();else if($('pw'))$('pw').focus();
   if($('fg'))$('fg').onclick=()=>lockUI('recover');
   const go=async()=>{
-    if(mode==='code')return enter();
+    if(mode==='connect'){try{const c=await decCfg(ENC,v('pw'));S.sync={url:c.url,key:c.key};persist();return start()}catch(e){return err('Wrong passphrase')}}
+    if(mode==='code'){startSess();return enter()}
     if(mode==='first'||mode==='recover'){const a=v('p1');if(a.length<4||a!==v('p2'))return err('PINs must match and be 4+ digits');
-      if(mode==='first'){const c=rnd(3).toUpperCase();S.users={admin:await mk(a),staff:[],rec:await mk(c)};U={name:'Admin',role:'admin'};lg('Admin created','');save();return lockUI('code',c)}
+      if(mode==='first'){const c=rnd(3).toUpperCase();S.users={admin:await mk(a),staff:[],rec:await mk(c)};U={name:'Admin',role:'admin',id:'admin'};lg('Admin created','');save();return lockUI('code',c)}
       if(!(await ck(S.users.rec,v('rc').trim().toUpperCase())))return err('Wrong recovery code');
       S.users.admin=await mk(a);U=null;lg('Admin PIN reset','');save();return lockUI('login')}
     const L=S.lockout||{n:0,until:0};if(Date.now()<L.until)return err('Too many attempts. Try again in a minute.');
     const id=v('lu'),st=S.users.staff.find(x=>x.id==id),o=id==='admin'?S.users.admin:st;
-    if(o&&await ck(o,v('p1'))){S.lockout={n:0,until:0};U={name:id==='admin'?'Admin':st.name,role:id==='admin'?'admin':'staff'};lg('Login','');save();enter()}
+    if(o&&await ck(o,v('p1'))){S.lockout={n:0,until:0};U={name:id==='admin'?'Admin':st.name,role:id==='admin'?'admin':'staff',id};lg('Login','');save();startSess();enter()}
     else{L.n++;if(L.n>=5){L.until=Date.now()+60000;L.n=0}S.lockout=L;save();err('Wrong PIN')}
   };
   $('lgo').onclick=go;lk.onkeydown=e=>{if(e.key==='Enter')go()}
 }
-function enter(){$('lk').hidden=true;$('lk').innerHTML='';$('set').hidden=$('stf').hidden=$('logb').hidden=$('rpb').hidden=!isA();$('who').textContent=U.name+' · '+(isA()?'Admin':'Staff');reset();render();bump();pull()}
-function lock(){U=null;$('ov').hidden=true;if(S.users)lockUI('login')}
-const bump=()=>{clearTimeout(it);if(U)it=setTimeout(lock,18000000)};
+function enter(){$('lk').hidden=true;$('lk').innerHTML='';$('set').hidden=$('stf').hidden=$('logb').hidden=$('rpb').hidden=!isA();$('who').textContent=isA()?'Admin':U.name+' · Staff';reset();render();bump();pull()}
+function lock(){try{localStorage.removeItem(SESS)}catch(e){}U=null;$('ov').hidden=true;if(S.users)lockUI('login')}
+const bump=()=>{};setInterval(()=>{if(U&&Date.now()>exp)lock()},60000);
 ['click','keydown','touchstart'].forEach(e=>document.addEventListener(e,bump));
 $('lockb').onclick=lock;
 
@@ -350,7 +353,7 @@ $('ob').addEventListener('click',async e=>{
     await dlFile('NCS_Report_'+RR.a+'.csv',r.map(x=>'"'+x[0]+'",'+x[1]).join('\n'))}});
 
 S.lang=S.lang||'en';
-const BN={'Daily Accounts':'দৈনিক হিসাব','Nur Computer & Stationary':'নূর কম্পিউটার এন্ড স্টেশনারী','Today':'আজ','Settings':'সেটিংস','Lock':'লক','Total Sell':'মোট বিক্রয়','Total Buy':'মোট ক্রয়','Difference (pending)':'পার্থক্য (বাকি)','Counted vs account':'গণনা বনাম হিসাব','Cash Balance':'ক্যাশ ব্যালেন্স','Account balance now':'বর্তমান হিসাবের ব্যালেন্স','Opening Cash':'প্রারম্ভিক ক্যাশ','Closing Cash':'সমাপনী ক্যাশ','Adjustments today':'আজকের সমন্বয়','Prepared':'প্রস্তুতকারী','Checked':'যাচাইকারী','Open':'খোলা','Closed':'বন্ধ','Close Day':'দিন বন্ধ করুন','Reopen':'পুনরায় খুলুন','Sl':'ক্র.','Time':'সময়','Description':'বিবরণ','Sell':'বিক্রয়','Buy':'ক্রয়','Previous Cash':'পূর্বের ক্যাশ','Actual Cash':'প্রকৃত ক্যাশ','Difference':'পার্থক্য','Type':'ধরন','Category':'ক্যাটাগরি','Payment method':'পেমেন্ট পদ্ধতি','Amount':'পরিমাণ','Actual cash counted (optional)':'গণনা করা প্রকৃত ক্যাশ (ঐচ্ছিক)','Count':'গণনা','Add entry':'এন্ট্রি যোগ করুন','Save changes':'পরিবর্তন সংরক্ষণ','Cancel edit':'সম্পাদনা বাতিল','Staff':'কর্মী','Change Log':'পরিবর্তন লগ','Print':'প্রিন্ট','Export CSV':'CSV এক্সপোর্ট','Reports':'রিপোর্ট','Undo':'পূর্বাবস্থা','Edit':'সম্পাদনা','Void':'বাতিল','Adjust':'সমন্বয়','Adjusted':'সমন্বিত','Sale':'বিক্রয়','Purchase / Expense':'ক্রয় / খরচ','Owner Deposit':'মালিকের জমা','Owner Withdrawal':'মালিকের উত্তোলন','Cash Adjustment (±)':'ক্যাশ সমন্বয় (±)','Cash':'নগদ','Mobile Banking':'মোবাইল ব্যাংকিং','Bank':'ব্যাংক','Due':'বাকি','All types':'সব ধরন','All payments':'সব পেমেন্ট','Clear':'মুছুন','No entries for this date':'এই তারিখে কোনো এন্ট্রি নেই','Previous':'পূর্বের','Sign in':'সাইন ইন','User':'ব্যবহারকারী','Unlock':'আনলক','Admin':'অ্যাডমিন','Close':'বন্ধ করুন','Cancel':'বাতিল','Confirm':'নিশ্চিত করুন','Day':'দিন','Week (Sat–Fri)':'সপ্তাহ (শনি–শুক্র)','Month':'মাস','Net (Sell − Buy)':'নিট (বিক্রয় − ক্রয়)','Adjustments':'সমন্বয়','Sales by category':'ক্যাটাগরি অনুযায়ী বিক্রয়','Expenses by category':'ক্যাটাগরি অনুযায়ী খরচ','Total':'মোট','Use total':'মোট ব্যবহার করুন','Cash Counter':'ক্যাশ কাউন্টার','Customer name':'গ্রাহকের নাম','Supplier name':'সরবরাহকারীর নাম','Phone (optional)':'ফোন (ঐচ্ছিক)','PIN':'পিন','Forgot admin PIN':'অ্যাডমিন পিন ভুলে গেছেন','☀ Light':'☀ লাইট','☾ Dark':'☾ ডার্ক','◐ Auto':'◐ অটো','◷ Day/Night':'◷ দিন/রাত'};
+const BN={'Daily Accounts':'দৈনিক হিসাব','Nur Computer & Stationary':'নূর কম্পিউটার এন্ড স্টেশনারী','Today':'আজ','Settings':'সেটিংস','Lock':'লক','Total Sell':'মোট বিক্রয়','Total Buy':'মোট ক্রয়','Difference (pending)':'পার্থক্য (বাকি)','Counted vs account':'গণনা বনাম হিসাব','Cash Balance':'ক্যাশ ব্যালেন্স','Account balance now':'বর্তমান হিসাবের ব্যালেন্স','Opening Cash':'প্রারম্ভিক ক্যাশ','Closing Cash':'সমাপনী ক্যাশ','Adjustments today':'আজকের সমন্বয়','Prepared':'প্রস্তুতকারী','Checked':'যাচাইকারী','Open':'খোলা','Closed':'বন্ধ','Close Day':'দিন বন্ধ করুন','Reopen':'পুনরায় খুলুন','Sl':'ক্র.','Time':'সময়','Description':'বিবরণ','Sell':'বিক্রয়','Buy':'ক্রয়','Previous Cash':'পূর্বের ক্যাশ','Actual Cash':'প্রকৃত ক্যাশ','Difference':'পার্থক্য','Type':'ধরন','Category':'ক্যাটাগরি','Payment method':'পেমেন্ট পদ্ধতি','Amount':'পরিমাণ','Actual cash (optional)':'গণনা করা প্রকৃত ক্যাশ (ঐচ্ছিক)','Count':'গণনা','Add entry':'এন্ট্রি যোগ করুন','Save changes':'পরিবর্তন সংরক্ষণ','Cancel edit':'সম্পাদনা বাতিল','Staff':'কর্মী','Change Log':'পরিবর্তন লগ','Print':'প্রিন্ট','Export CSV':'CSV এক্সপোর্ট','Reports':'রিপোর্ট','Undo':'পূর্বাবস্থা','Edit':'সম্পাদনা','Void':'বাতিল','Adjust':'সমন্বয়','Adjusted':'সমন্বিত','Sale':'বিক্রয়','Purchase / Expense':'ক্রয় / খরচ','Owner Deposit':'মালিকের জমা','Owner Withdrawal':'মালিকের উত্তোলন','Cash Adjustment (±)':'ক্যাশ সমন্বয় (±)','Cash':'নগদ','Mobile Banking':'মোবাইল ব্যাংকিং','Bank':'ব্যাংক','Due':'বাকি','All types':'সব ধরন','All payments':'সব পেমেন্ট','Clear':'মুছুন','No entries for this date':'এই তারিখে কোনো এন্ট্রি নেই','Previous':'পূর্বের','Sign in':'সাইন ইন','User':'ব্যবহারকারী','Unlock':'আনলক','Admin':'অ্যাডমিন','Close':'বন্ধ করুন','Cancel':'বাতিল','Confirm':'নিশ্চিত করুন','Day':'দিন','Week (Sat–Fri)':'সপ্তাহ (শনি–শুক্র)','Month':'মাস','Net (Sell − Buy)':'নিট (বিক্রয় − ক্রয়)','Adjustments':'সমন্বয়','Sales by category':'ক্যাটাগরি অনুযায়ী বিক্রয়','Expenses by category':'ক্যাটাগরি অনুযায়ী খরচ','Total':'মোট','Use total':'মোট ব্যবহার করুন','Cash Counter':'ক্যাশ কাউন্টার','Customer name':'গ্রাহকের নাম','Supplier name':'সরবরাহকারীর নাম','Phone (optional)':'ফোন (ঐচ্ছিক)','PIN':'পিন','Forgot admin PIN':'অ্যাডমিন পিন ভুলে গেছেন','☀ Light':'☀ লাইট','☾ Dark':'☾ ডার্ক','◐ Auto':'◐ অটো','◷ Day/Night':'◷ দিন/রাত'};
 const orig=new WeakMap();
 function tx(root){const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let x;while(x=w.nextNode()){if(!orig.has(x))orig.set(x,x.nodeValue);const o=orig.get(x);
   x.nodeValue=S.lang==='bn'?o.split(' · ').map(q=>{const t=q.trim();return BN[t]?q.replace(t,BN[t]):q}).join(' · '):o}}
@@ -374,16 +377,16 @@ async function push(force){
     const sn=Object.keys(S.days).filter(d=>S.days[d].closed&&!(S.snaps||[]).includes(d)),nl=S.log.filter(l=>l.i>(S.logSent||0)).reverse(),rev=S.rev;
     const r=await(await fetch(S.sync.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({key:S.sync.key,base:S.synced||0,force:!!force,rev,state:JSON.stringify(stateOut()),head:HEAD,rows:rowsOut(),log:nl.map(l=>[l.ts,l.u,l.a,l.d]),snaps:sn})})).json();
     if(r.conflict){setSt('conf');busy=false;return}
-    if(!r.ok)throw 0;
+    if(r.ok===false){busy=false;return badKey()}if(!r.ok)throw 0;
     S.synced=rev;S.snaps=[...(S.snaps||[]),...sn];if(S.log.length)S.logSent=Math.max(...S.log.map(l=>l.i));persist();setSt(isDirty()?'pend':'ok');if(isDirty())schedule()
   }catch(e){setSt('offl')}
   busy=false}
 function applyRemote(r){const k={};LOCAL.forEach(x=>{if(x in S)k[x]=S[x]});S=Object.assign({},JSON.parse(r.state),k,{rev:r.rev,synced:r.rev});persist();if(U){reset();render()}setSt('ok')}
 async function pull(){
   if(!SY()||busy)return;
-  try{const r=await getRemote();if(!r.ok)throw 0;
+  try{const r=await getRemote();if(r.ok===false)return badKey();if(!r.ok)throw 0;
     if(r.rev>(S.synced||0)){if(isDirty()){setSt('conf');return}applyRemote(r)}
-    else if(isDirty())push();else setSt('ok')
+    else if(isDirty()||(!r.rev&&S.entries.length))push();else setSt('ok')
   }catch(e){setSt('offl')}}
 $('sync').onclick=()=>{if(st==='conf')ask('Sync conflict','<p>This device and the Google Sheet both have new changes. Choose which to keep.</p><div class="oa" style="justify-content:flex-start"><button class="ghost" id="scp">Use Sheet data</button><button class="ghost" id="scf">Keep this device</button></div>',()=>{},'Close');else if(SY())pull();else setSt('off')};
 $('ob').addEventListener('click',e=>{if(e.target.id!=='sfr')return;
@@ -397,7 +400,24 @@ setInterval(()=>{if(U)pull()},30000);
 addEventListener('online',()=>{if(U)pull()});
 document.addEventListener('visibilitychange',()=>{if(U&&!document.hidden)pull()});
 setSt(SY()?(isDirty()?'pend':'ok'):'off');
-async function start(){if(!S.users&&SY()){try{const r=await getRemote();if(r.ok&&r.rev&&r.state)applyRemote(r)}catch(e){}}S.users?lockUI('login'):lockUI('first')}
+const b64=a=>btoa(String.fromCharCode(...new Uint8Array(a))),ub=x=>Uint8Array.from(atob(x),c=>c.charCodeAt(0));
+async function kdf(pw,salt,n){const k=await crypto.subtle.importKey('raw',new TextEncoder().encode(pw),'PBKDF2',false,['deriveKey']);return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:n,hash:'SHA-256'},k,{name:'AES-GCM',length:256},false,['encrypt','decrypt'])}
+async function encCfg(o,pw){const salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12)),n=600000,k=await kdf(pw,salt,n);return{s:b64(salt),i:b64(iv),c:b64(await crypto.subtle.encrypt({name:'AES-GCM',iv},k,new TextEncoder().encode(JSON.stringify(o)))),n}}
+async function decCfg(e,pw){const k=await kdf(pw,ub(e.s),e.n);return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:ub(e.i)},k,ub(e.c))))}
+function badKey(){setSt('offl');if(!ENC||!U)return;S.sync=null;persist();ask('Reconnect sync','<p>The sync key changed. Enter the shop passphrase to reconnect.</p><div class="f"><label>Shop passphrase</label><input id="rcp" type="password"></div>',async()=>{try{const c=await decCfg(ENC,$('rcp').value);S.sync={url:c.url,key:c.key};persist();pull()}catch(e){$('rcp').value='';$('rcp').placeholder='Wrong passphrase';return false}},'Reconnect')}
+$('ob').addEventListener('click',e=>{if(e.target.id!=='ssu')return;
+  ask('Secure sync setup',`<p>Creates an encrypted config.js that is safe in a public repository.</p><div class="f"><label>Web app URL</label><input id="g1" value="${esc(S.sync?S.sync.url:'')}"></div><div class="f"><label>Sync key (the key in your Apps Script)</label><input id="g2" type="password"></div><div class="f"><label>Shop passphrase (12+ characters)</label><input id="g3" type="password"></div><div class="f"><label>Repeat passphrase</label><input id="g4" type="password"></div>`,async()=>{
+    const u=$('g1').value.trim(),k=$('g2').value.trim(),p=$('g3').value;
+    if(!/^https:\/\//.test(u)||!k||p.length<12||p!==$('g4').value){$('g4').value='';$('g4').placeholder='Check URL, key, and matching passphrase (12+)';return false}
+    const en=await encCfg({url:u,key:k},p);await decCfg(en,p);S.sync={url:u,key:k};persist();
+    const txt='// Encrypted sync setup. Safe to keep in a public repository.\nwindow.NCS_CONFIG = '+JSON.stringify({enc:en})+';\n';
+    setTimeout(()=>ask('Your new config.js',`<p>Copy all of this and paste it into config.js on GitHub (replace everything), then commit.</p><textarea id="cfo" readonly rows="7" style="width:100%;font:12px monospace;background:var(--bg);border:1px solid var(--line);border-radius:10px;color:var(--ink);padding:8px">${esc(txt)}</textarea><div class="oa"><button class="ghost" id="cfc">Copy</button></div>`,()=>{},'Done'),0);pull()},'Generate')});
+$('ob').addEventListener('click',async e=>{if(e.target.id!=='cfc')return;const t=$('cfo');t.select();try{await navigator.clipboard.writeText(t.value)}catch(x){document.execCommand('copy')}e.target.textContent='Copied'});
+function startSess(){exp=Date.now()+864e5;const r=U.role==='admin'?S.users.admin:S.users.staff.find(x=>x.id==U.id);try{localStorage.setItem(SESS,JSON.stringify({u:U,exp,h:r.h}))}catch(e){}}
+function resume(){try{const q=JSON.parse(localStorage.getItem(SESS)||'null');if(!q||Date.now()>q.exp)return false;
+  const r=q.u.role==='admin'?S.users.admin:S.users.staff.find(x=>x.id==q.u.id&&x.on);
+  if(!r||r.h!==q.h)return false;U=q.u;exp=q.exp;enter();return true}catch(e){return false}}
+async function start(){if(ENC&&!SY()){lockUI('connect');return}if(!S.users&&SY()){try{const r=await getRemote();if(r.ok&&r.rev&&r.state)applyRemote(r)}catch(e){}}if(S.users&&resume())return;S.users?lockUI('login'):lockUI('first')}
 applyLang();start();
 if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js'));
 </script>
