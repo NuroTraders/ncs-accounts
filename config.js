@@ -1,2 +1,2 @@
-// Sync setup goes here. Generate it in the app: Settings > Secure sync setup, then paste it over this file.
-window.NCS_CONFIG = {};
+// Encrypted sync setup. Safe to keep in a public repository.
+window.NCS_CONFIG = {"enc":{"s":"fdL8DZBVSQMCwgW/NAE9cg==","i":"qlUaojmNP6J288FN","c":"V5itTKBTtGamyVTVHHAZc7fokzi/MVDMdq52IgIIbNMEGqOyiBCk9pvlWznUAHmqNYz9MzOfeeX8YKbPfSZs5wVrFXs9OrmHJnW/bkwSTzvg0f1MsaSknqzSUCuJTdeMsUDdCxzLhV7BqUevmY4MDGbJEjxfY7sTlwvq4WEBGzPoZHhuaaqTiyorNfZzphlQupFV0ZJUDSU7W9HWp/IRIxj3z23pZLEJmgLSfCpBOIXKC3o=","n":600000}};
