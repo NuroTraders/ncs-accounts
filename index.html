@@ -362,7 +362,7 @@ function applyLang(){const b=S.lang==='bn';document.documentElement.lang=b?'bn':
 $('lang').onclick=()=>{S.lang=S.lang==='bn'?'en':'bn';save();applyLang()};
 
 async function dlFile(name,data){try{if(typeof claude!=='undefined'){const dl=await claude.use('downloads');if(dl)return dl.save({filename:name,data})}const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type:'text/csv'}));a.download=name;a.click()}catch(e){}}
-const LOCAL=['theme','dayStart','dayEnd','lang','lockout','sync','snaps','logSent','synced'];
+const LOCAL=['theme','dayStart','dayEnd','lang','lockout','sync','snaps','logSent','synced','posSince'];
 const SY=()=>!!(S.sync&&S.sync.url&&S.sync.key),isDirty=()=>(S.rev||0)!==(S.synced||0);
 let st='off',tm,busy=false;
 function setSt(x){st=x;$('sync').textContent='Sync: '+{off:'Off',ok:'Synced',pend:'Pending',offl:'Offline',conf:'Conflict'}[x]}
@@ -382,11 +382,21 @@ async function push(force){
   }catch(e){setSt('offl')}
   busy=false}
 function applyRemote(r){const k={};LOCAL.forEach(x=>{if(x in S)k[x]=S[x]});S=Object.assign({},JSON.parse(r.state),k,{rev:r.rev,synced:r.rev});persist();if(U){reset();render()}setSt('ok')}
+async function importPos(){
+  if(!SY())return;
+  try{const r=await(await fetch(S.sync.url+(S.sync.url.includes('?')?'&':'?')+'action=inbox&key='+encodeURIComponent(S.sync.key)+'&since='+(S.posSince||0))).json();
+    if(!r.ok||!r.rows||!r.rows.length)return;
+    let c=0,mx=S.posSince||0;
+    r.rows.forEach(x=>{mx=Math.max(mx,x.seq);const b=x.bill;if(b.voidOf){const w=S.entries.find(e=>e.id===b.voidOf);if(w&&!w.void){w.void=1;w.vr='POS void: '+b.reason;c++}return}if(S.entries.some(e=>e.id===b.id))return;
+      let d=b.d;if(S.days[d]&&S.days[d].closed)d=iso(new Date());
+      S.entries.push({id:b.id,d,t:b.t,type:b.mode==='purchase'?'Purchase':'Sale',desc:String(b.desc).slice(0,200),cat:'POS',pay:b.pay,amt:b.total,by:b.user,party:b.party||'',phone:b.phone||'',pos:1,act:null});c++});
+    S.posSince=mx;if(c){lg('POS import',c+' bill(s)');save()}else persist();if(U)render()
+  }catch(e){}}
 async function pull(){
   if(!SY()||busy)return;
   try{const r=await getRemote();if(r.ok===false)return badKey();if(!r.ok)throw 0;
     if(r.rev>(S.synced||0)){if(isDirty()){setSt('conf');return}applyRemote(r)}
-    else if(isDirty()||(!r.rev&&S.entries.length))push();else setSt('ok')
+    else if(isDirty()||(!r.rev&&S.entries.length))push();else setSt('ok');importPos()
   }catch(e){setSt('offl')}}
 $('sync').onclick=()=>{if(st==='conf')ask('Sync conflict','<p>This device and the Google Sheet both have new changes. Choose which to keep.</p><div class="oa" style="justify-content:flex-start"><button class="ghost" id="scp">Use Sheet data</button><button class="ghost" id="scf">Keep this device</button></div>',()=>{},'Close');else if(SY())pull();else setSt('off')};
 $('ob').addEventListener('click',e=>{if(e.target.id!=='sfr')return;
