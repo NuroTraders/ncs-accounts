@@ -170,25 +170,42 @@ body{padding-bottom:78px}
 .lt{min-width:560px}.lt th,.lt td{text-align:right}.lt th:nth-child(-n+2),.lt td:nth-child(-n+2){text-align:left}.lt td:first-child{width:auto;color:var(--ink)}.lt tr[data-a]{cursor:pointer}.lt tfoot td{font-weight:600;border-top:1px solid var(--line)}
 #vLed header .nav{gap:8px}.lph{display:none}
 @media print{body.lp .tabs,body.lp .top,body.lp .view:not(#vLed),body.lp .noprint{display:none!important}body.lp .lph{display:block}}
-/* ===== THEME v8.2 (dashboard look). Use these tokens; do not hard-code colours ===== */
-:root{--bg1:#E8F5E4;--bg2:#DFF3EA;--bg3:#E6F0FF;--sh:0 6px 22px rgba(30,70,50,.08);--t1:#FDE8EA;--t2:#FFF0DC;--t3:#E4F7E7;--t4:#EEE6FB;--g1:#2F5D3A;--g2:#3F8A55}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg1:#0C1210;--bg2:#0E1613;--bg3:#101620;--sh:0 6px 22px rgba(0,0,0,.4);--t1:#2B1A1D;--t2:#2B2218;--t3:#17261B;--t4:#231E30;--g1:#1F4A2D;--g2:#2F7D46}}
-:root[data-theme="dark"]{--bg1:#0C1210;--bg2:#0E1613;--bg3:#101620;--sh:0 6px 22px rgba(0,0,0,.4);--t1:#2B1A1D;--t2:#2B2218;--t3:#17261B;--t4:#231E30;--g1:#1F4A2D;--g2:#2F7D46}
-body{background:linear-gradient(135deg,var(--bg1),var(--bg2) 55%,var(--bg3)) fixed;min-height:100vh}
-.card,.stat{border-radius:18px;box-shadow:var(--sh)}
-.stats .stat:nth-child(1){background:var(--t3);border-color:transparent}.stats .stat:nth-child(2){background:var(--t2);border-color:transparent}.stats .stat:nth-child(3){background:var(--t1);border-color:transparent}
-.stat.main{background:linear-gradient(135deg,var(--g1),var(--g2));border-color:transparent;color:#fff}.stat.main small,.stat.main i{color:rgba(255,255,255,.82)}.stat.main b{color:#fff}
-.lst .stat.main{border-radius:20px}.lst .stat.main b{font-size:26px}
-.go{box-shadow:0 4px 12px rgba(47,93,58,.25)}.ptabs button.on{box-shadow:0 3px 10px rgba(47,93,58,.2)}
-.tabs{border-radius:22px;border:0;box-shadow:0 8px 28px rgba(0,0,0,.16)}
-@media (max-width:899px){.tabs{left:10px;right:10px;bottom:calc(8px + env(safe-area-inset-bottom,0px));padding:6px}.wrap{padding-bottom:104px}.lst{grid-template-columns:1fr 1fr}.lst .stat.main{grid-column:1/-1}}
+/* ===== THEME v8.3 ItemPOS look (from Figma "POS System Dashboard", Light 01). Use tokens; do not hard-code colours ===== */
+:root{--bg:#F8F9FD;--card:#fff;--line:#F2F2F2;--acc:#2CC56F;--soft:#E9F9F0;--btn:#2CC56F;--btn2:#A5D86E;--pos:#1E9E57;--mut:#71747D;--sh:0 6px 9px -5px rgba(186,186,186,.15);--t1:#FCEAE4;--t2:#FFF5E0;--t3:#E0F8EA;--t4:#EFE6F6;--g1:#2CC56F;--g2:#BEDC7C}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--btn2:var(--btn);--sh:0 6px 14px -5px rgba(0,0,0,.5);--t1:#2B1A1D;--t2:#2B2218;--t3:#17261B;--t4:#231E30;--g1:#1F4A2D;--g2:#2F7D46}}
+:root[data-theme="dark"]{--btn2:var(--btn);--sh:0 6px 14px -5px rgba(0,0,0,.5);--t1:#2B1A1D;--t2:#2B2218;--t3:#17261B;--t4:#231E30;--g1:#1F4A2D;--g2:#2F7D46}
+body{background:var(--bg)}
+h1{font-size:24px;font-weight:600}
+.top{max-width:none;margin:0;padding:14px 24px;background:var(--card);box-shadow:0 1px 0 var(--line)}
+.card,.stat{background:var(--card);border-radius:14px;box-shadow:var(--sh)}
+.stats .stat:nth-child(1){background:var(--t3)}.stats .stat:nth-child(2){background:var(--t2)}.stats .stat:nth-child(3){background:var(--t1)}
+.stats .stat{border-color:transparent}
+.stat.main{background:linear-gradient(180deg,var(--g1),var(--g2));border-color:transparent;color:#fff}.stat.main small,.stat.main i{color:rgba(255,255,255,.88)}.stat.main b{color:#fff}
+.lst .stat.main b{font-size:26px}
+.go{background:linear-gradient(135deg,var(--btn),var(--btn2));border-radius:12px}
+.ptabs button.on{background:var(--soft);color:var(--acc);border-color:transparent;font-weight:600}
+th{color:var(--ink);font-weight:500}
+.tabs{background:var(--card);border:0;box-shadow:0 8px 28px rgba(0,0,0,.14)}
+.tabs button{font-weight:500;color:var(--mut)}.tabs button.on{background:var(--soft);color:var(--acc)}
+@media (max-width:899px){.tabs{left:10px;right:10px;bottom:calc(8px + env(safe-area-inset-bottom,0px));padding:6px;border-radius:20px}.wrap{padding-bottom:104px}.lst{grid-template-columns:1fr 1fr}.lst .stat.main{grid-column:1/-1}.top{padding:12px 16px}}
 @media (min-width:900px){
- body:has(.tabs:not([hidden])){padding-left:228px}
- .tabs{top:12px;bottom:12px;left:12px;right:auto;width:200px;flex-direction:column;justify-content:flex-start;gap:6px;padding:18px 10px}
- .tabs button{flex:none;flex-direction:row;justify-content:flex-start;gap:12px;font-size:14px;padding:12px 14px;border-radius:14px}
- .tabs button.on{background:var(--acc);color:var(--btnink)}
- .top,.wrap{max-width:1180px}.wrap{padding-top:18px}}
+ body:has(.tabs:not([hidden])){padding-left:240px}
+ .tabs{top:0;left:0;bottom:0;right:auto;width:240px;border-radius:0;border-right:2px solid var(--line);box-shadow:none;flex-direction:column;justify-content:flex-start;gap:6px;padding:22px 0}
+ .tabs::before{content:"Nur Computer";font:700 24px/1.2 Inter,sans-serif;padding:0 28px 26px;background:linear-gradient(91deg,var(--g1),var(--g2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+ .tabs button{flex:none;flex-direction:row;justify-content:flex-start;gap:16px;font-size:16px;padding:14px 28px;border-radius:4px 0 0 4px;position:relative}
+ .tabs button.on::after{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;border-radius:10px;background:linear-gradient(178deg,var(--g1) 10%,var(--g2) 90%)}
+ .wrap{max-width:1180px;padding-top:22px}}
 @media print{body{background:#fff!important;padding-left:0!important}}
+#mb{display:none;padding:0 9px}
+.dr[hidden]{display:none}.dr{position:fixed;inset:0;z-index:30}.drb{position:absolute;inset:0;background:rgba(0,0,0,.36)}
+.drp{position:absolute;left:0;top:0;bottom:0;width:min(266px,88vw);background:var(--card);padding:calc(14px + env(safe-area-inset-top,0px)) 18px 18px;overflow:auto;animation:drin .18s ease}
+@keyframes drin{from{transform:translateX(-30px);opacity:0}}
+.drh{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}.drh b{font:700 24px/1.2 Inter,sans-serif;background:linear-gradient(91deg,var(--g1),var(--g2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.drg{display:grid;grid-template-columns:1fr 1fr}
+.drt{aspect-ratio:1;border:1px solid var(--line);border-radius:6px;background:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;font-size:14px;font-weight:500;color:var(--ink);cursor:pointer}
+.drt svg{width:40px;height:40px}.drt.on{background:#46C1BF;color:#fff;border-color:#46C1BF}.drt.on svg{color:#fff!important}
+@media (max-width:899px){body:has(.tabs:not([hidden])) #mb{display:inline-flex;align-items:center}.tabs{display:none!important}.wrap{padding-bottom:56px}}
+@media print{.dr,#mb{display:none!important}}
 </style>
 <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#2F5D3A"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes">
 <script src="config.js"></script>
@@ -762,8 +779,8 @@ applyLang();start();
 if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js'));
 
 /* ---------- customer ledger + version history (v8) ---------- */
-var APP_VERSION='8.2',LC=null,LT='led',LQ='',LF='',LE='';
-var VERS=[{v:'8.2',d:'2026-10-15',n:['Dashboard theme: soft gradient background, rounded shadow cards, pastel stat tiles','PC: left sidebar navigation. Android: floating bottom bar and wallet-style balance card','Works in light and dark mode through colour tokens (no logic changes)']},{v:'8.1',d:'2026-10-15',n:['Ledger entries record date and time automatically; a previous date is chosen only through "Use a different (previous) date"','Time shown in ledger rows, entry details and CSV','HANDOVER.md added for multi-profile work']},{v:'8.0',d:'2026-10-15',n:['Customer Ledger tab for Admin, Accountant and Cashier','Customer profile tabs: Ledger, Statement, Notes, Activity','Received (পেলাম) and Given (দিলাম) entries; balance is always calculated','Split amounts like 3060+5000+15000+500 are saved as one grouped entry','Date ranges, "date unknown", method and payee on every entry','Cashier can add and view only; a correction voids the old entry (VOID tag) and adds a new one','Admin and Accountant can edit, void, print statements and export CSV','Ledger data syncs through the existing Google Sheet sync (no script change needed)','Version history screen with .txt export']}];
+var APP_VERSION='8.4',LC=null,LT='led',LQ='',LF='',LE='';
+var VERS=[{v:'8.4',d:'2026-10-15',n:['Phone menu from Figma Light 02: hamburger button opens a drawer with a 2-column icon grid, active tile in teal, dimmed overlay','Bottom bar hidden on phones (the drawer replaces it); PC sidebar unchanged']},{v:'8.3',d:'2026-10-15',n:['New look from the ItemPOS Figma design: light #F8F9FD background, white cards (14px radius, soft shadow), green #2CC56F accent and gradient','PC: white sidebar with green active marker; Android: floating bottom bar','Pastel stat tiles and green gradient balance card; dark mode kept']},{v:'8.2',d:'2026-10-15',n:['Dashboard theme: soft gradient background, rounded shadow cards, pastel stat tiles','PC: left sidebar navigation. Android: floating bottom bar and wallet-style balance card','Works in light and dark mode through colour tokens (no logic changes)']},{v:'8.1',d:'2026-10-15',n:['Ledger entries record date and time automatically; a previous date is chosen only through "Use a different (previous) date"','Time shown in ledger rows, entry details and CSV','HANDOVER.md added for multi-profile work']},{v:'8.0',d:'2026-10-15',n:['Customer Ledger tab for Admin, Accountant and Cashier','Customer profile tabs: Ledger, Statement, Notes, Activity','Received (পেলাম) and Given (দিলাম) entries; balance is always calculated','Split amounts like 3060+5000+15000+500 are saved as one grouped entry','Date ranges, "date unknown", method and payee on every entry','Cashier can add and view only; a correction voids the old entry (VOID tag) and adds a new one','Admin and Accountant can edit, void, print statements and export CSV','Ledger data syncs through the existing Google Sheet sync (no script change needed)','Version history screen with .txt export']}];
 function nowT(){var x=new Date();return String(x.getHours()).padStart(2,'0')+':'+String(x.getMinutes()).padStart(2,'0')}
 function lb(a,b){return S.lang==='bn'?b:a}
 function bd(s){return String(s).replace(/[০-৯]/g,function(c){return '০১২৩৪৫৬৭৮৯'.indexOf(c)})}
@@ -839,6 +856,23 @@ function verUI(){ask('Version history · v'+APP_VERSION,'<div class="lg">'+VERS.
   v.addEventListener('change',function(e){if(e.target.id==='lsa'||e.target.id==='lse'){LF=$('lsa').value;LE=$('lse').value;ledUI()}});
   window.addEventListener('afterprint',function(){document.body.classList.remove('lp')});
   var b=document.createElement('button');b.className='ghost';b.textContent='Version history';b.onclick=verUI;$('moreList').append(b)})();
+
+/* ---------- phone drawer menu (Figma Light 02) ---------- */
+(function(){
+  var COL=['#9E68DF','#2F7BD8','#EDBF47','#E8743B','#2CC56F','#46C1BF'],
+  mb=document.createElement('button');mb.id='mb';mb.className='ic';mb.setAttribute('aria-label','Menu');
+  mb.innerHTML='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>';
+  $('top').insertBefore(mb,$('top').firstChild);
+  var dr=document.createElement('div');dr.id='dr';dr.className='dr';dr.hidden=true;
+  dr.innerHTML='<div class="drb"></div><aside class="drp"><div class="drh"><b>Nur Computer</b><button class="ic" id="drx" aria-label="Close">✕</button></div><div class="drg" id="drg"></div></aside>';
+  document.body.appendChild(dr);
+  function close(){dr.hidden=true}
+  function open(){if(!U)return;var T=TABS[role()];
+    $('drg').innerHTML=T.map(function(k,i){return '<button class="drt'+(CUR===k?' on':'')+'" data-v="'+k+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="color:'+COL[i%COL.length]+'">'+ICO[k]+'</svg>'+TL[k]+'</button>'}).join('');dr.hidden=false}
+  mb.onclick=open;$('drx').onclick=close;dr.querySelector('.drb').onclick=close;
+  $('drg').addEventListener('click',function(e){var b=e.target.closest('[data-v]');if(!b)return;close();go(b.dataset.v)});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')close()});
+})();
 </script>
 </body>
 </html>

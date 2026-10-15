@@ -1,6 +1,6 @@
 # NCS Daily Accounts: Handover Note
 
-Shop: Nur Computer & Stationery. Current version: **v8.2** (service worker cache `ncs-v10`).
+Shop: Nur Computer & Stationery. Current version: **v8.4** (service worker cache `ncs-v12`).
 Two Claude profiles work on this app and do NOT share memory. This file is the shared memory.
 
 ## 0. Start-of-session checklist (both profiles)
@@ -60,7 +60,7 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 
 ## 6. Roadmap (what to build, change or remove next)
 **Phase 1 (next)**
-1. **Dashboard theme refresh (started in v8.2: CSS layer only).** Remaining: Home view charts and tiles (Dabang style), Nagad-style quick-action icon grid on Home for cashiers, restyle POS and Accounts tables, donut chart. Original brief: The owner shared four references: a light card dashboard with soft gradient and sidebar (Dabang), an orange mobile-banking home (Nagad), a blue wallet-card style, and a cream/yellow with black pill navigation style. Needs the owner's pick of direction, then restyle through CSS variables first (`:root` colour tokens), then layout. Keep dark mode and the green brand colour unless told otherwise. Do the Home view first, then Ledger, then Accounts and POS.
+1. **Dashboard theme refresh (started in v8.2: CSS layer only).** Remaining (Light 02 drawer is done in v8.4; ItemPOS-style table pills and profile card on the customer profile, Home view charts and tiles (Dabang style), Nagad-style quick-action icon grid on Home for cashiers, restyle POS and Accounts tables, donut chart. Original brief: The owner shared four references: a light card dashboard with soft gradient and sidebar (Dabang), an orange mobile-banking home (Nagad), a blue wallet-card style, and a cream/yellow with black pill navigation style. Needs the owner's pick of direction, then restyle through CSS variables first (`:root` colour tokens), then layout. Keep dark mode and the green brand colour unless told otherwise. Do the Home view first, then Ledger, then Accounts and POS.
 2. **Security options in the app:** change sync key from Settings AND the matching Apps Script change (store the key in Script Properties and accept a "rotate key" request) so the key is not hard-coded. Add an admin "change my PIN" if missing.
 3. **Ledger search** inside a customer's entries (amount, name, note) and filters (direction, method, date).
 4. **Statement sharing:** PDF or image for WhatsApp.
@@ -79,6 +79,8 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 13. Add an automated smoke test page.
 
 ## 7. Session log (append newest on top)
+- **v8.4, 2026-10-15:** Phone drawer menu (Figma Light 02): `#mb` hamburger in `.top`, `#dr` drawer built from `TABS[role()]`, tile colours cycle through 6 hues, active tile #46C1BF. Bottom bar is hidden under 900px. Not yet checked in a real browser.
+- **v8.3, 2026-10-15:** Theme layer v8.2 replaced by "THEME v8.3 ItemPOS" (end of `<style>`), built from the owner's Figma values: page #F8F9FD, sidebar white with 2px #F6F6F6 border, active item bg #E9F9F0 + 6px green gradient bar, green #2CC56F to #BEDC7C, card radius 14 and shadow `0 6px 9px -5px rgba(186,186,186,.15)`, pastel tiles #FFF5E0 / #E0F8EA / #FCEAE4 / #EFE6F6, status pills #E6F6E9 and orange #FF9A00, font Inter. Not yet checked in a real browser. The owner's other references (navy Glamstitch, blue wallet, cream/black) were not applied; a Settings theme switch is a possible later feature.
 - **v8.2, 2026-10-15:** Theme layer added at the end of `<style>` (block `THEME v8.2`). Colour tokens `--bg1..3, --t1..4, --g1/--g2, --sh`. PC (min-width 900px): sidebar nav. Under 900px: floating bottom bar. CSS only, no logic changed. **Not yet viewed in a real browser; the owner should check and report spacing or contrast problems.**
 - **v8.1, 2026-10-15:** Ledger date and time recorded automatically; previous date via checkbox; time shown in rows, details and CSV; this handover note added.
 - **v8.0, 2026-10-15:** Customer Ledger (cust and ltx collections, profile tabs, voids, statements, CSV), role-based tabs, version history screen with export. Earlier versions (v1 to v7) were not recorded.
