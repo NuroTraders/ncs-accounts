@@ -211,6 +211,42 @@ th{color:var(--ink);font-weight:500}
 .pti{flex:none;width:38px;height:38px;border-radius:4px;background:rgba(127,127,127,.14);display:flex;align-items:center;justify-content:center}.pt2.a{background:var(--t2)}.pt2.b{background:var(--t3)}.pt2.c{background:var(--t1)}.pt2.d{background:var(--t4)}
 @media (max-width:899px){.pc{grid-template-columns:1fr}}
 @media print{.dr,#mb{display:none!important}}
+/* ===== THEME v8.6 Dabang Home (Home view only). Tokens only; the d* classes below are Home-only and were checked for clashes ===== */
+:root{--dhg:#E4F2EA;--ch1:#1E9E57;--ch2:#46C1BF;--ch3:#B7862F;--ch4:#BEDC7C}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--dhg:#0F1526;--ch1:#10B981;--ch2:#3B82F6;--ch3:#F59E0B;--ch4:#FF9A3D}}
+:root[data-theme="dark"]{--dhg:#0F1526;--ch1:#10B981;--ch2:#3B82F6;--ch3:#F59E0B;--ch4:#FF9A3D}
+body:has(#vHome.on){background:linear-gradient(180deg,var(--dhg) 0,var(--bg) 340px)}
+.dhero{background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff;border-radius:16px;box-shadow:var(--sh);padding:18px 20px;margin-bottom:14px}
+.dhero small{display:block;font-size:13px;color:rgba(255,255,255,.85)}
+.dhero b{display:block;font-size:30px;font-weight:700;font-variant-numeric:tabular-nums;margin:3px 0 2px}
+.dhero i{font-style:normal;font-size:12.5px;color:rgba(255,255,255,.85)}
+#vHome .stat{border-color:transparent;box-shadow:var(--sh)}
+#vHome .stat b{font-size:19px}
+#vHome .stat.t1{background:var(--t1)}
+#vHome .stat.t2{background:var(--t2)}
+#vHome .stat.t3{background:var(--t3)}
+#vHome .stat.t4{background:var(--t4)}
+#vHome .stat.sf{background:var(--soft)}
+.dgrid{display:grid;grid-template-columns:1.7fr 1fr;gap:14px;margin-bottom:14px}
+.dchc{margin-bottom:0}
+.dchh{margin:0;padding:14px 16px 0;font-size:15px;font-weight:600}
+.dchart{display:flex;gap:6px;align-items:flex-end;padding:12px 12px 6px}
+.dcol{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:6px}
+.dbars{display:flex;gap:3px;align-items:flex-end;justify-content:center;height:110px;width:100%}
+.dbs,.dbb{width:min(15px,40%);border-radius:4px 4px 0 0;min-height:2px}
+.dbs{background:var(--ch1)}.dbb{background:var(--ch4)}
+.dcol small{font-size:11.5px;color:var(--mut)}
+.dpc{display:flex;gap:18px;align-items:center;padding:14px 16px;flex-wrap:wrap}
+.dwrap{position:relative;width:124px;aspect-ratio:1/1;border-radius:50%;flex:none}
+.dwrap.zero{background:var(--line)}
+.dhole{position:absolute;inset:16px;background:var(--card);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}
+.dhole b{font-size:15px;font-weight:700}
+.dhole small{font-size:11px;color:var(--mut)}
+.dleg{display:grid;gap:8px;min-width:0;flex:1}
+.dleg div{display:flex;align-items:center;gap:8px;font-size:13.5px}
+.dleg i{width:10px;height:10px;border-radius:3px;flex:none}
+.dleg b{margin-left:auto;font-variant-numeric:tabular-nums}
+@media(max-width:899px){.dgrid{grid-template-columns:1fr}.dhero b{font-size:26px}}
 </style>
 <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#2F5D3A"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes">
 <script src="config.js"></script>
@@ -256,8 +292,10 @@ th{color:var(--ink);font-weight:500}
 </div>
 
 <div class="wrap view" id="vHome"><header><div><div class="shop">Overview</div><h1 id="hTitle">Home</h1></div></header>
-  <div class="ptabs" id="hTabs"></div><section class="hs" id="hStats"></section>
+  <div class="ptabs" id="hTabs"></div><section class="dhero" id="hHero"></section>
+  <section class="hs" id="hStats"></section>
   <div class="qa" id="hQa"><button data-q="sale">New sale</button><button data-q="purchase">New purchase</button><button data-q="acc">Accounts</button><button data-q="bills">Today's bills</button></div>
+  <div class="dgrid"><section class="card dchc"><h3 class="dchh">Sell &amp; Buy · last 7 days</h3><div class="dchart" id="hChart"></div></section><section class="card dchc"><h3 class="dchh">Sales by payment</h3><div class="dpc" id="hPay"></div></section></div>
   <h3 style="margin:6px 2px 8px;font-size:15px">Recent bills</h3><section class="card" id="hRecent"></section></div>
 <div class="wrap view" id="vPos">
   <header style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px"><div><div class="shop">Point of sale</div><h1>POS</h1></div>
@@ -624,8 +662,18 @@ function homeUI(){
   $('hTabs').innerHTML=PER.map(([k,l])=>`<button data-p="${k}" class="${HP===k?'on':''}">${l}</button>`).join('');
   const[a,b]=prange(HP),E=S.entries.filter(e=>!e.void&&e.d>=a&&e.d<=b),B=S.bills.filter(x=>!x.void&&x.d>=a&&x.d<=b);
   const sm=(t,f)=>E.filter(e=>e.type===t&&(!f||f(e))).reduce((s,e)=>s+e.amt,0),m=calc(),act=sorted().filter(e=>!e.void),cb=act.length?m[act[act.length-1].id].bal:(+S.start||0);
-  const C=(l,v,c)=>`<div class="stat${c==='m'?' main':''}"><small>${l}</small><b>${v}</b></div>`;
-  $('hStats').innerHTML=C('Total Sell',tk(sm('Sale')))+C('Total Buy',tk(sm('Purchase')))+C('Bills',B.length)+C('To receive (Due)',tk(sm('Sale',e=>e.pay==='Due')))+C('To give (Due)',tk(sm('Purchase',e=>e.pay==='Due')))+C('Cash Balance',tk(cb),'m');
+  const C=(l,v,c)=>`<div class="stat ${c||''}"><small>${l}</small><b>${v}</b></div>`;
+  $('hHero').innerHTML=`<small>Cash Balance</small><b>${tk(cb)}</b><i>${sd(iso(new Date()))} · ${esc(U?U.name:'')}</i>`;
+  $('hStats').innerHTML=C('Total Sell',tk(sm('Sale')),'t3')+C('Total Buy',tk(sm('Purchase')),'t2')+C('Bills',B.length,'t4')+C('To receive (Due)',tk(sm('Sale',e=>e.pay==='Due')),'t1')+C('To give (Due)',tk(sm('Purchase',e=>e.pay==='Due')),'sf');
+  const ds=[...Array(7)].map((_,i)=>{const x=new Date();x.setDate(x.getDate()-6+i);return iso(x)});
+  const dv=d=>S.entries.reduce((o,e)=>{if(!e.void&&e.d===d){if(e.type==='Sale')o.s+=e.amt;else if(e.type==='Purchase')o.b+=e.amt}return o},{s:0,b:0});
+  const rows=ds.map(d=>({d:d,...dv(d)})),mx=Math.max(1,...rows.map(r=>Math.max(r.s,r.b)));
+  $('hChart').innerHTML=rows.map(r=>`<div class="dcol" title="${r.d} · Sell ${n(r.s)} · Buy ${n(r.b)}"><div class="dbars"><div class="dbs" style="height:${Math.ceil(r.s/mx*100)}%"></div><div class="dbb" style="height:${Math.ceil(r.b/mx*100)}%"></div></div><small>${r.d.slice(8)}</small></div>`).join('');
+  const sE=E.filter(e=>e.type==='Sale'),pt=sE.reduce((s,e)=>s+e.amt,0),pay={Cash:0,Digital:0,Due:0};
+  sE.forEach(e=>{pay[e.pay==='Cash'?'Cash':(e.pay==='Due'?'Due':'Digital')]+=e.amt});
+  const segs=[['Cash',pay.Cash,'--ch1'],['Digital',pay.Digital,'--ch2'],['Due',pay.Due,'--ch3']];
+  let stops='',acc=0;segs.forEach(([k,v,c])=>{if(v>0)stops+=`var(${c}) ${acc/pt*100}% ${(acc+v)/pt*100}%,`;acc+=v});
+  $('hPay').innerHTML=`<div class="dwrap${pt>0?'':' zero'}"${pt>0?` style="background:conic-gradient(${stops.slice(0,-1)})"`:''}><div class="dhole"><b>${tk(pt)}</b><small>sales</small></div></div><div class="dleg">${segs.map(([k,v,c])=>`<div><i style="background:var(${c})"></i>${k}<b>${tk(v)}</b></div>`).join('')}</div>`;
   $('hRecent').innerHTML=S.bills.slice(0,6).map(x=>`<div class="hrow"><span>#${esc(x.no)} · ${sd(x.d)} ${t12(x.t)} · ${esc(x.pay)}${x.void?' · <b class="bad">VOID</b>':''}<br><small class="mut">${esc(x.user)}</small></span><b>${tk(x.total)}</b></div>`).join('')||'<div class="empty">No bills yet</div>'}
 $('hTabs').addEventListener('click',e=>{const b=e.target.closest('[data-p]');if(b){HP=b.dataset.p;homeUI()}});
 $('hQa').addEventListener('click',e=>{const b=e.target.closest('[data-q]');if(!b)return;const q=b.dataset.q;
@@ -784,8 +832,8 @@ applyLang();start();
 if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js'));
 
 /* ---------- customer ledger + version history (v8) ---------- */
-var APP_VERSION='8.5',LC=null,LT='led',LQ='',LF='',LE='';
-var VERS=[{v:'8.5',d:'2026-10-15',n:['Bottom bar kept on phones together with the drawer menu','Customer profile card: initial avatar, name, phone and pastel tiles for phone, last entry, balance and customer since','Dark mode redesigned: navy base with orange accent and no green (inflow #10B981, outflow #EF4444, pending/warning amber); POS cart panel lighter, low-stock badge amber','Fixed: ledger table text was bold because its class clashed with a POS class']},{v:'8.4',d:'2026-10-15',n:['Phone menu from Figma Light 02: hamburger button opens a drawer with a 2-column icon grid, active tile in teal, dimmed overlay','Bottom bar hidden on phones (the drawer replaces it); PC sidebar unchanged']},{v:'8.3',d:'2026-10-15',n:['New look from the ItemPOS Figma design: light #F8F9FD background, white cards (14px radius, soft shadow), green #2CC56F accent and gradient','PC: white sidebar with green active marker; Android: floating bottom bar','Pastel stat tiles and green gradient balance card; dark mode kept']},{v:'8.2',d:'2026-10-15',n:['Dashboard theme: soft gradient background, rounded shadow cards, pastel stat tiles','PC: left sidebar navigation. Android: floating bottom bar and wallet-style balance card','Works in light and dark mode through colour tokens (no logic changes)']},{v:'8.1',d:'2026-10-15',n:['Ledger entries record date and time automatically; a previous date is chosen only through "Use a different (previous) date"','Time shown in ledger rows, entry details and CSV','HANDOVER.md added for multi-profile work']},{v:'8.0',d:'2026-10-15',n:['Customer Ledger tab for Admin, Accountant and Cashier','Customer profile tabs: Ledger, Statement, Notes, Activity','Received (পেলাম) and Given (দিলাম) entries; balance is always calculated','Split amounts like 3060+5000+15000+500 are saved as one grouped entry','Date ranges, "date unknown", method and payee on every entry','Cashier can add and view only; a correction voids the old entry (VOID tag) and adds a new one','Admin and Accountant can edit, void, print statements and export CSV','Ledger data syncs through the existing Google Sheet sync (no script change needed)','Version history screen with .txt export']}];
+var APP_VERSION='8.6',LC=null,LT='led',LQ='',LF='',LE='';
+var VERS=[{v:'8.6',d:'2026-10-15',n:['Dabang-style Home view: soft gradient page wash, gradient cash-balance hero card, pastel stat tiles','Home charts: 7-day Sell and Buy bar chart, plus a sales-by-payment donut (Cash / Digital / Due) with legend','Chart colours come from new theme tokens --ch1..--ch4; dark mode keeps the navy palette with no green except inflow']},{v:'8.5',d:'2026-10-15',n:['Bottom bar kept on phones together with the drawer menu','Customer profile card: initial avatar, name, phone and pastel tiles for phone, last entry, balance and customer since','Dark mode redesigned: navy base with orange accent and no green (inflow #10B981, outflow #EF4444, pending/warning amber); POS cart panel lighter, low-stock badge amber','Fixed: ledger table text was bold because its class clashed with a POS class']},{v:'8.4',d:'2026-10-15',n:['Phone menu from Figma Light 02: hamburger button opens a drawer with a 2-column icon grid, active tile in teal, dimmed overlay','Bottom bar hidden on phones (the drawer replaces it); PC sidebar unchanged']},{v:'8.3',d:'2026-10-15',n:['New look from the ItemPOS Figma design: light #F8F9FD background, white cards (14px radius, soft shadow), green #2CC56F accent and gradient','PC: white sidebar with green active marker; Android: floating bottom bar','Pastel stat tiles and green gradient balance card; dark mode kept']},{v:'8.2',d:'2026-10-15',n:['Dashboard theme: soft gradient background, rounded shadow cards, pastel stat tiles','PC: left sidebar navigation. Android: floating bottom bar and wallet-style balance card','Works in light and dark mode through colour tokens (no logic changes)']},{v:'8.1',d:'2026-10-15',n:['Ledger entries record date and time automatically; a previous date is chosen only through "Use a different (previous) date"','Time shown in ledger rows, entry details and CSV','HANDOVER.md added for multi-profile work']},{v:'8.0',d:'2026-10-15',n:['Customer Ledger tab for Admin, Accountant and Cashier','Customer profile tabs: Ledger, Statement, Notes, Activity','Received (পেলাম) and Given (দিলাম) entries; balance is always calculated','Split amounts like 3060+5000+15000+500 are saved as one grouped entry','Date ranges, "date unknown", method and payee on every entry','Cashier can add and view only; a correction voids the old entry (VOID tag) and adds a new one','Admin and Accountant can edit, void, print statements and export CSV','Ledger data syncs through the existing Google Sheet sync (no script change needed)','Version history screen with .txt export']}];
 function nowT(){var x=new Date();return String(x.getHours()).padStart(2,'0')+':'+String(x.getMinutes()).padStart(2,'0')}
 function lb(a,b){return S.lang==='bn'?b:a}
 function bd(s){return String(s).replace(/[০-৯]/g,function(c){return '০১২৩৪৫৬৭৮৯'.indexOf(c)})}
