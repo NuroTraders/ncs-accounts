@@ -1,6 +1,6 @@
 # NCS Daily Accounts: Handover Note
 
-Shop: Nur Computer & Stationery. Current version: **v8.6** (service worker cache `ncs-v14`).
+Shop: Nur Computer & Stationery. Current version: **v8.7** (service worker cache `ncs-v15`).
 Two Claude profiles work on this app and do NOT share memory. This file is the shared memory.
 
 ## 0. Start-of-session checklist (both profiles)
@@ -16,6 +16,7 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 | `sw.js` | Offline cache. Network-first. Cache name `ncs-vN` |
 | `manifest.webmanifest` | PWA install info |
 | `config.js` | Optional sync preset. Currently empty on purpose. Sync URL and key are set in Settings |
+| `SolaimanLipi-*.ttf` | Bengali font (Normal, Bold, Thin). Must sit next to `index.html`. Used first when the language is Bengali |
 | icons and logos | `icon-*.png`, `logo-*.png` |
 | Google Apps Script | Lives in the owner's Google Sheet, not in this folder. It stores the whole app state as one blob |
 
@@ -32,7 +33,7 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 - **Ledger module** sits at the end of the script, headed `customer ledger + version history`. It uses function declarations and `var` so it can be called before it is defined.
 
 ## 3. Data model
-- **`cust`**: `{id, name, phone, note, del?}`
+- **`cust`**: `{id, name, phone, fb? (Facebook link or username), img? (200px JPEG data URL), note, del?}`
 - **`ltx`** (ledger transaction): `{id, c (customer id), dir ('in' = পেলাম, 'out' = দিলাম), amt, parts[] or null, d (YYYY-MM-DD, '' = unknown), d2 (range end), t (HH:MM, recorded automatically), m (Cash/bKash/Bank/Other), who, note, by, eb? (last editor), void?, vr (void reason), vb (voided by), fix? (id of the entry it corrected)}`
 - **Customer balance** = sum of `in` minus sum of `out` over non-void entries. It is calculated, never stored. Positive means the customer gets money (we owe). Negative means the customer owes us.
 - **`entries`** (daily accounts) are separate: cash is calculated from them by `cash()` and `calc()`.
@@ -42,7 +43,7 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 2. **New synced data goes into `COLS`.** Always call `save()` after changing `S`. Do not write to `localStorage` directly.
 3. **Never hard-delete money records.** Use `void` (with reason and who) or `del`. Cashiers can add and view only. A cashier correction voids the old entry and adds a new one.
 4. **Ledger is separate from the cash drawer.** A ledger entry must not change the daily cash balance unless a future feature explicitly links them.
-5. **Permissions:** the ledger is visible to admin, accountant and cashier (not keeper). Only admin and accountant can edit in place, print statements and export CSV.
+5. **Permissions:** the ledger is visible to admin, accountant and cashier (not keeper). Stock manager (`keeper`) is purchase-only in POS and sees all products with buy and sell price. Accountant sees accounts, ledger, products (read-only, with buying cost) and cash. Only admin and accountant can edit in place, print statements and export CSV.
 6. **Escape all user text** with `esc()` before putting it in HTML.
 7. **CSS clash:** the app has global `table`, `th:nth-child(-n+3)` and `td:first-child` rules. A new table needs its own class overriding them (see `.lt`).
 8. **Dates:** store ISO `YYYY-MM-DD`. Show with `sd()`. Ledger entries get date and time automatically. A previous date is entered manually.
@@ -50,7 +51,9 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 10. **Before handing back:** extract the last `<script>` block and run `node --check`. Run a logic test for any calculation changed. State plainly what was and was not tested in a browser.
 11. Class names are global: before adding a CSS class, search the file for it (the POS owns `.lt`, `.tile`, `.line`, `.cart`, `.tot`, `.sb`).
 12. Dark mode must not use green for accents; light mode keeps the green ItemPOS look. Use tokens only.
-13. Keep the shop name spelling used in the UI. Keep Bengali labels for পেলাম / দিলাম.
+13. **Scope trap:** `dlg`, `toast`, `C`, `prods`, `stockMap` live inside the POS closure and are NOT global. Code outside the POS (ledger module, drawer) must use `ask`, `ldlg`, `ltoast`. (v8.0 to v8.6 shipped a ledger entry dialog that called the private `dlg` and silently failed; fixed in v8.7.) Test new code paths in jsdom, not just `node --check`.
+14. **Parallel work / merging:** if both profiles built from the same version, do not overwrite: three-way merge with `git merge-file mine base theirs`, resolve conflicts (usually `APP_VERSION` and the `VERS` line), renumber, and record the merge in section 7. The owner's deployed file may have CRLF line endings; normalise before diffing.
+15. Shop name is `shopN()` (EN: Nur Computer & Stationery, BN: নুর কম্পিউটার এন্ড স্টেশনারী). Never type it by hand. Keep the shop name spelling used in the UI. Keep Bengali labels for পেলাম / দিলাম.
 
 ## 5. Known quirks
 - The "Start fresh" action erases daily accounts but **not** the ledger.
@@ -70,6 +73,12 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 **Phase 1b**
 4b. Five-colour chart palette for dark and light (top-selling items, monthly trends) when charts are added. Monospace SKU/barcode text on product cards. Pending/processing blue (#3B82F6) for supplier orders when that feature exists.
 
+**Known limits (v8.7)**
+- imo and Facebook cannot be opened from a phone number (no public link exists); only Call, SMS and WhatsApp work from the number. Facebook uses a link the staff pastes.
+- Many JS-built strings and error messages are still English only. Translate by adding keys to `BN` (leading labels before numbers such as "Stock 5" translate through `trp()`).
+- Currency symbol is ৳ through `tk()`; some table cells show plain numbers.
+- Stock manager not seeing other devices' products is most likely sync not configured on that device (sync settings are per device); the Products page shows a warning (`synNote()`).
+
 **Phase 2**
 5. Optional "Ledger" sheet in Google Sheets for reading entries outside the app (add to the Apps Script `doPost`).
 6. Reminders and due dates per customer; a "who owes whom" summary on Home.
@@ -84,6 +93,7 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 13. Add an automated smoke test page.
 
 ## 7. Session log (append newest on top)
+- **v8.7, 2026-10-16:** **Merge of two parallel builds** (both had been called v8.6): the other profile's Dabang Home view (v8.6 below, kept as is) merged with this profile's stock manager / accountant / ledger / Bengali / font work. Merge was a clean three-way merge (one conflict, the VERS line). Contents from this side: Stock manager purchase-only (`setMode`/`renderCart` force purchase, body class `kp`), "Cost not set" label and `synNote()`; accountant tabs acc, led, prod, more with `canCost` and body class `ro`; ledger photo, Call/SMS/WhatsApp/Facebook links (`lLinks`, `lNum`), card grid `ledList`, hover card `#lhp`, long-press / right-click summary `ledSum`, totals and filters (`LS`); `ldlg` and `ltoast`; Bengali dictionary additions including Home chart labels, `trp()`, placeholder translation, SolaimanLipi font, `SHOP_EN/SHOP_BN/shopN()`. **Bug fixed:** ledger entry dialog (click a ledger row) and the new summary dialog called the POS-private `dlg`; and the ledger used the POS-private `toast`. Tested in jsdom for all four roles (tabs, ledger flows, void, cashier correction, auto date and time, Bengali mode): no uncaught errors. Still not checked in a real browser on phone and PC.
 - **v8.6, 2026-10-15:** Home view restyled in the Dabang direction (owner's pick). `body:has(#vHome.on)` paints a soft gradient wash when Home is open (token `--dhg`); green gradient hero card shows cash balance, date and user; stat tiles pastel via t1–t4 and soft. New charts: 7-day Sell & Buy bar chart (`hChart`; classes dchart/dcol/dbars/dbs/dbb) and a sales-by-payment donut (`hPay`; dwrap/dhole/dleg, conic-gradient, zero state when no sales). Chart tokens `--ch1..--ch4` per theme (dark: #10B981, #3B82F6, #F59E0B, #FF9A3D — no green except inflow). Chart "Sell" includes all payment methods; donut splits Cash / Digital / Due over the selected period. Home-only `d*` classes checked for clashes (rule 11). Scope: Home view only; Ledger, Accounts and POS untouched. `APP_VERSION` 8.6, VERS entry added, `sw.js` cache `ncs-v14`. Not browser-tested: the owner should check light + dark, phone + PC, and the chart with real data.
 - **v8.5, 2026-10-15:** Bottom bar restored on phones (drawer stays). Customer profile card `ledPC()` with pastel tiles. **Dark mode palette replaced (no green):** bg #0B0F19, card #151B2C, hover/soft #1F2942, border #222E4A, accent #FF7A00, text #F8FAFC / #94A3B8, pos #10B981, neg #EF4444, warn/low-stock #F59E0B, pending blue #3B82F6 (not yet used). Tokens live in the dark blocks of THEME v8.3. Bug fixed: ledger table now uses class `ltb` because `.lt` belongs to the POS (line total).
 - **v8.4, 2026-10-15:** Phone drawer menu (Figma Light 02): `#mb` hamburger in `.top`, `#dr` drawer built from `TABS[role()]`, tile colours cycle through 6 hues, active tile #46C1BF. Bottom bar is hidden under 900px. Not yet checked in a real browser.
