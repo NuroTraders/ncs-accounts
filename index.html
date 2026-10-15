@@ -165,6 +165,11 @@ body{padding-bottom:78px}
 @media print{.tabs,.top{display:none!important}body{padding:0!important}body.pr .view,body.pr .top{display:none!important}body.pr #rcp{display:block}}
 .prd{display:grid;grid-template-columns:56px 1fr auto;gap:12px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--line)}.prd:last-child{border:0}
 .prd .pimg{width:56px;height:56px;font-size:20px}.prd .pa{display:flex;flex-direction:column;gap:6px}
+.lrow{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:13px 16px;border-bottom:1px solid var(--line);cursor:pointer}.lrow:last-child{border-bottom:0}.lrow:hover{background:var(--soft)}.lrow small{display:block;color:var(--mut);font-size:12px;font-weight:400}.lrow>b:last-child{text-align:right;font-variant-numeric:tabular-nums}
+.lst{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:10px;margin:12px 0}.lst .stat b{font-size:18px}
+.lt{min-width:560px}.lt th,.lt td{text-align:right}.lt th:nth-child(-n+2),.lt td:nth-child(-n+2){text-align:left}.lt td:first-child{width:auto;color:var(--ink)}.lt tr[data-a]{cursor:pointer}.lt tfoot td{font-weight:600;border-top:1px solid var(--line)}
+#vLed header .nav{gap:8px}.lph{display:none}
+@media print{body.lp .tabs,body.lp .top,body.lp .view:not(#vLed),body.lp .noprint{display:none!important}body.lp .lph{display:block}}
 </style>
 <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#2F5D3A"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes">
 <script src="config.js"></script>
@@ -233,6 +238,7 @@ body{padding-bottom:78px}
   <div class="ptabs" id="pdF"><button data-f="all" class="on">All</button><button data-f="low">Low stock</button><button data-f="out">Out of stock</button></div>
   <section class="card" id="pdL"></section></div>
 <div class="wrap view" id="vMore"><header><div><div class="shop">Settings and tools</div><h1>More</h1></div></header><div class="mlist" id="moreList"></div></div>
+<div class="wrap view" id="vLed"></div>
 <div id="rcp"></div>
 <div class="ov" id="sc" hidden><div class="dlg"><h3>Scan barcode</h3><video id="vid" playsinline muted></video><div class="oa"><button class="ghost" id="scx">Close</button></div></div></div>
 <div class="ov" id="ov" hidden><div class="dlg"><h3 id="ot"></h3><div id="ob"></div><div class="oa"><button class="ghost" id="oc">Cancel</button><button class="go" id="ok">Confirm</button></div></div></div>
@@ -254,7 +260,7 @@ let S;try{const r=localStorage.getItem(KEY);S=r?JSON.parse(r):seed()}catch(e){S=
 S.names=S.names||{};S.parties=S.parties||{};
 const ENC=(window.NCS_CONFIG||{}).enc;
 if(!S.sync&&window.NCS_CONFIG&&/^https:\/\//.test(NCS_CONFIG.url||'')&&NCS_CONFIG.key)S.sync={url:NCS_CONFIG.url,key:NCS_CONFIG.key};
-const LH=new Map(),sig=x=>JSON.stringify(x,(k,v)=>k==='u'?undefined:v),COLS=['entries','products','bills','moves'];
+const LH=new Map(),sig=x=>JSON.stringify(x,(k,v)=>k==='u'?undefined:v),COLS=['entries','products','bills','moves','cust','ltx'];
 function ensureCols(){COLS.forEach(c=>{S[c]=S[c]||[]});S.days=S.days||{};S.log=S.log||[]}
 function primeLH(){LH.clear();COLS.forEach(c=>S[c].forEach(x=>LH.set(c+x.id,sig(x))));if(S.users)LH.set('users',sig(S.users))}
 function stampChanged(){const now=Date.now();COLS.forEach(c=>S[c].forEach(x=>{const k=c+x.id,j=sig(x);if(LH.get(k)!==j){x.u=now;LH.set(k,j)}}));
@@ -487,7 +493,7 @@ async function push(force,tries){tries=tries||0;
     S.synced=rev;S.snaps=[...(S.snaps||[]),...sn];if(S.log.length)S.logSent=Math.max(...S.log.map(l=>l.i));persist();setSt(isDirty()?'pend':'ok');if(isDirty())schedule()
   }catch(e){setSt('offl')}
   busy=false}
-function applyRemote(r){const k={};LOCAL.forEach(x=>{if(x in S)k[x]=S[x]});S=Object.assign({},JSON.parse(r.state),k,{rev:r.rev,synced:r.rev});ensureCols();primeLH();persist();if(U){reset();render()}setSt('ok')}
+function applyRemote(r){const k={};LOCAL.forEach(x=>{if(x in S)k[x]=S[x]});S=Object.assign({},JSON.parse(r.state),k,{rev:r.rev,synced:r.rev});ensureCols();primeLH();persist();if(U){reset();render();if(CUR==='led')ledUI()}setSt('ok')}
 async function importPos(){
   if(!SY())return;
   try{const r=await(await fetch(S.sync.url+(S.sync.url.includes('?')?'&':'?')+'action=inbox&key='+encodeURIComponent(S.sync.key)+'&since='+(S.posSince||0))).json();
@@ -551,7 +557,7 @@ function mergeState(R){
   if(!S.start)S.start=R.start||0;
   if(R.catImported)S.catImported=1;
 }
-function mergeRemoteFrom(r){if(!r||!r.ok||!r.state)return false;try{mergeState(JSON.parse(r.state));ensureCols();S.synced=r.rev;S.rev=r.rev+1;primeLH();persist();if(U){render();try{homeUI()}catch(e){}POS.refresh()}return true}catch(e){return false}}
+function mergeRemoteFrom(r){if(!r||!r.ok||!r.state)return false;try{mergeState(JSON.parse(r.state));ensureCols();S.synced=r.rev;S.rev=r.rev+1;primeLH();persist();if(U){render();try{homeUI()}catch(e){}POS.refresh();if(CUR==='led')ledUI()}return true}catch(e){return false}}
 const mergeRemote=async()=>{try{return mergeRemoteFrom(await getRemote())}catch(e){return false}};
 async function importCatalog(){if(S.catImported||S.products.length||!SY())return;
   try{const r=await(await fetch(S.sync.url+(S.sync.url.includes('?')?'&':'?')+'action=catalog&key='+encodeURIComponent(S.sync.key))).json();
@@ -559,13 +565,13 @@ async function importCatalog(){if(S.catImported||S.products.length||!SY())return
     else{S.catImported=1;persist()}}catch(e){}}
 
 /* ---------- shell ---------- */
-const ICO={home:'<path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',pos:'<circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.5 12h11L21 7H6"/>',acc:'<path d="M5 3h11a3 3 0 0 1 3 3v15H8a3 3 0 0 1-3-3z"/><path d="M9 8h6M9 12h6"/>',prod:'<path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/>',more:'<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>'};
-const TABS={admin:['home','pos','prod','acc','more'],keeper:['pos','prod','more'],accountant:['acc','more'],cashier:['pos','more']},TL={home:'Home',pos:'POS',prod:'Products',acc:'Accounts',more:'More'};
+const ICO={led:'<circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M17 8h4M17 12h4"/>',home:'<path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',pos:'<circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.5 12h11L21 7H6"/>',acc:'<path d="M5 3h11a3 3 0 0 1 3 3v15H8a3 3 0 0 1-3-3z"/><path d="M9 8h6M9 12h6"/>',prod:'<path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/>',more:'<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>'};
+const TABS={admin:['home','pos','prod','acc','led','more'],keeper:['pos','prod','more'],accountant:['acc','led','more'],cashier:['pos','led','more']},TL={home:'Home',pos:'POS',prod:'Products',acc:'Accounts',led:'Ledger',more:'More'};
 let CUR=null;
 const role=()=>!U?'':U.role==='admin'?'admin':U.role==='accountant'?'accountant':U.role==='keeper'?'keeper':'cashier',canCost=()=>isA()||role()==='keeper';
 function buildTabs(){const T=TABS[role()];$('tabs').innerHTML=T.map(k=>`<button data-v="${k}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICO[k]}</svg>${TL[k]}</button>`).join('');$('tabs').hidden=false;$('tsub').textContent=(U.name.toLowerCase()===role()?'':U.name+' · ')+role();go(CUR&&T.includes(CUR)?CUR:T[0])}
 function go(v){CUR=v;document.querySelectorAll('.view').forEach(x=>x.classList.toggle('on',x.id==='v'+v[0].toUpperCase()+v.slice(1)));document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
-  if(v==='home')homeUI();if(v==='pos')POS.refresh();if(v==='prod')POS.prodUI();if(v==='acc')render();scrollTo(0,0)}
+  if(v==='home')homeUI();if(v==='pos')POS.refresh();if(v==='prod')POS.prodUI();if(v==='acc')render();if(v==='led')ledUI();scrollTo(0,0)}
 $('tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(b)go(b.dataset.v)});
 $('topR').append($('sync'));$('moreList').append($('theme'),$('lang'),$('set'),$('lockb'));
 
@@ -735,6 +741,84 @@ $('q').addEventListener('focus',()=>{});
 
 applyLang();start();
 if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js'));
+
+/* ---------- customer ledger + version history (v8) ---------- */
+var APP_VERSION='8.0',LC=null,LT='led',LQ='',LF='',LE='';
+var VERS=[{v:'8.0',d:'2026-10-15',n:['Customer Ledger tab for Admin, Accountant and Cashier','Customer profile tabs: Ledger, Statement, Notes, Activity','Received (পেলাম) and Given (দিলাম) entries; balance is always calculated','Split amounts like 3060+5000+15000+500 are saved as one grouped entry','Date ranges, "date unknown", method and payee on every entry','Cashier can add and view only; a correction voids the old entry (VOID tag) and adds a new one','Admin and Accountant can edit, void, print statements and export CSV','Ledger data syncs through the existing Google Sheet sync (no script change needed)','Version history screen with .txt export']}];
+function lb(a,b){return S.lang==='bn'?b:a}
+function bd(s){return String(s).replace(/[০-৯]/g,function(c){return '০১২৩৪৫৬৭৮৯'.indexOf(c)})}
+function parseAmt(v){var p=bd(v).replace(/[,\s]/g,'').split('+').filter(function(x){return x!==''}).map(Number);return(!p.length||p.some(function(x){return!(x>0)}))?null:p}
+function lEd(){return isA()||role()==='accountant'}
+function cname(){var c=S.cust.find(function(x){return x.id===LC});return c?c.name:''}
+function lSort(a){return[...a].sort(function(p,q){return(p.d||'9999').localeCompare(q.d||'9999')||p.id-q.id})}
+function lBal(c){return S.ltx.filter(function(x){return x.c===c&&!x.void}).reduce(function(s,x){return s+(x.dir==='in'?x.amt:-x.amt)},0)}
+function dr(x){return x.d?sd(x.d)+(x.d2?' – '+sd(x.d2):''):lb('Date unknown','তারিখ নেই')}
+function ledRows(all,a,b){var bal=0,r=[];all.forEach(function(x){if(!x.void)bal+=x.dir==='in'?x.amt:-x.amt;var k=x.d||'9999';if((!a||k>=a)&&(!b||k<=b))r.push([x,bal])});return r}
+function ledTable(rows,ob){
+  var a=rows.filter(function(r){return!r[0].void}),ti=a.filter(function(r){return r[0].dir==='in'}).reduce(function(s,r){return s+r[0].amt},0),to=a.filter(function(r){return r[0].dir==='out'}).reduce(function(s,r){return s+r[0].amt},0);
+  return '<div class="card scroll"><table class="lt"><thead><tr><th>'+lb('Date','তারিখ')+'</th><th>'+lb('Details','বিবরণ')+'</th><th>পেলাম</th><th>দিলাম</th><th>'+lb('Balance','ব্যালেন্স')+'</th></tr></thead><tbody>'+
+  (ob!=null?'<tr><td colspan="4">'+lb('Opening balance','শুরুর ব্যালেন্স')+'</td><td class="cb">'+n(ob)+'</td></tr>':'')+
+  (rows.length?rows.map(function(r){var x=r[0];return '<tr class="'+(x.void?'void':'')+'" data-a="tx" data-id="'+x.id+'"><td>'+dr(x)+'</td><td class="d">'+(x.void?'<span class="b v">VOID</span>':'')+esc(x.who||'')+(x.m?' <small>'+esc(x.m)+'</small>':'')+(x.parts?'<small>'+x.parts.map(n).join(' + ')+'</small>':'')+(x.note?'<small>'+esc(x.note)+'</small>':'')+'</td><td class="pos">'+(x.dir==='in'?n(x.amt):'')+'</td><td class="neg">'+(x.dir==='out'?n(x.amt):'')+'</td><td class="cb">'+n(r[1])+'</td></tr>'}).join(''):'<tr><td colspan="5" style="text-align:center;padding:30px;color:var(--mut)">'+lb('No entries','কোনো এন্ট্রি নেই')+'</td></tr>')+
+  '</tbody><tfoot><tr><td colspan="2">'+lb('Total','মোট')+'</td><td class="pos">'+n(ti)+'</td><td class="neg">'+n(to)+'</td><td class="cb">'+n((ob||0)+ti-to)+'</td></tr></tfoot></table></div>'}
+function ledList(){
+  var q=LQ.toLowerCase(),cs=S.cust.filter(function(c){return!c.del&&(c.name+' '+(c.phone||'')).toLowerCase().includes(q)});
+  return '<header><div><div class="shop">'+lb('Customer ledger','কাস্টমার খাতা')+'</div><h1>'+lb('Customers','কাস্টমার')+'</h1></div><button class="go" data-a="newc">+ '+lb('Customer','কাস্টমার')+'</button></header><input id="lq" value="'+esc(LQ)+'" placeholder="'+lb('Search name or phone','নাম বা ফোন খুঁজুন')+'" style="margin-bottom:12px"><div class="card">'+
+  (cs.length?cs.map(function(c){var b=lBal(c.id),l=lSort(S.ltx.filter(function(x){return x.c===c.id&&!x.void})).pop();return '<div class="lrow" data-a="open" data-id="'+c.id+'"><div><b>'+esc(c.name)+'</b><small>'+esc(c.phone||'')+(l&&l.d?' · '+sd(l.d):'')+'</small></div><b class="'+(b>0?'warn':b<0?'pos':'zero')+'">'+(b===0?'–':tk(Math.abs(b)))+'<small>'+(b>0?lb('we owe','আমরা দেব'):b<0?lb('they owe','আমরা পাব'):'')+'</small></b></div>'}).join(''):'<div class="empty">'+lb('No customers yet','এখনো কোনো কাস্টমার নেই')+(isA()?'<br><br><button class="ghost" data-a="sample">'+lb('Load Riyad notes (sample)','রিয়াদের নোট লোড করুন (নমুনা)')+'</button>':'')+'</div>')+'</div>'}
+function ledProfile(){
+  var c=S.cust.find(function(x){return x.id===LC}),b=lBal(c.id),all=lSort(S.ltx.filter(function(x){return x.c===c.id})),act=all.filter(function(x){return!x.void}),
+  ti=act.filter(function(x){return x.dir==='in'}).reduce(function(s,x){return s+x.amt},0),to=act.filter(function(x){return x.dir==='out'}).reduce(function(s,x){return s+x.amt},0),
+  T=[['led',lb('Ledger','খাতা')],['stm',lb('Statement','স্টেটমেন্ট')],['note',lb('Notes','নোট')],['act',lb('Activity','লগ')]],body='';
+  if(LT==='led')body=ledTable(ledRows(all,'',''),null);
+  else if(LT==='stm'){var ob=LF?all.filter(function(x){return!x.void&&(x.d||'9999')<LF}).reduce(function(s,x){return s+(x.dir==='in'?x.amt:-x.amt)},0):null;
+    body='<div class="card noprint" style="padding:12px;display:flex;gap:10px;flex-wrap:wrap;align-items:end"><div><label>'+lb('From','থেকে')+'</label><input id="lsa" type="date" value="'+LF+'"></div><div><label>'+lb('To','পর্যন্ত')+'</label><input id="lse" type="date" value="'+LE+'"></div><button class="ghost" data-a="print">'+lb('Print','প্রিন্ট')+'</button><button class="ghost" data-a="csv">CSV</button></div><div class="lph"><h2>NUR COMPUTER &amp; STATIONERY</h2><div>'+esc(c.name)+' · '+esc(c.phone||'')+' · '+(LF?sd(LF):'…')+' – '+(LE?sd(LE):sd(iso(new Date())))+'</div></div>'+ledTable(ledRows(all,LF,LE),ob)}
+  else if(LT==='note')body='<div class="card" style="padding:14px"><textarea id="lnt" rows="6" style="width:100%;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px;font:inherit;color:inherit">'+esc(c.note||'')+'</textarea><div style="margin-top:10px"><button class="go" data-a="savenote">'+lb('Save','সংরক্ষণ')+'</button></div></div>';
+  else{var L=S.log.filter(function(l){return String(l.a).indexOf('Ledger')===0&&String(l.d).indexOf(c.name+' ·')===0});body='<div class="card lg" style="padding:6px 14px">'+(L.length?L.map(function(l){return '<div><b>'+esc(l.a)+'</b> <small>'+esc(l.ts)+' · '+esc(l.u)+'</small><br>'+esc(l.d)+'</div>'}).join(''):'<div class="mut">'+lb('No activity yet','কোনো কার্যক্রম নেই')+'</div>')+'</div>'}
+  return '<header class="noprint"><div><button class="ghost" data-a="back">‹ '+lb('All customers','সব কাস্টমার')+'</button><h1>'+esc(c.name)+'</h1><div class="shop">'+esc(c.phone||'')+'</div></div><div class="nav"><button class="go" data-a="in">+ পেলাম</button><button class="go" data-a="out" style="background:var(--neg)">+ দিলাম</button>'+(lEd()?'<button class="ghost" data-a="editc">'+lb('Edit','সম্পাদনা')+'</button>':'')+'</div></header>'+
+  '<div class="lst noprint"><div class="stat main"><small>'+lb('Balance','ব্যালেন্স')+'</small><b class="'+(b>0?'warn':b<0?'pos':'zero')+'">'+tk(Math.abs(b))+'</b><i>'+(b===0?lb('Settled','মিটে গেছে'):b>0?esc(c.name)+' '+lb('gets (we owe)','পাবে (আমরা দেব)'):esc(c.name)+' '+lb('owes us','দেবে (আমরা পাব)'))+'</i></div><div class="stat"><small>পেলাম</small><b class="pos">'+tk(ti)+'</b></div><div class="stat"><small>দিলাম</small><b class="neg">'+tk(to)+'</b></div></div>'+
+  '<div class="ptabs noprint">'+T.map(function(t){return '<button data-a="tab" data-t="'+t[0]+'" class="'+(LT===t[0]?'on':'')+'">'+t[1]+'</button>'}).join('')+'</div>'+body}
+function ledUI(){if(!U)return;var v=$('vLed');if(LC&&!S.cust.find(function(c){return c.id===LC}))LC=null;v.innerHTML=LC?ledProfile():ledList()}
+function ledCust(id){var c=id?S.cust.find(function(x){return x.id===id}):null;
+  ask(c?lb('Edit customer','কাস্টমার সম্পাদনা'):lb('New customer','নতুন কাস্টমার'),'<div class="f"><label>'+lb('Name','নাম')+'</label><input id="lcn" maxlength="60" value="'+esc(c?c.name:'')+'"></div><div class="f"><label>'+lb('Phone (optional)','ফোন (ঐচ্ছিক)')+'</label><input id="lcp" type="tel" maxlength="20" value="'+esc(c?c.phone||'':'')+'"></div>',function(){
+    var nm=$('lcn').value.trim();if(!nm){$('lcn').style.borderColor='var(--neg)';return false}
+    if(S.cust.some(function(x){return!x.del&&(!c||x.id!==c.id)&&x.name.toLowerCase()===nm.toLowerCase()})){toast(lb('Name already exists','এই নামে কাস্টমার আছে'));return false}
+    if(c){c.name=nm;c.phone=$('lcp').value.trim();lg('Ledger customer','Edited '+nm)}else{var k={id:Date.now(),name:nm,phone:$('lcp').value.trim(),note:''};S.cust.push(k);LC=k.id;LT='led';lg('Ledger customer','Added '+nm)}
+    save();ledUI()},lb('Save','সংরক্ষণ'))}
+function ledForm(dir,eid,fix){
+  var ed=eid?S.ltx.find(function(t){return t.id===eid}):null,x=ed||{dir:dir,d:iso(new Date())},
+  po=[...new Set(S.ltx.filter(function(t){return t.c===LC&&t.who}).map(function(t){return t.who}))],am=x.amt?(x.parts?x.parts.join('+'):x.amt):'';
+  ask(lb('Entry','এন্ট্রি'),'<div class="f"><label>'+lb('Type','ধরন')+'</label><select id="lfd"><option value="in">পেলাম · Received</option><option value="out">দিলাম · Given</option></select></div><div class="f"><label>'+lb('Amount (e.g. 3060+5000+500)','টাকা (যেমন ৩০৬০+৫০০০+৫০০)')+'</label><input id="lfa" inputmode="tel" autocomplete="off" value="'+esc(am)+'"><small id="lfp" class="mut"></small></div><div class="f"><label>'+lb('Date','তারিখ')+'</label><input id="lfs" type="date" value="'+(x.d||'')+'"></div><div class="f"><label>'+lb('To date (optional)','শেষ তারিখ (ঐচ্ছিক)')+'</label><input id="lfe" type="date" value="'+(x.d2||'')+'"></div><div class="f"><label><input id="lfu" type="checkbox" style="width:auto;height:auto" '+(ed&&!ed.d?'checked':'')+'> '+lb('Date unknown','তারিখ জানা নেই')+'</label></div><div class="f"><label>'+lb('Method','মাধ্যম')+'</label><select id="lfm">'+['Cash','bKash','Bank','Other'].map(function(m){return '<option'+(x.m===m?' selected':'')+'>'+m+'</option>'}).join('')+'</select></div><div class="f"><label>'+lb('Paid to / received from','কাকে / কার কাছ থেকে')+'</label><input id="lfw" list="lfl" maxlength="60" value="'+esc(x.who||'')+'"><datalist id="lfl">'+po.map(function(p){return '<option value="'+esc(p)+'">'}).join('')+'</datalist></div><div class="f"><label>'+lb('Note','নোট')+'</label><input id="lfn" maxlength="200" value="'+esc(x.note||'')+'"></div>',function(){
+    var p=parseAmt($('lfa').value);if(!p){$('lfa').style.borderColor='var(--neg)';return false}
+    var d=$('lfu').checked?'':$('lfs').value,e2=$('lfe').value,o={dir:$('lfd').value,amt:p.reduce(function(a,b){return a+b},0),parts:p.length>1?p:null,d:d,d2:d&&e2>d?e2:'',m:$('lfm').value,who:$('lfw').value.trim(),note:$('lfn').value.trim()},cn=cname();
+    if(ed&&lEd()&&!fix){Object.assign(ed,o,{eb:U.name});lg('Ledger edit',cn+' · '+tk(o.amt))}
+    else{if(ed){ed.void=1;ed.vr='Corrected';ed.vb=U.name}S.ltx.push(Object.assign({id:Date.now(),c:LC,by:U.name},o,ed?{fix:ed.id}:{}));lg('Ledger '+(ed?'correction':o.dir==='in'?'received':'given'),cn+' · '+tk(o.amt))}
+    save();ledUI()},lb('Save','সংরক্ষণ'));
+  $('lfd').value=x.dir;var pv=function(){var p=parseAmt($('lfa').value);$('lfp').textContent=p?'= '+tk(p.reduce(function(a,b){return a+b},0)):''};$('ob').oninput=pv;pv()}
+function ledVoid(id){var t=S.ltx.find(function(x){return x.id===id});
+  ask(lb('Void this entry?','এন্ট্রি বাতিল করবেন?'),'<div class="f"><label>'+lb('Reason','কারণ')+'</label><input id="lvr" maxlength="120"></div>',function(){var r=$('lvr').value.trim();if(!r){$('lvr').style.borderColor='var(--neg)';return false}t.void=1;t.vr=r;t.vb=U.name;lg('Ledger void',cname()+' · '+tk(t.amt)+' · '+r);save();ledUI()},lb('Void','বাতিল'))}
+function ledTx(id){var t=S.ltx.find(function(x){return x.id===id});if(!t)return;
+  var row=function(a,b){return b?'<div class="f"><label>'+a+'</label><div>'+b+'</div></div>':''};
+  dlg(t.dir==='in'?'পেলাম · Received':'দিলাম · Given',row(lb('Amount','টাকা'),'<b>'+tk(t.amt)+'</b>'+(t.parts?' = '+t.parts.map(n).join(' + '):''))+row(lb('Date','তারিখ'),dr(t))+row(lb('Method','মাধ্যম'),esc(t.m))+row(lb('Party','পক্ষ'),esc(t.who))+row(lb('Note','নোট'),esc(t.note))+row(lb('Entered by','এন্ট্রি করেছেন'),esc(t.by))+row(lb('Last edited by','সম্পাদনা করেছেন'),esc(t.eb))+(t.void?row('VOID',esc(t.vr)+' · '+esc(t.vb)):'<div class="foot" style="justify-content:flex-start">'+(lEd()?'<button class="ghost" data-k="e">'+lb('Edit','সম্পাদনা')+'</button>':'<button class="ghost" data-k="f">'+lb('Correct','সংশোধন')+'</button>')+'<button class="ghost" data-k="v" style="color:var(--neg)">'+lb('Void','বাতিল')+'</button></div>'),function(){},lb('Close','বন্ধ'),1);
+  $('ob').onclick=function(e){var b=e.target.closest('[data-k]');if(!b)return;$('ov').hidden=true;var k=b.dataset.k;if(k==='e')ledForm(t.dir,t.id);else if(k==='f')ledForm(t.dir,t.id,1);else ledVoid(t.id)}}
+function ledSample(){
+  var c={id:Date.now(),name:'রিয়াদ',phone:'',note:'Notebook 28/09/2026 12:55: রিয়াদ পাবে ৳32,650. The app total matches (32,650). The 260 (Nasir পাবে) is already inside the 23,560 payment.'},
+  R=function(dir,amt,d,w,x){return Object.assign({id:Date.now()+Math.random(),c:c.id,by:U.name,dir:dir,amt:amt,d:d,d2:'',m:'Cash',who:w,note:''},x)};
+  S.cust.push(c);[R('in',100000,'2026-08-11','নগদ'),R('in',50000,'2026-08-12','নগদ'),R('out',40000,'2026-08-11','ইব্রাহীম এর মামা'),R('out',86700,'2026-08-12','বিকাশ',{d2:'2026-08-13',m:'bKash'}),R('out',23560,'','',{parts:[3060,5000,15000,500],note:'Nasir পাবে 260'}),R('out',2000,'2026-08-18','বিকাশ',{m:'bKash'}),R('out',2500,'2026-09-13','বিকাশ',{m:'bKash'}),R('out',2000,'2026-09-18','মর্জিনা'),R('out',2000,'2026-09-24','মাদিয়া'),R('in',41410,'','বিকাশ',{m:'bKash'})].forEach(function(x,i){x.id=Date.now()+i+1;S.ltx.push(x)});
+  LC=c.id;lg('Ledger customer','Sample imported: রিয়াদ');save();ledUI()}
+function verTxt(){return 'NCS Daily Accounts - Version history\n\n'+VERS.map(function(v){return 'v'+v.v+' ('+v.d+')\n'+v.n.map(function(x){return '  - '+x}).join('\n')}).join('\n\n')+'\n\nv1-v7: built before this log existed (details not recorded).\n'}
+function verUI(){ask('Version history · v'+APP_VERSION,'<div class="lg">'+VERS.map(function(v){return '<div><b>v'+esc(v.v)+'</b> <small>'+esc(v.d)+'</small><br>'+v.n.map(function(x){return '• '+esc(x)}).join('<br>')+'</div>'}).join('')+'<div><small>v1–v7: built before this log existed.</small></div></div>',function(){dlFile('NCS_Version_History.txt',verTxt());return false},'Export .txt',1)}
+(function(){
+  var v=$('vLed');
+  v.addEventListener('click',function(e){var b=e.target.closest('[data-a]');if(!b)return;var a=b.dataset.a,id=+b.dataset.id;
+    if(a==='open'){LC=id;LT='led';LF=LE='';ledUI();scrollTo(0,0)}else if(a==='back'){LC=null;ledUI()}else if(a==='newc')ledCust();else if(a==='editc')ledCust(LC);else if(a==='sample')ledSample();
+    else if(a==='in'||a==='out')ledForm(a);else if(a==='tab'){LT=b.dataset.t;ledUI()}else if(a==='tx')ledTx(id);
+    else if(a==='savenote'){var c=S.cust.find(function(x){return x.id===LC});c.note=$('lnt').value;lg('Ledger note',c.name+' · note updated');save();toast(lb('Saved','সংরক্ষিত'))}
+    else if(a==='print'){document.body.classList.add('lp');lg('Ledger print',cname());save();window.print()}
+    else if(a==='csv'){var q=function(s){return '"'+String(s==null?'':s).replace(/"/g,'""')+'"'},all=lSort(S.ltx.filter(function(x){return x.c===LC})),rows=[['Date','Type','Party','Method','Received','Given','Balance','Status','Note'].join(',')];
+      ledRows(all,LF,LE).forEach(function(r){var x=r[0];rows.push([x.d?x.d+(x.d2?' to '+x.d2:''):'unknown',x.dir==='in'?'Received':'Given',q(x.who),x.m||'',x.dir==='in'?x.amt:'',x.dir==='out'?x.amt:'',r[1],x.void?q('VOID: '+x.vr):'Active',q(x.note)].join(','))});dlFile('Ledger_'+cname()+'.csv',rows.join('\n'))}});
+  v.addEventListener('input',function(e){if(e.target.id==='lq'){LQ=e.target.value;ledUI();var i=$('lq');i.focus();i.setSelectionRange(99,99)}});
+  v.addEventListener('change',function(e){if(e.target.id==='lsa'||e.target.id==='lse'){LF=$('lsa').value;LE=$('lse').value;ledUI()}});
+  window.addEventListener('afterprint',function(){document.body.classList.remove('lp')});
+  var b=document.createElement('button');b.className='ghost';b.textContent='Version history';b.onclick=verUI;$('moreList').append(b)})();
 </script>
 </body>
 </html>
