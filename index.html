@@ -163,6 +163,8 @@ body{padding-bottom:78px}
 #vPos .tools .ghost{white-space:nowrap}#vPos .tools input{min-width:0}#vPos .fab:disabled{display:none}
 @media(max-width:800px){#bPay{display:none}}
 @media print{.tabs,.top{display:none!important}body{padding:0!important}body.pr .view,body.pr .top{display:none!important}body.pr #rcp{display:block}}
+.prd{display:grid;grid-template-columns:56px 1fr auto;gap:12px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--line)}.prd:last-child{border:0}
+.prd .pimg{width:56px;height:56px;font-size:20px}.prd .pa{display:flex;flex-direction:column;gap:6px}
 </style>
 <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#2F5D3A"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes">
 <script src="config.js"></script>
@@ -225,6 +227,11 @@ body{padding-bottom:78px}
       <div style="display:flex;gap:8px;margin:8px 0"><button class="ghost" id="bHold" style="flex:1">Hold bill</button><button class="ghost" id="bCustom" style="flex:1">+ Custom item</button></div>
       <button class="go" id="bPay">Charge</button></section></div>
   <button class="go fab" id="fab">Charge</button></div>
+<div class="wrap view" id="vProd"><header style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px"><div><div class="shop">Stock and prices</div><h1>Products</h1></div><button class="go" id="pdNew" style="width:auto">+ New product</button></header>
+  <section class="hs" id="pdS"></section>
+  <div class="tools" style="display:flex;gap:8px;margin-bottom:10px"><input id="pdq" placeholder="Search products" autocomplete="off"></div>
+  <div class="ptabs" id="pdF"><button data-f="all" class="on">All</button><button data-f="low">Low stock</button><button data-f="out">Out of stock</button></div>
+  <section class="card" id="pdL"></section></div>
 <div class="wrap view" id="vMore"><header><div><div class="shop">Settings and tools</div><h1>More</h1></div></header><div class="mlist" id="moreList"></div></div>
 <div id="rcp"></div>
 <div class="ov" id="sc" hidden><div class="dlg"><h3>Scan barcode</h3><video id="vid" playsinline muted></video><div class="oa"><button class="ghost" id="scx">Close</button></div></div></div>
@@ -403,16 +410,16 @@ function dayBar(){$('und').disabled=!UN||closed();const d=S.days[cur]||{},c=!!d.
 $('daybar').addEventListener('change',e=>{const D=S.days[cur]=S.days[cur]||{},k=e.target.id==='tp'?'prep':'chk';D[k]=e.target.checked?{by:U.name,ts:stamp()}:null;lg((e.target.checked?'Ticked ':'Unticked ')+(k==='prep'?'Prepared':'Checked'),label(cur));save();dayBar()});
 $('daybar').addEventListener('click',e=>{const b=e.target.id;
   if(b==='cls'){if(!(S.days[cur]&&S.days[cur].prep))return ask('Close Day','<p>Tick "Prepared" before closing the day.</p>',()=>{},'OK');
-    ask('Close Day',`<p>Lock ${label(cur)}? Entries cannot be changed until an admin reopens it.</p>`,()=>{S.days[cur].closed={by:U.name,ts:stamp()};lg('Close day',label(cur));save();render()},'Close Day')}
+    ask('Close Day',`<p>Lock ${label(cur)}? Entries cannot be changed until an admin reopens it.</p>`,()=>{S.days[cur].closed={by:U.name,ts:stamp()};lg('Close day',label(cur));save();{const x=new Date(cur+'T00:00:00');x.setDate(x.getDate()+1);cur=iso(x)}reset();render()},'Close Day')}
   if(b==='reo')ask('Reopen day','<div class="f"><label>Reason (required)</label><input id="rr" maxlength="100"></div><div class="f"><label>Admin PIN</label><input id="rp" type="password" inputmode="numeric"></div>',async()=>{
     const r=$('rr').value.trim();if(!r||!(await ck(S.users.admin,$('rp').value))){$('rp').value='';$('rp').placeholder='Reason or PIN is wrong';return false}
     delete S.days[cur].closed;lg('Reopen day',label(cur)+' — '+r);save();render()},'Reopen')});
 
-function staffUI(){ask('Staff',S.users.staff.map(x=>`<div class="sr"><span>${esc(x.name)} <small class="mut">· ${x.role||'cashier'}</small>${x.on?'':' <span class="b v">Off</span>'}</span><span><button class="lnk" data-s="o" data-i="${x.id}">Role</button><button class="lnk" data-s="t" data-i="${x.id}">${x.on?'Deactivate':'Activate'}</button><button class="lnk" data-s="r" data-i="${x.id}">Reset PIN</button></span></div>`).join('')+'<div class="f" style="margin-top:12px"><label>New staff name</label><input id="sn" maxlength="40"></div><div class="f"><label>Role</label><select id="sr"><option value="cashier">Cashier (POS only)</option><option value="accountant">Accountant (read-only accounts)</option></select></div><div class="f"><label>PIN (4+ digits)</label><input id="sp" type="password" inputmode="numeric"></div>',async()=>{
+function staffUI(){ask('Staff',S.users.staff.map(x=>`<div class="sr"><span>${esc(x.name)} <small class="mut">· ${x.role||'cashier'}</small>${x.on?'':' <span class="b v">Off</span>'}</span><span><button class="lnk" data-s="o" data-i="${x.id}">Role</button><button class="lnk" data-s="t" data-i="${x.id}">${x.on?'Deactivate':'Activate'}</button><button class="lnk" data-s="r" data-i="${x.id}">Reset PIN</button></span></div>`).join('')+'<div class="f" style="margin-top:12px"><label>New staff name</label><input id="sn" maxlength="40"></div><div class="f"><label>Role</label><select id="sr"><option value="cashier">Cashier (POS only)</option><option value="keeper">Stock keeper (POS and products with buying cost)</option><option value="accountant">Accountant (read-only accounts)</option></select></div><div class="f"><label>PIN (4+ digits)</label><input id="sp" type="password" inputmode="numeric"></div>',async()=>{
   const nm=$('sn').value.trim(),p=$('sp').value;if(!nm&&!p)return;if(!nm||p.length<4)return false;
   S.users.staff.push({id:Date.now(),name:nm,on:1,role:$('sr').value,...await mk(p)});lg('Add staff',nm);save()},'Add staff')}
 $('ob').addEventListener('click',e=>{const b=e.target.closest('[data-s]');if(!b)return;const x=S.users.staff.find(y=>y.id==b.dataset.i);
-  if(b.dataset.s==='o'){x.role=x.role==='accountant'?'cashier':'accountant';lg('Change role',x.name+' → '+x.role);save();staffUI()}
+  if(b.dataset.s==='o'){x.role={cashier:'keeper',keeper:'accountant'}[x.role||'cashier']||'cashier';lg('Change role',x.name+' → '+x.role);save();staffUI()}
   else if(b.dataset.s==='t'){x.on=!x.on;lg((x.on?'Activate':'Deactivate')+' staff',x.name);save();staffUI()}
   else ask('Reset PIN — '+x.name,'<div class="f"><label>New PIN (4+ digits)</label><input id="np" type="password" inputmode="numeric"></div>',async()=>{if($('np').value.length<4)return false;Object.assign(x,await mk($('np').value));lg('Reset staff PIN',x.name);save();setTimeout(staffUI,0)},'Reset')});
 $('stf').onclick=staffUI;
@@ -452,7 +459,7 @@ $('ob').addEventListener('click',async e=>{
     await dlFile('NCS_Report_'+RR.a+'.csv',r.map(x=>'"'+x[0]+'",'+x[1]).join('\n'))}});
 
 S.lang=S.lang||'en';
-const BN={'Daily Accounts':'দৈনিক হিসাব','Nur Computer & Stationary':'নূর কম্পিউটার এন্ড স্টেশনারী','Today':'আজ','Settings':'সেটিংস','Lock':'লক','Total Sell':'মোট বিক্রয়','Total Buy':'মোট ক্রয়','Difference (pending)':'পার্থক্য (বাকি)','Counted vs account':'গণনা বনাম হিসাব','Cash Balance':'ক্যাশ ব্যালেন্স','Account balance now':'বর্তমান হিসাবের ব্যালেন্স','Opening Cash':'প্রারম্ভিক ক্যাশ','Closing Cash':'সমাপনী ক্যাশ','Adjustments today':'আজকের সমন্বয়','Prepared':'প্রস্তুতকারী','Checked':'যাচাইকারী','Open':'খোলা','Closed':'বন্ধ','Close Day':'দিন বন্ধ করুন','Reopen':'পুনরায় খুলুন','Sl':'ক্র.','Time':'সময়','Description':'বিবরণ','Sell':'বিক্রয়','Buy':'ক্রয়','Previous Cash':'পূর্বের ক্যাশ','Actual Cash':'প্রকৃত ক্যাশ','Difference':'পার্থক্য','Type':'ধরন','Category':'ক্যাটাগরি','Payment method':'পেমেন্ট পদ্ধতি','Amount':'পরিমাণ','Actual cash (optional)':'গণনা করা প্রকৃত ক্যাশ (ঐচ্ছিক)','Count':'গণনা','Add entry':'এন্ট্রি যোগ করুন','Save changes':'পরিবর্তন সংরক্ষণ','Cancel edit':'সম্পাদনা বাতিল','Staff':'কর্মী','Change Log':'পরিবর্তন লগ','Print':'প্রিন্ট','Export CSV':'CSV এক্সপোর্ট','Reports':'রিপোর্ট','Undo':'পূর্বাবস্থা','Edit':'সম্পাদনা','Void':'বাতিল','Adjust':'সমন্বয়','Adjusted':'সমন্বিত','Sale':'বিক্রয়','Purchase / Expense':'ক্রয় / খরচ','Owner Deposit':'মালিকের জমা','Owner Withdrawal':'মালিকের উত্তোলন','Cash Adjustment (±)':'ক্যাশ সমন্বয় (±)','Cash':'নগদ','Mobile Banking':'মোবাইল ব্যাংকিং','Bank':'ব্যাংক','Due':'বাকি','All types':'সব ধরন','All payments':'সব পেমেন্ট','Clear':'মুছুন','No entries for this date':'এই তারিখে কোনো এন্ট্রি নেই','Previous':'পূর্বের','Sign in':'সাইন ইন','User':'ব্যবহারকারী','Unlock':'আনলক','Admin':'অ্যাডমিন','Close':'বন্ধ করুন','Cancel':'বাতিল','Confirm':'নিশ্চিত করুন','Day':'দিন','Week (Sat–Fri)':'সপ্তাহ (শনি–শুক্র)','Month':'মাস','Net (Sell − Buy)':'নিট (বিক্রয় − ক্রয়)','Adjustments':'সমন্বয়','Sales by category':'ক্যাটাগরি অনুযায়ী বিক্রয়','Expenses by category':'ক্যাটাগরি অনুযায়ী খরচ','Total':'মোট','Use total':'মোট ব্যবহার করুন','Cash Counter':'ক্যাশ কাউন্টার','Home':'হোম','POS':'পস','Accounts':'হিসাব','More':'আরও','New sale':'নতুন বিক্রয়','New purchase':'নতুন ক্রয়','Recent bills':'সাম্প্রতিক বিল','Overview':'সারসংক্ষেপ','Customer name':'গ্রাহকের নাম','Supplier name':'সরবরাহকারীর নাম','Phone (optional)':'ফোন (ঐচ্ছিক)','PIN':'পিন','Forgot admin PIN':'অ্যাডমিন পিন ভুলে গেছেন','☀ Light':'☀ লাইট','☾ Dark':'☾ ডার্ক','◐ Auto':'◐ অটো','◷ Day/Night':'◷ দিন/রাত'};
+const BN={'Daily Accounts':'দৈনিক হিসাব','Nur Computer & Stationary':'নূর কম্পিউটার এন্ড স্টেশনারী','Today':'আজ','Settings':'সেটিংস','Lock':'লক','Total Sell':'মোট বিক্রয়','Total Buy':'মোট ক্রয়','Difference (pending)':'পার্থক্য (বাকি)','Counted vs account':'গণনা বনাম হিসাব','Cash Balance':'ক্যাশ ব্যালেন্স','Account balance now':'বর্তমান হিসাবের ব্যালেন্স','Opening Cash':'প্রারম্ভিক ক্যাশ','Closing Cash':'সমাপনী ক্যাশ','Adjustments today':'আজকের সমন্বয়','Prepared':'প্রস্তুতকারী','Checked':'যাচাইকারী','Open':'খোলা','Closed':'বন্ধ','Close Day':'দিন বন্ধ করুন','Reopen':'পুনরায় খুলুন','Sl':'ক্র.','Time':'সময়','Description':'বিবরণ','Sell':'বিক্রয়','Buy':'ক্রয়','Previous Cash':'পূর্বের ক্যাশ','Actual Cash':'প্রকৃত ক্যাশ','Difference':'পার্থক্য','Type':'ধরন','Category':'ক্যাটাগরি','Payment method':'পেমেন্ট পদ্ধতি','Amount':'পরিমাণ','Actual cash (optional)':'গণনা করা প্রকৃত ক্যাশ (ঐচ্ছিক)','Count':'গণনা','Add entry':'এন্ট্রি যোগ করুন','Save changes':'পরিবর্তন সংরক্ষণ','Cancel edit':'সম্পাদনা বাতিল','Staff':'কর্মী','Change Log':'পরিবর্তন লগ','Print':'প্রিন্ট','Export CSV':'CSV এক্সপোর্ট','Reports':'রিপোর্ট','Undo':'পূর্বাবস্থা','Edit':'সম্পাদনা','Void':'বাতিল','Adjust':'সমন্বয়','Adjusted':'সমন্বিত','Sale':'বিক্রয়','Purchase / Expense':'ক্রয় / খরচ','Owner Deposit':'মালিকের জমা','Owner Withdrawal':'মালিকের উত্তোলন','Cash Adjustment (±)':'ক্যাশ সমন্বয় (±)','Cash':'নগদ','Mobile Banking':'মোবাইল ব্যাংকিং','Bank':'ব্যাংক','Due':'বাকি','All types':'সব ধরন','All payments':'সব পেমেন্ট','Clear':'মুছুন','No entries for this date':'এই তারিখে কোনো এন্ট্রি নেই','Previous':'পূর্বের','Sign in':'সাইন ইন','User':'ব্যবহারকারী','Unlock':'আনলক','Admin':'অ্যাডমিন','Close':'বন্ধ করুন','Cancel':'বাতিল','Confirm':'নিশ্চিত করুন','Day':'দিন','Week (Sat–Fri)':'সপ্তাহ (শনি–শুক্র)','Month':'মাস','Net (Sell − Buy)':'নিট (বিক্রয় − ক্রয়)','Adjustments':'সমন্বয়','Sales by category':'ক্যাটাগরি অনুযায়ী বিক্রয়','Expenses by category':'ক্যাটাগরি অনুযায়ী খরচ','Total':'মোট','Use total':'মোট ব্যবহার করুন','Cash Counter':'ক্যাশ কাউন্টার','Home':'হোম','Products':'পণ্য','POS':'পস','Accounts':'হিসাব','More':'আরও','New sale':'নতুন বিক্রয়','New purchase':'নতুন ক্রয়','Recent bills':'সাম্প্রতিক বিল','Overview':'সারসংক্ষেপ','Customer name':'গ্রাহকের নাম','Supplier name':'সরবরাহকারীর নাম','Phone (optional)':'ফোন (ঐচ্ছিক)','PIN':'পিন','Forgot admin PIN':'অ্যাডমিন পিন ভুলে গেছেন','☀ Light':'☀ লাইট','☾ Dark':'☾ ডার্ক','◐ Auto':'◐ অটো','◷ Day/Night':'◷ দিন/রাত'};
 const orig=new WeakMap();
 function tx(root){const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let x;while(x=w.nextNode()){if(!orig.has(x))orig.set(x,x.nodeValue);const o=orig.get(x);
   x.nodeValue=S.lang==='bn'?o.split(' · ').map(q=>{const t=q.trim();return BN[t]?q.replace(t,BN[t]):q}).join(' · '):o}}
@@ -552,13 +559,13 @@ async function importCatalog(){if(S.catImported||S.products.length||!SY())return
     else{S.catImported=1;persist()}}catch(e){}}
 
 /* ---------- shell ---------- */
-const ICO={home:'<path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',pos:'<circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.5 12h11L21 7H6"/>',acc:'<path d="M5 3h11a3 3 0 0 1 3 3v15H8a3 3 0 0 1-3-3z"/><path d="M9 8h6M9 12h6"/>',more:'<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>'};
-const TABS={admin:['home','pos','acc','more'],accountant:['acc','more'],cashier:['pos','more']},TL={home:'Home',pos:'POS',acc:'Accounts',more:'More'};
+const ICO={home:'<path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',pos:'<circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.5 12h11L21 7H6"/>',acc:'<path d="M5 3h11a3 3 0 0 1 3 3v15H8a3 3 0 0 1-3-3z"/><path d="M9 8h6M9 12h6"/>',prod:'<path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/>',more:'<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>'};
+const TABS={admin:['home','pos','prod','acc','more'],keeper:['pos','prod','more'],accountant:['acc','more'],cashier:['pos','more']},TL={home:'Home',pos:'POS',prod:'Products',acc:'Accounts',more:'More'};
 let CUR=null;
-const role=()=>!U?'':U.role==='admin'?'admin':U.role==='accountant'?'accountant':'cashier';
+const role=()=>!U?'':U.role==='admin'?'admin':U.role==='accountant'?'accountant':U.role==='keeper'?'keeper':'cashier',canCost=()=>isA()||role()==='keeper';
 function buildTabs(){const T=TABS[role()];$('tabs').innerHTML=T.map(k=>`<button data-v="${k}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICO[k]}</svg>${TL[k]}</button>`).join('');$('tabs').hidden=false;$('tsub').textContent=(U.name.toLowerCase()===role()?'':U.name+' · ')+role();go(CUR&&T.includes(CUR)?CUR:T[0])}
 function go(v){CUR=v;document.querySelectorAll('.view').forEach(x=>x.classList.toggle('on',x.id==='v'+v[0].toUpperCase()+v.slice(1)));document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
-  if(v==='home')homeUI();if(v==='pos')POS.refresh();if(v==='acc')render();scrollTo(0,0)}
+  if(v==='home')homeUI();if(v==='pos')POS.refresh();if(v==='prod')POS.prodUI();if(v==='acc')render();scrollTo(0,0)}
 $('tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(b)go(b.dataset.v)});
 $('topR').append($('sync'));$('moreList').append($('theme'),$('lang'),$('set'),$('lockb'));
 
@@ -590,13 +597,13 @@ const prods=()=>S.products.filter(p=>!p.del);
 const stockMap=()=>{const vb=new Set(S.bills.filter(b=>b.void).map(b=>b.id)),m={};S.moves.forEach(v=>{if(v.ref&&vb.has(v.ref))return;m[v.pid]=(m[v.pid]||0)+v.q});return m};
 const imgH=p=>p.img?`<img class="pimg" src="${p.img}" alt="">`:`<div class="pimg">${esc((p.name||'?').trim().slice(0,1).toUpperCase())}</div>`;
 const sub=()=>C.lines.reduce((s,l)=>s+l.price*l.qty,0),total=()=>Math.max(0,Math.round((sub()-(+C.disc||0))*100)/100);
-const todayClosed=()=>{const d=S.days[iso(new Date())];return !!(d&&d.closed)};
+const bizDate=()=>{const x=new Date();let d=iso(x);while(S.days[d]&&S.days[d].closed){x.setDate(x.getDate()+1);d=iso(x)}return d};
 
 function topSellers(){const from=iso(new Date(Date.now()-30*864e5)),c={};S.bills.filter(b=>!b.void&&b.mode==='sale'&&b.d>=from).forEach(b=>b.lines.forEach(l=>{if(l.pid)c[l.pid]=(c[l.pid]||0)+l.qty}));
   return Object.entries(c).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([id])=>S.products.find(p=>p.id==id)).filter(p=>p&&!p.del)}
 function renderGrid(){const q=$('q').value.trim().toLowerCase(),sm=stockMap();
   const L=prods().filter(p=>!q||p.name.toLowerCase().includes(q)||(p.barcode||'').includes(q)).sort((a,b)=>a.name.localeCompare(b.name)).slice(0,80);
-  $('grid').innerHTML=L.length?L.map(p=>{const s=sm[p.id]||0;return `<button class="tile" data-p="${p.id}">${imgH(p)}<div class="sb${s<=0?' low':''}">${s}</div><span>${esc(p.name)}</span><small>${tk(p.price)}</small></button>`}).join('')+(isA()?'<div class="mut" style="grid-column:1/-1">Long-press or right-click a product to edit it.</div>':''):'<div class="empty" style="grid-column:1/-1">No products yet. Tap + Product, scan a barcode, or use Custom item.</div>';
+  $('grid').innerHTML=L.length?L.map(p=>{const s=sm[p.id]||0;return `<button class="tile" data-p="${p.id}">${imgH(p)}<div class="sb${s<=0?' low':''}">${s}</div><span>${esc(p.name)}</span><small>${tk(p.price)}</small></button>`}).join('')+(canCost()?'<div class="mut" style="grid-column:1/-1">Long-press or right-click a product to edit it.</div>':''):'<div class="empty" style="grid-column:1/-1">No products yet. Tap + Product, scan a barcode, or use Custom item.</div>';
   const T=C.mode==='sale'?topSellers():[];$('top7').style.display=T.length?'flex':'none';$('top7').innerHTML=T.map(p=>`<button data-p="${p.id}">${imgH(p)}${esc(p.name)}</button>`).join('')}
 function addLine(p){const pm=C.mode==='purchase',l=p.id&&C.lines.find(x=>x.pid===p.id);if(l)l.qty++;else C.lines.push({pid:p.id||null,name:p.name,price:pm?(+p.buy||+p.price||0):(+p.price||0),cost:+p.buy||0,qty:1});renderCart()}
 function renderCart(){const pm=C.mode==='purchase',sm=stockMap();
@@ -607,7 +614,7 @@ function renderCart(){const pm=C.mode==='purchase',sm=stockMap();
 const byId=id=>S.products.find(p=>p.id==id);
 $('grid').addEventListener('click',e=>{const b=e.target.closest('[data-p]');if(b)addLine(byId(b.dataset.p))});
 $('top7').addEventListener('click',e=>{const b=e.target.closest('[data-p]');if(b)addLine(byId(b.dataset.p))});
-$('grid').addEventListener('contextmenu',e=>{const b=e.target.closest('[data-p]');if(b&&isA()){e.preventDefault();pForm(byId(b.dataset.p))}});
+$('grid').addEventListener('contextmenu',e=>{const b=e.target.closest('[data-p]');if(b&&canCost()){e.preventDefault();pForm(byId(b.dataset.p))}});
 $('lines').addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b)return;const i=+b.dataset.i,l=C.lines[i];
   if(b.dataset.a==='p')l.qty++;else if(b.dataset.a==='m'){if(--l.qty<1)C.lines.splice(i,1)}else C.lines.splice(i,1);renderCart()});
 $('lines').addEventListener('change',e=>{if(e.target.dataset.pr!=null){C.lines[+e.target.dataset.pr].price=+e.target.value||0;renderCart()}});
@@ -627,13 +634,13 @@ function shrink(file,cb){const r=new FileReader();r.onload=()=>{const im=new Ima
 function pForm(p,code){pimg=p?p.img||'':'';const e=!!p,sm=stockMap();
   dlg(e?'Edit product':'New product',`<div class="pf1"><div id="pfp">${imgH({img:pimg,name:p?p.name:'?'})}</div><button type="button" class="ghost" data-cam="1">Camera</button><button type="button" class="ghost" data-gal="1">Gallery</button><input id="pi1" type="file" accept="image/*" capture="environment" hidden><input id="pi2" type="file" accept="image/*" hidden></div>
   <div class="f"><label>Name</label><input id="np1" value="${esc(p?p.name:'')}"></div><div class="f"><label>Barcode (optional)</label><input id="np2" value="${esc(p?p.barcode||'':code||'')}"></div>
-  ${isA()?`<div class="f"><label>Buying cost</label><input id="np4" type="number" inputmode="decimal" min="0" value="${p?p.buy||'':''}"></div>`:''}
+  ${canCost()?`<div class="f"><label>Buying cost</label><input id="np4" type="number" inputmode="decimal" min="0" value="${p?p.buy||'':''}"></div>`:''}
   <div class="f"><label>Selling price</label><input id="np3" type="number" inputmode="decimal" min="0" value="${p?p.price:''}"></div>
   ${e?`<div class="mut">Stock now: ${sm[p.id]||0}</div>`:'<div class="f"><label>Opening stock</label><input id="np5" type="number" inputmode="decimal" min="0"></div>'}
   ${e?'<button type="button" class="ghost" id="npd" style="color:var(--neg);margin-top:8px">Delete product</button>':''}`,()=>{
-    const nm=$('np1').value.trim();if(!nm)return false;const o={name:nm,barcode:$('np2').value.trim(),price:+$('np3').value||0,img:pimg};if(isA())o.buy=+$('np4').value||0;
+    const nm=$('np1').value.trim();if(!nm)return false;const o={name:nm,barcode:$('np2').value.trim(),price:+$('np3').value||0,img:pimg};if(canCost())o.buy=+$('np4').value||0;
     if(e){Object.assign(p,o)}else{const q={id:Date.now(),buy:0,...o};S.products.push(q);const st=+($('np5')&&$('np5').value)||0;if(st>0)S.moves.push({id:'o'+q.id,pid:q.id,q:st,ref:'',t:'open',d:iso(new Date())});p=q;lg('Add product',nm)}
-    save();renderGrid();if(!e)addLine(p)},e?'Save':'Save and add');
+    save();renderGrid();if(!e&&CUR==='pos')addLine(p);if(CUR==='prod')prodUI()},e||CUR==='prod'?'Save':'Save and add');
   const show=d=>{pimg=d;$('pfp').innerHTML=imgH({img:d,name:$('np1').value||'?'})};
   $('ob').onclick=ev=>{const t=ev.target.closest('button');if(!t)return;if(t.dataset.cam)$('pi1').click();if(t.dataset.gal)$('pi2').click();
     if(t.id==='npd'){p.del=1;lg('Delete product',p.name);save();renderGrid();$('ov').hidden=true}};
@@ -655,10 +662,9 @@ $('bScan').onclick=async()=>{
 const split=x=>{const o={};x=Math.round(x);DEN.forEach(d=>{const c=Math.floor(x/d);if(c){o[d]=c;x-=c*d}});return o};
 const sumD=o=>DEN.reduce((s,d)=>s+d*(o[d]||0),0),txtD=o=>DEN.filter(d=>o[d]).map(d=>o[d]+'×'+d).join('  ')||'—';
 function checkout(){const T=total();if(!C.lines.length)return;
-  if(todayClosed())return dlg('Day closed','<p>Today is closed in Accounts. An admin must reopen the day before new bills can be saved.</p>',()=>{},'OK');
   const pm=C.mode==='purchase',ck={pay:'Cash',rec:{},party:'',phone:''};
   const draw=()=>{const rec=sumD(ck.rec),ch=rec-T,cash=ck.pay==='Cash';
-    $('ob').innerHTML=`<div class="tot big"><span>${pm?'To pay':'Total'}</span><b>${tk(T)}</b></div><div class="chips">${['Cash','Mobile Banking','Bank','Due'].map(x=>`<button data-pay="${x}" class="${ck.pay===x?'on':''}">${x}</button>`).join('')}</div>`+
+    $('ob').innerHTML=(bizDate()!==iso(new Date())?`<div class="mut" style="margin-bottom:8px">Today is closed. This bill will be saved under ${sd(bizDate())}.</div>`:'')+`<div class="tot big"><span>${pm?'To pay':'Total'}</span><b>${tk(T)}</b></div><div class="chips">${['Cash','Mobile Banking','Bank','Due'].map(x=>`<button data-pay="${x}" class="${ck.pay===x?'on':''}">${x}</button>`).join('')}</div>`+
     (ck.pay==='Due'?`<div class="f"><label>${pm?'Supplier name':'Customer name'}</label><input id="cpn" value="${esc(ck.party)}"></div><div class="f"><label>Phone (optional)</label><input id="cph" value="${esc(ck.phone)}"></div>`:'')+
     (cash?`<label>${pm?'Notes and coins paid out':'Notes and coins received'} <button class="ghost pbtn" data-exact="1">Exact</button></label>`+DEN.map(d=>`<div class="dn"><span>${d}</span><button data-m="${d}">−</button><b>${ck.rec[d]||0}</b><button data-pl="${d}">+</button></div>`).join('')+
       `<div class="prow"><span>${pm?'Paid':'Received'}</span><b>${tk(rec)}</b></div>`+(ch>=0?`<div class="prow"><span>${pm?'Change from supplier':'Change to give'}</span><b class="ok">${tk(ch)}</b></div>${ch?`<div class="mut">${txtD(split(ch))}</div>`:''}`:`<div class="prow bad"><span>Short by</span><b>${tk(-ch)}</b></div>`):'');
@@ -671,7 +677,7 @@ function checkout(){const T=total();if(!C.lines.length)return;
 function finishBill(ck){const pm=C.mode==='purchase',T=total(),rec=ck.pay==='Cash'?ck.rec:{},chg=ck.pay==='Cash'?split(sumD(ck.rec)-T):{};
   D.seq++;dsave();const no=D.dev+D.seq,items=C.lines.map(l=>l.qty+'× '+l.name).join(', '),id=Date.now()*1000+Math.floor(Math.random()*1000);
   const party=ck.pay==='Due'?ck.party.trim():'',phone=ck.pay==='Due'?ck.phone.trim():'',ty=pm?'Purchase':'Sale';
-  const b={id,no,d:iso(new Date()),t:nowT(),ts:Date.now(),user:U.name,mode:C.mode,desc:'POS #'+no+': '+items,lines:C.lines,disc:+C.disc||0,total:T,pay:ck.pay,party,phone,rec,chg};
+  const b={id,no,d:bizDate(),t:nowT(),ts:Date.now(),user:U.name,mode:C.mode,desc:'POS #'+no+': '+items,lines:C.lines,disc:+C.disc||0,total:T,pay:ck.pay,party,phone,rec,chg};
   S.bills.unshift(b);S.entries.push({id,d:b.d,t:b.t,type:ty,desc:b.desc.slice(0,200),cat:'POS',pay:ck.pay,amt:T,by:U.name,party,phone,pos:1,act:null});
   C.lines.forEach((l,i)=>{if(l.pid)S.moves.push({id:id+'-'+i,pid:l.pid,q:(pm?1:-1)*l.qty,ref:id,t:pm?'in':'sale',d:b.d})});
   if(party)(S.parties[ty]=S.parties[ty]||{})[party]=phone;
@@ -690,7 +696,7 @@ function voidBill(b){
   if(S.days[b.d]&&S.days[b.d].closed)return dlg('Day closed','<p>That day is closed. Reopen it in Accounts before voiding the bill.</p>',()=>{},'OK');
   dlg('Void bill #'+b.no,'<div class="f"><label>Reason (required)</label><input id="vr"></div><p class="mut">The matching accounts entry is voided and stock is restored.</p>',()=>{const r=$('vr').value.trim();if(!r)return false;
     b.void=1;b.vr=r;const e=S.entries.find(x=>x.id===b.id);if(e){e.void=1;e.vr='POS void: '+r}lg('POS void','#'+b.no+' — '+r);save();toast('Voided');renderGrid();setTimeout(billsUI,0)},'Void bill')}
-function billsUI(){const td=iso(new Date()),L=S.bills.filter(b=>b.d===td&&(isA()||b.user===U.name)),A=L.filter(b=>!b.void),sum=m=>A.filter(b=>b.mode===m).reduce((s,b)=>s+b.total,0);
+function billsUI(){const td=iso(new Date()),L=S.bills.filter(b=>b.d>=td&&(isA()||b.user===U.name)),A=L.filter(b=>!b.void),sum=m=>A.filter(b=>b.mode===m).reduce((s,b)=>s+b.total,0);
   dlg("Today's bills",`<div class="prow"><span>Sales</span><b>${tk(sum('sale'))}</b></div><div class="prow"><span>Purchases</span><b>${tk(sum('purchase'))}</b></div>`+(L.length?L.map(b=>`<div class="prow"><span>#${esc(b.no)} · ${t12(b.t)} · ${esc(b.pay)}${b.void?' · <b class="bad">VOID</b>':''}<br><small class="mut">${esc(b.user)}${b.mode==='purchase'?' · Purchase':''}</small><br><button class="ghost pbtn" data-rc="${b.id}">Receipt</button>${isA()&&!b.void?` <button class="ghost pbtn" data-vd="${b.id}">Void</button>`:''}</span><b>${tk(b.total)}</b></div>`).join(''):'<div class="empty">No bills today</div>'),()=>{},'Close',true);
   $('ob').onclick=e=>{const r=e.target.closest('[data-rc]'),v=e.target.closest('[data-vd]');if(r)receipt(S.bills.find(b=>b.id==r.dataset.rc));if(v)voidBill(S.bills.find(b=>b.id==v.dataset.vd))}}
 $('bBills').onclick=billsUI;
@@ -708,7 +714,22 @@ function drawerCounts(){const base=S.drawerBase||{c:{},ts:0},o={...base.c};S.bil
 $('bDrawer').onclick=()=>{const o=drawerCounts();
   dlg('Drawer notes and coins',DEN.map(d=>`<div class="prow"><span>${d}</span><b>${o[d]}</b><span class="mut">${tk(d*o[d])}</span></div>`).join('')+`<div class="prow"><b>Total</b><b>${tk(sumD(o))}</b></div>`+(isA()?'<p class="mut">Set the counts to your real notes to start or correct.</p>':''),()=>{
     if(!isA())return;dlg('Set drawer counts',DEN.map(d=>`<div class="dn"><span>${d}</span><span></span><input type="number" min="0" inputmode="numeric" data-dd="${d}" value="${o[d]}"><span></span></div>`).join(''),()=>{const c={};DEN.forEach(d=>{c[d]=Math.max(0,+$('ob').querySelector('[data-dd="'+d+'"]').value||0)});S.drawerBase={c,ts:Date.now()};lg('Drawer set','');save()},'Save');return false},isA()?'Set counts':'Close')};
-return{refresh(){renderGrid();renderCart()},setMode,bills:billsUI}
+/* products screen */
+let PF='all';const LOW=5;
+function prodUI(){const sm=stockMap(),q=($('pdq').value||'').trim().toLowerCase(),A=prods(),cost=canCost(),st=A.map(p=>({p,s:sm[p.id]||0}));
+  const units=st.reduce((a,x)=>a+Math.max(0,x.s),0),vc=st.reduce((a,x)=>a+Math.max(0,x.s)*(+x.p.buy||0),0),vs=st.reduce((a,x)=>a+Math.max(0,x.s)*(+x.p.price||0),0);
+  const C=(l,v)=>`<div class="stat"><small>${l}</small><b>${v}</b></div>`;
+  $('pdS').innerHTML=C('Products',A.length)+C('Units in stock',n(units))+C('Low or out of stock',st.filter(x=>x.s<=LOW).length)+(cost?C('Stock value (cost)',tk(vc))+C('Stock value (selling)',tk(vs))+C('Expected profit',tk(vs-vc)):'');
+  $('pdF').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.f===PF));
+  const L=st.filter(x=>(!q||x.p.name.toLowerCase().includes(q)||(x.p.barcode||'').includes(q))&&(PF==='all'||(PF==='out'?x.s<=0:x.s<=LOW))).sort((a,b)=>a.p.name.localeCompare(b.p.name));
+  $('pdL').innerHTML=L.length?L.map(({p,s})=>`<div class="prd"><div>${imgH(p)}</div><div><b>${esc(p.name)}</b><div class="mut">${p.barcode?esc(p.barcode)+' · ':''}Stock <b class="${s<=0?'bad':''}">${s}</b></div><div class="mut">${cost?'Buy '+tk(p.buy||0)+' · ':''}Sell ${tk(p.price)}</div></div><div class="pa"><button class="ghost pbtn" data-ad="${p.id}">Add stock</button><button class="ghost pbtn" data-ed="${p.id}">Edit</button></div></div>`).join(''):'<div class="empty">No products found</div>'}
+function addStock(p){dlg('Add stock · '+p.name,`<div class="f"><label>Quantity</label><input id="as1" type="number" inputmode="decimal" min="0"></div>${canCost()?`<div class="f"><label>Buying cost</label><input id="as2" type="number" inputmode="decimal" min="0" value="${p.buy||''}"></div>`:''}<div class="f"><label>Selling price</label><input id="as3" type="number" inputmode="decimal" min="0" value="${p.price}"></div><div class="f"><label>How did it come?</label><select id="as4"><option value="bought">Bought</option><option value="brought">Brought in</option></select></div><div class="f"><label>Date</label><input id="as5" type="date" value="${iso(new Date())}"></div><p class="mut">This records stock only. To record paying a supplier, use POS and Purchase, which adds stock too.</p>`,()=>{
+  const q=+$('as1').value;if(!(q>0))return false;if(canCost()&&$('as2').value!=='')p.buy=+$('as2').value||0;p.price=+$('as3').value||p.price;
+  S.moves.push({id:'s'+Date.now()+'-'+p.id,pid:p.id,q,ref:'',t:'in',how:$('as4').value,d:$('as5').value||iso(new Date())});lg('Add stock',p.name+' +'+q+' ('+$('as4').value+')');save();toast('Stock added');prodUI()},'Add stock')}
+$('pdL').addEventListener('click',e=>{const a=e.target.closest('[data-ad]'),b=e.target.closest('[data-ed]');if(a)addStock(byId(a.dataset.ad));if(b)pForm(byId(b.dataset.ed))});
+$('pdNew').onclick=()=>pForm(null,'');$('pdq').addEventListener('input',prodUI);
+$('pdF').addEventListener('click',e=>{const b=e.target.closest('[data-f]');if(b){PF=b.dataset.f;prodUI()}});
+return{refresh(){renderGrid();renderCart();if(CUR==='prod')prodUI()},setMode,bills:billsUI,prodUI}
 })();
 $('q').addEventListener('focus',()=>{});
 
