@@ -1,6 +1,6 @@
 # NCS Daily Accounts: Handover Note
 
-Shop: Nur Computer & Stationery. Current version: **v8.4** (service worker cache `ncs-v12`).
+Shop: Nur Computer & Stationery. Current version: **v8.5** (service worker cache `ncs-v13`).
 Two Claude profiles work on this app and do NOT share memory. This file is the shared memory.
 
 ## 0. Start-of-session checklist (both profiles)
@@ -48,7 +48,9 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 8. **Dates:** store ISO `YYYY-MM-DD`. Show with `sd()`. Ledger entries get date and time automatically. A previous date is entered manually.
 9. **Secrets:** never put the sync key, PINs or the owner's Sheet URL in the files or in this note.
 10. **Before handing back:** extract the last `<script>` block and run `node --check`. Run a logic test for any calculation changed. State plainly what was and was not tested in a browser.
-11. Keep the shop name spelling used in the UI. Keep Bengali labels for পেলাম / দিলাম.
+11. Class names are global: before adding a CSS class, search the file for it (the POS owns `.lt`, `.tile`, `.line`, `.cart`, `.tot`, `.sb`).
+12. Dark mode must not use green for accents; light mode keeps the green ItemPOS look. Use tokens only.
+13. Keep the shop name spelling used in the UI. Keep Bengali labels for পেলাম / দিলাম.
 
 ## 5. Known quirks
 - The "Start fresh" action erases daily accounts but **not** the ledger.
@@ -65,6 +67,9 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 3. **Ledger search** inside a customer's entries (amount, name, note) and filters (direction, method, date).
 4. **Statement sharing:** PDF or image for WhatsApp.
 
+**Phase 1b**
+4b. Five-colour chart palette for dark and light (top-selling items, monthly trends) when charts are added. Monospace SKU/barcode text on product cards. Pending/processing blue (#3B82F6) for supplier orders when that feature exists.
+
 **Phase 2**
 5. Optional "Ledger" sheet in Google Sheets for reading entries outside the app (add to the Apps Script `doPost`).
 6. Reminders and due dates per customer; a "who owes whom" summary on Home.
@@ -79,6 +84,7 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 13. Add an automated smoke test page.
 
 ## 7. Session log (append newest on top)
+- **v8.5, 2026-10-15:** Bottom bar restored on phones (drawer stays). Customer profile card `ledPC()` with pastel tiles. **Dark mode palette replaced (no green):** bg #0B0F19, card #151B2C, hover/soft #1F2942, border #222E4A, accent #FF7A00, text #F8FAFC / #94A3B8, pos #10B981, neg #EF4444, warn/low-stock #F59E0B, pending blue #3B82F6 (not yet used). Tokens live in the dark blocks of THEME v8.3. Bug fixed: ledger table now uses class `ltb` because `.lt` belongs to the POS (line total).
 - **v8.4, 2026-10-15:** Phone drawer menu (Figma Light 02): `#mb` hamburger in `.top`, `#dr` drawer built from `TABS[role()]`, tile colours cycle through 6 hues, active tile #46C1BF. Bottom bar is hidden under 900px. Not yet checked in a real browser.
 - **v8.3, 2026-10-15:** Theme layer v8.2 replaced by "THEME v8.3 ItemPOS" (end of `<style>`), built from the owner's Figma values: page #F8F9FD, sidebar white with 2px #F6F6F6 border, active item bg #E9F9F0 + 6px green gradient bar, green #2CC56F to #BEDC7C, card radius 14 and shadow `0 6px 9px -5px rgba(186,186,186,.15)`, pastel tiles #FFF5E0 / #E0F8EA / #FCEAE4 / #EFE6F6, status pills #E6F6E9 and orange #FF9A00, font Inter. Not yet checked in a real browser. The owner's other references (navy Glamstitch, blue wallet, cream/black) were not applied; a Settings theme switch is a possible later feature.
 - **v8.2, 2026-10-15:** Theme layer added at the end of `<style>` (block `THEME v8.2`). Colour tokens `--bg1..3, --t1..4, --g1/--g2, --sh`. PC (min-width 900px): sidebar nav. Under 900px: floating bottom bar. CSS only, no logic changed. **Not yet viewed in a real browser; the owner should check and report spacing or contrast problems.**
