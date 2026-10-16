@@ -1,6 +1,6 @@
 # NCS Daily Accounts: Handover Note
 
-Shop: Nur Computer & Stationery. Current version: **v8.8** (service worker cache `ncs-v16`).
+Shop: Nur Computer & Stationery. Current version: **v8.9** (service worker cache `ncs-v18`).
 Two Claude profiles work on this app and do NOT share memory. This file is the shared memory.
 
 ## 0. Start-of-session checklist (both profiles)
@@ -31,6 +31,7 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 - **Helpers to reuse:** `ask(title, bodyHtml, onOk, okText, wide)` (return `false` from onOk to keep the dialog open), `dlg(...)` (same, with optional hidden OK button), `toast(t)`, `lg(action, detail)` (writes the Change Log), `esc()`, `tk()` (৳ amount), `n()` (number), `sd(iso)` (dd.mm.yyyy), `t12(HH:MM)`, `iso(Date)`, `dlFile(name, text)` (download).
 - **Force logout all:** synced counter `S.rebootN` (+ `S.rebootAt`), merged with max in `mergeState`. Each session remembers the counter at login (`LRN`, and `rn` in the stored session); a 4-second interval locks any session whose `LRN` is lower; `resume()` rejects old sessions. A counter is used instead of timestamps so device clock differences cannot cause login loops.
 - **Cash adjust:** hold or right-click `#cashp` (touch long-press) opens `cashAdjust()` (note and coin counter). It adds an `Adjustment` entry with `act` = counted cash, `cnt` = denominations. Admin and accountant only. The optional actual-cash field of the entry form is hidden (`#fx` still exists for old data).
+- **Wallets (v8.9):** seven balances calculated from entries in time order, never typed: `WLT` keys `bk` Bkash Personal, `ng` Nagad, `rk` Rocket, `bka` Bkash Agent, `gp` GP, `robi` Robi, `cir` Circkle. `WLTC` maps category to wallet per entry type (Purchase category = wallet up and cash down; Sale category = wallet down and cash up; pay is forced to Cash for these). A Sale paid by Mobile Banking with `e.w` (picked wallet, Accounts form `#fw` or POS checkout chips `data-w`) adds to that wallet and does not touch cash. `wltEff(e)` gives the wallet effect; `wltRun/calcWallets/checkWalletLimit` do the maths and the never-below-zero check (checked on save/edit and on void of Accounts entries and POS bills). Opening balances are `S.wallets` (`u` timestamp; newest wins in `mergeState`), edited by admin from Management (`openWltSettings`). Cards: `#wltWrap` (Accounts, under the Cash card) and `#wltWrapH` (Home); hover popover `#whp`, click opens `showWltDetail`.
 - **Upcoming Features** live in the `UPC` array in the ledger module and show in the Management tab. Keep it in sync with section 6 below.
 - **Language:** the older screens use the `tx()` dictionary. The ledger and version screens use `lb(english, bangla)`.
 - **Ledger module** sits at the end of the script, headed `customer ledger + version history`. It uses function declarations and `var` so it can be called before it is defined.
@@ -39,7 +40,7 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 - **`cust`**: `{id, name, phone, fb? (Facebook link or username), img? (200px JPEG data URL), note, del? (1 = archived), dby?, dts?}`. Delete is allowed only at balance 0 and is admin-only; restore from the Archive chip.
 - **`ltx`** (ledger transaction): `{id, c (customer id), dir ('in' = পেলাম, 'out' = দিলাম), amt, parts[] or null, d (YYYY-MM-DD, '' = unknown), d2 (range end), t (HH:MM, recorded automatically), m (Cash/bKash/Bank/Other), who, note, by, eb? (last editor), void?, vr (void reason), vb (voided by), fix? (id of the entry it corrected)}`
 - **Customer balance** = sum of `in` minus sum of `out` over non-void entries. It is calculated, never stored. Positive means the customer gets money (we owe). Negative means the customer owes us.
-- **`entries`** (daily accounts) are separate: cash is calculated from them by `cash()` and `calc()`.
+- **`entries`** (daily accounts) are separate: cash is calculated from them by `cash()` and `calc()`. Wallet fields: `w` (wallet key, only for Sale paid by Mobile Banking; wallet categories are resolved by `cat`). POS bills and their entries carry `w` too.
 
 ## 4. Rules (do not break)
 1. **Every release:** bump `APP_VERSION`, add a `VERS` entry (newest first), bump the cache name in `sw.js`, and add a line to section 7 here.
@@ -59,6 +60,10 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 15. Capitalise the first letter of every visible label ("Last 7 days", "Sales", "We owe"). Write "Bkash" (not bKash) in the UI; `mN()` normalises old stored data.
 16. Shop name is `shopN()` (EN: Nur Computer & Stationery, BN: নুর কম্পিউটার এন্ড স্টেশনারী). Never type it by hand. Keep the shop name spelling used in the UI. Keep Bengali labels for পেলাম / দিলাম.
 
+17. **`n()` is a text formatter (`toLocaleString`), not a number parser.** Parse with `+x||0`. Colour tokens `--t1..--t4` are pastel tile backgrounds, not text colours: use `--ink`, `--mut`, `--soft`, `--card`, `--neg`, `--pos`.
+18. Wallet category names are stored values (`<option value=...>` is explicit so Bengali translation never changes them). Do not rename them without a data migration.
+19. A change that touches cash or wallets must keep the checks in `checkWalletLimit` (save, edit, void).
+
 ## 5. Known quirks
 - The "Start fresh" action erases daily accounts but **not** the ledger.
 - The Change Log keeps only the last 500 lines. Customer Activity reads from it and matches by customer name, so renaming a customer hides older activity lines.
@@ -67,20 +72,23 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 - `.g>.pp` CSS rule is duplicated in the old accounts form (harmless).
 - Customer balance for the sample matches the notebook: ৳32,650 (the 260 for Nasir is inside the 23,560 payment).
 
+- Wallet categories are Sale/Purchase entries, so they also count in the Home Sell/Buy totals and profit figures (cash exchange is not real revenue). Consider excluding them from Sell/Buy reports or showing them separately.
+- Undo (`snap`/`und`) restores old entries without running the wallet check.
+- Bills imported from the external POS inbox carry no wallet, so their Mobile Banking sales do not change wallets.
+- Entries made before v8.9 with pay Mobile Banking have no `w` and are ignored by wallets.
+
 ## 6. Roadmap (what to build, change or remove next)
-**Confirmed spec for v8.9 (wallets), decided with the owner**
-- Wallets are balances **calculated from entries** (like cash), never typed: `bk` Bkash personal, `ng` Nagad, `rk` Rocket, `bka` Bkash Agent, `gp` GP recharge, `robi` Robi recharge, `cir` Circkle recharge (spelling confirmed). Entry gets a wallet key `w`. Opening balance per wallet set once by admin (`S.wallets`).
-- UI: an **MFS card** (Bkash, Nagad, Rocket, Bkash Agent) and a **Recharge card** (GP, Robi, Circkle) to the left of the Cash Balance card. Hover (long-press on phone) shows an overview; click shows each wallet's balance.
-- **Purchase / Expense** categories (cash goes down, wallet goes up): Bk In - Personal (bk), Nagad In - Personal (ng), Rocket In - Personal (rk), Bkash Cash Out (bka), Recharge Balance - DSR GP (gp), Recharge Balance - DSR Robi (robi), Recharge Balance - DSR Circkle (cir), Bkash B2B Balance Receive (bka; the agent balance is received from the Bkash correspondent DSO and **paid from cash**).
-- **Sale** categories (wallet goes down, cash goes up): Bk Sent - Personal (bk), Nagad Sent - Personal (ng), Rocket Sent - Personal (rk), Bkash Cash IN (bka), Recharge - GP (gp), Recharge - Robi (robi), Recharge - Circkle (cir).
-- A wallet balance must **never go below zero**: block the entry, and block void or edit of an older entry if a later balance would go negative. Check in time order (`sorted()`).
-- Sales whose payment is Mobile Banking add to a chosen wallet (wallet picker).
+**v8.9 wallets: DONE** (see section 2 and the session log). Owner decisions that were built: Circkle spelling, Recharge - GP / Robi / Circkle sale categories, Bkash B2B Balance Receive paid from cash by the Bkash correspondent (DSO) raises the agent balance, never below zero, sales paid by Mobile Banking add to a chosen wallet.
 
 **Confirmed spec for v9.0 (ledger and sales linked to cash flow)**
 - A ledger entry with method Cash moves the Cash Balance (in = up, out = down) through a linked cash entry (field `lk` = ltx id); void or edit keeps both in sync. Method Bkash/Nagad/Rocket moves that wallet. Bank does nothing.
 - **Due sales post to the customer ledger automatically** (customer picker on Accounts entries; owner said yes).
 - Everything entered before the link exists gets a "Check" tag and stays out of the cash flow until admin links or accepts it.
 
+
+**Planned after 9.0 (from the other profile's Upcoming Features)**
+- v9.1: closed-day rule (a cash adjustment on a closed day rolls to the next open day instead of being blocked); archive a customer with an open balance without voiding entries (reason note required, shown in Archive, restorable); "Possible duplicate" tag on similar entries (Ledger, Accounts, POS) that admin can dismiss or void.
+- v9.2: efficiency pass (compute balances once, paged long lists, sync only changed records, limit stored image size, remove unused code) and effectiveness pass (fewer taps, only the actions each role needs).
 
 **Phase 1 (next)**
 1. **Dashboard theme refresh (started in v8.2: CSS layer only).** The owner picked the Dabang direction; the Home view is done in v8.6 (soft gradient wash, balance hero card, pastel tiles, 7-day Sell/Buy bar chart, sales-by-payment donut). Remaining: Nagad-style quick-action icon grid on Home for cashiers; restyle POS and Accounts tables; restyle the Ledger view. Original brief: The owner shared four references: a light card dashboard with soft gradient and sidebar (Dabang), an orange mobile-banking home (Nagad), a blue wallet-card style, and a cream/yellow with black pill navigation style. Restyle through CSS variables first (`:root` colour tokens), then layout. Keep dark mode and the green brand colour unless told otherwise. After Home (done): Ledger, then Accounts and POS.
@@ -111,6 +119,8 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 13. Add an automated smoke test page.
 
 ## 7. Session log (append newest on top)
+- **v8.9, 2026-10-16:** Wallets built on the v8.8.1 base. The code received from the other tool (Qwen: `WALLETS`, `calcWallets`, `checkWalletLimit`, `renderWalletCards`, `showWltDetail`, `openWltSettings`) was reviewed and rewritten because it would not have worked: it used `n()` as a number parser (it is a text formatter), `toast`/`dlg` (private to the POS), colour tokens that are pastel tiles, `e.pm`/`e.pos` fields that do not exist (POS entries use `pay`), it left out Bkash B2B Balance Receive, never checked the limit on save or void, did not sync opening balances, and passed `null` as the dialog callback. Added: Accounts form wallet categories, forced Cash pay for them, wallet picker, POS checkout wallet chips, void/edit blocking, cards on Accounts and Home with hover overview, Management button for opening balances, Bengali names and category translations. Tested in jsdom (cash and wallet moves, blocked negatives, void blocking, sale by Mobile Banking, B2B, opening balances, POS checkout end to end, hover, Bengali, merge, regression of v8.8 flows): no errors. Not checked in a real browser. The ledger-to-cash linking (v9.0) is still not built.
+- **v8.8.1, 2026-10-16 (other profile):** Version history rebuilt (collapsible groups, dates, Expand all, versions 1 to 7 added) and moved into Management; Upcoming Features extended with 9.1 and 9.2. The matching handover text it sent was plain text (formatting stripped) and claimed v8.9 was done while its index file was still 8.8.1; this file replaces it.
 - **v8.8, 2026-10-16:** Management tab (`vMgmt`, admin only; `TABS.admin` now has 7 tabs, check small phones): staff and roles, settings, change log, version history, Force logout all, Upcoming Features with .txt export. Old Staff and Settings buttons are hidden by CSS (`#stf,#set`) and opened from Management. Force logout via `S.rebootN`. `cashAdjust()` on the Cash Balance card; actual-cash field hidden from the entry form. Customer profile edit/delete admin-only, Archive chip (admin), Void data tab (admin and accountant, admin restores); Ledger and Statement show active entries only. Capital first letters fixed; Bkash spelling. Tested in jsdom for all roles (Management buttons, cash adjust with denominations, void and restore, archive and restore, delete blocked at non-zero balance, force logout and re-login, resume rejection, Bengali). Not checked in a real browser. Note: wallets (v8.9) and ledger-to-cash linking (v9.0) are NOT built yet; see section 6.
 - **v8.7, 2026-10-16:** **Merge of two parallel builds** (both had been called v8.6): the other profile's Dabang Home view (v8.6 below, kept as is) merged with this profile's stock manager / accountant / ledger / Bengali / font work. Merge was a clean three-way merge (one conflict, the VERS line). Contents from this side: Stock manager purchase-only (`setMode`/`renderCart` force purchase, body class `kp`), "Cost not set" label and `synNote()`; accountant tabs acc, led, prod, more with `canCost` and body class `ro`; ledger photo, Call/SMS/WhatsApp/Facebook links (`lLinks`, `lNum`), card grid `ledList`, hover card `#lhp`, long-press / right-click summary `ledSum`, totals and filters (`LS`); `ldlg` and `ltoast`; Bengali dictionary additions including Home chart labels, `trp()`, placeholder translation, SolaimanLipi font, `SHOP_EN/SHOP_BN/shopN()`. **Bug fixed:** ledger entry dialog (click a ledger row) and the new summary dialog called the POS-private `dlg`; and the ledger used the POS-private `toast`. Tested in jsdom for all four roles (tabs, ledger flows, void, cashier correction, auto date and time, Bengali mode): no uncaught errors. Still not checked in a real browser on phone and PC.
 - **v8.6, 2026-10-15:** Home view restyled in the Dabang direction (owner's pick). `body:has(#vHome.on)` paints a soft gradient wash when Home is open (token `--dhg`); green gradient hero card shows cash balance, date and user; stat tiles pastel via t1–t4 and soft. New charts: 7-day Sell & Buy bar chart (`hChart`; classes dchart/dcol/dbars/dbs/dbb) and a sales-by-payment donut (`hPay`; dwrap/dhole/dleg, conic-gradient, zero state when no sales). Chart tokens `--ch1..--ch4` per theme (dark: #10B981, #3B82F6, #F59E0B, #FF9A3D — no green except inflow). Chart "Sell" includes all payment methods; donut splits Cash / Digital / Due over the selected period. Home-only `d*` classes checked for clashes (rule 11). Scope: Home view only; Ledger, Accounts and POS untouched. `APP_VERSION` 8.6, VERS entry added, `sw.js` cache `ncs-v14`. Not browser-tested: the owner should check light + dark, phone + PC, and the chart with real data.
