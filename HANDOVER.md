@@ -1,6 +1,6 @@
 # NCS Daily Accounts: Handover Note
 
-Shop: Nur Computer & Stationery. Current version: **v9.3** (service worker cache `ncs-v23`).
+Shop: Nur Computer & Stationery. Current version: **v9.4** (service worker cache `ncs-v24`).
 Two Claude profiles work on this app and do NOT share memory. This file is the shared memory.
 
 ## 0. Start-of-session checklist (both profiles)
@@ -27,6 +27,7 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 - **Other synced keys:** `days`, `names`, `parties`, `log`, `users`, `start`.
 - **Local-only keys (never synced):** the `LOCAL` array: theme, dayStart, dayEnd, lang, lockout, sync, snaps, logSent, synced, posSince.
 - **Sync:** Google Apps Script web app. `pull()` and `push()` send the whole state as one text blob with a revision number. A conflict triggers `mergeState`. Because it is a blob, **new collections sync automatically once they are in `COLS`** and no script change is needed.
+- **Sync status dot (v9.4):** the `#sync` button in the top bar (moved there from Accounts) shows a coloured dot from `setSt()`: green (`ok`) when everything is synced, pulsing yellow (`pend`) while changes are saving, pulsing red (`offl` offline / `conf` conflict), hollow grey when sync is not set up. Size 10px, `vertical-align:middle`, yellow and red pulse with a soft `box-shadow` ring. The button has a `title` tooltip explaining the state. The same dot appears next to the sync line in the Management tab.
 - **Navigation:** `TABS` (tabs per role), `TL` (labels), `ICO` (icons), `go(view)` shows `#v<Name>`. Views are `.wrap.view` divs: vAcc, vHome, vPos, vProd, vMore, vLed, vMgmt (admin only: staff, settings, change log, version history, Force logout all, Upcoming Features).
 - **Roles:** admin, accountant, keeper, cashier (`role()`, `isA()`, `lEd()`). PINs are hashed. Staff are managed in the Staff dialog.
 - **Helpers to reuse:** `ask(title, bodyHtml, onOk, okText, wide)` (return `false` from onOk to keep the dialog open), `dlg(...)` (same, with optional hidden OK button), `toast(t)`, `lg(action, detail)` (writes the Change Log), `esc()`, `tk()` (৳ amount), `n()` (number), `sd(iso)` (dd.mm.yyyy), `t12(HH:MM)`, `iso(Date)`, `dlFile(name, text)` (download).
@@ -72,6 +73,7 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 21. **Do not put module-level `var` data into anything `save()`, `render()` or `party()` call.** Those paths use only function declarations (`ledReconcile`, `chkBar`, `cuOpts`, `entChk`, `ledLive`...). Keep it that way.
 22. Linked entries (`type:'Ledger'`) are read-only in Accounts (no Edit/Void). Change them from the ledger.
 23. **Purchases are never saved as Due (v9.3).** The Due payment option is only offered when the type is Sale (and when editing an old Purchase that already has `pay:'Due'` so its record is preserved). New due purchases are not possible; old ones keep their record and get a Check tag until admin accepts or voids them.
+24. **Sync status colours are fixed (v9.4):** green = synced, yellow = pending, red = offline or conflict, hollow grey = off. Do not add a fourth colour; if a new state is needed, reuse one of these.
 
 20. **Startup order trap:** `applyLang();start();` runs BEFORE the modules at the end of the script. On refresh `start()` → `resume()` → `enter()` → `render()`/`homeUI()` run while module-level `var X=...` lines have not executed yet (only function declarations are hoisted). Anything that `render()`, `homeUI()` or `enter()` touches must be defined **above** the `start()` line, or be a function declaration. `resume()` swallows errors and shows the login screen, so a crash there looks like "refresh logs me out" (v8.9 bug, fixed in v8.9.1; it now logs `Session restore failed` to the console). Always test a refresh with a saved session for every role.
 
@@ -90,11 +92,14 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 - Undo (`snap`/`und`) restores old entries without running the wallet check.
 - Bills imported from the external POS inbox carry no wallet, so their Mobile Banking sales do not change wallets.
 - Entries made before v8.9 with pay Mobile Banking have no `w` and are ignored by wallets.
+- The sync dot pulses forever while offline — that is intentional (owner asked for "in focus"), but on a very slow connection it will keep pulsing. If it becomes distracting the owner can ask to reduce the animation.
 
 ## 6. Roadmap (what to build, change or remove next)
-**v9.0 ledger linked to cash flow: DONE** (see section 2 and the session log).
+**v9.4 sync status dot: DONE.**
 
 **v9.3 no due purchases: DONE** (first part of decision B).
+
+**v9.0 ledger linked to cash flow: DONE** (see section 2 and the session log).
 
 **v8.9 wallets: DONE** (see section 2 and the session log). Owner decisions that were built: Circkle spelling, Recharge - GP / Robi / Circkle sale categories, Bkash B2B Balance Receive paid from cash by the Bkash correspondent (DSO) raises the agent balance, never below zero, sales paid by Mobile Banking add to a chosen wallet.
 
@@ -102,7 +107,6 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 - A ledger entry with method Cash moves the Cash Balance (in = up, out = down) through a linked cash entry (field `lk` = ltx id); void or edit keeps both in sync. Method Bkash/Nagad/Rocket moves that wallet. Bank does nothing.
 - **Due sales post to the customer ledger automatically** (customer picker on Accounts entries; owner said yes).
 - Everything entered before the link exists gets a "Check" tag and stays out of the cash flow until admin links or accepts it.
-
 
 **Owner decisions and requests after v9.0 (2026-10-16).**
 *Decision A: Bkash wallets in the ledger and in Accounts.* **BUILT in v9.2.** Ledger method list: Cash, Bkash Personal, Bkash Agent, Nagad, Rocket, Bank, Other. `mN()` maps old `Bkash`/`bKash` to `Bkash Personal`; `ledMove()` maps `Bkash Agent` to `bka`. Bkash Agent works like Personal (received = wallet up, given = wallet down). Wallet never below zero stays.
@@ -122,11 +126,13 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 
 *Feature G: Upcoming Features as a card.* **BUILT in v9.1.** Closed card with the same hover-preview and click-to-open behaviour.
 
+*Feature I (v9.4): sync status dot.* **BUILT in v9.4.** See section 2. Green / pulsing yellow / pulsing red / hollow grey in the `#sync` button and on the Management sync line.
+
 *Question H: make every card hover-based?* Answered in chat: hover is a **preview on desktop only** (`matchMedia('(hover:hover)')`); click/tap toggles open and close; `<button aria-expanded>` headers for keyboard. Applied to Bug Fixing and Upcoming Features. Do not hide daily numbers (Cash Balance, wallets, stats) behind hover.
 
-**Planned after 9.0 (from the other profile's Upcoming Features)**
-- v9.4: Party profile (extend `cust`), Borrow/Lend entries, closed-day rule (already built for cash adjust in v8.9.1), archive a customer/party with an open balance without voiding entries (reason note required, shown in Archive, restorable); "Possible duplicate" tag on similar entries (Ledger, Accounts, POS) that admin can dismiss or void.
-- v9.5: efficiency pass (compute balances once, paged long lists, sync only changed records, limit stored image size, remove unused code) and effectiveness pass (fewer taps, only the actions each role needs).
+**Planned after 9.4**
+- v9.5: Party profile (extend `cust`), Borrow/Lend entries, archive a customer/party with an open balance without voiding entries (reason note required, shown in Archive, restorable); "Possible duplicate" tag on similar entries (Ledger, Accounts, POS) that admin can dismiss or void; closed-day rule (already done for cash adjust in v8.9.1). Decision C (Start fresh carry-over + Pending section).
+- v9.6: efficiency pass (compute balances once, paged long lists, sync only changed records, limit stored image size, remove unused code) and effectiveness pass (fewer taps, only the actions each role needs).
 
 **Phase 1 (next)**
 1. **Dashboard theme refresh (started in v8.2: CSS layer only).** The owner picked the Dabang direction; the Home view is done in v8.6 (soft gradient wash, balance hero card, pastel tiles, 7-day Sell/Buy bar chart, sales-by-payment donut). Remaining: Nagad-style quick-action icon grid on Home for cashiers; restyle POS and Accounts tables; restyle the Ledger view. Original brief: The owner shared four references: a light card dashboard with soft gradient and sidebar (Dabang), an orange mobile-banking home (Nagad), a blue wallet-card style, and a cream/yellow with black pill navigation style. Restyle through CSS variables first (`:root` colour tokens), then layout. Keep dark mode and the green brand colour unless told otherwise. After Home (done): Ledger, then Accounts and POS.
@@ -157,6 +163,7 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 13. Add an automated smoke test page.
 
 ## 7. Session log (append newest on top)
+- **v9.4, 2026-10-16:** Sync status dot. The `#sync` button in the top bar now shows a 10px coloured dot before the label: solid green when everything is synced (`ok`), pulsing yellow while saving (`pend`), pulsing red when offline (`offl`) or in conflict (`conf`), hollow grey when sync is not set up (`off`). Yellow and red pulse with a soft box-shadow ring so the state is easy to notice. The button also gets a `title` tooltip. The same dot is added to the sync line in the Management tab. CSS is a small `.sdot` block with two `@keyframes`; `setSt()` was rewritten to build `innerHTML` instead of `textContent`. The old `tx()` translator still works because it walks text nodes and the dot is an empty `<i>`. `sw.js` cache `ncs-v24`. Decisions B (rest), C and the Party profile are still not built; Upcoming Features renumbered so v9.5 is the Party profile release and v9.6 is the efficiency/effectiveness pass.
 - **v9.3, 2026-10-16:** Decision B, first part. Purchases can no longer be saved as Due in the Accounts form or POS checkout; the Due option is removed from the payment list when the type is Purchase (editing an old Due purchase keeps it as Due so the record is not silently rewritten). Old Due purchases keep their record and get a Check tag; admin can Accept (dismiss the tag) or Void them (`entChk` extended to Purchase+Due; `entLink` guarded to Sale+Due only so no "Link customer" button appears for a purchase). Due sales are unchanged. `cats()` rebuilds the payment list from the type and whether editing an old due purchase; the POS checkout chip list is filtered by mode. `sw.js` cache `ncs-v23`. The Party profile and Borrow/Lend entries (the rest of decision B) and decision C are still not built.
 - **v9.2, 2026-10-16:** Decision A built. Owner confirmed: Bkash Agent works like Personal (received = wallet up, given = wallet down). Ledger method list is now Cash, Bkash Personal, Bkash Agent, Nagad, Rocket, Bank, Other. `mN()` maps old `Bkash`/`bKash` to `Bkash Personal`; `ledMove()` maps `Bkash Agent` to `bka`. Existing linked entries keep working (no migration). `sw.js` cache `ncs-v22`. Decisions B and C still not built.
 - **v9.1, 2026-10-16:** Built Bug E (Accounts opens on Today at startup and on every Accounts tab click: `cur` reset at startup and in `go('acc')`), Feature F (Bug Fixing card, `BUGS` array, `bcard()`, Export .txt) and Feature G (Upcoming Features as a card; hover preview on desktop only, click/tap toggles, `<button aria-expanded>`). Decisions A, B, C and the closed-day, archive and duplicate items are NOT built yet (Upcoming Features lists them under 9.1). `sw.js` cache `ncs-v21`.
