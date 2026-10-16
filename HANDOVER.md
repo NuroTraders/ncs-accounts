@@ -1,6 +1,6 @@
 # NCS Daily Accounts: Handover Note
 
-Shop: Nur Computer & Stationery. Current version: **v9.1** (service worker cache `ncs-v21`).
+Shop: Nur Computer & Stationery. Current version: **v9.2** (service worker cache `ncs-v22`).
 Two Claude profiles work on this app and do NOT share memory. This file is the shared memory.
 
 ## 0. Start-of-session checklist (both profiles)
@@ -76,7 +76,7 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 
 ## 5. Known quirks
 - The "Start fresh" action erases daily accounts but **not** the ledger; old links go dormant (new `S.epoch`). **Owner rejected silent dormancy on 2026-10-16: balances must carry over and mismatches go to a Pending section for admin (decision C).**
-- Ledger entries via Bkash always move **Bkash Personal** (`bk`), never the Agent wallet. **Owner rejected this on 2026-10-16; to be replaced in v9.1 (section 6, decision A).**
+- Ledger Bkash Personal moves `bk`, Bkash Agent moves `bka` (decision A, done in v9.2).
 - Due purchases (suppliers) are not posted to the ledger. **Owner decision: the shop does not buy on due; it borrows from and lends to parties. To be replaced in v9.1 (decision B).**
 - Ledger entries marked unknown date, or with "Also record" unticked (admin/accountant), stay out of cash flow without a Check tag.
 - The Change Log keeps only the last 500 lines. Customer Activity reads from it and matches by customer name, so renaming a customer hides older activity lines.
@@ -158,6 +158,7 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 13. Add an automated smoke test page.
 
 ## 7. Session log (append newest on top)
+- **v9.2, 2026-10-16:** Decision A built. Owner confirmed: Bkash Agent works like Personal (received = wallet up, given = wallet down). Ledger method list is now Cash, Bkash Personal, Bkash Agent, Nagad, Rocket, Bank, Other. `mN()` maps old `Bkash`/`bKash` to `Bkash Personal`; `ledMove()` maps `Bkash Agent` to `bka`. Existing linked entries keep working (no migration). `sw.js` cache `ncs-v22`. Decisions B and C still not built.
 - **v9.1, 2026-10-16:** Built Bug E (Accounts opens on Today at startup and on every Accounts tab click: `cur` reset at startup and in `go('acc')`), Feature F (Bug Fixing card, `BUGS` array, `bcard()`, Export .txt) and Feature G (Upcoming Features as a card; hover preview on desktop only, click/tap toggles, `<button aria-expanded>`). Decisions A, B, C and the closed-day, archive and duplicate items are NOT built yet (Upcoming Features lists them under 9.1). `sw.js` cache `ncs-v21`.
 - **2026-10-16, after v9.0 (no code change, version stays v9.0):** Owner reviewed the "Choices to confirm" of v9.0 and gave new requests. Only this handover was updated. Recorded in section 6 as decisions A to H (Bkash Personal vs Agent in the ledger, Borrow/Lend with a Party profile instead of due purchases, Start fresh carry-over with an admin Pending section, Ledger cash report line accepted, Accounts opens on Today, Bug Fixing card, Upcoming Features card, hover-card policy), in section 0 as the bug fix command, and in section 8 as the bug fix history. Quirks in section 5 that the owner overruled are marked.
 - **v9.0, 2026-10-16:** Ledger linked to cash flow (spec in section 6). Built on v8.9.1. (1) Ledger Cash entries move the Cash Balance, Bkash/Nagad/Rocket entries move the wallets, Bank/Other nothing; edit, void, restore, method change kept in sync by `ledReconcile()` in `save()`; closed-day and wallet-limit guards; new checkbox "Also record in cash / wallet" (admin/accountant) and a live hint line in the form. (2) Due sales post to the customer ledger automatically: customer picker in Accounts and POS checkout, including "+ New customer"; edit/void/payment change of the sale updates the posting. (3) Check tag for old ledger entries and old due sales with Link / Accept / Accept all; Check filter and banners. (4) Report gains a "Ledger cash" line; version history group for v9; Upcoming Features now starts at 9.1. (5) Shop name removed from the phone bottom tab bar (the `.tabs::before` rule is now desktop-only). Tested in real headless Chromium (Playwright) with 72 scripted checks across admin and cashier: ledger cash/wallet moves, edit/void/restore, blocked negative wallet, void blocked when later spending needs the money, closed day, unticked record, legacy Check/Link/Accept, due sale post/edit/void/Cash switch, new customer from the picker, POS due bill and void, Undo, Start fresh, Bengali hint, refresh with saved session for admin and cashier; no console errors. Mobile bottom bar and Accounts form checked by screenshot at 390 px and 1280 px. Not tested: real Google Sheet sync between two devices, iOS Safari.
