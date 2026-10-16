@@ -1,6 +1,6 @@
 # NCS Daily Accounts: Handover Note
 
-Shop: Nur Computer & Stationery. Current version: **v9.4** (service worker cache `ncs-v24`).
+Shop: Nur Computer & Stationery. Current version: **v9.5** (service worker cache `ncs-v25`).
 Two Claude profiles work on this app and do NOT share memory. This file is the shared memory.
 
 ## 0. Start-of-session checklist (both profiles)
@@ -24,12 +24,12 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 ## 2. Architecture
 - **State:** one object `S`, saved to `localStorage` key `ncs_accounts_v2` by `save()`.
 - **Collections** (arrays of objects with a numeric `id`): `entries`, `products`, `bills`, `moves`, `cust`, `ltx`. The list is `COLS`. Anything in `COLS` is stamped with `u` (last changed time) and merged by `mergeById` (newest `u` wins).
-- **Other synced keys:** `days`, `names`, `parties`, `log`, `users`, `start`.
+- **Other synced keys:** `days`, `names`, `parties`, `log`, `users`, `start`; `pending` and `history` are explicitly merged by id (they are not collections in `COLS`).
 - **Local-only keys (never synced):** the `LOCAL` array: theme, dayStart, dayEnd, lang, lockout, sync, snaps, logSent, synced, posSince.
 - **Sync:** Google Apps Script web app. `pull()` and `push()` send the whole state as one text blob with a revision number. A conflict triggers `mergeState`. Because it is a blob, **new collections sync automatically once they are in `COLS`** and no script change is needed.
-- **Sync status dot (v9.4):** the `#sync` button in the top bar (moved there from Accounts) shows a coloured dot from `setSt()`: green (`ok`) when everything is synced, pulsing yellow (`pend`) while changes are saving, pulsing red (`offl` offline / `conf` conflict), hollow grey when sync is not set up. Size 10px, `vertical-align:middle`, yellow and red pulse with a soft `box-shadow` ring. The button has a `title` tooltip explaining the state. The same dot appears next to the sync line in the Management tab.
+- **Sync status (v9.5):** `#sync` retains its status name (Synced, Pending, Offline, Conflict, Off) and coloured dot, with a continuous expanding flash ring. The Management sync row also retains the indicator and shows Synced/Off. Status names are not prefixed with “Sync:”.
 - **Navigation:** `TABS` (tabs per role), `TL` (labels), `ICO` (icons), `go(view)` shows `#v<Name>`. Views are `.wrap.view` divs: vAcc, vHome, vPos, vProd, vMore, vLed, vMgmt (admin only: staff, settings, change log, version history, Force logout all, Upcoming Features).
-- **Roles:** admin, accountant, keeper, cashier (`role()`, `isA()`, `lEd()`). PINs are hashed. Staff are managed in the Staff dialog.
+- **Roles:** admin, accountant, keeper, cashier (`role()`, `isA()`, `lEd()`). Accountant has Accounts and Ledger access, including the high-discount review shortcut in Accounts. Admin and keeper can set exact stock with a required reason; each change is recorded and queued for Admin review. PINs are hashed; staff are managed in the Staff dialog.
 - **Helpers to reuse:** `ask(title, bodyHtml, onOk, okText, wide)` (return `false` from onOk to keep the dialog open), `dlg(...)` (same, with optional hidden OK button), `toast(t)`, `lg(action, detail)` (writes the Change Log), `esc()`, `tk()` (৳ amount), `n()` (number), `sd(iso)` (dd.mm.yyyy), `t12(HH:MM)`, `iso(Date)`, `dlFile(name, text)` (download).
 - **Force logout all:** synced counter `S.rebootN` (+ `S.rebootAt`), merged with max in `mergeState`. Each session remembers the counter at login (`LRN`, and `rn` in the stored session); a 4-second interval locks any session whose `LRN` is lower; `resume()` rejects old sessions. A counter is used instead of timestamps so device clock differences cannot cause login loops.
 - **Cash adjust:** the visible **Count and adjust cash** button on the Cash card (`#cashp`, `data-cadj`, admin and accountant) opens `cashAdjust()` (note and coin counter). No right-click or long-press (owner asked for a button). If today is closed the entry goes to the next open day (`nextOpenDay()`) and the view jumps there. It adds an `Adjustment` entry with `act` = counted cash, `cnt` = denominations. Admin and accountant only. The optional actual-cash field of the entry form is hidden (`#fx` still exists for old data).
@@ -42,18 +42,18 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 - **Ledger module** sits at the end of the script, headed `customer ledger + version history`. It uses function declarations and `var` so it can be called before it is defined.
 
 ## 3. Data model
-- **`cust`**: `{id, name, phone, fb? (Facebook link or username), img? (200px JPEG data URL), note, del? (1 = archived), dby?, dts?}`. Delete is allowed only at balance 0 and is admin-only; restore from the Archive chip.
-- **`ltx`** (ledger transaction): `{id, c (customer id), dir ('in' = পেলাম, 'out' = দিলাম), amt, parts[] or null, d (YYYY-MM-DD, '' = unknown), d2 (range end), t (HH:MM, recorded automatically), m (Cash/Bkash Personal/Bkash Agent/Nagad/Rocket/Bank/Other), who, note, by, eb? (last editor), void?, vr (void reason), vb (voided by), fix? (id of the entry it corrected)}`
-- **Customer balance** = sum of `in` minus sum of `out` over non-void entries. It is calculated, never stored. Positive means the customer gets money (we owe). Negative means the customer owes us.
+- **`cust`:** `{id, name, phone, fb?, img?, note, kind?, addr?, rel?, del?, delReason?, dby?, dts?}`. Party kind: Customer, Supplier, Lender, Borrower or Other. Archive is admin-only, reason-required, retains nonzero balance and all ledger entries, and is restorable.
+- **`ltx`** (ledger transaction): `{id, c, dir ('in' = we received / we owe; 'out' = we paid / they owe), btype? (Borrow/Lend), amt, parts[], d, d2, t, m, who, note, by, eb?, void?, vr, vb, fix?, dupDismissed?}`. Borrow maps to `in`; Lend maps to `out`.
+- **Party balance** = sum of `in` minus sum of `out` over non-void entries. Borrow is an `in` (we owe); Lend is an `out` (they owe us). It is calculated, never stored. Positive means we owe; negative means they owe us.
 - **v9.0 `ltx` fields:** `l9` (made by v9+), `lnk` (linked to cash/wallet), `le` (link epoch), `ok`/`okb` (accepted), `src` (source entry id for auto-posted due sales); `m` can also be Nagad, Rocket, 'Due sale'. **v9.0 `entries` fields:** `cu` (customer id of a due sale), `ok` (accepted without customer), and for `type:'Ledger'`: `ld`, `lk`, `od`, `w`.
 - **`entries`** (daily accounts) are separate: cash is calculated from them by `cash()` and `calc()`. Wallet fields: `w` (wallet key, only for Sale paid by Mobile Banking; wallet categories are resolved by `cat`). POS bills and their entries carry `w` too.
 
 ## 4. Rules (do not break)
-1. **Every release:** bump `APP_VERSION`, add a `VERS` entry (newest first), bump the cache name in `sw.js`, and add a line to section 7 here.
-2. **New synced data goes into `COLS`.** Always call `save()` after changing `S`. Do not write to `localStorage` directly.
+1. **Every release:** bump `APP_VERSION`, add a `VERS` entry (newest first), bump the cache name in `sw.js`, add a line to section 7 here, and synchronize the `UPC` and `BUGS` records.
+2. **Synced data:** array collections go into `COLS`; standalone synced state keys (like `pending`) need explicit merge handling in `mergeState`. Always call `save()` after changing `S`; do not write to `localStorage` directly.
 3. **Never hard-delete money records.** Use `void` (with reason and who) or `del`. Cashiers can add and view only. A cashier correction voids the old entry and adds a new one.
 4. **Ledger and cash drawer are linked only through `ledReconcile()` (v9.0).** Never write cash entries for the ledger by hand; set `lnk` and let the reconcile do it. Entries made before linking (no `l9`) stay out of cash until admin links or accepts them.
-5. **Permissions:** the ledger is visible to admin, accountant and cashier (not keeper). Stock manager (`keeper`) is purchase-only in POS and sees all products with buy and sell price. Accountant sees accounts, ledger, products (read-only, with buying cost) and cash. Only admin and accountant can edit entries in place, print statements and export CSV. **Customer profile edit and delete are admin-only.** Voided entries are hidden from the Ledger and Statement tabs and shown in the Void data tab (admin and accountant see it; only admin restores). Admin and accountant can adjust actual cash. Management tab is admin-only.
+5. **Permissions:** Ledger is visible to admin, accountant and cashier (not keeper). Accountant sees Accounts, Ledger and read-only Products with cost; accountant can inspect and review discount cautions. Admin and keeper may set exact stock with reason; these changes are pending Admin approval. Only admin and accountant edit ledger entries in place, print statements and export CSV. Party profile edit/archive is admin-only. Management is admin-only.
 6. **Escape all user text** with `esc()` before putting it in HTML.
 7. **CSS clash:** the app has global `table`, `th:nth-child(-n+3)` and `td:first-child` rules. A new table needs its own class overriding them (see `.lt`).
 8. **Dates:** store ISO `YYYY-MM-DD`. Show with `sd()`. Ledger entries get date and time automatically. A previous date is entered manually.
@@ -73,12 +73,12 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 21. **Do not put module-level `var` data into anything `save()`, `render()` or `party()` call.** Those paths use only function declarations (`ledReconcile`, `chkBar`, `cuOpts`, `entChk`, `ledLive`...). Keep it that way.
 22. Linked entries (`type:'Ledger'`) are read-only in Accounts (no Edit/Void). Change them from the ledger.
 23. **Purchases are never saved as Due (v9.3).** The Due payment option is only offered when the type is Sale (and when editing an old Purchase that already has `pay:'Due'` so its record is preserved). New due purchases are not possible; old ones keep their record and get a Check tag until admin accepts or voids them.
-24. **Sync status colours are fixed (v9.4):** green = synced, yellow = pending, red = offline or conflict, hollow grey = off. Do not add a fourth colour; if a new state is needed, reuse one of these.
+24. **Sync status colours are fixed:** green = synced, yellow = pending, red = offline or conflict, hollow grey = off. The indicator flash is always active; do not add a fourth state colour.
 
 20. **Startup order trap:** `applyLang();start();` runs BEFORE the modules at the end of the script. On refresh `start()` → `resume()` → `enter()` → `render()`/`homeUI()` run while module-level `var X=...` lines have not executed yet (only function declarations are hoisted). Anything that `render()`, `homeUI()` or `enter()` touches must be defined **above** the `start()` line, or be a function declaration. `resume()` swallows errors and shows the login screen, so a crash there looks like "refresh logs me out" (v8.9 bug, fixed in v8.9.1; it now logs `Session restore failed` to the console). Always test a refresh with a saved session for every role.
 
 ## 5. Known quirks
-- The "Start fresh" action erases daily accounts but **not** the ledger; old links go dormant (new `S.epoch`). **Owner rejected silent dormancy on 2026-10-16: balances must carry over and mismatches go to a Pending section for admin (decision C).**
+- Start fresh (v9.5) carries current cash and wallet balances into opening balances, retains party-ledger history and stock movements, clears the active daily entries/bills/days/names, and creates an Admin reconciliation item. It changes `S.epoch`; older linked entries remain dormant as historical ledger records. Sync merge checks can queue due-sale/customer-ledger, linked-entry and negative-wallet mismatches.
 - Ledger Bkash Personal moves `bk`, Bkash Agent moves `bka` (decision A, done in v9.2).
 - Due purchases (suppliers) are no longer possible for new entries (v9.3); old ones keep their record with a Check tag. **Owner decision (B, still to finish): the shop does not buy on due; it borrows from and lends to parties — the Party profile and Borrow/Lend ledger entries are the next step.**
 - Ledger entries marked unknown date, or with "Also record" unticked (admin/accountant), stay out of cash flow without a Check tag.
@@ -92,10 +92,10 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 - Undo (`snap`/`und`) restores old entries without running the wallet check.
 - Bills imported from the external POS inbox carry no wallet, so their Mobile Banking sales do not change wallets.
 - Entries made before v8.9 with pay Mobile Banking have no `w` and are ignored by wallets.
-- The sync dot pulses forever while offline — that is intentional (owner asked for "in focus"), but on a very slow connection it will keep pulsing. If it becomes distracting the owner can ask to reduce the animation.
+- The sync indicator ring pulses continuously in every state per the v9.5 request; a reduced-motion preference is not yet implemented.
 
 ## 6. Roadmap (what to build, change or remove next)
-**v9.4 sync status dot: DONE.**
+**v9.5: DONE for the scoped release items.** Party types/details, Borrow/Lend, open-balance archive, duplicate warnings, Start fresh carry-forward and reconciliation queue, high-discount caution/review, exact stock overrides with Admin review, accountant ledger access, and animated status label/indicator are included.
 
 **v9.3 no due purchases: DONE** (first part of decision B).
 
@@ -111,12 +111,12 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 **Owner decisions and requests after v9.0 (2026-10-16).**
 *Decision A: Bkash wallets in the ledger and in Accounts.* **BUILT in v9.2.** Ledger method list: Cash, Bkash Personal, Bkash Agent, Nagad, Rocket, Bank, Other. `mN()` maps old `Bkash`/`bKash` to `Bkash Personal`; `ledMove()` maps `Bkash Agent` to `bka`. Bkash Agent works like Personal (received = wallet up, given = wallet down). Wallet never below zero stays.
 
-*Decision B: no due purchases; borrow and lend instead, with a Party profile.* **First part BUILT in v9.3** (Due removed from new Purchases in Accounts and POS; old Due purchases keep their record with a Check tag). **Still to build:**
-- Party profile in the Ledger with full details: name, phone, address, photo, relationship, Facebook, notes, party kind (Customer, Supplier, Lender, Borrower, Other) and a Borrow / Lend summary with open balance and history. **Extend `cust`** rather than creating a new collection (add `kind`, `addr`, etc.); keep Archive, void and Check rules. Decide with the owner which extra fields are required (NID, second phone, reference person).
-- Money owed to others recorded in the ledger as **Borrow** (we received money, we owe) and **Lend** (we gave money, they owe). Labels and quick actions in the ledger for these two directions.
+*Decision B: no due purchases; borrow and lend instead, with a Party profile.* **BUILT in v9.5.** Party kind/address/relationship, Borrow/Lend entry types and summary, plus reason-required archive retaining open balance are included. NID, second phone and reference person were intentionally omitted per the owner instruction.
+- Implemented: name, phone, photo, Facebook, notes, party kind, address and relationship; three optional identity/reference fields omitted. Borrow/Lend direction and balances are visible on the party ledger.
+- Implemented: **Borrow** is received money/we owe (`in`); **Lend** is given money/they owe (`out`), with quick-action buttons and a separate net summary.
 
-*Decision C: Start fresh must carry balances forward and report mismatches.* **NOT BUILT.**
-- Replace the silent dormant-link behaviour (`S.epoch`). After Start fresh, all previous balances (Cash, wallets, every customer or party balance) must be carried over exactly. Anything that does not match (a linked entry without its source, a due sale without a ledger posting, a wallet that would be negative, a customer balance that differs from its entries) goes into a new **Pending** section (admin only, Management tab) with the entry, the reason and actions: Link, Accept, Correct, Void. Nothing is lost silently. Also run the same check after every sync merge.
+*Decision C: Start fresh must carry balances forward and report mismatches.* **BUILT in v9.5:**
+- Implemented: Start fresh sets opening cash and wallet balances from the current book, preserves the party ledger and stock-movement history, archives prior entries/day/name context in synced `S.history`, clears only the active entries/days/names, leaves bills intact, and queues an Admin reconciliation item. After each sync merge, detectable due-sale posting gaps, linked-ledger shadow gaps and negative-wallet balances are queued. A higher-epoch remote Start fresh replaces the local opening cash and history batches merge by id. Admin can mark a queue item checked; corrections use the existing Accounts/Ledger workflows. Limitation: the queue does not yet offer per-item Link/Accept/Correct/Void buttons, and production-data reconciliation was not tested.
 
 *Request D: report line.* "Ledger cash" line in Reports: accepted as built in v9.0.
 
@@ -126,12 +126,11 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 
 *Feature G: Upcoming Features as a card.* **BUILT in v9.1.** Closed card with the same hover-preview and click-to-open behaviour.
 
-*Feature I (v9.4): sync status dot.* **BUILT in v9.4.** See section 2. Green / pulsing yellow / pulsing red / hollow grey in the `#sync` button and on the Management sync line.
+*Feature I (v9.4/v9.5): sync state.* **BUILT.** v9.5 preserves the state label and animates the status indicator continuously.
 
 *Question H: make every card hover-based?* Answered in chat: hover is a **preview on desktop only** (`matchMedia('(hover:hover)')`); click/tap toggles open and close; `<button aria-expanded>` headers for keyboard. Applied to Bug Fixing and Upcoming Features. Do not hide daily numbers (Cash Balance, wallets, stats) behind hover.
 
-**Planned after 9.4**
-- v9.5: Party profile (extend `cust`), Borrow/Lend entries, archive a customer/party with an open balance without voiding entries (reason note required, shown in Archive, restorable); "Possible duplicate" tag on similar entries (Ledger, Accounts, POS) that admin can dismiss or void; closed-day rule (already done for cash adjust in v8.9.1). Decision C (Start fresh carry-over + Pending section).
+**Planned after 9.5**
 - v9.6: efficiency pass (compute balances once, paged long lists, sync only changed records, limit stored image size, remove unused code) and effectiveness pass (fewer taps, only the actions each role needs).
 
 **Phase 1 (next)**
@@ -163,6 +162,7 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 13. Add an automated smoke test page.
 
 ## 7. Session log (append newest on top)
+- **v9.5, 2026-10-16:** Large release from the owner-approved scope. Party records now have kind, address and relationship (the three optional identity/reference fields were intentionally omitted); Borrow and Lend entries map to existing balance directions, have profile quick actions and a separate net summary; party kind/address/relationship appear on the profile. Party archive requires a reason, retains the open balance and ledger history, and is restorable. Similar ledger/account/POS records show Possible duplicate; Admin can dismiss on account/ledger details. Start fresh carries current cash and wallets, retains party ledger and stock movement history, and creates a pending reconciliation record; sync merges queue detectable due-sale posting, linked-entry and negative-wallet mismatches for Admin review. POS discounts over 5% of subtotal continue the bill and attach a synchronized caution, accessible to Admin and Accountant for review. Admin and keeper can set exact stock with a required reason; adjustment is recorded and queued for Admin approval. Accountant has ledger data access and high-discount review from Accounts. Sync label is Synced/Off (or the current state name) and the colored indicator runs a continuous flash. `sw.js` cache `ncs-v25`. Validation: `node --check` passed; jsdom startup, party-field save, Borrow balance direction, exact stock override/reason/review marker, >5% POS discount checkout (bill remains active and warning is pending), Accountant review action, Admin reconciliation/stock review controls, and higher-epoch opening-cash merge passed. Not tested: live Google Apps Script sync between devices, real-browser visual/mobile layouts, or financial reconciliation against production data.
 - **v9.4, 2026-10-16:** Sync status dot. The `#sync` button in the top bar now shows a 10px coloured dot before the label: solid green when everything is synced (`ok`), pulsing yellow while saving (`pend`), pulsing red when offline (`offl`) or in conflict (`conf`), hollow grey when sync is not set up (`off`). Yellow and red pulse with a soft box-shadow ring so the state is easy to notice. The button also gets a `title` tooltip. The same dot is added to the sync line in the Management tab. CSS is a small `.sdot` block with two `@keyframes`; `setSt()` was rewritten to build `innerHTML` instead of `textContent`. The old `tx()` translator still works because it walks text nodes and the dot is an empty `<i>`. `sw.js` cache `ncs-v24`. Decisions B (rest), C and the Party profile are still not built; Upcoming Features renumbered so v9.5 is the Party profile release and v9.6 is the efficiency/effectiveness pass.
 - **v9.3, 2026-10-16:** Decision B, first part. Purchases can no longer be saved as Due in the Accounts form or POS checkout; the Due option is removed from the payment list when the type is Purchase (editing an old Due purchase keeps it as Due so the record is not silently rewritten). Old Due purchases keep their record and get a Check tag; admin can Accept (dismiss the tag) or Void them (`entChk` extended to Purchase+Due; `entLink` guarded to Sale+Due only so no "Link customer" button appears for a purchase). Due sales are unchanged. `cats()` rebuilds the payment list from the type and whether editing an old due purchase; the POS checkout chip list is filtered by mode. `sw.js` cache `ncs-v23`. The Party profile and Borrow/Lend entries (the rest of decision B) and decision C are still not built.
 - **v9.2, 2026-10-16:** Decision A built. Owner confirmed: Bkash Agent works like Personal (received = wallet up, given = wallet down). Ledger method list is now Cash, Bkash Personal, Bkash Agent, Nagad, Rocket, Bank, Other. `mN()` maps old `Bkash`/`bKash` to `Bkash Personal`; `ledMove()` maps `Bkash Agent` to `bka`. Existing linked entries keep working (no migration). `sw.js` cache `ncs-v22`. Decisions B and C still not built.
@@ -183,6 +183,8 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 - **v8.0, 2026-10-15:** Customer Ledger (cust and ltx collections, profile tabs, voids, statements, CSV), role-based tabs, version history screen with export. Earlier versions (v1 to v7) were not recorded.
 
 ## 8. Bug fix history (every profile must append here, newest on top)
+- **2026-10-16 21:20 (UTC+6), v9.5:** A Start fresh on one device would leave stale opening cash on another device after sync. Cause: the higher-epoch branch replaced entries but did not copy remote `S.start`; the fallback only copied it when local start was zero. Fix: when `R.epoch > S.epoch`, copy `R.start` when present; merge `history` and `pending` batches by id. Verified with an isolated higher-epoch merge test.
+- **2026-10-16 21:11 (UTC+6), v9.5:** The first v9.5 patch draft did not parse because an account matcher was emitted using function-declaration syntax for an arrow expression and the new review-queue callback had an extra closing brace. Cause: broad text insertion did not preserve the app’s exact declaration and brace structure. Fix: restored the `const match = (...) =>` form, rebuilt the callback with balanced braces, and verified the final inline script with `node --check` and jsdom.
 Format: `YYYY-MM-DD HH:MM (UTC+6) · version · who · what was wrong · cause · fix`. Times before this rule was made were not recorded and are shown as `--:--`.
 - 2026-10-16 18:37 (UTC+6) · v9.1 · this profile · Accounts tab stayed on the previous date instead of Today · startup used the last entry date and `go('acc')` only called `render()` · `cur` reset at startup and in `go('acc')`; Close Day and cash adjust jumps unchanged.
 - 2026-10-16 --:-- · v9.0 · this profile · Shop name appeared on the phone bottom tab bar · global `.tabs::before{content:...!important}` rule was not limited to desktop · rule moved into `@media (min-width:900px)`, none on small screens.
