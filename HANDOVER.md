@@ -1,6 +1,6 @@
 # NCS Daily Accounts: Handover Note
 
-Shop: Nur Computer & Stationery. Current version: **v9.0** (service worker cache `ncs-v20`).
+Shop: Nur Computer & Stationery. Current version: **v9.1** (service worker cache `ncs-v21`).
 Two Claude profiles work on this app and do NOT share memory. This file is the shared memory.
 
 ## 0. Start-of-session checklist (both profiles)
@@ -8,6 +8,7 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 2. Read sections 2 and 4 before changing anything.
 3. Make one feature per version. Do not refactor unrelated code.
 4. At the end: bump the version (section 4, rule 1), update section 7 (session log), and hand back all changed files, including this one.
+5. **Bug fix command (owner rule, applies to every profile and tool):** every bug you fix must be written into section 8 (Bug fix history) with **date and time (HH:MM, Bangladesh time, UTC+6)**, version, what was wrong, the cause and the fix. Once the in-app Bug Fixing card exists (section 6, v9.1) the same entry must also go into its `BUGS` array. No fix is finished until it is listed.
 
 ## 1. Files
 | File | Purpose |
@@ -74,9 +75,9 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 20. **Startup order trap:** `applyLang();start();` runs BEFORE the modules at the end of the script. On refresh `start()` → `resume()` → `enter()` → `render()`/`homeUI()` run while module-level `var X=...` lines have not executed yet (only function declarations are hoisted). Anything that `render()`, `homeUI()` or `enter()` touches must be defined **above** the `start()` line, or be a function declaration. `resume()` swallows errors and shows the login screen, so a crash there looks like "refresh logs me out" (v8.9 bug, fixed in v8.9.1; it now logs `Session restore failed` to the console). Always test a refresh with a saved session for every role.
 
 ## 5. Known quirks
-- The "Start fresh" action erases daily accounts but **not** the ledger; old links go dormant (new `S.epoch`).
-- Ledger entries via Bkash always move **Bkash Personal** (`bk`), never the Agent wallet.
-- Due purchases (suppliers) are not posted to the ledger.
+- The "Start fresh" action erases daily accounts but **not** the ledger; old links go dormant (new `S.epoch`). **Owner rejected silent dormancy on 2026-10-16: balances must carry over and mismatches go to a Pending section for admin (decision C).**
+- Ledger entries via Bkash always move **Bkash Personal** (`bk`), never the Agent wallet. **Owner rejected this on 2026-10-16; to be replaced in v9.1 (section 6, decision A).**
+- Due purchases (suppliers) are not posted to the ledger. **Owner decision: the shop does not buy on due; it borrows from and lends to parties. To be replaced in v9.1 (decision B).**
 - Ledger entries marked unknown date, or with "Also record" unticked (admin/accountant), stay out of cash flow without a Check tag.
 - The Change Log keeps only the last 500 lines. Customer Activity reads from it and matches by customer name, so renaming a customer hides older activity lines.
 - The sample button "Load Riyad notes" appears only when there are no customers (admin). Remove it once real data is entered.
@@ -99,6 +100,30 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 - **Due sales post to the customer ledger automatically** (customer picker on Accounts entries; owner said yes).
 - Everything entered before the link exists gets a "Check" tag and stays out of the cash flow until admin links or accepts it.
 
+
+**Owner decisions and requests after v9.0 (2026-10-16). NOTED ONLY, NOT BUILT. Build as v9.1 in this order unless the owner changes it.**
+
+*Decision A: Bkash wallets in the ledger and in Accounts.* Business rules from the owner:
+- **Bkash Personal (`bk`):** Receive Money raises the balance. Send Money lowers it. When we send money to a customer and take cash from them, cash goes up and Personal goes down (the existing Sale categories `Bk Sent - Personal` and Bk In do this in Accounts).
+- **Bkash Agent (`bka`):** a Cash Out (customer withdraws cash from us) raises the Agent balance and lowers our cash (existing Purchase category `Bkash Cash Out`). A Cash In (customer gives us cash and we send from the Agent wallet) raises cash and lowers the Agent balance (existing Sale category `Bkash Cash IN`).
+- So the ledger method **Bkash must let the user choose Personal or Agent** (suggest methods: Bkash Personal, Bkash Agent, Nagad, Rocket, Cash, Bank, Other). Open question for the owner before building: for the Agent wallet, which ledger direction raises and which lowers the wallet (suggested: Received = wallet up, Given = wallet down, same as Personal). Wallet never below zero stays (rule 19).
+
+*Decision B: no due purchases; borrow and lend instead, with a Party profile.*
+- The shop does not buy on due. Remove the Due payment option for Purchases in Accounts and POS (old Due purchases get a Check tag, never deleted). Money owed to others is **Borrow** (we received money, we owe) and **Lend** (we gave money, they owe), recorded in the ledger.
+- Add a **Party profile** in the Ledger with full details: name, phone, address, photo, relationship, Facebook, notes, party kind (Customer, Supplier, Lender, Borrower, Other) and a Borrow / Lend summary with open balance and history. Extend `cust` rather than creating a new collection (add `kind`, `addr`, etc.); keep Archive, void and Check rules. Decide with the owner which extra fields are required (NID, second phone, reference person).
+
+*Decision C: Start fresh must carry balances forward and report mismatches.*
+- Replace the silent dormant-link behaviour (`S.epoch`). After Start fresh, all previous balances (Cash, wallets, every customer or party balance) must be carried over exactly. Anything that does not match (a linked entry without its source, a due sale without a ledger posting, a wallet that would be negative, a customer balance that differs from its entries) goes into a new **Pending** section (admin only, Management tab) with the entry, the reason and actions: Link, Accept, Correct, Void. Nothing is lost silently. Also run the same check after every sync merge.
+
+*Request D: report line.* "Ledger cash" line in Reports: accepted as built in v9.0.
+
+*Bug E: Accounts tab opens on the previous date.* Accounts stays on the last date used. Wanted: **open on Today every time the page is refreshed and every time the Accounts tab is clicked.** Cause: `let cur=S.entries.length?S.entries[S.entries.length-1].d:iso(new Date())` (startup) and `go('acc')` only calls `render()` without resetting `cur`. Fix idea: set `cur=iso(new Date())` at startup and in `go('acc')` before `reset();render()`. Keep the existing jumps that must stay (Close Day moves to the next day, cash adjust jumps to the next open day) because they are not tab clicks. If today is closed, show today with the closed notice (do not skip silently). Add a regression test (refresh, switch tabs, previous-date entries in storage).
+
+*Feature F: Bug Fixing section (card).* New card in the Management tab (admin) titled Bug Fixing, closed by default; **hover shows a preview on desktop, click or tap opens it**. Inside: bug fix history, newest first, each entry with date, time, version, who fixed it (profile or tool), what was wrong and the fix. Data lives in a `BUGS` array next to `VERS` and `UPC` (same style, bilingual with `lb()`), plus the existing Export .txt pattern. Backfill from section 8. The command that every profile must list its fixes is in section 0, item 5.
+
+*Feature G: Upcoming Features as a card.* In Management, Upcoming Features becomes a closed card with the same hover-preview and click-to-open behaviour (today the whole list is always open).
+
+*Question H (answered in chat, record the decision when the owner confirms): make every card hover-based?* Advice: use hover as a **preview on desktop only** (`matchMedia('(hover:hover)')`, like the ledger hover card and wallet hover card already do) and make **click/tap the real way to open and close**, because phones and tablets have no hover and a card that opens only on hover would be unusable there. Keyboard users need Enter/Space to toggle (use a real `<button>` header with `aria-expanded`). Apply it first to Bug Fixing and Upcoming Features; roll out to other cards only where the card is long (Version history already collapses by click). Do not hide numbers people need every day (Cash Balance, wallets, stats) behind hover.
 
 **Planned after 9.0 (from the other profile's Upcoming Features)**
 - v9.1: closed-day rule (a cash adjustment on a closed day rolls to the next open day instead of being blocked); archive a customer with an open balance without voiding entries (reason note required, shown in Archive, restorable); "Possible duplicate" tag on similar entries (Ledger, Accounts, POS) that admin can dismiss or void.
@@ -133,6 +158,8 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 13. Add an automated smoke test page.
 
 ## 7. Session log (append newest on top)
+- **v9.1, 2026-10-16:** Built Bug E (Accounts opens on Today at startup and on every Accounts tab click: `cur` reset at startup and in `go('acc')`), Feature F (Bug Fixing card, `BUGS` array, `bcard()`, Export .txt) and Feature G (Upcoming Features as a card; hover preview on desktop only, click/tap toggles, `<button aria-expanded>`). Decisions A, B, C and the closed-day, archive and duplicate items are NOT built yet (Upcoming Features lists them under 9.1). `sw.js` cache `ncs-v21`.
+- **2026-10-16, after v9.0 (no code change, version stays v9.0):** Owner reviewed the "Choices to confirm" of v9.0 and gave new requests. Only this handover was updated. Recorded in section 6 as decisions A to H (Bkash Personal vs Agent in the ledger, Borrow/Lend with a Party profile instead of due purchases, Start fresh carry-over with an admin Pending section, Ledger cash report line accepted, Accounts opens on Today, Bug Fixing card, Upcoming Features card, hover-card policy), in section 0 as the bug fix command, and in section 8 as the bug fix history. Quirks in section 5 that the owner overruled are marked.
 - **v9.0, 2026-10-16:** Ledger linked to cash flow (spec in section 6). Built on v8.9.1. (1) Ledger Cash entries move the Cash Balance, Bkash/Nagad/Rocket entries move the wallets, Bank/Other nothing; edit, void, restore, method change kept in sync by `ledReconcile()` in `save()`; closed-day and wallet-limit guards; new checkbox "Also record in cash / wallet" (admin/accountant) and a live hint line in the form. (2) Due sales post to the customer ledger automatically: customer picker in Accounts and POS checkout, including "+ New customer"; edit/void/payment change of the sale updates the posting. (3) Check tag for old ledger entries and old due sales with Link / Accept / Accept all; Check filter and banners. (4) Report gains a "Ledger cash" line; version history group for v9; Upcoming Features now starts at 9.1. (5) Shop name removed from the phone bottom tab bar (the `.tabs::before` rule is now desktop-only). Tested in real headless Chromium (Playwright) with 72 scripted checks across admin and cashier: ledger cash/wallet moves, edit/void/restore, blocked negative wallet, void blocked when later spending needs the money, closed day, unticked record, legacy Check/Link/Accept, due sale post/edit/void/Cash switch, new customer from the picker, POS due bill and void, Undo, Start fresh, Bengali hint, refresh with saved session for admin and cashier; no console errors. Mobile bottom bar and Accounts form checked by screenshot at 390 px and 1280 px. Not tested: real Google Sheet sync between two devices, iOS Safari.
 - **v8.9.1, 2026-10-16:** Fix release. (1) Refresh logged every role out: `renderWalletCards()` (called from `render()`/`homeUI()`) used `WLT_MFS`, `WLT_RCR`, `WLT_BN`, which were declared in the late wallet module and therefore undefined when `resume()` ran at startup; `resume()` caught the error and showed the login. The three lists now sit next to `WLT`/`WLTC` above `start()`; the wallet card calls are wrapped in try/catch; `resume()` logs failures. Reproduced and verified in jsdom for admin, accountant, keeper and cashier (login screen after refresh: before true, after false; the v8.8.1 base never had it). (2) Cash adjustment: visible Count and adjust cash button on the Cash card replaces right-click and long-press; closed-day rule from the 9.1 plan done (posts to the next open day with a notice, then jumps to that day); errors now show a message. Wallet suite (22 checks) and earlier role/ledger suites re-run with no failures.
 - **v8.9, 2026-10-16:** Wallets built on the v8.8.1 base. The code received from the other tool (Qwen: `WALLETS`, `calcWallets`, `checkWalletLimit`, `renderWalletCards`, `showWltDetail`, `openWltSettings`) was reviewed and rewritten because it would not have worked: it used `n()` as a number parser (it is a text formatter), `toast`/`dlg` (private to the POS), colour tokens that are pastel tiles, `e.pm`/`e.pos` fields that do not exist (POS entries use `pay`), it left out Bkash B2B Balance Receive, never checked the limit on save or void, did not sync opening balances, and passed `null` as the dialog callback. Added: Accounts form wallet categories, forced Cash pay for them, wallet picker, POS checkout wallet chips, void/edit blocking, cards on Accounts and Home with hover overview, Management button for opening balances, Bengali names and category translations. Tested in jsdom (cash and wallet moves, blocked negatives, void blocking, sale by Mobile Banking, B2B, opening balances, POS checkout end to end, hover, Bengali, merge, regression of v8.8 flows): no errors. Not checked in a real browser. The ledger-to-cash linking (v9.0) is still not built.
@@ -146,3 +173,12 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 - **v8.2, 2026-10-15:** Theme layer added at the end of `<style>` (block `THEME v8.2`). Colour tokens `--bg1..3, --t1..4, --g1/--g2, --sh`. PC (min-width 900px): sidebar nav. Under 900px: floating bottom bar. CSS only, no logic changed. **Not yet viewed in a real browser; the owner should check and report spacing or contrast problems.**
 - **v8.1, 2026-10-15:** Ledger date and time recorded automatically; previous date via checkbox; time shown in rows, details and CSV; this handover note added.
 - **v8.0, 2026-10-15:** Customer Ledger (cust and ltx collections, profile tabs, voids, statements, CSV), role-based tabs, version history screen with export. Earlier versions (v1 to v7) were not recorded.
+
+## 8. Bug fix history (every profile must append here, newest on top)
+Format: `YYYY-MM-DD HH:MM (UTC+6) · version · who · what was wrong · cause · fix`. Times before this rule was made were not recorded and are shown as `--:--`.
+- 2026-10-16 18:37 (UTC+6) · v9.1 · this profile · Accounts tab stayed on the previous date instead of Today · startup used the last entry date and `go('acc')` only called `render()` · `cur` reset at startup and in `go('acc')`; Close Day and cash adjust jumps unchanged.
+- 2026-10-16 --:-- · v9.0 · this profile · Shop name appeared on the phone bottom tab bar · global `.tabs::before{content:...!important}` rule was not limited to desktop · rule moved into `@media (min-width:900px)`, none on small screens.
+- 2026-10-16 --:-- · v8.9.1 · this profile · Refresh logged every role out · `renderWalletCards()` used `WLT_MFS/WLT_RCR/WLT_BN` declared after `start()` (startup order trap, rule 20) · lists moved above `start()`, calls wrapped in try/catch, `resume()` logs failures.
+- 2026-10-16 --:-- · v8.7 · this profile · Ledger entry dialog and summary silently did nothing; ledger toasts missing · called the POS-private `dlg` and `toast` (scope trap, rule 13) · switched to `ask`, `ldlg`, `ltoast`.
+- 2026-10-15 --:-- · v8.5 · other profile · Ledger table styled like the POS line total · class `.lt` belongs to the POS · ledger table uses `.ltb`.
+
