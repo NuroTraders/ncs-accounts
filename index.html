@@ -243,9 +243,9 @@ body.lp .ctag,body.pr .ctag{display:none!important}@media print{.cbn{display:non
 #whp{position:fixed;z-index:25;width:260px;padding:12px;box-shadow:0 12px 32px rgba(0,0,0,.2);font-size:13px}#whp[hidden]{display:none}.whr{display:flex;justify-content:space-between;gap:8px;padding:3px 0;border-bottom:1px solid var(--line)}.whr span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @media print{.dr,#mb{display:none!important}}
 /* ===== THEME v8.6 Dabang Home (Home view only). Tokens only; the d* classes below are Home-only and were checked for clashes ===== */
-:root{--dhg:#E4F2EA;--ch1:#1E9E57;--ch2:#46C1BF;--ch3:#B7862F;--ch4:#BEDC7C}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--dhg:#0F1526;--ch1:#10B981;--ch2:#3B82F6;--ch3:#F59E0B;--ch4:#FF9A3D}}
-:root[data-theme="dark"]{--dhg:#0F1526;--ch1:#10B981;--ch2:#3B82F6;--ch3:#F59E0B;--ch4:#FF9A3D}
+:root{--dhg:#E4F2EA;--ch1:#2CC56F;--ch2:#4D8DFF;--ch3:#E3A236;--ch4:#8D6BCC;--table-alt:#F6F9F7;--table-hover:#E9F9F0}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--dhg:#0F1526;--ch1:#10B981;--ch2:#60A5FA;--ch3:#FBBF24;--ch4:#C084FC;--table-alt:#172033;--table-hover:#202D45}}
+:root[data-theme="dark"]{--dhg:#0F1526;--ch1:#10B981;--ch2:#60A5FA;--ch3:#FBBF24;--ch4:#C084FC;--table-alt:#172033;--table-hover:#202D45}
 body:has(#vHome.on){background:linear-gradient(180deg,var(--dhg) 0,var(--bg) 340px)}
 .dhero{background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff;border-radius:16px;box-shadow:var(--sh);padding:18px 20px;margin-bottom:14px}
 .dhero small{display:block;font-size:13px;color:rgba(255,255,255,.85)}
@@ -309,13 +309,34 @@ body:has(#vHome.on){background:linear-gradient(180deg,var(--dhg) 0,var(--bg) 340
 .dcn{font-size:12.5px;color:var(--warn);text-align:right;margin:-2px 0 6px}
 .pgmore{text-align:center;padding:12px;margin-top:6px;border-radius:10px;background:var(--soft);color:var(--acc);font-weight:600;cursor:pointer}td.pgmore{background:transparent;margin:0}
 .vhby{font-size:12px;color:var(--mut);margin:6px 0 2px}
+/* v9.8: tab views use the same native scale; app data tables share a calm, theme-aware treatment. */
+#vPos,#vLed{zoom:1;transform:none;transform-origin:initial}
+#sync{border-color:transparent;background:transparent;box-shadow:none}
+#sync:hover{border-color:transparent}
+#sync:focus-visible,#refresh:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.top .ic{height:32px;width:36px;display:grid;place-items:center;padding:0}
+.view .scroll table:not(.rt){border-collapse:separate;border-spacing:0;overflow:hidden;border-radius:12px}
+.view .scroll table:not(.rt) thead th{position:sticky;top:0;z-index:1;background:var(--soft);color:var(--ink);font-weight:600}
+.view .scroll table:not(.rt) tbody tr:nth-child(even){background:var(--table-alt)}
+.view .scroll table:not(.rt) tbody tr:hover{background:var(--table-hover)}
+#vPos #lines .line{border-top:0;border-bottom:1px solid var(--line);padding:10px 8px;transition:background .15s}
+#vPos #lines .line:nth-child(even){background:var(--table-alt)}
+#vPos #lines .line:hover{background:var(--table-hover)}
+.qa button{display:flex;align-items:center;justify-content:flex-start;gap:12px;min-height:76px;padding:12px 14px;text-align:left;background:var(--card);box-shadow:var(--sh)}
+.qa .qai{display:grid;place-items:center;flex:none;width:42px;height:42px;border-radius:14px;background:var(--soft);color:var(--acc)}
+.qa .qai svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.qa button:nth-child(2) .qai{background:var(--t2);color:var(--warn)}
+.qa button:nth-child(3) .qai{background:var(--t3);color:var(--pos)}
+.qa button:nth-child(4) .qai{background:var(--t4);color:var(--acc)}
+.qa .qal{font-weight:600}
+@media(max-width:420px){.qa{gap:8px}.qa button{min-height:70px;padding:10px;gap:8px}.qa .qai{width:36px;height:36px;border-radius:12px}.qa .qal{font-size:13px}}
 </style>
 <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#2F5D3A"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes">
 <script src="config.js"></script>
 </head>
 <body>
 <aside class="tabs" id="tabs" hidden></aside>
-<div class="top" id="top"><img class="lg-b" src="logo-icon-black.png" alt=""><img class="lg-w" src="logo-icon-white.png" alt=""><div class="tt">Nur Computer &amp; Stationery<small id="tsub"></small></div><div class="sp" id="topR"></div></div>
+<div class="top" id="top"><img class="lg-b" src="logo-icon-black.png" alt=""><img class="lg-w" src="logo-icon-white.png" alt=""><div class="tt">Nur Computer &amp; Stationery<small id="tsub"></small></div><div class="sp" id="topR"><button type="button" class="ic" id="refresh" aria-label="Refresh current view" title="Refresh current view"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 7v5h-5"/><path d="M4.7 15A8 8 0 0 0 19 18l1-2M4 12V7h5"/><path d="M5 6a8 8 0 0 1 14.3 3"/></svg></button></div></div>
 <div class="wrap view" id="vAcc">
   <div class="pt"><h2>Nur Computer &amp; Stationery</h2><div>DAILY ACCOUNTS</div></div>
   <header>
@@ -360,7 +381,7 @@ body:has(#vHome.on){background:linear-gradient(180deg,var(--dhg) 0,var(--bg) 340
   <div class="ptabs" id="hTabs"></div><section class="dhero" id="hHero"></section>
   <section class="hs" id="hStats"></section>
   <div id="wltWrapH" class="wlt-wrap"></div>
-  <div class="qa" id="hQa"><button data-q="sale">New sale</button><button data-q="purchase">New purchase</button><button data-q="acc">Accounts</button><button data-q="bills">Today's bills</button></div>
+  <div class="qa" id="hQa"><button type="button" data-q="sale"><span class="qai" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 12h16M12 4v16"/></svg></span><span class="qal">New sale</span></button><button type="button" data-q="purchase"><span class="qai" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6L5 8Z"/><path d="M9 8a3 3 0 0 1 6 0"/></svg></span><span class="qal">New purchase</span></button><button type="button" data-q="acc"><span class="qai" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 12h7M9 16h7"/></svg></span><span class="qal">Accounts</span></button><button type="button" data-q="bills"><span class="qai" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6M9 16h3"/></svg></span><span class="qal">Today's bills</span></button></div>
   <div class="dgrid"><section class="card dchc"><h3 class="dchh">Sell &amp; Buy · Last 7 days</h3><div class="dchart" id="hChart"></div></section><section class="card dchc"><h3 class="dchh">Sales by payment</h3><div class="dpc" id="hPay"></div></section></div>
   <h3 style="margin:6px 2px 8px;font-size:15px">Recent bills</h3><section class="card" id="hRecent"></section></div>
 <div class="wrap view" id="vPos">
@@ -417,15 +438,15 @@ function stampChanged(){const now=Date.now();COLS.forEach(c=>S[c].forEach(x=>{co
 ensureCols();primeLH();
  function storageNotice(message){
    let box=document.getElementById('ncsStorageNotice');
-   if(!box){box=document.createElement('div');box.id='ncsStorageNotice';box.setAttribute('role','alert');box.style.cssText='position:fixed;left:12px;right:12px;bottom:86px;z-index:1000;padding:12px 14px;border:1px solid var(--warn);border-radius:12px;background:var(--card);color:var(--ink);box-shadow:0 6px 24px rgba(0,0,0,.22);display:flex;align-items:center;gap:12px;justify-content:space-between;flex-wrap:wrap';const text=document.createElement('span');text.dataset.storageMessage='1';const button=document.createElement('button');button.type='button';button.className='ghost';button.onclick=function(){try{let data=recoveryRaw;if(data==null&&recoveryBackupKey)data=localStorage.getItem(recoveryBackupKey);if(data==null)data=JSON.stringify(S,null,2);const isRecovery=recoveryRaw!=null,url=URL.createObjectURL(new Blob([data],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download=isRecovery?'NCS_Local_Recovery.txt':'NCS_Local_Backup.json';a.click();setTimeout(function(){URL.revokeObjectURL(url)},1000)}catch(e){console.error('Recovery export failed',e)}};box.append(text,button);document.body.appendChild(box)}
-   box.querySelector('button').textContent=recoveryRaw!=null?'Download recovery copy':'Download current data';
+   if(!box){box=document.createElement('div');box.id='ncsStorageNotice';box.setAttribute('role','alert');box.style.cssText='position:fixed;left:12px;right:12px;bottom:86px;z-index:1000;padding:12px 14px;border:1px solid var(--warn);border-radius:12px;background:var(--card);color:var(--ink);box-shadow:0 6px 24px rgba(0,0,0,.22);display:flex;align-items:center;gap:12px;justify-content:space-between;flex-wrap:wrap';const text=document.createElement('span');text.dataset.storageMessage='1';const button=document.createElement('button');button.type='button';button.className='ghost';button.setAttribute('aria-label','Dismiss storage warning');button.onclick=function(){box.hidden=true};box.append(text,button);document.body.appendChild(box)}
+   box.querySelector('button').textContent='Dismiss';
    box.querySelector('[data-storage-message]').textContent=message;box.hidden=!message;
  }
  const persist=()=>{try{
-   if(storageLoadError){if(rawStorageAtLoad===null)throw new Error('Could not preserve the unreadable saved data');recoveryBackupKey=KEY+'_recovery_'+Date.now();localStorage.setItem(recoveryBackupKey,rawStorageAtLoad);recoveryRaw=rawStorageAtLoad;recoveryNotice='Saved data could not be read. A recovery copy was preserved; download it before clearing this warning.';storageLoadError=null}
+   if(storageLoadError){if(rawStorageAtLoad===null)throw new Error('Could not preserve the unreadable saved data');recoveryBackupKey=KEY+'_recovery_'+Date.now();localStorage.setItem(recoveryBackupKey,rawStorageAtLoad);recoveryRaw=rawStorageAtLoad;recoveryNotice='Saved data could not be read. A recovery copy was preserved in this browser before new data was saved.';storageLoadError=null}
    localStorage.setItem(KEY,JSON.stringify(S));storageNotice(recoveryNotice);return true
- }catch(e){console.error('Local save failed',e);storageNotice('Local save failed. Recent changes may be lost on reload. Download a copy or free browser storage, then try again.');return false}};
- if(storageLoadError)storageNotice('Saved data could not be read. Download a recovery copy before continuing; the original will be preserved before this app saves a new state.');
+ }catch(e){console.error('Local save failed',e);storageNotice('Local save failed. Recent changes may be lost on reload. Free browser storage, then try again.');return false}};
+ if(storageLoadError)storageNotice('Saved data could not be read. The original will be preserved before this app saves a new state.');
 const save=()=>{S.rev=(S.rev||0)+1;try{ledReconcile()}catch(e){console.error('Ledger link failed',e)}stampChanged();const ok=persist();if(ok)schedule();return ok};
 const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 let cur=iso(new Date()),editing=null;
@@ -660,7 +681,7 @@ function tx(root){const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);l
   x.nodeValue=S.lang==='bn'?o.split(' · ').map(trp).join(' · '):o}
   document.querySelectorAll('[placeholder]').forEach(e=>{if(e.id==='fd'||e.id==='sq')return;if(e.dataset.ph===undefined)e.dataset.ph=e.getAttribute('placeholder');const v=e.dataset.ph;e.setAttribute('placeholder',S.lang==='bn'&&BN[v]?BN[v]:v)})}
 new MutationObserver(()=>tx(document.body)).observe(document.body,{childList:true,subtree:true});
-function applyLang(){const b=S.lang==='bn';document.documentElement.lang=b?'bn':'en';$('lang').textContent=b?'English':'বাংলা';$('fd').placeholder=b?'পণ্য বা খরচের নাম লিখুন':'Type product or cost name';$('sq').placeholder=b?'বিবরণ বা ক্যাটাগরি খুঁজুন':'Search description or category';tx(document.body);if(U)render()}
+function applyLang(){const b=S.lang==='bn';document.documentElement.lang=b?'bn':'en';$('lang').textContent=b?'English':'বাংলা';setRefreshLabel();$('fd').placeholder=b?'পণ্য বা খরচের নাম লিখুন':'Type product or cost name';$('sq').placeholder=b?'বিবরণ বা ক্যাটাগরি খুঁজুন':'Search description or category';tx(document.body);if(U)render()}
 $('lang').onclick=()=>{S.lang=S.lang==='bn'?'en':'bn';save();applyLang()};
 
 async function dlFile(name,data){try{if(typeof claude!=='undefined'){const dl=await claude.use('downloads');if(dl)return dl.save({filename:name,data})}const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type:'text/csv'}));a.download=name;a.click()}catch(e){}}
@@ -669,6 +690,7 @@ const SY=()=>!!(S.sync&&S.sync.url&&S.sync.key),isDirty=()=>(S.rev||0)!==(S.sync
 let st='off',tm,busy=false;
 function setSt(x){st=x;var c=x==='ok'?'ok':x==='pend'?'pend':(x==='offl'||x==='conf')?'bad':'off',lab={off:'Off',ok:'Synced',pend:'Pending',offl:'Offline',conf:'Conflict'}[x];
   $('sync').innerHTML='<i class="sdot '+c+'" aria-hidden="true"></i>'+lab;
+  var labBn={off:'বন্ধ',ok:'সিঙ্ক সম্পন্ন',pend:'অপেক্ষমাণ',offl:'অফলাইন',conf:'দ্বন্দ্ব'}[x]||lab;$('sync').setAttribute('aria-label',lb('Sync status: ','সিঙ্ক অবস্থা: ')+(S.lang==='bn'?labBn:lab));
   $('sync').title=c==='ok'?'All changes are synced':c==='pend'?'Saving changes…':x==='conf'?'Sync conflict — tap to resolve':c==='bad'?'Offline — will sync when back online':'Sync is not set up on this device'}
 function schedule(){if(!SY())return;setSt('pend');clearTimeout(tm);tm=setTimeout(()=>push(),2000)}
 const HEAD=['Date','Time','Type','Description','Category','Payment','Amount','Previous Cash','Cash Balance','Actual Cash','Difference','Status','Entered by','Party','Phone'];
@@ -685,7 +707,7 @@ async function push(force,tries){tries=tries||0;
     S.synced=rev;S.snaps=[...(S.snaps||[]),...sn];if(S.log.length)S.logSent=Math.max(...S.log.map(l=>l.i));persist();setSt(isDirty()?'pend':'ok');if(isDirty())schedule()
   }catch(e){setSt('offl')}
   busy=false}
-function applyRemote(r){const k={};LOCAL.forEach(x=>{if(x in S)k[x]=S[x]});S=Object.assign({},JSON.parse(r.state),k,{rev:r.rev,synced:r.rev});ensureCols();primeLH();persist();if(U){reset();render();if(CUR==='led')ledUI()}setSt('ok')}
+function applyRemote(r){const k={};LOCAL.forEach(x=>{if(x in S)k[x]=S[x]});S=Object.assign({},JSON.parse(r.state),k,{rev:r.rev,synced:r.rev});ensureCols();primeLH();persist();if(U){if(CUR==='acc')reset();redrawActiveView()}setSt('ok')}
 async function importPos(){
   if(!SY())return;
   try{const r=await(await fetch(S.sync.url+(S.sync.url.includes('?')?'&':'?')+'action=inbox&key='+encodeURIComponent(S.sync.key)+'&since='+(S.posSince||0))).json();
@@ -764,17 +786,22 @@ const ICO={mgmt:'<path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/><circle cx="16
 const TABS={admin:['home','pos','prod','acc','led','mgmt','more'],keeper:['pos','prod','more'],accountant:['acc','led','prod','more'],cashier:['pos','led','more']},TL={home:'Home',pos:'POS',prod:'Products',acc:'Accounts',led:'Ledger',mgmt:'Manage',more:'More'};
 let CUR=null;
 const role=()=>!U?'':U.role==='admin'?'admin':U.role==='accountant'?'accountant':U.role==='keeper'?'keeper':'cashier',canCost=()=>isA()||role()==='keeper'||role()==='accountant';
-function buildTabs(){const T=TABS[role()];$('tabs').innerHTML=T.map(k=>`<button data-v="${k}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICO[k]}</svg>${TL[k]}</button>`).join('');$('tabs').hidden=false;$('tsub').textContent=(U.name.toLowerCase()===role()?'':U.name+' · ')+role();go(CUR&&T.includes(CUR)?CUR:T[0])}
-function go(v){CUR=v;document.querySelectorAll('.view').forEach(x=>x.classList.toggle('on',x.id==='v'+v[0].toUpperCase()+v.slice(1)));document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
+function buildTabs(){const T=TABS[role()];$('tabs').innerHTML=T.map(k=>`<button data-v="${k}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICO[k]}</svg>${TL[k]}</button>`).join('');$('tabs').hidden=false;$('tsub').textContent=(U.name.toLowerCase()===role()?'':U.name+' · ')+role();let saved=CUR;try{if(!saved)saved=sessionStorage.getItem('ncs_active_view_v1_'+role())}catch(e){}go(saved&&T.includes(saved)?saved:T[0])}
+function go(v){CUR=v;try{sessionStorage.setItem('ncs_active_view_v1_'+role(),v)}catch(e){}document.querySelectorAll('.view').forEach(x=>x.classList.toggle('on',x.id==='v'+v[0].toUpperCase()+v.slice(1)));document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
   if(v==='home')homeUI();if(v==='pos')POS.refresh();if(v==='prod')POS.prodUI();if(v==='acc'){cur=iso(new Date());reset();render()}if(v==='led')ledUI();if(v==='mgmt')mgmtUI();document.body.classList.toggle('kp',role()==='keeper');document.body.classList.toggle('ro',role()==='accountant');scrollTo(0,0)}
 $('tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(b)go(b.dataset.v)});
 $('topR').append($('sync'));$('moreList').append($('theme'),$('lang'),$('set'),$('lockb'));
+function redrawActiveView(){if(CUR==='home')homeUI();else if(CUR==='pos')POS.refresh();else if(CUR==='prod')POS.prodUI();else if(CUR==='acc')render();else if(CUR==='led')ledUI();else if(CUR==='mgmt')mgmtUI()}
+function refreshCurrentView(){if(!U||!CUR)return;redrawActiveView();if(SY())pull()}
+$('refresh').onclick=refreshCurrentView;
+function setRefreshLabel(){var t=lb('Refresh current view','বর্তমান ট্যাব রিফ্রেশ করুন');$('refresh').title=t;$('refresh').setAttribute('aria-label',t)}
 
 /* ---------- home ---------- */
 const PER=[['today','Today'],['yest','Yesterday'],['7','7 days'],['30','1 month'],['90','3 months'],['180','6 months'],['all','Overall']];let HP='today';
 function prange(p){const t=new Date(),a=new Date();if(p==='today')return[iso(t),iso(t)];if(p==='yest'){a.setDate(a.getDate()-1);return[iso(a),iso(a)]}if(p==='all')return['0000','9999'];a.setDate(a.getDate()-(+p-1));return[iso(a),iso(t)]}
 function homeUI(){try{renderWalletCards()}catch(e){}
-  $('hTitle').textContent='Hello, '+(U?U.name:'');
+  $('hTitle').textContent=lb('Hello, ','হ্যালো, ')+(U?U.name:'');
+  $('hQa').querySelectorAll('[data-q]').forEach(function(b){var k=b.dataset.q,l=k==='sale'?lb('New sale','নতুন বিক্রয়'):k==='purchase'?lb('New purchase','নতুন ক্রয়'):k==='acc'?lb('Accounts','হিসাব'):lb("Today's bills",'আজকের বিল');b.querySelector('.qal').textContent=l});
   $('hTabs').innerHTML=PER.map(([k,l])=>`<button data-p="${k}" class="${HP===k?'on':''}">${l}</button>`).join('');
   const[a,b]=prange(HP),E=S.entries.filter(e=>!e.void&&e.d>=a&&e.d<=b),B=S.bills.filter(x=>!x.void&&x.d>=a&&x.d<=b);
   const sm=(t,f)=>E.filter(e=>e.type===t&&!isWalletTransfer(e)&&(!f||f(e))).reduce((s,e)=>s+e.amt,0),m=calc(),act=sorted().filter(e=>!e.void),cb=act.length?m[act[act.length-1].id].bal:(+S.start||0);
@@ -955,8 +982,7 @@ return{refresh(){renderGrid();renderCart();if(CUR==='prod')prodUI()},setMode,bil
 })();
 $('q').addEventListener('focus',()=>{});
 
-applyLang();start();
-if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js'));
+
 
 /* ---------- customer ledger + version history (v8) ---------- */
 var APP_VERSION='9.7',LC=null,LT='led',LQ='',LF='',LE='';
@@ -1400,6 +1426,23 @@ UPC.unshift({v:'9.6',s:'Done',t:['Financial audit safeguards: opening-cash reaso
   UPC.unshift({v:'9.7',s:'Done',t:['Discount percent calculator in POS (amount and percent in step, plus and minus buttons)','Faster wallet maths and entry sorting; long lists open in pages; picture size cap','Model and account shown in version and bug notes']});
   var li=UPC.findIndex(function(x){return x.v==='Later'});UPC.splice(li<0?UPC.length:li,0,{v:'9.8',s:'Planned',t:['Send only changed records when syncing (needs a Google Apps Script update; owner decision pending)','Effectiveness pass: fewer taps and only the actions each role needs (owner choices pending)','Reduced-motion option for the sync indicator','Import and restore from a JSON backup']});
 })();
+
+/* ---------- v9.8: navigation, refresh and dashboard visual fixes ---------- */
+(function(){
+  var M="Manus (model not recorded) · owner's Manus account";
+  APP_VERSION='9.8';
+  VERS.unshift({v:'9.8',d:'2026-10-18',t:'Navigation, refresh and dashboard visual fixes',by:M,n:['POS and Ledger use the same normal scale as the other tabs; Sync keeps its status label and indicator without a resting outline','Top refresh redraws the selected view without restarting the app; full page refresh restores the last selected tab for that role','Removed the storage-warning JSON download action; the separate Settings data export remains available','Home now has an icon quick-action grid and a refreshed light/dark chart palette; Accounts and Ledger tables plus POS cart rows have a consistent theme-aware style','Bengali/English labels, dark mode, phone layout and existing calculations are preserved']});
+  BUGS.unshift(
+    {d:'2026-10-18 00:32',v:'9.8',w:M,a:'Refreshing the app returned to the role default tab instead of the selected tab',b:'The selected view existed only in the in-memory CUR variable and was lost on page reload',c:'Remember the active view in sessionStorage by role and restore it when the tab list is rebuilt'},
+    {d:'2026-10-18 00:32',v:'9.8',w:M,a:'The Sync control had an unwanted resting border around its status',b:'It inherited the shared ghost-button border treatment',c:'Remove the resting border while preserving the visible status label, colored indicator, title and explicit focus-visible keyboard cue'},
+    {d:'2026-10-18 00:32',v:'9.8',w:M,a:'The storage warning offered a Download current data action that created a JSON file',b:'The warning button serialized current or recovery data into a downloadable file',c:'Repurpose that specific button as Dismiss; retain the independent Settings JSON export'},
+    {d:'2026-10-18 00:32',v:'9.8',w:M,a:'POS and Ledger did not explicitly reset to the same normal view scale as other tabs',b:'Those views had no scoped scale reset to guard against inherited zoom/transform styling',c:'Explicitly reset zoom and transform on POS and Ledger views without changing their responsive layout'}
+  );
+  var u=UPC.find(function(x){return x.v==='9.8'});if(u){u.s='Done';u.t=['Keep the selected tab after a full page refresh; add an active-view refresh action without restarting the app','Remove the storage-warning JSON download while keeping the Settings export','Normalize POS/Ledger scale and Sync outline while preserving status and accessibility cues','Apply the Home chart palette, quick-action icon grid, and Ledger/POS/Accounts table restyle with Bengali/English, dark mode, phone layout and calculations intact']}
+})();
+
+applyLang();start();
+if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js'));
 </script>
 </body>
 </html>
