@@ -122,7 +122,6 @@ body{padding-bottom:78px}
 .hrow{display:flex;justify-content:space-between;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line)}.hrow:last-child{border:0}
 .bad{color:var(--neg)}.ok{color:var(--pos)}.mut{color:var(--mut);font-size:13px}
 /* ---- POS ---- */
-/* v9.9: the cart is the primary full-width POS panel. */
 #vPos .tools{display:flex;gap:8px;margin-bottom:10px}
 .seg{display:flex;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:3px}
 .seg button{border:0;background:none;padding:8px 20px;border-radius:9px;cursor:pointer;font-weight:600;color:var(--mut)}
@@ -170,7 +169,7 @@ body{padding-bottom:78px}
 .ltb{min-width:560px}.ltb th,.ltb td{text-align:right}.ltb th:nth-child(-n+2),.ltb td:nth-child(-n+2){text-align:left}.ltb td:first-child{width:auto;color:var(--ink)}.ltb tr[data-a]{cursor:pointer}.ltb tfoot td{font-weight:600;border-top:1px solid var(--line)}
 #vLed header .nav{gap:8px}.lph{display:none}
 @media print{body.lp .tabs,body.lp .top,body.lp .view:not(#vLed),body.lp .noprint{display:none!important}body.lp .lph{display:block}}
-/* ===== THEME v8.3 ItemPOS look (from Figma "POS System Dashboard", Light 01). Use tokens; do not hard-code colours ===== */
+/* ===== THEME v8.3 ItemPOS look ===== */
 :root{--bg:#F8F9FD;--card:#fff;--line:#F2F2F2;--acc:#2CC56F;--soft:#E9F9F0;--btn:#2CC56F;--btn2:#A5D86E;--pos:#1E9E57;--mut:#71747D;--sh:0 6px 9px -5px rgba(186,186,186,.15);--t1:#FCEAE4;--t2:#FFF5E0;--t3:#E0F8EA;--t4:#EFE6F6;--g1:#2CC56F;--g2:#BEDC7C;--on:#46C1BF;--cartbg:var(--card)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0B0F19;--card:#151B2C;--ink:#F8FAFC;--mut:#94A3B8;--line:#222E4A;--acc:#FF7A00;--soft:#1F2942;--btn:#FF7A00;--btn2:#FF9A3D;--btnink:#fff;--pos:#10B981;--neg:#EF4444;--warn:#F59E0B;--sh:0 6px 14px -5px rgba(0,0,0,.5);--t1:#2C2019;--t2:#2A2418;--t3:#172338;--t4:#221E36;--g1:#FF7A00;--g2:#FFA24D;--on:#FF7A00;--cartbg:#1F2942}}
 :root[data-theme="dark"]{--bg:#0B0F19;--card:#151B2C;--ink:#F8FAFC;--mut:#94A3B8;--line:#222E4A;--acc:#FF7A00;--soft:#1F2942;--btn:#FF7A00;--btn2:#FF9A3D;--btnink:#fff;--pos:#10B981;--neg:#EF4444;--warn:#F59E0B;--sh:0 6px 14px -5px rgba(0,0,0,.5);--t1:#2C2019;--t2:#2A2418;--t3:#172338;--t4:#221E36;--g1:#FF7A00;--g2:#FFA24D;--on:#FF7A00;--cartbg:#1F2942}
@@ -232,7 +231,7 @@ body.lp .ctag,body.pr .ctag{display:none!important}@media print{.cbn{display:non
 #stf,#set{display:none!important}
 .mgh{margin:0 0 12px;font-size:15px;font-weight:600}.mgl{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}.mg{height:auto;text-align:left;padding:12px 14px;border-radius:14px}.mg b{display:block;font-weight:600}.mg small{display:block;color:var(--mut);font-size:12.5px;margin-top:2px;white-space:normal}
 .upg{margin-top:14px}.upi{font-size:14px;padding:3px 0 3px 4px}
-/* ===== THEME v8.9 Wallets (tokens only: --card --soft --ink --mut --neg --sh) ===== */
+/* ===== Wallets ===== */
 .wlt-wrap{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0 0 14px}
 @media (max-width:700px){.wlt-wrap{grid-template-columns:1fr}}
 .wlt-card{background:var(--card);border-radius:14px;padding:12px;box-shadow:var(--sh)}
@@ -242,7 +241,7 @@ body.lp .ctag,body.pr .ctag{display:none!important}@media print{.cbn{display:non
 .wlt-item .wname{font-size:12px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.wlt-item .wbal{font-size:16px;font-weight:700;color:var(--ink);margin-top:2px;font-variant-numeric:tabular-nums}.wlt-item.neg .wbal{color:var(--neg)}
 #whp{position:fixed;z-index:25;width:260px;padding:12px;box-shadow:0 12px 32px rgba(0,0,0,.2);font-size:13px}#whp[hidden]{display:none}.whr{display:flex;justify-content:space-between;gap:8px;padding:3px 0;border-bottom:1px solid var(--line)}.whr span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @media print{.dr,#mb{display:none!important}}
-/* ===== THEME v8.6 Dabang Home (Home view only). Tokens only; the d* classes below are Home-only and were checked for clashes ===== */
+/* ===== Dabang Home ===== */
 :root{--dhg:#E4F2EA;--ch1:#2CC56F;--ch2:#4D8DFF;--ch3:#E3A236;--ch4:#8D6BCC;--table-alt:#F6F9F7;--table-hover:#E9F9F0}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--dhg:#0F1526;--ch1:#10B981;--ch2:#60A5FA;--ch3:#FBBF24;--ch4:#C084FC;--table-alt:#172033;--table-hover:#202D45}}
 :root[data-theme="dark"]{--dhg:#0F1526;--ch1:#10B981;--ch2:#60A5FA;--ch3:#FBBF24;--ch4:#C084FC;--table-alt:#172033;--table-hover:#202D45}
@@ -294,14 +293,13 @@ body:has(#vHome.on){background:linear-gradient(180deg,var(--dhg) 0,var(--bg) 340
 .vhx ul{margin:0;padding-left:18px}.vhx li{font-size:14px;padding:2px 0}
 .vhnote{color:var(--mut);font-size:12.5px;margin:6px 2px 0}
 @media(max-width:560px){.vhht{display:none}.vhd{font-size:11.5px}.vhh{padding:12px 10px}.vhgh{padding:12px 10px}}
-/* ===== v9.4 sync status dot ===== */
-.sdot{display:inline-block;position:relative;width:11px;height:11px;border-radius:50%;margin-right:8px;vertical-align:middle;background:var(--mut);flex:none;overflow:visible}.sdot:after{content:"";position:absolute;inset:-4px;border:2px solid currentColor;border-radius:50%;animation:sdflash 1.1s ease-out infinite;pointer-events:none}@keyframes sdflash{0%{transform:scale(.6);opacity:.95}100%{transform:scale(2.6);opacity:0}}
-.sdot.ok{background:#22C55E;color:#22C55E}
-.sdot.pend{background:#EAB308;color:#EAB308;animation:sdpy 1.3s ease-out infinite}
-.sdot.bad{background:#EF4444;color:#EF4444;animation:sdpR 1s ease-out infinite}
-.sdot.off{color:var(--mut);background:transparent;border:2px solid var(--mut);width:8px;height:8px}
-@keyframes sdpy{0%{box-shadow:0 0 0 0 rgba(234,179,8,.55)}70%{box-shadow:0 0 0 7px rgba(234,179,8,0)}100%{box-shadow:0 0 0 0 rgba(234,179,8,0)}}
-@keyframes sdpR{0%{box-shadow:0 0 0 0 rgba(239,68,68,.6)}70%{box-shadow:0 0 0 8px rgba(239,68,68,0)}100%{box-shadow:0 0 0 0 rgba(239,68,68,0)}}
+/* ===== v9.19 sync status dot (single, calm pulse) ===== */
+.sdot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:8px;vertical-align:middle;background:var(--mut);flex:none}
+.sdot.ok{background:#22C55E;animation:sdotPulse 6s ease-in-out infinite}
+.sdot.pend{background:#EAB308;animation:sdotPulse 3s ease-in-out infinite}
+.sdot.bad{background:#EF4444;animation:sdotPulse 2s ease-in-out infinite}
+.sdot.off{background:transparent;border:2px solid var(--mut);width:8px;height:8px}
+@keyframes sdotPulse{0%,85%,100%{opacity:1}90%{opacity:.4}95%{opacity:.9}}
 @media print{.sdot{display:none!important}}
 .dcw{display:flex;gap:8px;align-items:center;justify-content:flex-end;flex-wrap:wrap}.dcw input{width:92px;text-align:right}
 .dcp{display:flex;align-items:center;gap:4px}.dcp input{width:64px}.dcp span{color:var(--mut)}
@@ -309,11 +307,11 @@ body:has(#vHome.on){background:linear-gradient(180deg,var(--dhg) 0,var(--bg) 340
 .dcn{font-size:12.5px;color:var(--warn);text-align:right;margin:-2px 0 6px}
 .pgmore{text-align:center;padding:12px;margin-top:6px;border-radius:10px;background:var(--soft);color:var(--acc);font-weight:600;cursor:pointer}td.pgmore{background:transparent;margin:0}
 .vhby{font-size:12px;color:var(--mut);margin:6px 0 2px}
-/* v9.8: tab views use the same native scale; app data tables share a calm, theme-aware treatment. */
+/* v9.8 navigation */
 #vPos,#vLed{zoom:1;transform:none;transform-origin:initial}
 #sync{border-color:transparent;background:transparent;box-shadow:none}
 #sync:hover{border-color:transparent}
-#sync:focus-visible,#refresh:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+#sync:focus-visible,#refresh:focus-visible,#themeBtn:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
 .top .ic{height:32px;width:36px;display:grid;place-items:center;padding:0}
 .view .scroll table:not(.rt){border-collapse:separate;border-spacing:0;overflow:hidden;border-radius:12px}
 .view .scroll table:not(.rt) thead th{position:sticky;top:0;z-index:1;background:var(--soft);color:var(--ink);font-weight:600}
@@ -331,7 +329,7 @@ body:has(#vHome.on){background:linear-gradient(180deg,var(--dhg) 0,var(--bg) 340
 .qa .qal{font-weight:600}
 @media(max-width:420px){.qa{gap:8px}.qa button{min-height:70px;padding:10px;gap:8px}.qa .qai{width:36px;height:36px;border-radius:12px}.qa .qal{font-size:13px}}
 
-/* v9.9: bill-first POS with a compact search row and collapsed product browser. */
+/* v9.9 bill-first POS */
 #vPos .pos-tools{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:end;gap:8px;margin:10px 0 14px}
 #vPos .pos-search{min-width:0}
 #vPos .pos-search label{display:block;margin:0 0 4px;color:var(--mut);font-size:12px;font-weight:600}
@@ -361,12 +359,10 @@ body:has(#vHome.on){background:linear-gradient(180deg,var(--dhg) 0,var(--bg) 340
 /* v9.12 dashboard clock */
 .dhero{position:relative}.dclk{position:absolute;top:14px;right:18px;text-align:right}.dhero .dclk b{font-size:19px;margin:0;line-height:1.2}.dhero .dclk small{font-size:12px}
 @media(max-width:380px){.dhero .dclk b{font-size:16px}.dhero .dclk small{font-size:11px}}
-/* v9.13 reduced motion: set by the OS preference or the More > Motion button (data-rm on the root). Status colour and text stay. */
+/* v9.13 reduced motion (auto-detected from OS; no manual button) */
 :root[data-rm] *,:root[data-rm] *::before,:root[data-rm] *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
-:root[data-rm] .sdot:after{animation:none!important;transform:scale(1.9);opacity:.4}
-:root[data-rm] .sdot.off:after{display:none}
-:root[data-rm] .sdot.pend{animation:none!important;box-shadow:0 0 0 4px rgba(234,179,8,.35)}
-:root[data-rm] .sdot.bad{animation:none!important;box-shadow:0 0 0 4px rgba(239,68,68,.35)}
+:root[data-rm] .sdot.ok,:root[data-rm] .sdot.pend,:root[data-rm] .sdot.bad{animation:none!important;opacity:1}
+:root[data-rm] .view.on,:root[data-rm] #refresh svg.spin{animation:none!important}
 .atg{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px}.atc{display:flex;flex-direction:column;gap:4px}.atc img{width:100%;border-radius:8px;border:1px solid var(--line);cursor:zoom-in}.atc small{color:var(--mut);font-size:11.5px}.atc.z{grid-column:1/-1}
 /* v9.18 Home dashboard */
 .htoday{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
@@ -390,13 +386,23 @@ body:has(#vHome.on){background:linear-gradient(180deg,var(--dhg) 0,var(--bg) 340
 .howe-foot{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:12.5px;color:var(--mut)}
 .howe-foot b{color:var(--ink);font-variant-numeric:tabular-nums}
 @media(max-width:520px){.howe-body{grid-template-columns:1fr}}
+/* v9.19 additions */
+#themeBtn svg{display:none}
+#themeBtn[data-mode="auto"] .th-auto,
+#themeBtn[data-mode="light"] .th-light,
+#themeBtn[data-mode="dark"] .th-dark{display:block}
+.view.on{animation:viewIn .22s ease}
+@keyframes viewIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+#refresh svg.spin{animation:spinRefresh .6s linear}
+@keyframes spinRefresh{to{transform:rotate(360deg)}}
+#ncsStorageNotice[hidden]{display:none!important}
 </style>
 <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#2F5D3A"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes">
 <script src="config.js"></script>
 </head>
 <body>
 <aside class="tabs" id="tabs" hidden></aside>
-<div class="top" id="top"><img class="lg-b" src="logo-icon-black.png" alt=""><img class="lg-w" src="logo-icon-white.png" alt=""><div class="tt">Nur Computer &amp; Stationery<small id="tsub"></small></div><div class="sp" id="topR"><button type="button" class="ic" id="refresh" aria-label="Refresh current view" title="Refresh current view"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 7v5h-5"/><path d="M4.7 15A8 8 0 0 0 19 18l1-2M4 12V7h5"/><path d="M5 6a8 8 0 0 1 14.3 3"/></svg></button></div></div>
+<div class="top" id="top"><img class="lg-b" src="logo-icon-black.png" alt=""><img class="lg-w" src="logo-icon-white.png" alt=""><div class="tt">Nur Computer &amp; Stationery<small id="tsub"></small></div><div class="sp" id="topR"><button type="button" class="ic" id="themeBtn" aria-label="Theme" title="Theme" data-mode="auto"><svg class="th-auto" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor"/></svg><svg class="th-light" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg><svg class="th-dark" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button><button type="button" class="ic" id="refresh" aria-label="Refresh current view" title="Refresh current view"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 0 1 13.66-5.66L20 8"/><path d="M20 3v5h-5"/><path d="M20 12a8 8 0 0 1-13.66 5.66L4 16"/><path d="M4 21v-5h5"/></svg></button></div></div>
 <div class="wrap view" id="vAcc">
   <div class="pt"><h2>Nur Computer &amp; Stationery</h2><div>DAILY ACCOUNTS</div></div>
   <header>
@@ -406,7 +412,6 @@ body:has(#vHome.on){background:linear-gradient(180deg,var(--dhg) 0,var(--bg) 340
       <input type="date" id="pick" aria-label="Choose date">
       <button class="ic" id="nd" aria-label="Next day">›</button>
       <button class="ghost" id="today">Today</button>
-      <button class="ghost" id="theme"></button>
       <button class="ghost" id="set">Settings</button><button class="ghost" id="lockb">Lock</button><button class="ghost" id="lang">বাংলা</button><button class="ghost" id="sync">Sync: Off</button>
     </div>
   </header>
@@ -489,7 +494,7 @@ const seed=()=>({start:0,theme:'auto',dayStart:'06:00',dayEnd:'18:00',entries:[
  E(5,'21:46','Purchase','Purchases till 9:46 PM','Stock',24360,{act:49750}),
  E(6,'23:47','Sale','Sales till 11:47 PM','Computer Service',4610),
  E(7,'23:47','Purchase','Tea & snacks','Other',10,{act:55280})]});
- let S,rawStorageAtLoad=null,storageLoadError=null,recoveryBackupKey='',recoveryNotice='',recoveryRaw=null;
+ let S,rawStorageAtLoad=null,storageLoadError=null,recoveryBackupKey='',recoveryRaw=null;
  try{rawStorageAtLoad=localStorage.getItem(KEY);S=rawStorageAtLoad?JSON.parse(rawStorageAtLoad):seed()}
  catch(e){storageLoadError=e;recoveryRaw=rawStorageAtLoad;S=seed()}
 S.names=S.names||{};S.parties=S.parties||{};
@@ -503,15 +508,24 @@ function stampChanged(){const now=Date.now();COLS.forEach(c=>S[c].forEach(x=>{co
 ensureCols();primeLH();
  function storageNotice(message){
    let box=document.getElementById('ncsStorageNotice');
-   if(!box){box=document.createElement('div');box.id='ncsStorageNotice';box.setAttribute('role','alert');box.style.cssText='position:fixed;left:12px;right:12px;bottom:86px;z-index:1000;padding:12px 14px;border:1px solid var(--warn);border-radius:12px;background:var(--card);color:var(--ink);box-shadow:0 6px 24px rgba(0,0,0,.22);display:flex;align-items:center;gap:12px;justify-content:space-between;flex-wrap:wrap';const text=document.createElement('span');text.dataset.storageMessage='1';const button=document.createElement('button');button.type='button';button.className='ghost';button.setAttribute('aria-label','Dismiss storage warning');button.onclick=function(){box.hidden=true};box.append(text,button);document.body.appendChild(box)}
-   box.querySelector('button').textContent='Dismiss';
-   box.querySelector('[data-storage-message]').textContent=message;box.hidden=!message;
+   if(!message){if(box)box.style.display='none';return}
+   if(!box){
+     box=document.createElement('div');
+     box.id='ncsStorageNotice';
+     box.setAttribute('role','alert');
+     box.style.cssText='position:fixed;left:12px;right:12px;bottom:86px;z-index:1000;padding:12px 14px;border:1px solid var(--warn);border-radius:12px;background:var(--card);color:var(--ink);box-shadow:0 6px 24px rgba(0,0,0,.22);display:none;align-items:center;gap:12px;justify-content:space-between;flex-wrap:wrap';
+     const text=document.createElement('span');text.dataset.storageMessage='1';
+     const button=document.createElement('button');button.type='button';button.className='ghost';button.setAttribute('aria-label','Dismiss');button.textContent='Dismiss';
+     button.onclick=function(){box.style.display='none'};
+     box.append(text,button);document.body.appendChild(box);
+   }
+   box.querySelector('[data-storage-message]').textContent=message;
+   box.style.display='flex';
  }
  const persist=()=>{try{
-   if(storageLoadError){if(rawStorageAtLoad===null)throw new Error('Could not preserve the unreadable saved data');recoveryBackupKey=KEY+'_recovery_'+Date.now();localStorage.setItem(recoveryBackupKey,rawStorageAtLoad);recoveryRaw=rawStorageAtLoad;recoveryNotice='Saved data could not be read. A recovery copy was preserved in this browser before new data was saved.';storageLoadError=null}
-   localStorage.setItem(KEY,JSON.stringify(S));storageNotice(recoveryNotice);return true
- }catch(e){console.error('Local save failed',e);storageNotice('Local save failed. Recent changes may be lost on reload. Free browser storage, then try again.');return false}};
- if(storageLoadError)storageNotice('Saved data could not be read. The original will be preserved before this app saves a new state.');
+   if(storageLoadError){if(rawStorageAtLoad===null)throw new Error('Could not preserve the unreadable saved data');recoveryBackupKey=KEY+'_recovery_'+Date.now();localStorage.setItem(recoveryBackupKey,rawStorageAtLoad);recoveryRaw=rawStorageAtLoad;storageLoadError=null}
+   localStorage.setItem(KEY,JSON.stringify(S));return true
+ }catch(e){console.error('Local save failed',e);storageNotice('Could not save to this device. Free browser storage and try again.');return false}};
 const save=()=>{S.rev=(S.rev||0)+1;try{ledReconcile()}catch(e){console.error('Ledger link failed',e)}stampChanged();const ok=persist();if(ok)schedule();return ok};
 const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 let cur=iso(new Date()),editing=null;
@@ -528,7 +542,6 @@ const prevFor=(d,t)=>{let p=+S.start||0;sorted().forEach(e=>{if(!e.void&&e.id!==
 var WLT={bk:'Bkash Personal',ng:'Nagad',rk:'Rocket',bka:'Bkash Agent',gp:'GP Recharge',robi:'Robi Recharge',cir:'Circkle Recharge'};
 var WLTC={Purchase:{'Bk In - Personal':'bk','Nagad In - Personal':'ng','Rocket In - Personal':'rk','Bkash Cash Out':'bka','Recharge Balance - DSR GP':'gp','Recharge Balance - DSR Robi':'robi','Recharge Balance - DSR Circkle':'cir','Bkash B2B Balance Receive':'bka'},Sale:{'Bk Sent - Personal':'bk','Nagad Sent - Personal':'ng','Rocket Sent - Personal':'rk','Bkash Cash IN':'bka','Recharge - GP':'gp','Recharge - Robi':'robi','Recharge - Circkle':'cir'}};
  const isWalletTransfer=e=>!!(WLTC[e.type]&&WLTC[e.type][e.cat]);
-/* must stay above start(): resume() runs render() before the modules at the end of the script */
 var WLT_MFS=['bk','ng','rk','bka'],WLT_RCR=['gp','robi','cir'],WLT_BN={bk:'বিকাশ পার্সোনাল',ng:'নগদ',rk:'রকেট',bka:'বিকাশ এজেন্ট',gp:'জিপি রিচার্জ',robi:'রবি রিচার্জ',cir:'সার্কেল রিচার্জ'};
 var ACC_N=150,ACC_D='',LPGN=80,LPGC=null;
 function imgCap(c,q){var u=c.toDataURL('image/jpeg',q);while(u.length>24000&&q>.3){q-=.1;u=c.toDataURL('image/jpeg',q)}return u}
@@ -621,11 +634,22 @@ $('pick').onchange=e=>{if(e.target.value){cur=e.target.value;reset();render()}};
  const shift=k=>{const x=new Date(cur+'T00:00:00');x.setDate(x.getDate()+k);cur=iso(x);reset();render()};
 $('pd').onclick=()=>shift(-1);$('nd').onclick=()=>shift(1);$('today').onclick=()=>{cur=iso(new Date());reset();render()};
 
-const MODES=[['light','☀ Light'],['dark','☾ Dark'],['auto','◐ Auto'],['daynight','◷ Day/Night']];
-function applyTheme(){const m=S.theme||'auto';let v=null;if(m==='light'||m==='dark')v=m;else if(m==='daynight'){const x=new Date(),q=x.getHours()*60+x.getMinutes(),f=s=>+s.slice(0,2)*60+ +s.slice(3);v=q>=f(S.dayStart||'06:00')&&q<f(S.dayEnd||'18:00')?'light':'dark'}
-  if(v)document.documentElement.dataset.theme=v;else delete document.documentElement.dataset.theme;$('theme').textContent=MODES.find(x=>x[0]===m)[1]}
-$('theme').onclick=()=>{S.theme=MODES[(MODES.findIndex(x=>x[0]===(S.theme||'auto'))+1)%4][0];save();applyTheme()};
-setInterval(applyTheme,60000);
+function applyTheme(){
+  var m=S.theme||'auto';
+  if(m!=='auto'&&m!=='light'&&m!=='dark')m='auto';
+  S.theme=m;
+  if(m==='light'||m==='dark')document.documentElement.dataset.theme=m;
+  else delete document.documentElement.dataset.theme;
+  var btn=$('themeBtn');
+  if(btn)btn.dataset.mode=m;
+}
+$('themeBtn').onclick=function(){
+  var cur=S.theme||'auto';
+  var next=cur==='auto'?'light':cur==='light'?'dark':'auto';
+  S.theme=next;
+  save();
+  applyTheme();
+};
  $('set').onclick=()=>ask('Settings',`<div class="f"><label>Starting cash</label><input id="s1" type="number" min="0" step="any" value="${S.start||0}"></div><div class="f"><label>Reason for changing opening cash (required when changed)</label><input id="s1r" maxlength="160"></div><div class="f"><label>Day starts (Day/Night theme)</label><input id="s2" type="time" value="${S.dayStart}"></div><div class="f"><label>Night starts</label><input id="s3" type="time" value="${S.dayEnd}"></div><div class="f"><label>Google Sheet sync URL</label><input id="s4" value="${esc(S.sync?S.sync.url:'')}"></div><div class="f"><label>Sync key</label><input id="s5" type="password" value="${esc(S.sync?S.sync.key:'')}"></div><button type="button" class="ghost" id="setpin">Change admin PIN</button> <button type="button" class="ghost" id="ssu">Secure sync setup</button> <button type="button" class="ghost" id="sfr" style="color:var(--neg)">Start fresh (carry forward balances)</button> <button type="button" class="ghost" id="backupJson">Download data backup</button> <button type="button" class="ghost" id="restoreJson">Restore from backup</button><p class="mut" style="font-size:12.5px;margin:8px 0 0">${lb('Backups are files you download; the app does not back up by itself. Data lives in this browser, and in the Google Sheet only if sync is on. Keep a recent download off this device (for example in Drive).','ব্যাকআপ হলো ডাউনলোড করা ফাইল; অ্যাপ নিজে ব্যাকআপ নেয় না। তথ্য এই ব্রাউজারে থাকে, আর সিঙ্ক চালু থাকলে গুগল শিটে। সাম্প্রতিক একটি ডাউনলোড এই ডিভাইসের বাইরে রাখুন (যেমন ড্রাইভে)।')} ${S.lastBackup?lb('Last download from this device: ','এই ডিভাইস থেকে শেষ ডাউনলোড: ')+sd(iso(new Date(S.lastBackup))):lb('No backup downloaded from this device yet.','এই ডিভাইস থেকে এখনো ব্যাকআপ ডাউনলোড হয়নি।')}</p>`,()=>{const before={start:S.start,dayStart:S.dayStart,dayEnd:S.dayEnd,sync:S.sync},raw=$('s1').value.trim(),start=raw===''?NaN:Number(raw),old=+S.start||0,reason=$('s1r').value.trim();if(!Number.isFinite(start)||start<0)return false;if(start!==old){if(!reason){$('s1r').style.borderColor='var(--neg)';return false}lg('Opening cash changed',old+' → '+start+' · '+reason);S.start=start}S.dayStart=$('s2').value||'06:00';S.dayEnd=$('s3').value||'18:00';S.sync=$('s4').value.trim()&&$('s5').value.trim()?{url:$('s4').value.trim(),key:$('s5').value.trim()}:null;if(!save()){Object.assign(S,before);if(start!==old)S.log.shift();return false}pull();applyTheme();render()},'Save');
  $('ob').addEventListener('click',e=>{if(e.target.id!=='backupJson')return;const backup={app:'NCS Daily Accounts',version:APP_VERSION,exportedAt:new Date().toISOString(),state:stateOut()};dlFile('NCS_Backup_'+iso(new Date())+'.json',JSON.stringify(backup,null,2))});
 
@@ -736,18 +760,11 @@ $('ob').addEventListener('click',async e=>{
     await dlFile('NCS_Report_'+RR.a+'.csv',r.map(x=>csvCell(x[0])+','+x[1]).join('\n'))}});
 
 S.lang=S.lang||'en';
-const BN={'Daily Accounts':'দৈনিক হিসাব','Nur Computer & Stationery':'নুর কম্পিউটার এন্ড স্টেশনারী','Today':'আজ','Settings':'সেটিংস','Lock':'লক','Total Sell':'মোট বিক্রয়','Total Buy':'মোট ক্রয়','Difference (pending)':'পার্থক্য (বাকি)','Counted vs account':'গণনা বনাম হিসাব','Cash Balance':'ক্যাশ ব্যালেন্স','Account balance now':'বর্তমান হিসাবের ব্যালেন্স','Opening Cash':'প্রারম্ভিক ক্যাশ','Closing Cash':'সমাপনী ক্যাশ','Adjustments today':'আজকের সমন্বয়','Prepared':'প্রস্তুতকারী','Checked':'যাচাইকারী','Open':'খোলা','Closed':'বন্ধ','Close Day':'দিন বন্ধ করুন','Reopen':'পুনরায় খুলুন','Sl':'ক্র.','Time':'সময়','Description':'বিবরণ','Sell':'বিক্রয়','Buy':'ক্রয়','Previous Cash':'পূর্বের ক্যাশ','Actual Cash':'প্রকৃত ক্যাশ','Difference':'পার্থক্য','Type':'ধরন','Category':'ক্যাটাগরি','Payment method':'পেমেন্ট পদ্ধতি','Amount':'পরিমাণ','Actual cash (optional)':'গণনা করা প্রকৃত ক্যাশ (ঐচ্ছিক)','Count':'গণনা','Add entry':'এন্ট্রি যোগ করুন','Save changes':'পরিবর্তন সংরক্ষণ','Cancel edit':'সম্পাদনা বাতিল','Staff':'কর্মী','Change Log':'পরিবর্তন লগ','Print':'প্রিন্ট','Export CSV':'CSV এক্সপোর্ট','Reports':'রিপোর্ট','Undo':'পূর্বাবস্থা','Edit':'সম্পাদনা','Void':'বাতিল','Adjust':'সমন্বয়','Adjusted':'সমন্বিত','Sale':'বিক্রয়','Purchase / Expense':'ক্রয় / খরচ','Owner Deposit':'মালিকের জমা','Owner Withdrawal':'মালিকের উত্তোলন','Cash Adjustment (±)':'ক্যাশ সমন্বয় (±)','Cash':'নগদ','Mobile Banking':'মোবাইল ব্যাংকিং','Bank':'ব্যাংক','Due':'বাকি','All types':'সব ধরন','All payments':'সব পেমেন্ট','Clear':'মুছুন','No entries for this date':'এই তারিখে কোনো এন্ট্রি নেই','Previous':'পূর্বের','Sign in':'সাইন ইন','User':'ব্যবহারকারী','Unlock':'আনলক','Admin':'অ্যাডমিন','Close':'বন্ধ করুন','Cancel':'বাতিল','Confirm':'নিশ্চিত করুন','Day':'দিন','Week (Sat–Fri)':'সপ্তাহ (শনি–শুক্র)','Month':'মাস','Net (Sell − Buy)':'নিট (বিক্রয় − ক্রয়)','Adjustments':'সমন্বয়','Sales by category':'ক্যাটাগরি অনুযায়ী বিক্রয়','Expenses by category':'ক্যাটাগরি অনুযায়ী খরচ','Total':'মোট','Use total':'মোট ব্যবহার করুন','Cash Counter':'ক্যাশ কাউন্টার','Home':'হোম','Products':'পণ্য','POS':'পস','Accounts':'হিসাব','More':'আরও','New sale':'নতুন বিক্রয়','New purchase':'নতুন ক্রয়','Recent bills':'সাম্প্রতিক বিল','Overview':'সারসংক্ষেপ','Customer name':'গ্রাহকের নাম','Supplier name':'সরবরাহকারীর নাম','Phone (optional)':'ফোন (ঐচ্ছিক)','PIN':'পিন','Forgot admin PIN':'অ্যাডমিন পিন ভুলে গেছেন','☀ Light':'☀ লাইট','☾ Dark':'☾ ডার্ক','◐ Auto':'◐ অটো','◷ Day/Night':'◷ দিন/রাত','DAILY ACCOUNTS':'দৈনিক হিসাব','Sync: Off':'সিঙ্ক: বন্ধ','Sync: Synced':'সিঙ্ক: সম্পন্ন','Sync: Pending':'সিঙ্ক: অপেক্ষমাণ','Sync: Offline':'সিঙ্ক: অফলাইন','Sync: Conflict':'সিঙ্ক: দ্বন্দ্ব','Home':'হোম','POS':'পিওএস','Products':'পণ্য','Accounts':'হিসাব','Ledger':'খাতা','More':'আরও','Today\'s bills':'আজকের বিল','Point of sale':'বিক্রয় কেন্দ্র','Purchase':'ক্রয়','Held':'হোল্ড','Bills':'বিল','Drawer':'ক্যাশ ড্রয়ার','Scan':'স্ক্যান','+ Product':'+ পণ্য','Sale cart':'বিক্রয় কার্ট','Purchase cart':'ক্রয় কার্ট','Sale':'বিক্রয়','Subtotal':'উপমোট','Discount':'ছাড়','Hold bill':'বিল হোল্ড','+ Custom item':'+ নিজের আইটেম','Charge':'বিল নিন','Stock and prices':'স্টক ও দাম','+ New product':'+ নতুন পণ্য','All':'সব','Low stock':'কম স্টক','Out of stock':'স্টক শেষ','Settings and tools':'সেটিংস ও টুলস','Scan barcode':'বারকোড স্ক্যান','This day is closed. An admin can reopen it to add or change entries.':'এই দিনটি বন্ধ। অ্যাডমিন আবার খুলে দিলে এন্ট্রি যোগ বা পরিবর্তন করা যাবে।','Balance would be negative':'ব্যালেন্স ঋণাত্মক হয়ে যাবে','Reason (required)':'কারণ (আবশ্যক)','Account will change by':'হিসাব পরিবর্তিত হবে','to match counted cash':'গণনা করা নগদের সাথে মেলাতে','Other':'অন্যান্য','Starting cash (first day only)':'শুরুর নগদ (শুধু প্রথম দিন)','Day starts (Day/Night theme)':'দিন শুরু (দিন/রাত থিম)','Night starts':'রাত শুরু','Google Sheet sync URL':'গুগল শিট সিঙ্ক ইউআরএল','Sync key':'সিঙ্ক কী','Secure sync setup':'নিরাপদ সিঙ্ক সেটআপ','Start fresh (carry forward balances)':'নতুন করে শুরু (সব এন্ট্রি মুছুন)','Admin PIN':'অ্যাডমিন পিন','Off':'বন্ধ','Role':'ভূমিকা','Reset PIN':'পিন রিসেট','New staff name':'নতুন স্টাফের নাম','Cashier (POS and ledger entry)':'ক্যাশিয়ার (বিক্রয় ও খাতা এন্ট্রি)','Stock manager (all products with buy and sell price; purchases only, cannot sell)':'স্টক ম্যানেজার (সব পণ্য ক্রয় ও বিক্রয় দামসহ দেখবেন; শুধু ক্রয়, বিক্রয় নয়)','Accountant (accounts, ledger, stock and cash; read-only)':'হিসাবরক্ষক (হিসাব, খাতা, স্টক ও নগদ; শুধু দেখা)','PIN (4+ digits)':'পিন (৪+ সংখ্যা)','New PIN (4+ digits)':'নতুন পিন (৪+ সংখ্যা)','Use Sheet data':'শিটের তথ্য নিন','Keep this device':'এই ডিভাইস রাখুন','Shop passphrase':'দোকানের পাসফ্রেজ','Web app URL':'ওয়েব অ্যাপ ইউআরএল','Repeat passphrase':'পাসফ্রেজ আবার দিন','Copy':'কপি','VOID':'বাতিল','No bills yet':'এখনো কোনো বিল নেই','Long-press or right-click a product to edit it.':'পণ্য এডিট করতে চেপে ধরুন বা রাইট-ক্লিক করুন।','No products yet. Use Add Product, scan a barcode, or use Custom item.':'এখনো কোনো পণ্য নেই। + পণ্য চাপুন, বারকোড স্ক্যান করুন বা নিজের আইটেম দিন।','Cart is empty':'কার্ট খালি','Camera':'ক্যামেরা','Gallery':'গ্যালারি','Name':'নাম','Barcode (optional)':'বারকোড (ঐচ্ছিক)','Buying cost':'ক্রয়মূল্য','Selling price':'বিক্রয়মূল্য','Opening stock':'শুরুর স্টক','Delete product':'পণ্য মুছুন','Item name':'আইটেমের নাম','Price':'দাম','Exact':'সঠিক','Short by':'কম আছে','Share':'শেয়ার','Sales':'বিক্রয়','Purchases':'ক্রয়','Receipt':'রসিদ','No bills today':'আজ কোনো বিল নেই','Resume':'চালু করুন','Delete':'মুছুন','No held bills':'কোনো হোল্ড বিল নেই','Add stock':'স্টক যোগ','No products found':'কোনো পণ্য পাওয়া যায়নি','Quantity':'পরিমাণ','How did it come?':'কীভাবে এলো?','Bought':'কেনা','Brought in':'নিয়ে আসা','Date':'তারিখ','Void entry':'এন্ট্রি বাতিল','Adjust cash':'নগদ সমন্বয়','Reopen day':'দিন আবার খুলুন','Sync conflict':'সিঙ্ক দ্বন্দ্ব','Start fresh':'নতুন করে শুরু','Reconnect sync':'সিঙ্ক আবার যুক্ত করুন','Custom item':'নিজের আইটেম','Day closed':'দিন বন্ধ','Held bills':'হোল্ড বিল','Drawer notes and coins':'ড্রয়ারের নোট ও কয়েন','Set drawer counts':'ড্রয়ার গণনা দিন','Search products':'পণ্য খুঁজুন','Saved':'সংরক্ষিত','Copied':'কপি হয়েছে','Voided':'বাতিল হয়েছে','Bill held':'বিল হোল্ড হয়েছে','Stock added':'স্টক যোগ হয়েছে','Search or scan barcode':'খুঁজুন বা বারকোড স্ক্যান করুন','Buy':'ক্রয়','Sell':'বিক্রয়','Stock':'স্টক','Cost not set':'ক্রয়মূল্য দেওয়া নেই','Version history':'সংস্করণ ইতিহাস','Total':'মোট','Edit':'সম্পাদনা','Close':'বন্ধ','Units in stock':'মোট ইউনিট','Low or out of stock':'কম বা শেষ স্টক','Stock value (cost)':'স্টকের মূল্য (ক্রয়)','Manage':'ব্যবস্থাপনা','Bk In - Personal':'বিকাশ ইন - ব্যক্তিগত','Nagad In - Personal':'নগদ ইন - ব্যক্তিগত','Rocket In - Personal':'রকেট ইন - ব্যক্তিগত','Bkash Cash Out':'বিকাশ ক্যাশ আউট','Recharge Balance - DSR GP':'রিচার্জ ব্যালেন্স - ডিএসআর জিপি','Recharge Balance - DSR Robi':'রিচার্জ ব্যালেন্স - ডিএসআর রবি','Recharge Balance - DSR Circkle':'রিচার্জ ব্যালেন্স - ডিএসআর সার্কেল','Bkash B2B Balance Receive':'বিকাশ বি২বি ব্যালেন্স গ্রহণ','Bk Sent - Personal':'বিকাশ সেন্ড - ব্যক্তিগত','Nagad Sent - Personal':'নগদ সেন্ড - ব্যক্তিগত','Rocket Sent - Personal':'রকেট সেন্ড - ব্যক্তিগত','Bkash Cash IN':'বিকাশ ক্যাশ ইন','Recharge - GP':'রিচার্জ - জিপি','Recharge - Robi':'রিচার্জ - রবি','Recharge - Circkle':'রিচার্জ - সার্কেল','Bkash Personal':'বিকাশ পার্সোনাল','Nagad':'নগদ','Rocket':'রকেট','Bkash Agent':'বিকাশ এজেন্ট','Received into wallet':'যে ওয়ালেটে এসেছে','Sell & Buy':'বিক্রয় ও ক্রয়','Last 7 days':'শেষ ৭ দিন','Sales by payment':'পেমেন্ট অনুযায়ী বিক্রয়','sales':'বিক্রয়','Digital':'ডিজিটাল','To receive (Due)':'পাওনা (বাকি)','To give (Due)':'দেনা (বাকি)','Recent bills':'সাম্প্রতিক বিল','New purchase':'নতুন ক্রয়','New sale':'নতুন বিক্রয়'};
-Object.assign(BN,{'Customer':'কাস্টমার','Check':'যাচাই','Needs check':'যাচাই দরকার','Ledger cash / wallet':'খাতা ক্যাশ / ওয়ালেট','Link customer':'কাস্টমার যুক্ত করুন','Accept':'গ্রহণ','Ledger cash (received − given)':'খাতার ক্যাশ (পেলাম − দিলাম)','Product Name/ID/Barcode':'পণ্যের নাম/আইডি/বারকোড','Add Product':'পণ্য যোগ করুন','Browse products / Add to bill':'পণ্য দেখুন / বিলে যোগ করুন','No products yet. Use Add Product, scan a barcode, or use Custom item.':'এখনো কোনো পণ্য নেই। পণ্য যোগ করুন, বারকোড স্ক্যান করুন বা নিজের আইটেম দিন'});
+const BN={'Daily Accounts':'দৈনিক হিসাব','Nur Computer & Stationery':'নুর কম্পিউটার এন্ড স্টেশনারী','Today':'আজ','Settings':'সেটিংস','Lock':'লক','Total Sell':'মোট বিক্রয়','Total Buy':'মোট ক্রয়','Difference (pending)':'পার্থক্য (বাকি)','Counted vs account':'গণনা বনাম হিসাব','Cash Balance':'ক্যাশ ব্যালেন্স','Account balance now':'বর্তমান হিসাবের ব্যালেন্স','Opening Cash':'প্রারম্ভিক ক্যাশ','Closing Cash':'সমাপনী ক্যাশ','Adjustments today':'আজকের সমন্বয়','Prepared':'প্রস্তুতকারী','Checked':'যাচাইকারী','Open':'খোলা','Closed':'বন্ধ','Close Day':'দিন বন্ধ করুন','Reopen':'পুনরায় খুলুন','Sl':'ক্র.','Time':'সময়','Description':'বিবরণ','Sell':'বিক্রয়','Buy':'ক্রয়','Previous Cash':'পূর্বের ক্যাশ','Actual Cash':'প্রকৃত ক্যাশ','Difference':'পার্থক্য','Type':'ধরন','Category':'ক্যাটাগরি','Payment method':'পেমেন্ট পদ্ধতি','Amount':'পরিমাণ','Actual cash (optional)':'গণনা করা প্রকৃত ক্যাশ (ঐচ্ছিক)','Count':'গণনা','Add entry':'এন্ট্রি যোগ করুন','Save changes':'পরিবর্তন সংরক্ষণ','Cancel edit':'সম্পাদনা বাতিল','Staff':'কর্মী','Change Log':'পরিবর্তন লগ','Print':'প্রিন্ট','Export CSV':'CSV এক্সপোর্ট','Reports':'রিপোর্ট','Undo':'পূর্বাবস্থা','Edit':'সম্পাদনা','Void':'বাতিল','Adjust':'সমন্বয়','Adjusted':'সমন্বিত','Sale':'বিক্রয়','Purchase / Expense':'ক্রয় / খরচ','Owner Deposit':'মালিকের জমা','Owner Withdrawal':'মালিকের উত্তোলন','Cash Adjustment (±)':'ক্যাশ সমন্বয় (±)','Cash':'নগদ','Mobile Banking':'মোবাইল ব্যাংকিং','Bank':'ব্যাংক','Due':'বাকি','All types':'সব ধরন','All payments':'সব পেমেন্ট','Clear':'মুছুন','No entries for this date':'এই তারিখে কোনো এন্ট্রি নেই','Previous':'পূর্বের','Sign in':'সাইন ইন','User':'ব্যবহারকারী','Unlock':'আনলক','Admin':'অ্যাডমিন','Close':'বন্ধ করুন','Cancel':'বাতিল','Confirm':'নিশ্চিত করুন','Day':'দিন','Week (Sat–Fri)':'সপ্তাহ (শনি–শুক্র)','Month':'মাস','Net (Sell − Buy)':'নিট (বিক্রয় − ক্রয়)','Adjustments':'সমন্বয়','Sales by category':'ক্যাটাগরি অনুযায়ী বিক্রয়','Expenses by category':'ক্যাটাগরি অনুযায়ী খরচ','Total':'মোট','Use total':'মোট ব্যবহার করুন','Cash Counter':'ক্যাশ কাউন্টার','Home':'হোম','Products':'পণ্য','POS':'পস','Accounts':'হিসাব','More':'আরও','New sale':'নতুন বিক্রয়','New purchase':'নতুন ক্রয়','Recent bills':'সাম্প্রতিক বিল','Overview':'সারসংক্ষেপ','Customer name':'গ্রাহকের নাম','Supplier name':'সরবরাহকারীর নাম','Phone (optional)':'ফোন (ঐচ্ছিক)','PIN':'পিন','Forgot admin PIN':'অ্যাডমিন পিন ভুলে গেছেন','DAILY ACCOUNTS':'দৈনিক হিসাব','Sync: Off':'সিঙ্ক: বন্ধ','Sync: Synced':'সিঙ্ক: সম্পন্ন','Sync: Pending':'সিঙ্ক: অপেক্ষমাণ','Sync: Offline':'সিঙ্ক: অফলাইন','Sync: Conflict':'সিঙ্ক: দ্বন্দ্ব','Ledger':'খাতা','Today\'s bills':'আজকের বিল','Point of sale':'বিক্রয় কেন্দ্র','Purchase':'ক্রয়','Held':'হোল্ড','Bills':'বিল','Drawer':'ক্যাশ ড্রয়ার','Scan':'স্ক্যান','Sale cart':'বিক্রয় কার্ট','Purchase cart':'ক্রয় কার্ট','Subtotal':'উপমোট','Discount':'ছাড়','Hold bill':'বিল হোল্ড','+ Custom item':'+ নিজের আইটেম','Charge':'বিল নিন','Stock and prices':'স্টক ও দাম','+ New product':'+ নতুন পণ্য','All':'সব','Low stock':'কম স্টক','Out of stock':'স্টক শেষ','Settings and tools':'সেটিংস ও টুলস','Scan barcode':'বারকোড স্ক্যান','This day is closed. An admin can reopen it to add or change entries.':'এই দিনটি বন্ধ। অ্যাডমিন আবার খুলে দিলে এন্ট্রি যোগ বা পরিবর্তন করা যাবে।','Balance would be negative':'ব্যালেন্স ঋণাত্মক হয়ে যাবে','Reason (required)':'কারণ (আবশ্যক)','Account will change by':'হিসাব পরিবর্তিত হবে','to match counted cash':'গণনা করা নগদের সাথে মেলাতে','Other':'অন্যান্য','Starting cash':'শুরুর নগদ','Day starts (Day/Night theme)':'দিন শুরু (দিন/রাত থিম)','Night starts':'রাত শুরু','Google Sheet sync URL':'গুগল শিট সিঙ্ক ইউআরএল','Sync key':'সিঙ্ক কী','Secure sync setup':'নিরাপদ সিঙ্ক সেটআপ','Start fresh (carry forward balances)':'নতুন করে শুরু','Admin PIN':'অ্যাডমিন পিন','Off':'বন্ধ','Role':'ভূমিকা','Reset PIN':'পিন রিসেট','New staff name':'নতুন স্টাফের নাম','Cashier (POS and ledger entry)':'ক্যাশিয়ার (বিক্রয় ও খাতা এন্ট্রি)','Stock manager (all products with buy and sell price; purchases only, cannot sell)':'স্টক ম্যানেজার','Accountant (accounts, ledger, stock and cash; read-only)':'হিসাবরক্ষক','PIN (4+ digits)':'পিন (৪+ সংখ্যা)','New PIN (4+ digits)':'নতুন পিন (৪+ সংখ্যা)','Use Sheet data':'শিটের তথ্য নিন','Keep this device':'এই ডিভাইস রাখুন','Shop passphrase':'দোকানের পাসফ্রেজ','Web app URL':'ওয়েব অ্যাপ ইউআরএল','Repeat passphrase':'পাসফ্রেজ আবার দিন','Copy':'কপি','VOID':'বাতিল','No bills yet':'এখনো কোনো বিল নেই','Long-press or right-click a product to edit it.':'পণ্য এডিট করতে চেপে ধরুন বা রাইট-ক্লিক করুন।','No products yet. Use Add Product, scan a barcode, or use Custom item.':'এখনো কোনো পণ্য নেই।','Cart is empty':'কার্ট খালি','Camera':'ক্যামেরা','Gallery':'গ্যালারি','Name':'নাম','Barcode (optional)':'বারকোড (ঐচ্ছিক)','Buying cost':'ক্রয়মূল্য','Selling price':'বিক্রয়মূল্য','Opening stock':'শুরুর স্টক','Delete product':'পণ্য মুছুন','Item name':'আইটেমের নাম','Price':'দাম','Exact':'সঠিক','Short by':'কম আছে','Share':'শেয়ার','Sales':'বিক্রয়','Purchases':'ক্রয়','Receipt':'রসিদ','No bills today':'আজ কোনো বিল নেই','Resume':'চালু করুন','Delete':'মুছুন','No held bills':'কোনো হোল্ড বিল নেই','Add stock':'স্টক যোগ','No products found':'কোনো পণ্য পাওয়া যায়নি','Quantity':'পরিমাণ','How did it come?':'কীভাবে এলো?','Bought':'কেনা','Brought in':'নিয়ে আসা','Date':'তারিখ','Void entry':'এন্ট্রি বাতিল','Adjust cash':'নগদ সমন্বয়','Reopen day':'দিন আবার খুলুন','Sync conflict':'সিঙ্ক দ্বন্দ্ব','Start fresh':'নতুন করে শুরু','Reconnect sync':'সিঙ্ক আবার যুক্ত করুন','Custom item':'নিজের আইটেম','Day closed':'দিন বন্ধ','Held bills':'হোল্ড বিল','Drawer notes and coins':'ড্রয়ারের নোট ও কয়েন','Set drawer counts':'ড্রয়ার গণনা দিন','Search products':'পণ্য খুঁজুন','Saved':'সংরক্ষিত','Copied':'কপি হয়েছে','Voided':'বাতিল হয়েছে','Bill held':'বিল হোল্ড হয়েছে','Stock added':'স্টক যোগ হয়েছে','Search or scan barcode':'খুঁজুন বা বারকোড স্ক্যান করুন','Stock':'স্টক','Cost not set':'ক্রয়মূল্য দেওয়া নেই','Version history':'সংস্করণ ইতিহাস','Units in stock':'মোট ইউনিট','Low or out of stock':'কম বা শেষ স্টক','Stock value (cost)':'স্টকের মূল্য (ক্রয়)','Manage':'ব্যবস্থাপনা','Customer':'কাস্টমার','Check':'যাচাই','Needs check':'যাচাই দরকার','Ledger cash / wallet':'খাতা ক্যাশ / ওয়ালেট','Link customer':'কাস্টমার যুক্ত করুন','Accept':'গ্রহণ','Ledger cash (received − given)':'খাতার ক্যাশ (পেলাম − দিলাম)','Product Name/ID/Barcode':'পণ্যের নাম/আইডি/বারকোড','Add Product':'পণ্য যোগ করুন','Browse products / Add to bill':'পণ্য দেখুন / বিলে যোগ করুন','Cash in':'নগদ এসেছে','Cash out':'নগদ গেছে','Net':'নিট','Entries':'এন্ট্রি','No cash movements today':'আজ কোনো নগদ লেনদেন নেই','Who owes whom':'কার কাছে পাওনা / দেনা','They owe us':'আমরা পাব','We owe':'আমরা দেব','parties':'পক্ষ','Net receivable':'নিট পাওনা','Net payable':'নিট দেনা','Open Ledger':'খাতা খুলুন','Change admin PIN':'অ্যাডমিন পিন পরিবর্তন','Current PIN':'বর্তমান পিন','New PIN (6+ digits)':'নতুন পিন (৬+ সংখ্যা)','Confirm new PIN':'নতুন পিন নিশ্চিত করুন','Wrong PIN':'ভুল পিন','Could not save. Try again.':'সংরক্ষণ হয়নি। আবার চেষ্টা করুন।','Admin PIN changed':'অ্যাডমিন পিন পরিবর্তন হয়েছে','Run self test':'সেলফ টেস্ট','Check calculations, storage and key modules':'হিসাব, স্টোরেজ ও মূল মডিউল পরীক্ষা','Request void':'বাতিলের অনুরোধ','Void request':'বাতিলের অনুরোধ','Review void request':'বাতিলের অনুরোধ দেখুন','Void requested — awaiting Admin':'বাতিলের অনুরোধ অপেক্ষমাণ','A void request is already pending':'বাতিলের অনুরোধ অপেক্ষমাণ','Admin must approve this request before the entry is voided.':'অ্যাডমিন অনুমোদন করার আগে এন্ট্রি বাতিল হবে না।','Request':'অনুরোধ','Reason to reject':'প্রত্যাখ্যানের কারণ','Reject':'প্রত্যাখ্যান','Approve':'অনুমোদন','Reject flag':'চিহ্ন প্রত্যাখ্যান','Flag for Admin check':'অ্যাডমিন যাচাইয়ের জন্য চিহ্নিত করুন'};
 var SHOP_EN='Nur Computer & Stationery',SHOP_BN='নুর কম্পিউটার এন্ড স্টেশনারী';function shopN(){return S.lang==='bn'?SHOP_BN:SHOP_EN}
 const orig=new WeakMap();
 function trp(q){var t=q.trim();if(BN[t])return q.replace(t,BN[t]);var m=t.match(/^([A-Za-z][A-Za-z\/ ]*?)(\s+[0-9৳#−+(\-].*)$/);return m&&BN[m[1]]?q.replace(m[1],BN[m[1]]):q}
 BN['Admin PIN (6+ digits)']='অ্যাডমিন পিন (৬+ সংখ্যা)';BN['New PIN (6+ digits)']='নতুন পিন (৬+ সংখ্যা)';BN['PIN (6+ digits)']='পিন (৬+ সংখ্যা)';BN['Confirm PIN']='পিন নিশ্চিত করুন';BN['PINs must match and be 6+ digits']='পিন মিলতে হবে এবং কমপক্ষে ৬ সংখ্যা হতে হবে';
-BN['Cash in']='নগদ এসেছে';BN['Cash out']='নগদ গেছে';BN['Net']='নিট';BN['Entries']='এন্ট্রি';BN['No cash movements today']='আজ কোনো নগদ লেনদেন নেই';
-BN['Who owes whom']='কার কাছে পাওনা / দেনা';BN['They owe us']='আমরা পাব';BN['We owe']='আমরা দেব';BN['parties']='পক্ষ';BN['Net receivable']='নিট পাওনা';BN['Net payable']='নিট দেনা';BN['Open Ledger']='খাতা খুলুন';
-BN['Change admin PIN']='অ্যাডমিন পিন পরিবর্তন';BN['Current PIN']='বর্তমান পিন';BN['New PIN (6+ digits)']='নতুন পিন (৬+ সংখ্যা)';BN['Confirm new PIN']='নতুন পিন নিশ্চিত করুন';BN['The recovery code is not changed. Use Reset admin PIN from the lock screen if you also want to rotate it.']='রিকভারি কোড বদলাবে না। রিকভারি কোডও বদলাতে চাইলে লক স্ক্রিন থেকে Reset admin PIN ব্যবহার করুন।';BN['Wrong PIN']='ভুল পিন';BN['Could not save. Try again.']='সংরক্ষণ হয়নি। আবার চেষ্টা করুন।';BN['Admin PIN changed']='অ্যাডমিন পিন পরিবর্তন হয়েছে';
-BN['Run self test']='সেলফ টেস্ট';BN['Check calculations, storage and key modules']='হিসাব, স্টোরেজ ও মূল মডিউল পরীক্ষা';
-BN['Request void']='বাতিলের অনুরোধ';BN['Void request']='বাতিলের অনুরোধ';BN['Review void request']='বাতিলের অনুরোধ দেখুন';BN['Void requested — awaiting Admin']='বাতিলের অনুরোধ অপেক্ষমাণ';BN['A void request is already pending']='বাতিলের অনুরোধ অপেক্ষমাণ';BN['Admin must approve this request before the entry is voided.']='অ্যাডমিন অনুমোদন করার আগে এন্ট্রি বাতিল হবে না।';BN['Request']='অনুরোধ';BN['Reason to reject']='প্রত্যাখ্যানের কারণ';BN['Reject']='প্রত্যাখ্যান';BN['Approve']='অনুমোদন';
-BN['Reject flag']='চিহ্ন প্রত্যাখ্যান';BN['Flag for Admin check']='অ্যাডমিন যাচাইয়ের জন্য চিহ্নিত করুন';
 function tx(root){const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let x;while(x=w.nextNode()){if(!orig.has(x))orig.set(x,x.nodeValue);const o=orig.get(x);
   x.nodeValue=S.lang==='bn'?o.split(' · ').map(trp).join(' · '):o}
   document.querySelectorAll('[placeholder]').forEach(e=>{if(e.id==='fd'||e.id==='sq')return;if(e.dataset.ph===undefined)e.dataset.ph=e.getAttribute('placeholder');const v=e.dataset.ph;e.setAttribute('placeholder',S.lang==='bn'&&BN[v]?BN[v]:v)})}
@@ -861,9 +878,15 @@ function buildTabs(){const T=TABS[role()];$('tabs').innerHTML=T.map(k=>`<button 
 function go(v){CUR=v;try{sessionStorage.setItem('ncs_active_view_v1_'+role(),v)}catch(e){}document.querySelectorAll('.view').forEach(x=>x.classList.toggle('on',x.id==='v'+v[0].toUpperCase()+v.slice(1)));document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
   if(v==='home')homeUI();if(v==='pos')POS.refresh();if(v==='prod')POS.prodUI();if(v==='acc'){cur=iso(new Date());reset();render()}if(v==='led')ledUI();if(v==='mgmt')mgmtUI();document.body.classList.toggle('kp',role()==='keeper');document.body.classList.toggle('ro',role()==='accountant');scrollTo(0,0)}
 $('tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(b)go(b.dataset.v)});
-$('topR').append($('sync'));$('moreList').append($('theme'),$('lang'),$('set'),$('lockb'));
+$('topR').append($('sync'));$('moreList').append($('lang'),$('set'),$('lockb'));
 function redrawActiveView(){if(CUR==='home')homeUI();else if(CUR==='pos')POS.refresh();else if(CUR==='prod')POS.prodUI();else if(CUR==='acc')render();else if(CUR==='led')ledUI();else if(CUR==='mgmt')mgmtUI()}
-function refreshCurrentView(){if(!U||!CUR)return;redrawActiveView();if(SY())pull()}
+function refreshCurrentView(){
+  if(!U||!CUR)return;
+  var svg=$('refresh').querySelector('svg');
+  if(svg){svg.classList.add('spin');setTimeout(function(){svg.classList.remove('spin')},650)}
+  redrawActiveView();
+  if(SY())pull();
+}
 $('refresh').onclick=refreshCurrentView;
 function setRefreshLabel(){var t=lb('Refresh current view','বর্তমান ট্যাব রিফ্রেশ করুন');$('refresh').title=t;$('refresh').setAttribute('aria-label',t)}
 
@@ -1046,7 +1069,7 @@ function billsUI(){const td=iso(new Date()),L=S.bills.filter(b=>isA()||role()===
   $('ob').onclick=e=>{const r=e.target.closest('[data-rc]'),v=e.target.closest('[data-vd]'),d=e.target.closest('[data-dr]');var ph=e.target.closest('[data-ph]');if(ph)return attUI('e'+ph.dataset.ph);if(r)receipt(S.bills.find(b=>b.id==r.dataset.rc));if(v)voidBill(S.bills.find(b=>b.id==v.dataset.vd));if(d){var bill=S.bills.find(b=>b.id==d.dataset.dr);dlg('High discount review · #'+bill.no,'<p>'+n(bill.discountReview.pct)+'% · '+tk(bill.disc)+' discount on '+tk(bill.subtotal)+'</p>',()=>{bill.discountReview.state='reviewed';bill.discountReview.reviewedBy=U.name;bill.discountReview.reviewedAt=Date.now();lg('Discount reviewed','#'+bill.no+' by '+U.name);save();setTimeout(billsUI,0)},'Mark reviewed')}}}
 $('bBills').onclick=billsUI;
 
-/* hold and resume (this device only) */
+/* hold and resume */
 $('bHold').onclick=()=>{if(!C.lines.length)return;D.held.unshift({id:Date.now(),mode:C.mode,lines:C.lines,disc:C.disc,t:nowT()});C.lines=[];C.disc=0;C.dpct=0;C.dm='a';dsave();renderCart();toast('Bill held')};
 function heldUI(){dlg('Held bills',D.held.length?D.held.map(h=>`<div class="prow"><span>${t12(h.t)} · ${h.lines.reduce((s,l)=>s+l.qty,0)} items · ${tk(h.lines.reduce((s,l)=>s+l.price*l.qty,0))}${h.mode==='purchase'?' · Purchase':''}</span><span><button class="ghost pbtn" data-rs="${h.id}">Resume</button> <button class="ghost pbtn" data-dh="${h.id}">Delete</button></span></div>`).join(''):'<div class="empty">No held bills</div>',()=>{},'Close',true);
   $('ob').onclick=e=>{const r=e.target.closest('[data-rs]'),d=e.target.closest('[data-dh]');
@@ -1054,7 +1077,7 @@ function heldUI(){dlg('Held bills',D.held.length?D.held.map(h=>`<div class="prow
     if(d){D.held=D.held.filter(x=>x.id!=d.dataset.dh);dsave();heldUI()}}}
 $('bHeld').onclick=heldUI;
 
-/* drawer notes and coins (worked out from bills) */
+/* drawer */
 function drawerCounts(){const base=S.drawerBase||{c:{},ts:0},o={...base.c};S.bills.forEach(b=>{if(b.void||(b.ts||0)<=base.ts)return;const s=b.mode==='purchase'?-1:1;DEN.forEach(d=>{o[d]=(o[d]||0)+s*((b.rec[d]||0)-(b.chg[d]||0))})});DEN.forEach(d=>{o[d]=Math.max(0,o[d]||0)});return o}
 $('bDrawer').onclick=()=>{const o=drawerCounts();
   dlg('Drawer notes and coins',DEN.map(d=>`<div class="prow"><span>${d}</span><b>${o[d]}</b><span class="mut">${tk(d*o[d])}</span></div>`).join('')+`<div class="prow"><b>Total</b><b>${tk(sumD(o))}</b></div>`+(isA()?'<p class="mut">Set the counts to your real notes to start or correct.</p>':''),()=>{
@@ -1079,11 +1102,9 @@ return{refresh(){renderGrid();renderCart();if(CUR==='prod')prodUI()},setMode,bil
 })();
 $('q').addEventListener('focus',()=>{});
 
-
-
-/* ---------- customer ledger + version history (v8) ---------- */
+/* ---------- customer ledger + version history ---------- */
 var APP_VERSION='9.7',LC=null,LT='led',LQ='',LF='',LE='';
-var VERS=[{"v":"9.5","d":"2026-10-16","t":"Party, balance carry-forward and review controls","by":"Other Claude profile (model not recorded)","n":["Party details and kinds; Borrow/Lend entries; open-balance archive with reason","Start fresh carries cash and wallets while preserving ledger/stock and queues Admin reconciliation","POS discounts over 5% are recorded and flagged for Admin/Accountant review","Admin and stock manager can set exact stock with reason; changes queue Admin review","Energetic live sync status and duplicate indicators"]},{"v":"9.4","d":"2026-10-16","t":"Sync status dot","n":["Sync button now shows a coloured status dot: green when everything is synced, yellow while changes are saving, red when offline or when there is a conflict, hollow when sync is not set up","Yellow and red dots pulse so the status is easy to notice; the button tooltip explains what the colour means","The same dot appears next to the sync line in the Management tab"]},{"v":"9.3","d":"2026-10-16","t":"No due purchases","n":["Purchases can no longer be saved as Due in Accounts or POS (decision B, first part)","Old Due purchases keep their record and get a Check tag; admin can Accept or Void them","Due sales are unchanged; the customer picker and Link customer action still apply only to sales"]},{"v":"9.2","d":"2026-10-16","t":"Bkash Personal or Agent in the ledger","n":["Ledger method Bkash is now Bkash Personal or Bkash Agent; old Bkash entries count as Bkash Personal","Bkash Agent: received = Agent wallet up, given = Agent wallet down, same as Personal; the wallet never goes below zero"]},{"v":"9.1","d":"2026-10-16","t":"Today on Accounts, Bug Fixing and Upcoming cards","n":["Accounts now opens on Today after every refresh and every time the Accounts tab is clicked","New Bug Fixing card in Management with the full fix history (hover to preview on desktop, click or tap to open)","Upcoming Features is now a closed card with the same preview and open behaviour"]},{"v":"9.0","d":"2026-10-16","t":"Ledger linked to cash flow","n":["Ledger entries paid in Cash now move the Cash Balance (received = up, given = down) through a linked entry that stays in sync when the ledger entry is edited, voided or restored","Ledger entries paid by Bkash, Nagad or Rocket move that wallet (never below zero); Bank and Other do not move cash or wallets","Due sales post to the customer ledger automatically: Accounts entries and POS checkout now have a customer picker (or a new customer)","Entries made before linking get a Check tag; they stay out of the cash flow until admin links or accepts them (Accounts, Ledger list and customer profile show the Check tag and counts)","Shop name removed from the phone bottom tab bar"]},{"v":"8.9.1","d":"2026-10-16","t":"Fixes","by":"Claude Sonnet 5.5 · owner's Claude account","n":["Fixed: refreshing the page logged everyone out (wallet cards used lists that were not defined yet when the saved session was restored)","Cash adjustment now has a visible Count and adjust cash button on the Cash card (right-click and long-press removed)","Cash adjustment on a closed day is posted to the next open day with a notice, and the screen jumps to that day"]},{"v":"8.9","d":"2026-10-16","t":"Wallets","by":"Claude Sonnet 5.5 · owner's Claude account","n":["MFS card (Bkash Personal, Nagad, Rocket, Bkash Agent) and Recharge card (GP, Robi, Circkle) on Accounts and Home, with hover overview and click for the full list","New Sale and Purchase categories that move a wallet and the Cash Balance together (Bk In/Sent - Personal, Bkash Cash Out/IN, Recharge Balance - DSR, Recharge, Bkash B2B Balance Receive)","Wallet balances can never go below zero: saving or voiding an entry that would do it is blocked","Sales paid by Mobile Banking (Accounts form and POS checkout) add to the chosen wallet","Admin sets opening balances in Management; they sync between devices"]},{"v":"8.8.1","d":"2026-10-16","t":"Version history cleanup","n":["Version history rebuilt: versions open and close with a tap, are grouped, and every version shows its date","Versions 1 to 7 (Excel sheet to the merged role-based app) added from the project history","Version history removed from the More tab; it now lives only in Management","Upcoming Features: added the closed-day rule, archive with reason, duplicate marking and an efficiency pass"]},{"v":"8.8","d":"2026-10-16","n":["Management tab (admin only): staff and roles, settings and security, change log, version history, Force logout all, Upcoming Features with export","Force logout all: everyone, including the admin, must log in again; other devices log out at their next sync","Cash Balance card: hold or right-click to count notes and coins and adjust actual cash (admin and accountant); the optional actual-cash field is removed from the entry form","Customer profile: only admin can edit or delete; deleted customers go to an Archive with Restore; voided entries moved to a separate Void data tab (admin restores)","Capital first letters fixed in several labels; Bkash spelled consistently"],"t":"Management tab and cash adjustment"},{"v":"8.7","d":"2026-10-16","n":["Merged two parallel builds: Dabang Home view (v8.6, other profile) with the stock manager, accountant, ledger and Bengali work","Stock manager: purchases only (Sale mode removed), sees every product with buy and sell price, \"Cost not set\" flag, sync-off warning","Accountant: accounts, ledger, stock information (read-only products with buying cost) and cash","Ledger: customer photo, Call/SMS/WhatsApp/Facebook links, active customer cards with hover and long-press summary, totals for dues and payables, filters","Bengali: many more labels translated, SolaimanLipi font for Bengali, placeholders translated","Shop name fixed: Nur Computer & Stationery / নুর কম্পিউটার এন্ড স্টেশনারী"],"t":"Merged build: roles, ledger extras, Bengali"},{"v":"8.6","d":"2026-10-15","n":["Dabang-style Home view: soft gradient page wash, gradient cash-balance hero card, pastel stat tiles","Home charts: 7-day Sell and Buy bar chart, plus a sales-by-payment donut (Cash / Digital / Due) with legend","Chart colours come from new theme tokens --ch1..--ch4; dark mode keeps the navy palette with no green except inflow"],"t":"Dabang-style Home"},{"v":"8.5","d":"2026-10-15","n":["Bottom bar kept on phones together with the drawer menu","Customer profile card: initial avatar, name, phone and pastel tiles for phone, last entry, balance and customer since","Dark mode redesigned: navy base with orange accent and no green (inflow #10B981, outflow #EF4444, pending/warning amber); POS cart panel lighter, low-stock badge amber","Fixed: ledger table text was bold because its class clashed with a POS class"],"t":"Customer card and navy dark mode"},{"v":"8.4","d":"2026-10-15","n":["Phone menu from Figma Light 02: hamburger button opens a drawer with a 2-column icon grid, active tile in teal, dimmed overlay","Bottom bar hidden on phones (the drawer replaces it); PC sidebar unchanged"],"t":"Phone drawer menu"},{"v":"8.3","d":"2026-10-15","n":["New look from the ItemPOS Figma design: light #F8F9FD background, white cards (14px radius, soft shadow), green #2CC56F accent and gradient","PC: white sidebar with green active marker; Android: floating bottom bar","Pastel stat tiles and green gradient balance card; dark mode kept"],"t":"ItemPOS look"},{"v":"8.2","d":"2026-10-15","n":["Dashboard theme: soft gradient background, rounded shadow cards, pastel stat tiles","PC: left sidebar navigation. Android: floating bottom bar and wallet-style balance card","Works in light and dark mode through colour tokens (no logic changes)"],"t":"Dashboard theme layer"},{"v":"8.1","d":"2026-10-15","n":["Ledger entries record date and time automatically; a previous date is chosen only through \"Use a different (previous) date\"","Time shown in ledger rows, entry details and CSV","HANDOVER.md added for multi-profile work"],"t":"Ledger date and time"},{"v":"8.0","d":"2026-10-15","n":["Customer Ledger tab for Admin, Accountant and Cashier","Customer profile tabs: Ledger, Statement, Notes, Activity","Received (পেলাম) and Given (দিলাম) entries; balance is always calculated","Split amounts like 3060+5000+15000+500 are saved as one grouped entry","Date ranges, \"date unknown\", method and payee on every entry","Cashier can add and view only; a correction voids the old entry (VOID tag) and adds a new one","Admin and Accountant can edit, void, print statements and export CSV","Ledger data syncs through the existing Google Sheet sync (no script change needed)","Version history screen with .txt export"],"t":"Customer Ledger"},{"v":"7","d":"2026-10-14","t":"One role-based app","n":["POS, Products and Accounts merged into one app; each role sees its own tabs (admin, cashier, accountant, stock keeper)","POS saves bills straight into Accounts; products have buying cost, selling price, stock and a picture from camera or gallery","Several devices can save at the same time; changes are merged record by record, so no conflict prompts","Home dashboard with period tabs; Nur Computer & Stationery logo and installable app icons","A sale after Close Day moves to the next day; Close Day starts the next day by itself","Stock keeper role with a Products tab and Add stock (bought or brought in)"]},{"v":"6","d":"2026-10-09","t":"Separate POS app","n":["POS app for sales and purchases: product tiles, search, barcode by camera or typed, custom items, bill discount","Payment by Cash, Mobile Banking, Bank or Due; notes and coins tracked with change calculation","Hold and resume bills, void with a reason, receipts to share, copy or print","Bills reached Accounts through the Google Sheet; product list shared between devices"]},{"v":"5","d":"2026-10-09","t":"Backup, install and security","n":["Google Sheet backup and sync with Synced, Pending, Offline and Conflict status, plus daily backup tabs","Installable on PC and Android from GitHub Pages; works offline","Sync address and key kept encrypted behind a shop passphrase; 24-hour login session","Due entries ask for a customer or supplier name and phone; Start fresh option protected by the admin PIN"]},{"v":"4","d":"2026-10-09","t":"Logins, controls and reports","n":["Admin and staff sign-in with PINs; change log of every action","Close Day lock with Prepared and Checked ticks; printable daily sheet","Cash counter for notes and coins, search and filters, day, week and month reports, undo","Bengali and English toggle"]},{"v":"3","d":"2026-10-08","t":"Accounts app: new interface","n":["Minimal modern design with light, dark, auto and day/night themes","Entry types: Sale, Purchase or Expense, Owner Deposit, Owner Withdrawal and Cash Adjustment; description, category and payment method","Cash Balance calculated automatically; Opening and Closing Cash panel; adjust against actual cash; void with a reason","Remembered product and cost names suggest themselves as you type"]},{"v":"2","d":"2026-10-08","t":"First web tracker","n":["Web page version of the daily sheet with date navigation, summary cards and an entry form","Net Balance and Difference calculated as you type; data saved in the browser; CSV export"]},{"v":"1","d":"2026-10-08","t":"Excel daily accounts sheet","n":["Daily sheet copied from your Word table: Sl, Time, Sell/Earning, Previous Cash, Buy/Cost, Net Balance, Cash Balance, Difference","Formulas calculate Net Balance and Difference; previous cash carries over from the row above","Master Log plus a Daily View sheet so each day looks like a separate page"]}];
+var VERS=[{"v":"9.5","d":"2026-10-16","t":"Party, balance carry-forward and review controls","by":"Other Claude profile (model not recorded)","n":["Party details and kinds; Borrow/Lend entries; open-balance archive with reason","Start fresh carries cash and wallets while preserving ledger/stock and queues Admin reconciliation","POS discounts over 5% are recorded and flagged for Admin/Accountant review","Admin and stock manager can set exact stock with reason; changes queue Admin review","Energetic live sync status and duplicate indicators"]},{"v":"9.4","d":"2026-10-16","t":"Sync status dot","n":["Sync button now shows a coloured status dot","Yellow and red dots pulse so the status is easy to notice; the button tooltip explains what the colour means","The same dot appears next to the sync line in the Management tab"]},{"v":"9.3","d":"2026-10-16","t":"No due purchases","n":["Purchases can no longer be saved as Due in Accounts or POS","Old Due purchases keep their record and get a Check tag; admin can Accept or Void them","Due sales are unchanged"]},{"v":"9.2","d":"2026-10-16","t":"Bkash Personal or Agent in the ledger","n":["Ledger method Bkash is now Bkash Personal or Bkash Agent","Bkash Agent: received = Agent wallet up, given = Agent wallet down"]},{"v":"9.1","d":"2026-10-16","t":"Today on Accounts, Bug Fixing and Upcoming cards","n":["Accounts now opens on Today after every refresh and every time the Accounts tab is clicked","New Bug Fixing card in Management with the full fix history","Upcoming Features is now a closed card"]},{"v":"9.0","d":"2026-10-16","t":"Ledger linked to cash flow","n":["Ledger entries paid in Cash now move the Cash Balance through a linked entry","Ledger entries paid by Bkash, Nagad or Rocket move that wallet","Due sales post to the customer ledger automatically","Check tag for pre-link entries"]},{"v":"8.9.1","d":"2026-10-16","t":"Fixes","by":"Claude Sonnet 5.5 · owner's Claude account","n":["Fixed: refreshing the page logged everyone out","Cash adjustment now has a visible Count and adjust cash button","Closed-day cash adjust rolls to the next open day"]},{"v":"8.9","d":"2026-10-16","t":"Wallets","by":"Claude Sonnet 5.5 · owner's Claude account","n":["MFS card and Recharge card on Accounts and Home","Wallet-and-cash categories and no-below-zero","Sales paid by Mobile Banking add to the chosen wallet"]},{"v":"8.8.1","d":"2026-10-16","t":"Version history cleanup","n":["Version history rebuilt"]},{"v":"8.8","d":"2026-10-16","n":["Management tab (admin only)"],"t":"Management tab and cash adjustment"},{"v":"8.7","d":"2026-10-16","n":["Merged two parallel builds"],"t":"Merged build: roles, ledger extras, Bengali"},{"v":"8.6","d":"2026-10-15","n":["Dabang-style Home view"],"t":"Dabang-style Home"},{"v":"8.5","d":"2026-10-15","n":["Customer card and navy dark mode"],"t":"Customer card and navy dark mode"},{"v":"8.4","d":"2026-10-15","n":["Phone drawer menu"],"t":"Phone drawer menu"},{"v":"8.3","d":"2026-10-15","n":["ItemPOS look"],"t":"ItemPOS look"},{"v":"8.2","d":"2026-10-15","n":["Dashboard theme layer"],"t":"Dashboard theme layer"},{"v":"8.1","d":"2026-10-15","n":["Ledger date and time"],"t":"Ledger date and time"},{"v":"8.0","d":"2026-10-15","n":["Customer Ledger tab"],"t":"Customer Ledger"},{"v":"7","d":"2026-10-14","t":"One role-based app","n":["POS, Products and Accounts merged"]},{"v":"6","d":"2026-10-09","t":"Separate POS app","n":["POS app"]},{"v":"5","d":"2026-10-09","t":"Backup, install and security","n":["Google Sheet backup and sync"]},{"v":"4","d":"2026-10-09","t":"Logins, controls and reports","n":["Admin and staff sign-in with PINs"]},{"v":"3","d":"2026-10-08","t":"Accounts app: new interface","n":["Minimal modern design"]},{"v":"2","d":"2026-10-08","t":"First web tracker","n":["Web page version of the daily sheet"]},{"v":"1","d":"2026-10-08","t":"Excel daily accounts sheet","n":["Daily sheet copied from Word table"]}];
 function ldlg(t,b,f,o,h){ask(t,b,f,o);$('ok').style.display=h?'none':''}
 function ltoast(t){var d=document.createElement('div');d.className='toast';d.textContent=t;document.body.appendChild(d);setTimeout(function(){d.remove()},1800)}
 function nowT(){var x=new Date();return String(x.getHours()).padStart(2,'0')+':'+String(x.getMinutes()).padStart(2,'0')}
@@ -1266,11 +1287,6 @@ function ledTx(id){var t=S.ltx.find(function(x){return x.id===id});if(!t)return;
     else if(k==='v')ledVoid(t.id);
   };
 }
-function ledSample(){
-  var c={id:Date.now(),name:'রিয়াদ',phone:'',note:'Notebook 28/09/2026 12:55: রিয়াদ পাবে ৳32,650. The app total matches (32,650). The 260 (Nasir পাবে) is already inside the 23,560 payment.'},
-  R=function(dir,amt,d,w,x){return Object.assign({id:Date.now()+Math.random(),c:c.id,by:U.name,dir:dir,amt:amt,d:d,d2:'',m:'Cash',who:w,note:''},x)};
-  S.cust.push(c);[R('in',100000,'2026-08-11','নগদ'),R('in',50000,'2026-08-12','নগদ'),R('out',40000,'2026-08-11','ইব্রাহীম এর মামা'),R('out',86700,'2026-08-12','বিকাশ',{d2:'2026-08-13',m:'Bkash'}),R('out',23560,'','',{parts:[3060,5000,15000,500],note:'Nasir পাবে 260'}),R('out',2000,'2026-08-18','বিকাশ',{m:'Bkash'}),R('out',2500,'2026-09-13','বিকাশ',{m:'Bkash'}),R('out',2000,'2026-09-18','মর্জিনা'),R('out',2000,'2026-09-24','মাদিয়া'),R('in',41410,'','বিকাশ',{m:'Bkash'})].forEach(function(x,i){x.id=Date.now()+i+1;S.ltx.push(x)});
-  LC=c.id;lg('Ledger customer','Sample imported: রিয়াদ');save();ledUI()}
 var VMON={en:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],bn:['জানু','ফেব্রু','মার্চ','এপ্রিল','মে','জুন','জুলাই','আগস্ট','সেপ্টে','অক্টো','নভে','ডিসে']};
 var VHG=[{f:function(v){return v.v.split('.')[0]==='9'},e:'Version 9 · Cash flow linked',b:'ভার্সন ৯ · ক্যাশ ফ্লো সংযুক্ত'},{f:function(v){return v.v.split('.')[0]==='8'},e:'Version 8 · Role-based app',b:'ভার্সন ৮ · রোল-ভিত্তিক অ্যাপ'},{f:function(v){var m=v.v.split('.')[0];return m!=='8'&&m!=='9'},e:'Versions 1 to 7 · Foundations',b:'ভার্সন ১ থেকে ৭ · ভিত্তি'}];
 function vhDate(d){var p=String(d).split('-');if(p.length<3)return esc(d);return(+p[2])+' '+VMON[S.lang==='bn'?'bn':'en'][+p[1]-1]+' '+p[0]}
@@ -1298,8 +1314,7 @@ function verUI(){ask(lb('Version history','সংস্করণ ইতিহা
   window.addEventListener('afterprint',function(){document.body.classList.remove('lp')});
   })();
 
-
-/* ---------- ledger list interactions: hover card, long-press summary ---------- */
+/* ---------- ledger list interactions ---------- */
 (function(){
   var v=$('vLed'),hp=document.createElement('div'),HT,HH,TP;hp.id='lhp';hp.className='card';hp.hidden=true;document.body.appendChild(hp);
   function hide(){clearTimeout(HT);hp.hidden=true}
@@ -1314,8 +1329,7 @@ function verUI(){ask(lb('Version history','সংস্করণ ইতিহা
 })();
 function synNote(){return SY()?'':'<div class="card" style="grid-column:1/-1;padding:12px;border-color:var(--warn)"><b>'+lb('Sync is off on this device','এই ডিভাইসে সিঙ্ক বন্ধ')+'</b><br><small>'+lb('Products added on other devices will not appear here until sync is set up. Ask the admin: Settings > Secure sync setup.','অন্য ডিভাইসে যোগ করা পণ্য এখানে দেখা যাবে না, যতক্ষণ সিঙ্ক চালু না হয়। অ্যাডমিনকে বলুন: সেটিংস > নিরাপদ সিঙ্ক সেটআপ।')+'</small></div>'}
 
-
-/* ---------- v8.8: management tab, force logout, cash adjust, customer archive ---------- */
+/* ---------- management ---------- */
 var LRN;
 var BUGS=[
  {d:'2026-10-16 21:20',v:'9.5',w:'Other Claude profile (model not recorded)',a:'Start fresh left stale opening cash on another device after a higher-epoch sync merge',b:'The merge branch replaced entries but did not copy remote S.start; its fallback only copied when the local start was zero',c:'Copy remote S.start when R.epoch is newer and merge history/pending by id; verified with an isolated merge test'},
@@ -1329,17 +1343,14 @@ function bugTxt(){return'NCS Daily Accounts - Bug Fixing\n\n'+BUGS.map(function(
 function bcard(id,title,exp,body){return'<div class="card bcd" data-bc="'+id+'"><button class="bch" aria-expanded="false" data-bt="'+id+'"><h3 class="mgh" style="margin:0">'+title+'</h3><span class="bcx">'+exp+'<i class="vhc">&#9662;</i></span></button><div class="bcb">'+body+'</div></div>'}
 function bugBody(){return BUGS.map(function(x){return'<div class="upg"><div><b>v'+esc(x.v)+'</b> <span class="b o">'+esc(x.d)+'</span> <span class="mut">'+esc(x.w)+'</span></div><div class="upi">'+lb('Wrong','সমস্যা')+': '+esc(x.a)+'</div><div class="upi">'+lb('Cause','কারণ')+': '+esc(x.b)+'</div><div class="upi">'+lb('Fix','সমাধান')+': '+esc(x.c)+'</div></div>'}).join('')}
 (function(){var st=document.createElement('style');st.textContent='.bcd{padding:16px}.bch{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;background:none;border:0;color:var(--ink);cursor:pointer;padding:0;font:inherit;text-align:left;height:auto}.bcx{display:flex;align-items:center;gap:10px}.bcb{display:none;margin-top:6px}.bcd.on .bcb{display:block}.bcd.pv:not(.on) .bcb{display:block;max-height:150px;overflow:hidden;opacity:.85}.bcd.on .bch .vhc{transform:rotate(180deg)}';document.head.appendChild(st)})();
-var UPC=[
- {v:'9.5',s:'Done',t:['Party profile: extend cust with kind (Customer, Supplier, Lender, Borrower, Other), address, relationship; Borrow / Lend entries in the ledger with an open-balance summary (decision B, rest)','Start fresh carries all balances forward; mismatches go to an admin Pending section (decision C)','Ledger: archive any customer or party with an open balance, without voiding entries; reason note required; restorable','Duplicate marking: entries that look the same or very similar (same customer or party, same amount, close in time) get a Possible duplicate tag in the Ledger, Accounts entries and POS bills; admin can dismiss the tag or void one']},
- {v:'9.6',s:'Planned',t:['Efficiency pass: calculate balances once and reuse them, show long lists in pages, send only changed records when syncing, limit stored image size, remove unused code','Effectiveness pass: fewer taps for daily work, only the actions each role needs on each screen']},
- {v:'Later',s:'Planned',t:['Change sync key and PINs from inside the app (needs a small Google Apps Script update)','Search and filters inside a customer ledger','Statement sharing as PDF or image for WhatsApp','Ledger sheet in Google Sheets','Reminders and due dates per customer','Backup and restore (export and import)','Receipt photo attachments','Chart colour palette, quick-action icon grid on Home, Ledger/POS/Accounts table restyle']}];
+var UPC=[{v:'9.19',s:'Done',t:['Storage warning only shows on real save failures; Dismiss now works','Sync dot is a single pulsing indicator; Motion section removed','Theme is a single cycling top-bar icon (Auto → Light → Dark); Day/Night removed','Tabs fade in; Refresh spins on tap','Self test and review-queue Open fixed']},{v:'Later',s:'Planned',t:['Sync key rotation in Settings (needs Apps Script)','Send only changed records when syncing (needs Apps Script)','Effectiveness pass: fewer taps per role','Ledger sheet in Google Sheets','Sub-accounts or linked customers']}];
 function upcTxt(){return'NCS Daily Accounts - Upcoming Features\n\n'+UPC.map(function(g){return g.v+' ('+g.s+')\n'+g.t.map(function(x){return'  - '+x}).join('\n')}).join('\n\n')+'\n'}
 function mgmtUI(){
   if(!isA())return;var v=$('vMgmt'),B=function(k,l,d){return'<button class="ghost mg" data-m="'+k+'"><b>'+l+'</b><small>'+d+'</small></button>'};
   var sc=st==='ok'?'ok':st==='pend'?'pend':(st==='offl'||st==='conf')?'bad':'off';
   v.innerHTML='<header><div><div class="shop">'+lb('System management','সিস্টেম ব্যবস্থাপনা')+'</div><h1>'+lb('Management','ব্যবস্থাপনা')+'</h1></div></header>'+
-  '<div class="card" style="padding:16px"><h3 class="mgh">'+lb('Staff and access','কর্মী ও অ্যাক্সেস')+'</h3><div class="mgl">'+B('staff',lb('Staff and roles','কর্মী ও ভূমিকা'),lb('Add staff, accountant, stock manager; change role; reset PIN; deactivate','কর্মী যোগ, ভূমিকা পরিবর্তন, পিন রিসেট, নিষ্ক্রিয়'))+B('set',lb('Settings and security','সেটিংস ও নিরাপত্তা'),lb('Sync URL and key, admin PIN, starting cash, day and night times','সিঙ্ক ইউআরএল ও কী, অ্যাডমিন পিন, শুরুর নগদ, দিন-রাতের সময়'))+B('log',lb('Change log','পরিবর্তন লগ'),lb('Who changed what and when','কে কী কখন পরিবর্তন করেছে'))+'</div></div>'+
-  '<div class="card" style="padding:16px"><h3 class="mgh">'+lb('System','সিস্টেম')+'</h3><div class="mgl">'+B('reboot',lb('Force logout all','সবাইকে লগআউট'),lb('Everyone, including you, must log in again. Other devices log out when they next sync.','সবাইকে, আপনিসহ, আবার লগইন করতে হবে। অন্য ডিভাইস পরের সিঙ্কে লগআউট হবে।'))+B('wlt',lb('Wallet opening balances','ওয়ালেট শুরুর ব্যালেন্স'),lb('Starting balance of Bkash, Nagad, Rocket, Bkash Agent and recharge balances','বিকাশ, নগদ, রকেট, বিকাশ এজেন্ট ও রিচার্জ ব্যালেন্সের শুরুর পরিমাণ'))+B('ver',lb('Version history','সংস্করণ ইতিহাস'),lb('Current version','বর্তমান সংস্করণ')+' v'+APP_VERSION)+B('selftest',lb('Run self test','সেলফ টেস্ট'),lb('Check calculations, storage and key modules','হিসাব, স্টোরেজ ও মূল মডিউল পরীক্ষা'))+'</div>'+
+  '<div class="card" style="padding:16px"><h3 class="mgh">'+lb('Staff and access','কর্মী ও অ্যাক্সেস')+'</h3><div class="mgl">'+B('staff',lb('Staff and roles','কর্মী ও ভূমিকা'),lb('Add staff, accountant, stock manager','কর্মী যোগ, ভূমিকা পরিবর্তন'))+B('set',lb('Settings and security','সেটিংস ও নিরাপত্তা'),lb('Sync, PIN, cash, theme times','সিঙ্ক, পিন, নগদ'))+B('log',lb('Change log','পরিবর্তন লগ'),lb('Who changed what and when','কে কী কখন পরিবর্তন করেছে'))+'</div></div>'+
+  '<div class="card" style="padding:16px"><h3 class="mgh">'+lb('System','সিস্টেম')+'</h3><div class="mgl">'+B('reboot',lb('Force logout all','সবাইকে লগআউট'),lb('Everyone logs out','সবাই লগআউট হবে'))+B('wlt',lb('Wallet opening balances','ওয়ালেট শুরুর ব্যালেন্স'),lb('Starting balances','শুরুর পরিমাণ'))+B('ver',lb('Version history','সংস্করণ ইতিহাস'),lb('Current version','বর্তমান সংস্করণ')+' v'+APP_VERSION)+B('selftest',lb('Run self test','সেলফ টেস্ট'),lb('Check calculations, storage and key modules','হিসাব, স্টোরেজ ও মূল মডিউল পরীক্ষা'))+'</div>'+
   '<div class="mut" style="margin-top:10px;font-size:13px"><i class="sdot '+sc+'" aria-hidden="true"></i>'+(SY()?lb('Synced','সিঙ্ক হয়েছে'):lb('Off','বন্ধ'))+' · '+lb('Staff','কর্মী')+': '+(S.users&&S.users.staff?S.users.staff.length:0)+' · '+lb('Products','পণ্য')+': '+S.products.filter(function(p){return!p.del}).length+' · '+lb('Customers','কাস্টমার')+': '+S.cust.filter(function(c){return!c.del}).length+'</div></div>'+
   '<div class="card" style="padding:16px"><h3 class="mgh">Admin review queue</h3><button class="ghost mg" data-m="reviewq"><b>Review queue ('+reviewQueueCount()+')</b><small>Reconciliation, stock, flags, proposals and void requests</small></button></div>'+bcard('bug',lb('Bug Fixing','বাগ ফিক্সিং'),'<span data-m="bug" class="ghost" style="padding:6px 10px;border-radius:10px;font-size:13px">'+lb('Export .txt','এক্সপোর্ট .txt')+'</span>',bugBody())+
   bcard('upc',lb('Upcoming Features','আসন্ন ফিচার'),'<span data-m="upc" class="ghost" style="padding:6px 10px;border-radius:10px;font-size:13px">'+lb('Export .txt','এক্সপোর্ট .txt')+'</span>',UPC.map(function(g){return'<div class="upg"><div><b>'+(g.v==='Later'?lb('Later','পরে'):'v'+g.v)+'</b> <span class="b'+(g.s==='Next'?'':' o')+'">'+(g.s==='Next'?lb('Next','পরবর্তী'):lb('Planned','পরিকল্পিত'))+'</span></div>'+g.t.map(function(x){return'<div class="upi">• '+esc(x)+'</div>'}).join('')+'</div>'}).join(''))}
@@ -1392,13 +1403,13 @@ function reviewQueue(){
     if(b=e.target.closest('[data-rq-void]')){$('ov').hidden=true;ledVoidReqReview(b.dataset.rqVoid);return}
     if(b=e.target.closest('[data-rq-open]')){$('ov').hidden=true;var q=P.find(function(x){return x.id==b.dataset.rqOpen});
       if(q&&q.details){
-        if(q.details.entry){var en=S.entries.find(function(en){return en.id===q.details.entry});if(en){cur=en.d;go('acc');return}}
+        if(q.details.entry){var en=S.entries.find(function(en){return en.id===q.details.entry});if(en){go('acc');cur=en.d;reset();render();return}}
         if(q.details.customer){LC=q.details.customer;go('led');return}
         if(q.details.ledger){var t=S.ltx.find(function(x){return x.id===q.details.ledger});if(t){LC=t.c;LT='led';go('led');setTimeout(function(){ledTx(t.id)},50);return}}
       }return}
   };
 }
-function rebootAsk(){ask(lb('Force logout all?','সবাইকে লগআউট করবেন?'),'<p>'+lb('Everyone, including you, will have to log in again. Devices that are offline log out when they reconnect.','সবাইকে, আপনিসহ, আবার লগইন করতে হবে। অফলাইন ডিভাইস অনলাইনে এলে লগআউট হবে।')+'</p>',async function(){
+function rebootAsk(){ask(lb('Force logout all?','সবাইকে লগআউট করবেন?'),'<p>'+lb('Everyone, including you, will have to log in again.','সবাইকে, আপনিসহ, আবার লগইন করতে হবে।')+'</p>',async function(){
   S.rebootN=(S.rebootN||0)+1;S.rebootAt=Date.now();lg('Force logout all','By '+U.name);save();try{await push()}catch(e){}lock()},lb('Force logout','লগআউট করুন'))}
 (function(){
   var v=$('vMgmt');
@@ -1433,8 +1444,7 @@ function ledVoidTab(all){var V=all.filter(function(x){return x.void});
 function mN(m){return(m==='bKash'||m==='Bkash')?'Bkash Personal':m}
 function mL(m){return m==='Due sale'?lb('Due sale','বাকি বিক্রি'):mN(m)}
 
-
-/* ---------- v8.9: wallets (MFS and recharge balances, calculated from entries) ---------- */
+/* ---------- wallets ---------- */
 if(!S.wallets)S.wallets={};
 function wN(k){return lb(WLT[k],WLT_BN[k])}
 function wOpen(k){return+((S.wallets||{})[k])||0}
@@ -1481,8 +1491,7 @@ function openWltSettings(){
   $('fc').addEventListener('input',function(){party();preview()});
   renderWalletCards()})();
 
-/* ---------- v9.0: ledger and sales linked to cash flow ---------- */
-/* Function declarations only (hoisted), so render() and save() can call them at startup. */
+/* ---------- ledger linked to cash flow ---------- */
 function DLid(e){return e.id+2e13}
 function LKid(t){return t.id+1e13}
 function cN(id){var c=S.cust.find(function(x){return x.id===id});return c?c.name:'?'}
@@ -1494,11 +1503,8 @@ function ledEntry(t){var mv=ledMove(t)||{pay:'Cash',w:''};
 function ledChk(t){return!t.void&&!t.l9&&!t.ok}
 function entChk(e){return !e.void&&!e.ok&&((e.type==='Sale'&&e.pay==='Due'&&!e.cu)||(e.type==='Purchase'&&e.pay==='Due'))}
 function lChkN(c){return S.ltx.filter(function(t){return t.c===c.id&&ledChk(t)}).length}
-
-/* One idempotent pass, run from save(): keeps linked cash/wallet entries and due-sale ledger postings in step with their source. */
 function ledReconcile(){
   var em={},tm={};S.entries.forEach(function(e){em[e.id]=e});S.ltx.forEach(function(t){tm[t.id]=t});
-  /* A. due sales -> customer ledger (out = we gave goods on credit, the customer owes us) */
   S.entries.slice().forEach(function(e){
     var q=e.type==='Sale'&&e.pay==='Due'&&!!e.cu,id=DLid(e),t=tm[id];
     if(!q&&!t)return;
@@ -1509,7 +1515,6 @@ function ledReconcile(){
     if(q){var w={c:e.cu,amt:e.amt,d:e.d,t:e.t||'',note:String(e.desc||'').slice(0,200)};Object.keys(w).forEach(function(k){if(t[k]!==w[k])t[k]=w[k]})}
     if(!!t.void!==sv){if(sv){t.void=1;t.vr=q?'Sale voided':'Sale changed';t.vb='System'}else{t.void=0;t.vr='';t.vb=''}}
   });
-  /* B. ledger entries linked to cash or a wallet (never touches a closed day) */
   S.ltx.slice().forEach(function(t){
     if(t.src)return;
     if(!!t.lnk&&(t.le||0)!==(S.epoch||0))return;
@@ -1520,8 +1525,6 @@ function ledReconcile(){
     else if(!e.void){e.void=1;e.vr=t.void?'Ledger entry voided':(t.lnk?'Method changed':'Unlinked')}
   });
 }
-
-/* customer picker */
 function cuOptHtml(val){var L=S.cust.filter(function(c){return!c.del}).sort(function(a,b){return a.name.localeCompare(b.name)});
   return'<option value="">'+lb('Select customer','কাস্টমার বাছুন')+'</option>'+L.map(function(c){return'<option value="'+c.id+'"'+(String(val)===String(c.id)?' selected':'')+'>'+esc(c.name)+(c.phone?' · '+esc(c.phone):'')+'</option>'}).join('')+'<option value="__new"'+(val==='__new'?' selected':'')+'>+ '+lb('New customer','নতুন কাস্টমার')+'</option>'}
 function cuOpts(){var s=$('fcu'),v=s.value,sig=cuOptHtml('');if(s.dataset.sig!==sig){s.innerHTML=cuOptHtml(v);s.dataset.sig=sig}}
@@ -1538,17 +1541,13 @@ function posCust(ck){var v=ck.cu,c=null;
   else if(v)c=S.cust.find(function(x){return x.id===+v});
   if(!c){ltoast(lb('Select a customer for a due sale','বাকি বিক্রির জন্য কাস্টমার বাছুন'));return false}
   ck.cuId=c.id;ck.party=c.name;ck.phone=c.phone||ck.phone||'';return true}
-
-/* ledger form hint */
 function lkHint(s,ed){var el=$('lfk');if(!el)return;var m=ledMove({m:$('lfm').value}),cb=$('lfk2'),unk=$('lfx').checked&&$('lfu').checked,up=$('lfd').value==='in',x;
-  if(ed&&!ed.l9)x=lb('Old entry (before cash linking): use Link in the entry details to put it in the cash flow.','পুরোনো এন্ট্রি (ক্যাশ সংযোগের আগের): ক্যাশ ফ্লোতে আনতে এন্ট্রির বিস্তারিত থেকে লিংক করুন।');
+  if(ed&&!ed.l9)x=lb('Old entry (before cash linking): use Link in the entry details to put it in the cash flow.','পুরোনো এন্ট্রি (ক্যাশ সংযোগের আগের)');
   else if(!m)x=lb('Bank / Other: no change to cash or wallets.','ব্যাংক / অন্যান্য: ক্যাশ বা ওয়ালেট বদলাবে না।');
   else if(unk)x=lb('No date, so cash and wallets will not change.','তারিখ নেই, তাই ক্যাশ বা ওয়ালেট বদলাবে না।');
   else if(cb&&!cb.checked)x=lb('Not recorded in cash / wallet.','ক্যাশ / ওয়ালেটে লেখা হবে না।');
   else x=(m.w?wN(m.w):lb('Cash balance','ক্যাশ ব্যালেন্স'))+' '+(up?lb('goes up by ','বাড়বে '):lb('goes down by ','কমবে '))+(s?tk(s):'');
   el.textContent=x}
-
-/* void / restore guards for linked entries */
 function ledVoidBlocked(t){var e=S.entries.find(function(x){return x.id===LKid(t)});if(!e||e.void||!ledLive(t))return false;
   if(S.days[e.d]&&S.days[e.d].closed){ltoast(lb('That day is closed. Reopen it in Accounts first.','ওই দিন বন্ধ। আগে অ্যাকাউন্টসে দিনটি খুলুন।'));return true}
   return wltVoidBlocked(e)}
@@ -1556,20 +1555,18 @@ function ledRestoreBlocked(t){if(!ledLive(t))return false;var mv=ledMove(t);if(!
   if(e&&S.days[e.d]&&S.days[e.d].closed){ltoast(lb('That day is closed. Reopen it in Accounts first.','ওই দিন বন্ধ। আগে অ্যাকাউন্টসে দিনটি খুলুন।'));return true}
   if(mv.w){var wc=checkWalletLimit(Object.assign({id:LKid(t)},ledEntry(t)),LKid(t),[mv.w]);if(!wc.ok){ltoast(lb('Cannot restore: ','ফেরানো যাবে না: ')+wc.wallet+lb(' would go below zero.',' ঋণাত্মক হয়ে যাবে।'));return true}}
   return false}
-
-/* Check tag: review actions (admin) */
 function ledLink(id){var t=S.ltx.find(function(x){return x.id===id});if(!t||!isA())return;var mv=ledMove(t);
   if(!mv){ltoast(lb('Bank and Other do not move cash or wallets. Use Accept.','ব্যাংক ও অন্যান্য ক্যাশ বা ওয়ালেট বদলায় না। গ্রহণ করুন।'));return}
   if(!t.d){ltoast(lb('Set the date first (Edit), then link.','আগে তারিখ দিন (সম্পাদনা), তারপর যুক্ত করুন।'));return}
   var f=ledEntry(t),what=mv.w?wN(mv.w):lb('Cash balance','ক্যাশ ব্যালেন্স'),ef=(t.dir==='in'?'+':'−')+tk(t.amt);
   if(mv.w){var wc=checkWalletLimit(Object.assign({id:LKid(t)},f),null,[mv.w]);if(!wc.ok){ltoast(lb('Cannot link: ','যুক্ত করা যাবে না: ')+wc.wallet+lb(' would go below zero.',' ঋণাত্মক হয়ে যাবে।'));return}}
-  ask(lb('Link to cash flow?','ক্যাশ ফ্লোতে যুক্ত করবেন?'),'<p><b>'+esc(what)+' '+ef+'</b><br>'+lb('Posted on ','তারিখ ')+sd(f.d)+(f.d!==t.d?' ('+lb('original day is closed','আসল দিন বন্ধ')+')':'')+'</p><p class="mut" style="font-size:13px">'+lb('This changes the balance. To undo it, void the ledger entry.','এতে ব্যালেন্স বদলাবে। ফেরাতে খাতার এন্ট্রি বাতিল করুন।')+'</p>',function(){
+  ask(lb('Link to cash flow?','ক্যাশ ফ্লোতে যুক্ত করবেন?'),'<p><b>'+esc(what)+' '+ef+'</b><br>'+lb('Posted on ','তারিখ ')+sd(f.d)+(f.d!==t.d?' ('+lb('original day is closed','আসল দিন বন্ধ')+')':'')+'</p>',function(){
     t.lnk=1;t.le=S.epoch||0;t.ok=1;t.okb=U.name;lg('Ledger link',cN(t.c)+' · '+tk(t.amt)+' · '+(mv.w||'Cash'));save();ledUI()},lb('Link','যুক্ত করুন'))}
 function ledAccept(id){var t=S.ltx.find(function(x){return x.id===id});if(!t||!isA())return;t.ok=1;t.okb=U.name;lg('Ledger accept',cN(t.c)+' · '+tk(t.amt));save();ledUI()}
 function ledAcceptAll(cid){if(!isA())return;var L=S.ltx.filter(function(t){return t.c===cid&&ledChk(t)});if(!L.length)return;
   ask(lb('Accept all?','সব গ্রহণ করবেন?'),'<p>'+L.length+' '+lb('older entries stay out of the cash flow and lose the Check tag.','টি পুরোনো এন্ট্রি ক্যাশ ফ্লোর বাইরেই থাকবে, যাচাই চিহ্ন চলে যাবে।')+'</p>',function(){L.forEach(function(t){t.ok=1;t.okb=U.name});lg('Ledger accept',cN(cid)+' · '+L.length+' entries');save();ledUI()},lb('Accept all','সব গ্রহণ'))}
 function entLink(id){var e=S.entries.find(function(x){return x.id===id});if(!e||!isA()||e.type!=='Sale'||e.pay!=='Due'||!entChk(e))return;
-  ask(lb('Link to customer ledger','কাস্টমার খাতায় যুক্ত করুন'),'<p>'+esc(e.desc)+' · <b>'+tk(e.amt)+'</b> · '+sd(e.d)+'</p><div class="f"><label>'+lb('Customer','কাস্টমার')+'</label><select id="elc">'+cuOptHtml(guessCu(e))+'</select></div><div id="eln" hidden><div class="f"><label>'+lb('Customer name','কাস্টমারের নাম')+'</label><input id="eln1" maxlength="60" value="'+esc(e.party||'')+'"></div><div class="f"><label>'+lb('Phone (optional)','ফোন (ঐচ্ছিক)')+'</label><input id="eln2" type="tel" maxlength="20" value="'+esc(e.phone||'')+'"></div></div><p class="mut" style="font-size:13px">'+lb('The sale is added to this customer as money they owe us. Cash is not changed.','বিক্রিটি এই কাস্টমারের পাওনা হিসেবে যোগ হবে। ক্যাশ বদলাবে না।')+'</p>',function(){
+  ask(lb('Link to customer ledger','কাস্টমার খাতায় যুক্ত করুন'),'<p>'+esc(e.desc)+' · <b>'+tk(e.amt)+'</b> · '+sd(e.d)+'</p><div class="f"><label>'+lb('Customer','কাস্টমার')+'</label><select id="elc">'+cuOptHtml(guessCu(e))+'</select></div><div id="eln" hidden><div class="f"><label>'+lb('Customer name','কাস্টমারের নাম')+'</label><input id="eln1" maxlength="60" value="'+esc(e.party||'')+'"></div><div class="f"><label>'+lb('Phone (optional)','ফোন (ঐচ্ছিক)')+'</label><input id="eln2" type="tel" maxlength="20" value="'+esc(e.phone||'')+'"></div></div>',function(){
     var v=$('elc').value,c=null;
     if(v==='__new'){var nm=$('eln1').value.trim();if(!nm){$('eln1').style.borderColor='var(--neg)';return false}c=custNew(nm,$('eln2').value.trim(),'due sale')}
     else if(v)c=S.cust.find(function(x){return x.id===+v});
@@ -1577,30 +1574,25 @@ function entLink(id){var e=S.entries.find(function(x){return x.id===id});if(!e||
     e.cu=c.id;e.party=c.name;e.phone=c.phone||e.phone||'';lg('Link due sale',c.name+' · '+tk(e.amt));save();render()},lb('Link','যুক্ত করুন'));
   $('ob').onchange=function(ev){if(ev.target.id==='elc')$('eln').hidden=ev.target.value!=='__new'};$('eln').hidden=$('elc').value!=='__new'}
 function entAccept(id){var e=S.entries.find(function(x){return x.id===id});if(!e||!isA())return;e.ok=1;lg('Accept entry',(e.party||e.desc||'?')+' · '+tk(e.amt));save();render()}
-
-/* Check banners */
 function ledChkBar(c){if(!lEd())return'';var n=lChkN(c);if(!n)return'';
-  return'<div class="card cbn noprint"><span><b>'+lb('Check','যাচাই')+'</b> · '+n+' '+lb('older entries were made before cash linking and are not in the cash flow. Open an entry to review it.','টি পুরোনো এন্ট্রি ক্যাশ সংযোগের আগের, ক্যাশ ফ্লোতে নেই। দেখতে এন্ট্রি খুলুন।')+'</span>'+(isA()?'<button class="ghost" data-a="accall">'+lb('Accept all','সব গ্রহণ')+'</button>':'')+'</div>'}
+  return'<div class="card cbn noprint"><span><b>'+lb('Check','যাচাই')+'</b> · '+n+' '+lb('older entries were made before cash linking and are not in the cash flow.','টি পুরোনো এন্ট্রি ক্যাশ সংযোগের আগের, ক্যাশ ফ্লোতে নেই।')+'</span>'+(isA()?'<button class="ghost" data-a="accall">'+lb('Accept all','সব গ্রহণ')+'</button>':'')+'</div>'}
 function ledTopBar(){if(!lEd())return'';var a=S.ltx.filter(ledChk).length,b=S.entries.filter(entChk).length;if(!a&&!b)return'';
-  return'<div class="card cbn"><span><b>'+lb('Check','যাচাই')+'</b> · '+(a?a+' '+lb('ledger entries','খাতার এন্ট্রি'):'')+(a&&b?' · ':'')+(b?b+' '+lb('entries in Accounts','অ্যাকাউন্টসের এন্ট্রি'):'')+' — '+lb('made before cash linking; they stay out of the cash flow until admin links or accepts them.','ক্যাশ সংযোগের আগের; অ্যাডমিন যুক্ত বা গ্রহণ না করা পর্যন্ত ক্যাশ ফ্লোর বাইরে থাকবে।')+'</span>'+(a?'<button class="ghost" data-a="flt" data-f="chk">'+lb('Show customers','কাস্টমার দেখুন')+'</button>':'')+'</div>'}
+  return'<div class="card cbn"><span><b>'+lb('Check','যাচাই')+'</b> · '+(a?a+' '+lb('ledger entries','খাতার এন্ট্রি'):'')+(a&&b?' · ':'')+(b?b+' '+lb('entries in Accounts','অ্যাকাউন্টসের এন্ট্রি'):'')+'</span>'+(a?'<button class="ghost" data-a="flt" data-f="chk">'+lb('Show customers','কাস্টমার দেখুন')+'</button>':'')+'</div>'}
 function chkBar(){var el=$('chkBar');if(!el)return;if(!(U&&lEd())){el.hidden=true;el.innerHTML='';return}
   var ds=S.entries.filter(function(e){return entChk(e)&&e.type==='Sale'}).length,
       dp=S.entries.filter(function(e){return entChk(e)&&e.type==='Purchase'}).length;
   if(!ds&&!dp){el.hidden=true;el.innerHTML='';return}
   var parts=[];if(ds)parts.push(ds+' '+lb('due sale(s)','বাকি বিক্রি'));if(dp)parts.push(dp+' '+lb('old due purchase(s)','পুরোনো বাকি ক্রয়'));
-  el.hidden=false;el.innerHTML='<span><b>'+lb('Check','যাচাই')+'</b> · '+parts.join(' · ')+' — '+lb('review and accept.','পর্যালোচনা করে গ্রহণ করুন।')+'</span><button class="ghost" data-ck="show">'+lb('Show','দেখুন')+'</button>'}
+  el.hidden=false;el.innerHTML='<span><b>'+lb('Check','যাচাই')+'</b> · '+parts.join(' · ')+'</span><button class="ghost" data-ck="show">'+lb('Show','দেখুন')+'</button>'}
 (function(){
   $('fcu').addEventListener('change',function(){party();preview()});
   $('tbl').addEventListener('click',function(ev){var b=ev.target.closest('button');if(!b)return;var a=b.dataset.a;if(a==='lc')entLink(+b.dataset.i);else if(a==='ok')entAccept(+b.dataset.i)});
   $('chkBar').addEventListener('click',function(ev){if(ev.target.closest('[data-ck]')){$('sty').value='Check';render()}});
 })();
-
-/* ---------- v9.7: paging controls ---------- */
 (function(){
   $('tbl').addEventListener('click',function(e){if(e.target.closest('[data-amore]')){ACC_N+=150;render()}});
   $('vLed').addEventListener('click',function(e){if(e.target.closest('[data-lm]')){LPGN+=100;ledUI()}});
 })();
-/* ---------- phone drawer menu (Figma Light 02) ---------- */
 (function(){
   var COL=['#9E68DF','#2F7BD8','#EDBF47','#E8743B','#2CC56F','#46C1BF'],
   mb=document.createElement('button');mb.id='mb';mb.className='ic';mb.setAttribute('aria-label','Menu');
@@ -1617,152 +1609,18 @@ function chkBar(){var el=$('chkBar');if(!el)return;if(!(U&&lEd())){el.hidden=tru
   document.addEventListener('keydown',function(e){if(e.key==='Escape')close()});
 })();
 
-/* ---------- v9.6 audit hardening ---------- */
-VERS.unshift({v:'9.6',d:'2026-10-17',t:'Financial and data safeguards',n:['Opening-cash changes require a reason and enter the Change Log; daily, Home and report sales/purchases exclude wallet-transfer categories','New PINs use PBKDF2-SHA-256 and 6+ digits; old hashes upgrade after a successful login, and recovery codes rotate after reset','Stock overrides remain pending until approval; Admin can reject, and approved targets are recalculated against current stock','Local save failures are visible; unreadable saved data is preserved before replacement, and Settings can export a JSON data backup','Undo checks wallet balances; CSV exports neutralize formula-leading text and product image sources are escaped']});
-BUGS.unshift(
- {d:'2026-10-17 07:25',v:'9.6',w:'Other Claude profile (model not recorded)',a:'Changing starting cash could silently move the calculated balance for every historical day',b:'Settings overwrote S.start without a reason or audit record',c:'Reject negative/invalid values; require a reason when it changes; write the old and new amount to Change Log'},
- {d:'2026-10-17 07:25',v:'9.6',w:'Other Claude profile (model not recorded)',a:'Wallet top-ups and cash-outs inflated Home, daily and report sales/purchases',b:'Wallet-transfer categories are stored as Sale/Purchase entries and used in business totals',c:'Exclude exact WLTC transfer categories from operational totals and charts while preserving cash/wallet balance effects'},
- {d:'2026-10-17 07:25',v:'9.6',w:'Other Claude profile (model not recorded)',a:'Undo could restore entries that made a wallet negative',b:'Undo restored the snapshot without comparing wallet balances',c:'Compare balances before and after; block undo if it creates or worsens a negative wallet'},
- {d:'2026-10-17 07:25',v:'9.6',w:'Other Claude profile (model not recorded)',a:'An exact stock override changed stock before Admin reviewed it and could not be rejected',b:'stockMap included queued movements and the review row had only an approve action',c:'Exclude pending/rejected movements; allow Admin approval or rejection; recalculate the approved adjustment from current stock to the requested target, with fallback for legacy queued movements that have no target field'},
- {d:'2026-10-17 07:25',v:'9.6',w:'Other Claude profile (model not recorded)',a:'PINs used a single SHA-256 pass and accepted four digits; resetting the PIN kept the same recovery verifier',b:'The stored hash was not a password-hardening KDF and reset did not rotate recovery',c:'Use PBKDF2-SHA-256 with per-PIN salt, require 6+ digits for new/reset PINs, migrate old hashes on successful login and show a newly rotated recovery code'},
- {d:'2026-10-17 07:25',v:'9.6',w:'Other Claude profile (model not recorded)',a:'Local save errors were swallowed and malformed saved data could be replaced by a demo state',b:'persist caught storage failures silently and startup fell back without retaining the unreadable original',c:'Show a persistent warning, preserve unreadable data before the first replacement, offer a recovery download and JSON data export'},
- {d:'2026-10-17 07:25',v:'9.6',w:'Other Claude profile (model not recorded)',a:'Product image attributes and CSV text exports could interpret user text as markup or spreadsheet formulas',b:'Image src was interpolated without escaping and CSV cells only escaped quotes',c:'Escape the image attribute and prefix formula-leading CSV text before quoting'}
-);
-var upc96=UPC.find(function(x){return x.v==='9.6'});if(upc96)upc96.v='9.7';
-var later=UPC.find(function(x){return x.v==='Later'});if(later){later.t[0]='Change sync key in Settings with the matching Apps Script key-rotation change; add a direct admin PIN change in Settings';later.t[5]='Backup import/restore (JSON export added in v9.6)'}
-UPC.unshift({v:'9.6',s:'Done',t:['Financial audit safeguards: opening-cash reason and log; wallet-transfer categories excluded from sell/buy reporting; Undo wallet guard','PIN hash upgrade to PBKDF2-SHA-256, 6+ digit new/reset PINs and rotating recovery code','Stock override approval/rejection; pending changes do not affect stock until approved','Visible local-storage save failures, recovery copy before replacing unreadable data, and JSON backup export','CSV formula neutralization and escaped product image sources']});
-
-/* ---------- v9.7 notes (added after the v9.6 block so they come first) ---------- */
-(function(){
-  var M="Claude Sonnet 5.5 · owner's Claude account";
-  if(VERS[0]&&VERS[0].v==='9.6'&&!VERS[0].by)VERS[0].by='Other Claude profile (model not recorded)';
-  VERS.unshift({v:'9.7',d:'2026-10-17',t:'Discount percent, speed and model notes',by:M,n:['POS discount: amount and percent fields work together (type an amount to see the percent, type a percent to get the amount) with minus and plus buttons to lower or raise the percent; a note shows when it is over 5%','Faster screens: wallet balances only sort wallet entries, and entries sort with a quicker comparison','Long lists open in pages with Show more: Products (60 at a time), Accounts day table (150), customer ledger (latest 80)','Stored pictures are capped at about 24 KB so the synced data stays small','Version and Bug Fixing notes now say which AI model and account made each change']});
-  BUGS.unshift(
-    {d:'2026-10-17 --:--',v:'9.7',w:M,a:'Wallet balances were slow to calculate every time Accounts or Home opened',b:'Every entry (thousands) was copied and sorted with a slow text comparison even though only wallet entries matter',c:'Only entries that move a wallet are sorted, using a plain comparison; all entries are sorted the same faster way'},
-    {d:'2026-10-17 --:--',v:'9.7',w:M,a:'Products screen took about half a second to open with 800 products',b:'A row with picture and buttons was built for every product at once',c:'Rows are built 60 at a time with a Show more control; search and filters restart from the first page'});
-  var old=UPC.findIndex(function(x){return x.v==='9.7'&&x.s!=='Done'});if(old>=0)UPC.splice(old,1);
-  UPC.unshift({v:'9.7',s:'Done',t:['Discount percent calculator in POS (amount and percent in step, plus and minus buttons)','Faster wallet maths and entry sorting; long lists open in pages; picture size cap','Model and account shown in version and bug notes']});
-  var li=UPC.findIndex(function(x){return x.v==='Later'});UPC.splice(li<0?UPC.length:li,0,{v:'9.8',s:'Planned',t:['Send only changed records when syncing (needs a Google Apps Script update; owner decision pending)','Effectiveness pass: fewer taps and only the actions each role needs (owner choices pending)','Reduced-motion option for the sync indicator','Import and restore from a JSON backup']});
-})();
-
-/* ---------- v9.8: navigation, refresh and dashboard visual fixes ---------- */
-(function(){
-  var M="Manus (model not recorded) · owner's Manus account";
-  APP_VERSION='9.8';
-  VERS.unshift({v:'9.8',d:'2026-10-18',t:'Navigation, refresh and dashboard visual fixes',by:M,n:['POS and Ledger use the same normal scale as the other tabs; Sync keeps its status label and indicator without a resting outline','Top refresh redraws the selected view without restarting the app; full page refresh restores the last selected tab for that role','Removed the storage-warning JSON download action; the separate Settings data export remains available','Home now has an icon quick-action grid and a refreshed light/dark chart palette; Accounts and Ledger tables plus POS cart rows have a consistent theme-aware style','Bengali/English labels, dark mode, phone layout and existing calculations are preserved']});
-  BUGS.unshift(
-    {d:'2026-10-18 00:32',v:'9.8',w:M,a:'Refreshing the app returned to the role default tab instead of the selected tab',b:'The selected view existed only in the in-memory CUR variable and was lost on page reload',c:'Remember the active view in sessionStorage by role and restore it when the tab list is rebuilt'},
-    {d:'2026-10-18 00:32',v:'9.8',w:M,a:'The Sync control had an unwanted resting border around its status',b:'It inherited the shared ghost-button border treatment',c:'Remove the resting border while preserving the visible status label, colored indicator, title and explicit focus-visible keyboard cue'},
-    {d:'2026-10-18 00:32',v:'9.8',w:M,a:'The storage warning offered a Download current data action that created a JSON file',b:'The warning button serialized current or recovery data into a downloadable file',c:'Repurpose that specific button as Dismiss; retain the independent Settings JSON export'},
-    {d:'2026-10-18 00:32',v:'9.8',w:M,a:'POS and Ledger did not explicitly reset to the same normal view scale as other tabs',b:'Those views had no scoped scale reset to guard against inherited zoom/transform styling',c:'Explicitly reset zoom and transform on POS and Ledger views without changing their responsive layout'}
-  );
-  var ix=UPC.findIndex(function(x){return x.v==='9.8'});if(ix>=0)UPC.splice(ix,1);
-  UPC.unshift({v:'9.8',s:'Done',t:['Keep the selected tab after a full page refresh; add an active-view refresh action without restarting the app','Remove the storage-warning JSON download while keeping the Settings export','Normalize POS/Ledger scale and Sync outline while preserving status and accessibility cues','Apply the Home chart palette, quick-action icon grid, and Ledger/POS/Accounts table restyle with Bengali/English, dark mode, phone layout and calculations intact']});
-})();
-
-
-/* ---------- v9.9: bill-first POS workflow ---------- */
-(function(){
-  var M="Manus (model not recorded) · owner's Manus account";
-  APP_VERSION='9.9';
-  VERS.unshift({v:'9.9',d:'2026-10-18',t:'Bill-first POS layout and product picker',by:M,n:['The POS bill/cart is now the main full-width focus; the product catalog is collapsed in a browse/add-to-bill disclosure','Product Name/ID/Barcode search comes first, followed by Scan and Add Product in one responsive row','Typing opens the product browser with matching results; exact product IDs can be searched or entered to add the item','Basket, discount, checkout, hold/resume, payment, receipt and stock logic remain unchanged']});
-  BUGS.unshift(
-    {d:'2026-10-18 00:56',v:'9.9',w:M,a:'The POS catalog was always visible and competed with the bill/cart for the primary workspace',b:'The catalog and cart shared the main view in a fixed two-column layout',c:'Give the cart a full-width primary panel and place browsing results in a collapsed, searchable disclosure'},
-    {d:'2026-10-18 00:56',v:'9.9',w:M,a:'POS product search did not find items by product ID',b:'The product list filtered by name and barcode, and exact-code handling only checked barcode',c:'Include product IDs in live filtering and exact-entry matching while preserving barcode precedence'}
-  );
-  UPC.unshift({v:'9.9',s:'Done',t:['Bill/cart is the primary full-width POS area; product browsing is collapsed until requested','Product Name/ID/Barcode search, Scan and Add Product stay together in one adaptive row','Search results open the product browser; exact product IDs can be entered to add the matching item','Existing basket, discount, checkout, hold/resume, payment, receipt and stock calculations are preserved']});
-})();
-
-/* ---------- v9.10: ledger search/filters, cashier flag, accountant edit review, statement image, due dates ---------- */
-var LFQ='',LFD='',LFM='',LFA='',LFB='',LFC=null;
-function ledFilt(){if(LFC!==LC){LFC=LC;LFQ=LFD=LFM=LFA=LFB=''}
- var o=function(v,l,s){return'<option value="'+v+'"'+(s===v?' selected':'')+'>'+l+'</option>'};
- return'<section class="card fb noprint"><input data-lf="q" value="'+esc(LFQ)+'" placeholder="'+lb('Search name, note, amount','নাম, নোট, টাকা খুঁজুন')+'"><select data-lf="d">'+o('',lb('All directions','সব'),LFD)+o('in','পেলাম',LFD)+o('out','দিলাম',LFD)+'</select><select data-lf="m">'+o('',lb('All methods','সব মাধ্যম'),LFM)+['Cash','Bkash Personal','Bkash Agent','Nagad','Rocket','Bank','Other','Due sale'].map(function(m){return o(m,mL(m),LFM)}).join('')+'</select><input data-lf="a" type="date" title="From" value="'+LFA+'"><input data-lf="b" type="date" title="To" value="'+LFB+'"><button class="ghost" data-a="fltclr">'+lb('Clear','মুছুন')+'</button></section>'}
-function ledFlt(rows){var q=LFQ.trim().toLowerCase().replace(/,/g,'');return rows.filter(function(r){var x=r[0],k=x.d||'9999';return(!q||((x.who||'')+' '+(x.note||'')+' '+x.amt+' '+(x.parts||[]).join(' ')).toLowerCase().includes(q))&&(!LFD||x.dir===LFD)&&(!LFM||mN(x.m)===LFM)&&(!(LFA||LFB)||x.d)&&(!LFA||k>=LFA)&&(!LFB||k<=LFB)})}
-$('vLed').addEventListener('input',function(e){var k=e.target.dataset&&e.target.dataset.lf;if(!k)return;var p=e.target.selectionStart,v=e.target.value;if(k==='q')LFQ=v;else if(k==='d')LFD=v;else if(k==='m')LFM=v;else if(k==='a')LFA=v;else LFB=v;ledUI();var i=$('vLed').querySelector('[data-lf="'+k+'"]');if(i){i.focus();if(k==='q')i.setSelectionRange(p,p)}});
-/* cashier flag / accountant edit review */
-function ledFlagN(c){return S.ltx.filter(function(t){return t.c===c.id&&!t.void&&((t.flag&&t.flag.state==='pending')||(t.prop&&t.prop.state==='pending')||(t.voidReq&&t.voidReq.state==='pending'))}).length}
-function ledFlag(id){var t=S.ltx.find(function(x){return x.id===id});if(!t||t.void)return;
- ask(lb('Flag for Admin check','অ্যাডমিন যাচাইয়ের জন্য চিহ্নিত করুন'),'<p class="mut">'+tk(t.amt)+' · '+dr(t)+'</p><div class="f"><label>'+lb('Reason (required)','কারণ (আবশ্যক)')+'</label><input id="lfgr" maxlength="160"></div><p class="mut" style="font-size:13px">'+lb('The entry is not changed. Admin will review it.','এন্ট্রি বদলাবে না। অ্যাডমিন দেখবেন।')+'</p>',function(){var r=$('lfgr').value.trim();if(!r){$('lfgr').style.borderColor='var(--neg)';return false}t.flag={state:'pending',by:U.name,at:Date.now(),reason:r};lg('Ledger flag',cname()+' · '+tk(t.amt)+' — '+r);save();ledUI()},lb('Flag','চিহ্নিত করুন'))}
-function ledFlagClear(id){var t=S.ltx.find(function(x){return x.id===id});if(!t||!isA()||!t.flag)return;t.flag.state='cleared';t.flag.cb=U.name;t.flag.ca=Date.now();lg('Ledger flag cleared',cname()+' · '+tk(t.amt));save();ledUI()}
-function ledPropReview(id){var t=S.ltx.find(function(x){return x.id===id});if(!t||!isA()||!t.prop||t.prop.state!=='pending')return;var p=t.prop,to=p.to,
- r=function(l,a,b){return'<div class="prow"><span>'+l+'</span><span>'+esc(a)+' → <b>'+esc(b)+'</b></span></div>'},L=[];
- if(t.amt!==to.amt)L.push(r(lb('Amount','টাকা'),n(t.amt),n(to.amt)));if(t.dir!==to.dir)L.push(r(lb('Type','ধরন'),t.dir,to.dir));if((t.d||'')!==(to.d||''))L.push(r(lb('Date','তারিখ'),t.d||'?',to.d||'?'));if(mN(t.m)!==mN(to.m))L.push(r(lb('Method','মাধ্যম'),mN(t.m)||'',mN(to.m)||''));if((t.who||'')!==(to.who||''))L.push(r(lb('Party','পক্ষ'),t.who||'',to.who||''));if((t.note||'')!==(to.note||''))L.push(r(lb('Note','নোট'),t.note||'',to.note||''));
- ask(lb('Review proposed edit','প্রস্তাবিত সম্পাদনা'),'<p class="mut">'+esc(p.by)+' · '+esc(p.reason)+'</p>'+(L.join('')||'<div class="mut">'+lb('No visible change','কোনো পরিবর্তন নেই')+'</div>')+'<div class="f" style="margin-top:10px"><label>'+lb('Reason to reject','বাতিলের কারণ')+'</label><input id="lpr" maxlength="160"></div><button type="button" class="ghost" id="lprj" style="color:var(--neg)">'+lb('Reject','প্রত্যাখ্যান')+'</button>',function(){
-  var m=Object.assign({},t,to),mv=ledMove(m);if(to.lnk&&mv&&mv.w){var wc=checkWalletLimit(Object.assign({id:LKid(t)},ledEntry(m)),LKid(t),[mv.w]);if(!wc.ok){ltoast(lb('Cannot approve: ','অনুমোদন যাবে না: ')+wc.wallet+lb(' would go below zero.',' ঋণাত্মক হয়ে যাবে।'));return false}}
-  Object.assign(t,to,{eb:p.by});t.prop={state:'approved',by:p.by,at:p.at,reason:p.reason,rb:U.name,ra:Date.now()};lg('Ledger edit approved',cname()+' · '+tk(t.amt)+' · by '+p.by);save();ledUI()},lb('Approve','অনুমোদন'));
- $('ob').onclick=function(e){if(e.target.id!=='lprj')return;var w=$('lpr').value.trim();if(!w){$('lpr').style.borderColor='var(--neg)';return}t.prop.state='rejected';t.prop.rb=U.name;t.prop.ra=Date.now();t.prop.rr=w;lg('Ledger edit rejected',cname()+' · '+tk(t.amt)+' — '+w);save();$('ov').hidden=true;ledUI()}}
-/* due dates and reminders */
-function dueState(c){if(!c.due||c.del||!lBal(c.id))return'';var t=iso(new Date()),s=new Date();s.setDate(s.getDate()+3);return c.due<t?'over':c.due<=iso(s)?'soon':''}
-function dueTxt(c){var s=dueState(c);return sd(c.due)+(s==='over'?' · '+lb('Overdue','মেয়াদ পার'):s==='soon'?' · '+lb('Due soon','শীঘ্রই')+'':'')}
-function ledDue(id){var c=S.cust.find(function(x){return x.id===id});if(!c||!lEd())return;
- ask(lb('Due date and reminder','নির্ধারিত তারিখ ও রিমাইন্ডার'),'<div class="f"><label>'+lb('Due date (leave empty to clear)','নির্ধারিত তারিখ (মুছতে খালি রাখুন)')+'</label><input id="cdd" type="date" value="'+esc(c.due||'')+'"></div><div class="f"><label>'+lb('Reminder note (optional)','রিমাইন্ডার নোট (ঐচ্ছিক)')+'</label><input id="cdn" maxlength="120" value="'+esc(c.dueNote||'')+'"></div><p class="mut" style="font-size:13px">'+lb('Reminders show inside the app (Ledger list and this profile) when a party with a balance is due within 3 days or overdue.','রিমাইন্ডার অ্যাপের ভেতরে দেখা যাবে (খাতার তালিকা ও প্রোফাইল), বাকি থাকা পক্ষের তারিখ ৩ দিনের মধ্যে বা পার হলে।')+'</p>',function(){c.due=$('cdd').value;c.dueNote=$('cdn').value.trim();lg('Ledger due date',c.name+' · '+(c.due?sd(c.due):'cleared'));save();ledUI()},lb('Save','সংরক্ষণ'))}
-function ledDueBar(c){if(!c.due)return'';var b=lBal(c.id);return'<div class="card cbn noprint"><span><b>'+lb('Due date','নির্ধারিত তারিখ')+'</b> · '+esc(dueTxt(c))+(b?' · '+tk(Math.abs(b))+' '+(b>0?lb('we owe','আমরা দেব'):lb('they owe','আমরা পাব')):' · '+lb('Settled','মিটেছে'))+(c.dueNote?' · '+esc(c.dueNote):'')+'</span></div>'}
-function ledDueTop(){var L=S.cust.filter(function(c){return dueState(c)}).sort(function(a,b){return a.due.localeCompare(b.due)});if(!L.length)return'';
- return'<div class="card cbn"><span><b>'+lb('Reminders','রিমাইন্ডার')+'</b> · '+L.length+'</span>'+L.slice(0,6).map(function(c){var b=lBal(c.id);return'<button class="ghost" data-a="open" data-id="'+c.id+'">'+esc(c.name)+' · '+esc(dueTxt(c))+' · '+tk(Math.abs(b))+'</button>'}).join('')+'</div>'}
-/* statement as an image (WhatsApp share or download) */
-async function ledImg(){var c=S.cust.find(function(x){return x.id===LC});if(!c)return;try{
- var all=lSort(S.ltx.filter(function(x){return x.c===LC&&!x.void})),rows=ledRows(all,LF,LE),ob=LF?all.filter(function(x){return(x.d||'9999')<LF}).reduce(function(s,x){return s+(x.dir==='in'?x.amt:-x.amt)},0):null;
- if(document.fonts&&document.fonts.ready)await document.fonts.ready;
- var W=760,H=170+(rows.length+(ob!=null?1:0)+1)*30+20,cv=document.createElement('canvas'),F='SolaimanLipi, Inter, sans-serif';cv.width=W;cv.height=H;var g=cv.getContext('2d');
- g.fillStyle='#fff';g.fillRect(0,0,W,H);g.fillStyle='#111';g.font='700 22px '+F;g.fillText(shopN(),24,38);g.font='16px '+F;g.fillText(c.name+(c.phone?' · '+c.phone:''),24,66);g.fillStyle='#666';g.fillText((LF?sd(LF):'…')+' – '+(LE?sd(LE):sd(iso(new Date()))),24,90);
- var y=128,T=function(a,b,d,e,f,col){g.textAlign='left';g.fillStyle=col||'#111';g.fillText(String(a).slice(0,12),24,y);g.fillText(String(b).slice(0,34),140,y);g.textAlign='right';g.fillStyle=col||'#1E7A47';g.fillText(d,520,y);g.fillStyle=col||'#C23B3B';g.fillText(e,620,y);g.fillStyle=col||'#111';g.fillText(f,736,y);y+=30};
- g.font='600 14px '+F;T('Date','Details','পেলাম','দিলাম','Balance','#111');g.font='14px '+F;
- if(ob!=null)T('','Opening balance','','',n(ob));var ti=0,to=0,last=ob||0;
- rows.forEach(function(r){var x=r[0];if(x.dir==='in')ti+=x.amt;else to+=x.amt;last=r[1];T(x.d?sd(x.d):'?',(x.who||'')+(x.note?' · '+x.note:''),x.dir==='in'?n(x.amt):'',x.dir==='out'?n(x.amt):'',n(r[1]))});
- g.font='600 14px '+F;T('','Total',n(ti),n(to),n(last));
- var b=await new Promise(function(r){cv.toBlob(r,'image/png')}),fn='Statement_'+c.name.replace(/[^\w\u0980-\u09FF]+/g,'_')+'.png',f=new File([b],fn,{type:'image/png'});lg('Ledger share image',c.name);save();
- if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],title:c.name})}catch(e){}}
- else{var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=fn;a.click();ltoast(lb('Image saved. Share it from your gallery or WhatsApp.','ছবি সেভ হয়েছে। গ্যালারি বা হোয়াটসঅ্যাপ থেকে শেয়ার করুন।'))}
- }catch(e){ltoast('Image error: '+e.message)}}
-(function(){var M="Claude Sonnet 5.5 · owner's Claude account";APP_VERSION='9.10';
- VERS.unshift({v:'9.10',d:'2026-10-18',t:'Ledger search, review flags, statement image and due dates',by:M,n:['Search inside a party ledger (name, note, amount) with filters for direction, method and date range','Cashiers can add entries and view full party details but can no longer edit or void existing entries; they can flag an entry for Admin check with a reason','Accountant edits to ledger entries are sent to Admin as a proposal; the live entry changes only when Admin approves, and a rejection keeps the original','Statement can be shared as an image (WhatsApp share sheet, or saved to the device); Print can save a PDF through the browser','Due date and reminder note per party; in-app reminders for parties due within 3 days or overdue']});
- UPC.unshift({v:'9.10',s:'Done',t:['Party ledger search and filters (amount, name, note, direction, method, date)','Cashier flag for Admin check; Accountant edit proposals with Admin approve/reject','Statement image sharing; in-app due dates and reminders']})})();
-
-/* ---------- v9.11: JSON restore (admin only; validates, previews, safety backup, PIN) ---------- */
-var RSB=null;
-function rsLoad(text){RSB=null;var el=$('rsp');
- try{var b=JSON.parse(text),st=b&&b.state;
-  if(!b||b.app!=='NCS Daily Accounts'||!st||typeof st!=='object'||Array.isArray(st))throw new Error(lb('This is not an NCS backup file.','এটি এনসিএস ব্যাকআপ ফাইল নয়।'));
-  COLS.forEach(function(c){if(st[c]===undefined)return;if(!Array.isArray(st[c])||st[c].some(function(x){return!x||typeof x!=='object'||x.id===undefined}))throw new Error(lb('Invalid data in ','ভুল তথ্য: ')+c)});
-  if(st.days&&typeof st.days!=='object')throw new Error('days');
-  RSB=b;var L=COLS.map(function(c){return c+': '+(st[c]||[]).length+' ('+lb('now','এখন')+' '+(S[c]||[]).length+')'});
-  if(el)el.innerHTML='<b>'+lb('Preview','প্রিভিউ')+'</b> · v'+esc(b.version||'?')+' · '+esc(String(b.exportedAt||'').slice(0,16).replace('T',' '))+'<br>'+L.map(esc).join('<br>')+'<br><span class="warn">'+lb('All current data on this device will be replaced by this backup.','এই ডিভাইসের সব বর্তমান তথ্য ব্যাকআপ দিয়ে বদলে যাবে।')+'</span>';
-  return true}catch(e){if(el)el.innerHTML='<span class="neg">'+esc(e.message)+'</span>';return false}}
-function restoreUI(){if(!isA())return;
- ask(lb('Restore from backup','ব্যাকআপ থেকে ফিরিয়ে আনুন'),'<div class="f"><label>'+lb('Backup file (.json)','ব্যাকআপ ফাইল (.json)')+'</label><input id="rsf" type="file" accept=".json,application/json"></div><div id="rsp" class="mut" style="margin-bottom:10px">'+lb('Choose a file to preview it. Nothing changes until you confirm.','ফাইল বেছে প্রিভিউ দেখুন। নিশ্চিত না করা পর্যন্ত কিছু বদলাবে না।')+'</div><div class="f"><label>Admin PIN</label><input id="rspin" type="password" inputmode="numeric"></div><p class="mut" style="font-size:12.5px">'+lb('Logins, PINs and sync settings on this device are kept. A safety copy of the current data is downloaded first.','এই ডিভাইসের লগইন, পিন ও সিঙ্ক সেটিং থাকবে। আগে বর্তমান তথ্যের একটি সেফটি কপি ডাউনলোড হবে।')+'</p>',async function(){
-  if(!RSB){ltoast(lb('Choose a valid backup file first','আগে সঠিক ব্যাকআপ ফাইল বাছুন'));return false}
-  if(!(await ck(S.users.admin,$('rspin').value))){$('rspin').value='';$('rspin').placeholder=lb('Wrong PIN','ভুল পিন');return false}
-  var ts=Date.now(),cur=JSON.stringify({app:'NCS Daily Accounts',version:APP_VERSION,exportedAt:new Date().toISOString(),state:stateOut()},null,2);
-  await dlFile('NCS_PreRestore_'+iso(new Date())+'.json',cur);try{localStorage.setItem(KEY+'_prerestore_'+ts,cur)}catch(e){}
-  var st=RSB.state,keep={};LOCAL.concat(['users','rebootN','rebootAt']).forEach(function(k){if(k in S)keep[k]=S[k]});
-  var ns=Object.assign({},st,keep);ns.epoch=Math.max(S.epoch||0,st.epoch||0);
-  COLS.forEach(function(c){ns[c]=(st[c]||[]).map(function(x){return Object.assign({},x,{u:ts})})});if(ns.wallets&&typeof ns.wallets==='object')ns.wallets=Object.assign({},ns.wallets,{u:ts});
-  ns.rev=(S.rev||0)+1;S=ns;ensureCols();S.names=S.names||{};S.parties=S.parties||{};primeLH();lg('Restore backup','From '+String(RSB.exportedAt||'?').slice(0,16)+' · '+COLS.map(function(c){return c+' '+S[c].length}).join(', '));RSB=null;save();cur=iso(new Date());reset();redrawActiveView();ltoast(lb('Backup restored','ব্যাকআপ ফিরিয়ে আনা হয়েছে'))},lb('Restore','ফিরিয়ে আনুন'));
- $('ob').onchange=function(e){if(e.target.id!=='rsf')return;var f=e.target.files&&e.target.files[0];if(!f)return;if(f.size>20e6){$('rsp').textContent='File too large';return}f.text().then(rsLoad)}}
-$('ob').addEventListener('click',function(e){if(e.target.id==='restoreJson')restoreUI()});
-(function(){var M="Claude Sonnet 5.5 · owner's Claude account";APP_VERSION='9.11';
- VERS.unshift({v:'9.11',d:'2026-10-18',t:'Restore from JSON backup',by:M,n:['Settings has a Restore from backup button (Admin): choose a backup file, see a preview of record counts, enter the Admin PIN, then restore','The file is checked before anything changes; a safety copy of the current data is downloaded first','Logins, PINs and this device\'s sync settings are never imported or replaced','Restored records are stamped as newest so they win when other devices sync']});
- UPC.unshift({v:'9.11',s:'Done',t:['JSON import/restore with validation, preview, safety backup and Admin PIN']})})();
-
-/* ---------- v9.12: dashboard clock (device local time) ---------- */
-function clkTick(){var t=$('hClkT'),d=$('hClkD');if(!t||!d)return;var x=new Date(),L=S.lang==='bn'?'bn-BD':'en-US';t.textContent=x.toLocaleTimeString(L,{hour:'numeric',minute:'2-digit',second:'2-digit',hour12:true});d.textContent=x.toLocaleDateString(L,{weekday:'long',day:'numeric',month:'short',year:'numeric'})}
-setInterval(function(){if(CUR==='home'&&!document.hidden)clkTick()},1000);
-(function(){var M="Claude Sonnet 5.5 · owner's Claude account";APP_VERSION='9.12';
- VERS.unshift({v:'9.12',d:'2026-10-18',t:'Dashboard clock',by:M,n:['Home shows a live clock (time with seconds, weekday and date) in the top corner of the cash balance card, in English or Bengali','Uses the device time; it updates only while Home is open and the app is visible']});
- UPC.unshift({v:'9.12',s:'Done',t:['Live clock on the Home dashboard']})})();
-/* ---------- v9.13: reduced motion (OS setting + manual option, this device only) ---------- */
+/* v9.13 reduced motion: auto-detect from OS, no manual button */
 var MQM=window.matchMedia?matchMedia('(prefers-reduced-motion: reduce)'):null;
-BN['Motion: Auto']='মোশন: অটো (ডিভাইস অনুযায়ী)';BN['Motion: Reduced']='মোশন: কম';
-function applyMotion(){var on=S.motion==='reduce'||!!(MQM&&MQM.matches),r=document.documentElement;if(on)r.dataset.rm='1';else delete r.dataset.rm;var b=$('motion');if(b)b.textContent=S.motion==='reduce'?'Motion: Reduced':'Motion: Auto'}
-(function(){var b=document.createElement('button');b.id='motion';b.type='button';b.className='ghost';b.setAttribute('aria-live','polite');$('moreList').append(b);
- b.onclick=function(){S.motion=S.motion==='reduce'?'auto':'reduce';persist();applyMotion()};
- if(MQM){var f=function(){applyMotion()};if(MQM.addEventListener)MQM.addEventListener('change',f);else if(MQM.addListener)MQM.addListener(f)}
- applyMotion();
- var M="Claude Sonnet 5.5 · owner's Claude account";APP_VERSION='9.13';
- VERS.unshift({v:'9.13',d:'2026-10-18',t:'Reduced motion',by:M,n:['The Sync indicator stops pulsing when the device asks for reduced motion; its colour and text label stay the same, and a still halo replaces the animation','More has a Motion button: Auto (follow the device) or Reduced (always); it is saved on this device only','Reduced motion also turns off other animations and transitions and smooth scrolling']});
- UPC.unshift({v:'9.13',s:'Done',t:['Reduced-motion option for the Sync indicator, plus support for the device prefers-reduced-motion setting']})})();
-/* ---------- v9.14: optional receipt photos (collection atts) + backup note ---------- */
+function applyMotion(){var on=!!(MQM&&MQM.matches),r=document.documentElement;if(on)r.dataset.rm='1';else delete r.dataset.rm}
+(function(){
+  if(MQM){if(MQM.addEventListener)MQM.addEventListener('change',applyMotion);else if(MQM.addListener)MQM.addListener(applyMotion)}
+  applyMotion();
+  var M="Claude Sonnet 5.5 · owner's Claude account";APP_VERSION='9.13';
+  VERS.unshift({v:'9.13',d:'2026-10-18',t:'Reduced motion',by:M,n:['When the device asks for reduced motion, the Sync indicator stops pulsing and other animations are shortened','Automatic from the OS setting only; no manual toggle (v9.19 removed the Motion button)']});
+  UPC.unshift({v:'9.13',s:'Done',t:['Reduced-motion support via OS preference']});
+})();
+
+/* v9.14 receipt photos */
 var ATT_MAX=3,ATT_CH=70000,ATT_TOTAL=1.5e6;
 function attList(ref){return(S.atts||[]).filter(function(a){return a.ref===ref&&!a.del})}
 function attN(ref){return attList(ref).length}
@@ -1770,7 +1628,7 @@ function attBtn(ref){var c=attN(ref);return'<button class="lnk" data-a="at" data
 function attShrink(f){return new Promise(function(res,rej){var r=new FileReader();r.onerror=rej;r.onload=function(){var im=new Image();im.onerror=function(){rej(new Error('Not an image'))};im.onload=function(){var side=1000,q=.7;for(var i=0;i<9;i++){var k=Math.min(1,side/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(im.width*k));c.height=Math.max(1,Math.round(im.height*k));var g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,c.width,c.height);g.drawImage(im,0,0,c.width,c.height);var u=c.toDataURL('image/jpeg',q);if(u.length<=ATT_CH)return res(u);if(q>.4)q-=.1;else side=Math.round(side*.8)}rej(new Error('Too large'))};im.src=r.result};r.readAsDataURL(f)})}
 function attAdd(ref,u){if(!/^data:image\/jpeg;base64,/.test(u)||u.length>ATT_CH*1.05)return lb('Photo is too large','ছবি অনেক বড়');
  if(attN(ref)>=ATT_MAX)return lb('Up to 3 photos per record','প্রতি রেকর্ডে সর্বোচ্চ ৩টি ছবি');
- if((S.atts||[]).reduce(function(s,a){return s+(a.del?0:a.d.length)},0)+u.length>ATT_TOTAL)return lb('Photo storage is full. Ask Admin to remove old photos.','ছবির জায়গা ভরে গেছে। অ্যাডমিনকে পুরোনো ছবি সরাতে বলুন।');
+ if((S.atts||[]).reduce(function(s,a){return s+(a.del?0:a.d.length)},0)+u.length>ATT_TOTAL)return lb('Photo storage is full. Ask Admin to remove old photos.','ছবির জায়গা ভরে গেছে।');
  S.atts=S.atts||[];S.atts.push({id:Date.now()*1000+Math.floor(Math.random()*1000),ref:ref,d:u,by:U?U.name:'',at:Date.now()});lg('Receipt photo added',ref);save();if(CUR==='acc')render();return true}
 function attUI(ref){var L=attList(ref);
  ldlg(lb('Receipt photos','রসিদের ছবি'),'<div class="mut" style="margin-bottom:8px">'+lb('Optional. Up to 3 photos, shrunk to save space.','ঐচ্ছিক। সর্বোচ্চ ৩টি ছবি, জায়গা বাঁচাতে ছোট করা হয়।')+'</div><div class="atg">'+(L.length?L.map(function(a){return'<div class="atc"><img src="'+esc(a.d)+'" data-z="1" alt=""><small>'+esc(a.by||'')+' · '+sd(iso(new Date(a.at)))+'</small>'+(isA()?'<button type="button" class="lnk" data-rm="'+a.id+'">'+lb('Remove','সরান')+'</button>':'')+'</div>'}).join(''):'<div class="empty">'+lb('No photos','কোনো ছবি নেই')+'</div>')+'</div>'+(L.length<ATT_MAX?'<div class="chips" style="margin-top:10px"><button type="button" data-cam="1">'+lb('Camera','ক্যামেরা')+'</button><button type="button" data-gal="1">'+lb('Gallery','গ্যালারি')+'</button></div><input id="ati1" type="file" accept="image/*" capture="environment" hidden><input id="ati2" type="file" accept="image/*" hidden>':''),function(){},lb('Close','বন্ধ'),1);
@@ -1780,32 +1638,36 @@ function attUI(ref){var L=attList(ref);
 $('tbl').addEventListener('click',function(e){var b=e.target.closest('[data-a="at"]');if(b)attUI(b.dataset.r)});
 $('ob').addEventListener('click',function(e){if(e.target.id==='backupJson'){S.lastBackup=Date.now();persist()}});
 (function(){var M="Claude Sonnet 5.5 · owner's Claude account";APP_VERSION='9.14';
- VERS.unshift({v:'9.14',d:'2026-10-18',t:'Optional receipt photos and backup note',by:M,n:['Optional receipt photos (never required): Photo button on Accounts rows, POS Bills list and ledger entry details; up to 3 per record, from Camera or Gallery','Photos are shrunk before saving (about 50 KB each) and total photo storage is capped; Admin can remove a photo (it is hidden, with who and when kept)','Photos are a synced collection, so they appear on other devices and are included in backups','Settings explains that backups are downloaded files, not automatic cloud backups, and shows when this device last downloaded one']});
- UPC.unshift({v:'9.14',s:'Done',t:['Optional receipt photo attachments with compression and size limits','Clear note about manual vs automatic backup']})})();
-(function(){var M="Claude Sonnet 5.5 · owner's Claude account";APP_VERSION='9.15';
- VERS.unshift({v:'9.15',d:'2026-10-18',t:'Documentation and metadata cleanup',by:M,n:['Handover section 3 now lists the v9.10 fields cust.due, cust.dueNote, ltx.flag and ltx.prop','Handover section 6 marks v9.10 through v9.14 as done and trims completed Phase 1/Phase 2 items','Bug-fix format instruction moved to the top of section 8','VERS.by backfilled for v9.5','Upcoming Features card now shows v9.8 above v9.5','No change to calculations, wallets, sync, roles or UI behaviour']});
- UPC.unshift({v:'9.15',s:'Done',t:['Documentation and metadata cleanup (data model, roadmap, bug-fix format)','Upcoming Features ordering fix','No user-visible change to the app itself']});
- BUGS.unshift({d:'2026-10-18 --:--',v:'9.15',w:M,a:'Upcoming Features card listed v9.8 below v9.5',b:'The v9.8 build updated its existing Planned entry in place instead of prepending a new Done entry like every other release',c:'Splice the old 9.8 entry out and unshift a fresh Done 9.8 entry at the head of the array'});})();
-(function(){var M="Claude Sonnet 5.5 · owner's Claude account";APP_VERSION='9.16';
- VERS.unshift({v:'9.16',d:'2026-10-18',t:'Complete admin review queue',by:M,n:['Admin review queue shows all pending items in one place: reconciliation items, stock overrides, cashier flags, accountant edit proposals and void requests','Cashier flags can now be cleared or rejected with a reason; a rejected flag shows its rejection reason on the ledger entry','Accountant voids no longer apply directly: the accountant creates a pending void request and Admin approves or rejects with a reason (matches the edit-proposal rule from v9.10)','Reconciliation items in the queue show Open (jumps to the related entry, party or ledger record when known) and Checked actions','Manage tab Review queue button now shows the total pending count']});
- UPC.unshift({v:'9.16',s:'Done',t:['One review queue for reconciliation items, stock overrides, cashier flags, accountant edit proposals and void requests','Reject-with-reason for cashier flags; accountant voids become approval requests','Manage tab shows the total pending count']});
- BUGS.unshift({d:'2026-10-18 --:--',v:'9.16',w:M,a:'Accountant voids applied directly while accountant edits required Admin approval',b:'v9.10 added the accountant edit-proposal flow but left the void path unchanged, so the same role could change some ledger data without review and not others',c:'Accountant voids now create a pending void request that Admin approves or rejects with a reason; cashier flags can also be rejected with a reason'});})();
+ VERS.unshift({v:'9.14',d:'2026-10-18',t:'Optional receipt photos and backup note',by:M,n:['Optional receipt photos on Accounts rows, POS Bills list and ledger entry details; up to 3 per record','Photos are a synced collection; Admin can remove a photo','Settings explains that backups are manual downloads']});
+ UPC.unshift({v:'9.14',s:'Done',t:['Optional receipt photo attachments with compression']})})();
 
-/* ---------- v9.17: admin PIN change + self test + by backfill ---------- */
+/* v9.15 cleanup */
+(function(){var M="Claude Sonnet 5.5 · owner's Claude account";APP_VERSION='9.15';
+ VERS.unshift({v:'9.15',d:'2026-10-18',t:'Documentation and metadata cleanup',by:M,n:['Handover section 3 lists the v9.10 fields','Handover section 6 marks v9.10 to v9.14 done','Bug-fix format instruction moved to section 8 top','VERS.by backfilled for v9.5']});
+ UPC.unshift({v:'9.15',s:'Done',t:['Documentation and metadata cleanup']});
+ BUGS.unshift({d:'2026-10-18 --:--',v:'9.15',w:M,a:'Upcoming Features card listed v9.8 below v9.5',b:'v9.8 build updated its existing Planned entry in place',c:'Splice the old 9.8 entry out and unshift a fresh Done 9.8'});})();
+
+/* v9.16 review queue completion */
+(function(){var M="Claude Sonnet 5.5 · owner's Claude account";APP_VERSION='9.16';
+ VERS.unshift({v:'9.16',d:'2026-10-18',t:'Complete admin review queue',by:M,n:['One queue shows all pending: reconciliation, stock overrides, cashier flags, edit proposals and void requests','Cashier flags can be cleared or rejected with a reason','Accountant voids become approval requests']});
+ UPC.unshift({v:'9.16',s:'Done',t:['One review queue for all pending kinds; cashier flags and accountant voids join edit proposals']});
+ BUGS.unshift({d:'2026-10-18 --:--',v:'9.16',w:M,a:'Accountant voids applied directly while edits required approval',b:'v9.10 added proposal flow for edits but not for voids',c:'Accountant voids now create a pending request; Admin approves or rejects with reason'});})();
+
+/* v9.17 PIN change + self test + by backfill */
 function changeAdminPin(){
   if(!U||!isA())return;
   ask(lb('Change admin PIN','অ্যাডমিন পিন পরিবর্তন'),
     '<div class="f"><label>'+lb('Current PIN','বর্তমান পিন')+'</label><input id="pin0" type="password" inputmode="numeric" autocomplete="off"></div>'
     +'<div class="f"><label>'+lb('New PIN (6+ digits)','নতুন পিন (৬+ সংখ্যা)')+'</label><input id="pin1" type="password" inputmode="numeric" autocomplete="off"></div>'
     +'<div class="f"><label>'+lb('Confirm new PIN','নতুন পিন নিশ্চিত করুন')+'</label><input id="pin2" type="password" inputmode="numeric" autocomplete="off"></div>'
-    +'<p class="mut" style="font-size:12.5px">'+lb('The recovery code is not changed. Use Reset admin PIN from the lock screen if you also want to rotate it.','রিকভারি কোড বদলাবে না। রিকভারি কোডও বদলাতে চাইলে লক স্ক্রিন থেকে Reset admin PIN ব্যবহার করুন।')+'</p>',
+    +'<p class="mut" style="font-size:12.5px">'+lb('The recovery code is not changed.','রিকভারি কোড বদলাবে না।')+'</p>',
     async function(){
       var cur=$('pin0').value,nu=$('pin1').value,cf=$('pin2').value;
       if(!/^\d{6,}$/.test(nu)||nu!==cf){$('pin2').style.borderColor='var(--neg)';return false}
       if(!(await ck(S.users.admin,cur))){$('pin0').value='';$('pin0').style.borderColor='var(--neg)';$('pin0').placeholder=lb('Wrong PIN','ভুল পিন');return false}
       var old=S.users.admin;S.users.admin=await mk(nu);
       lg('Admin PIN changed','');
-      if(!save()){S.users.admin=old;S.log.shift();ltoast(lb('Could not save. Try again.','সংরক্ষণ হয়নি। আবার চেষ্টা করুন।'));return false}
+      if(!save()){S.users.admin=old;S.log.shift();ltoast(lb('Could not save. Try again.','সংরক্ষণ হয়নি।'));return false}
       ltoast(lb('Admin PIN changed','অ্যাডমিন পিন পরিবর্তন হয়েছে'));
     },lb('Save','সংরক্ষণ'));
   $('pin0').focus();
@@ -1813,7 +1675,12 @@ function changeAdminPin(){
 function selfTest(){
   if(!U||!isA())return;
   var r=[],ok=function(name,fn){try{var v=fn();r.push({n:name,p:true,v:v})}catch(e){r.push({n:name,p:false,e:e.message||String(e)})}};
-  ok('Core functions',function(){var f=['calc','calcWallets','save','cash','wltEff','sorted','mN','n','tk','esc','ledReconcile','ledVoidReq','ledVoidReqReview','ledFlagReject','reviewQueue','reviewQueueCount','bugTxt','upcTxt','verTxt','mk','ck','H'];var miss=f.filter(function(n){return typeof window[n]!=='function'});if(miss.length)throw new Error('missing: '+miss.join(', '));return f.length+' checked'});
+  ok('Core functions',function(){
+    var f=['calc','calcWallets','save','cash','wltEff','sorted','mN','n','tk','esc','ledReconcile','ledVoidReq','ledVoidReqReview','ledFlagReject','reviewQueue','reviewQueueCount','bugTxt','upcTxt','verTxt','mk','ck','H'];
+    var miss=f.filter(function(n){try{return eval('typeof '+n)!=='function'}catch(e){return true}});
+    if(miss.length)throw new Error('missing: '+miss.join(', '));
+    return f.length+' checked';
+  });
   ok('n() and tk()',function(){if(n(1234)!=='1,234')throw new Error('n wrong');if(tk(100)!=='৳100')throw new Error('tk wrong');return 'ok'});
   ok('mN(Bkash)',function(){if(mN('Bkash')!=='Bkash Personal')throw new Error('wrong');return 'ok'});
   ok('calc()',function(){var m=calc();if(!m||typeof m!=='object')throw new Error('not object');return Object.keys(m).length+' rows'});
@@ -1842,13 +1709,67 @@ function selfTest(){
   APP_VERSION='9.17';
   var backfilled=0;
   ['9.0','9.1','9.2','9.3','9.4'].forEach(function(v){var e=VERS.find(function(x){return x.v===v});if(e&&!e.by){e.by='Other Claude profile (model not recorded)';backfilled++}});
-  VERS.unshift({v:'9.17',d:'2026-10-18',t:'Admin PIN change, self test and by backfill',by:M,n:['Settings has a Change admin PIN button (Admin only): current PIN, new PIN (6+ digits) and confirmation. The recovery code is not rotated (use Reset admin PIN from the lock screen for that)','Management has a Run self test button (Admin only): checks core functions, calculations, storage, PBKDF2, collections and version arrays, and reports PASS/FAIL per check without changing any data','VERS.by backfilled for v9.0 through v9.4 ('+backfilled+' entries) as required by rule 25']});
-  UPC.unshift({v:'9.17',s:'Done',t:['Change admin PIN from Settings','Run self test in Management','VERS.by backfill for v9.0–v9.4']});
+  VERS.unshift({v:'9.17',d:'2026-10-18',t:'Admin PIN change, self test and by backfill',by:M,n:['Settings has a Change admin PIN button','Management has a Run self test button','VERS.by backfilled for v9.0 to v9.4']});
+  UPC.unshift({v:'9.17',s:'Done',t:['Change admin PIN from Settings','Run self test in Management','VERS.by backfill']});
 })();
+
+/* v9.18 Home dashboard + sample removal */
 (function(){var M="Claude Sonnet 5.5 · owner's Claude account";APP_VERSION='9.18';
- VERS.unshift({v:'9.18',d:'2026-10-18',t:'Home dashboard: cash strip, owed summary, stock value',by:M,n:['Home shows a compact today cash-movements strip: cash in, cash out, net and entry count for today, independent of the period tab','Home shows a Who owes whom card: money we are owed, money we owe, count of parties with an open balance and the net position; Open Ledger jumps to the Ledger (hidden for keeper, who cannot open Ledger)','Home stat tiles now include Stock value (cost) for Admin, Keeper and Accountant','Removed the sample Load Riyad notes button (real customer data exists)']});
+ VERS.unshift({v:'9.18',d:'2026-10-18',t:'Home dashboard: cash strip, owed summary, stock value',by:M,n:['Home shows today cash in, cash out, net and entry count','Home shows a Who owes whom card','Home stat tiles include Stock value (cost)','Sample Load Riyad notes button removed']});
  UPC.unshift({v:'9.18',s:'Done',t:['Home today-cash strip, who-owes-whom card and stock value tile','Sample Load Riyad notes button removed']});
- BUGS.unshift({d:'2026-10-18 --:--',v:'9.18',w:M,a:'The sample "Load Riyad notes" button could still be shown to Admin when the active customer list was momentarily empty (for example after archiving all customers), risking fictional ledger rows being loaded into live books',b:'The button lived in the empty-customers card and only required the customer list to be empty to appear',c:'Removed the button from the empty-customers card; the underlying ledSample function stays defined but is no longer reachable from the UI'});})();
+ BUGS.unshift({d:'2026-10-18 --:--',v:'9.18',w:M,a:'Sample "Load Riyad notes" button could still appear when the customer list was momentarily empty, risking fictional ledger rows',b:'Button lived in the empty-customers card and only required the list to be empty',c:'Removed the button from the empty-customers card'});})();
+
+/* v9.19 fix release */
+function ledFlag(id){var t=S.ltx.find(function(x){return x.id===id});if(!t||t.void)return;
+ ask(lb('Flag for Admin check','অ্যাডমিন যাচাইয়ের জন্য চিহ্নিত করুন'),'<p class="mut">'+tk(t.amt)+' · '+dr(t)+'</p><div class="f"><label>'+lb('Reason (required)','কারণ (আবশ্যক)')+'</label><input id="lfgr" maxlength="160"></div>',function(){var r=$('lfgr').value.trim();if(!r){$('lfgr').style.borderColor='var(--neg)';return false}t.flag={state:'pending',by:U.name,at:Date.now(),reason:r};lg('Ledger flag',cname()+' · '+tk(t.amt)+' — '+r);save();ledUI()},lb('Flag','চিহ্নিত করুন'))}
+function ledFlagClear(id){var t=S.ltx.find(function(x){return x.id===id});if(!t||!isA()||!t.flag)return;t.flag.state='cleared';t.flag.cb=U.name;t.flag.ca=Date.now();lg('Ledger flag cleared',cname()+' · '+tk(t.amt));save();ledUI()}
+function ledPropReview(id){var t=S.ltx.find(function(x){return x.id===id});if(!t||!isA()||!t.prop||t.prop.state!=='pending')return;var p=t.prop,to=p.to,
+ r=function(l,a,b){return'<div class="prow"><span>'+l+'</span><span>'+esc(a)+' → <b>'+esc(b)+'</b></span></div>'},L=[];
+ if(t.amt!==to.amt)L.push(r(lb('Amount','টাকা'),n(t.amt),n(to.amt)));if(t.dir!==to.dir)L.push(r(lb('Type','ধরন'),t.dir,to.dir));if((t.d||'')!==(to.d||''))L.push(r(lb('Date','তারিখ'),t.d||'?',to.d||'?'));
+ ask(lb('Review proposed edit','প্রস্তাবিত সম্পাদনা'),'<p class="mut">'+esc(p.by)+' · '+esc(p.reason)+'</p>'+(L.join('')||'<div class="mut">'+lb('No visible change','কোনো পরিবর্তন নেই')+'</div>')+'<div class="f" style="margin-top:10px"><label>'+lb('Reason to reject','বাতিলের কারণ')+'</label><input id="lpr" maxlength="160"></div><button type="button" class="ghost" id="lprj" style="color:var(--neg)">'+lb('Reject','প্রত্যাখ্যান')+'</button>',function(){
+  var m=Object.assign({},t,to),mv=ledMove(m);if(to.lnk&&mv&&mv.w){var wc=checkWalletLimit(Object.assign({id:LKid(t)},ledEntry(m)),LKid(t),[mv.w]);if(!wc.ok){ltoast(lb('Cannot approve: ','অনুমোদন যাবে না: ')+wc.wallet+lb(' would go below zero.',' ঋণাত্মক হয়ে যাবে।'));return false}}
+  Object.assign(t,to,{eb:p.by});t.prop={state:'approved',by:p.by,at:p.at,reason:p.reason,rb:U.name,ra:Date.now()};lg('Ledger edit approved',cname()+' · '+tk(t.amt)+' · by '+p.by);save();ledUI()},lb('Approve','অনুমোদন'));
+ $('ob').onclick=function(e){if(e.target.id!=='lprj')return;var w=$('lpr').value.trim();if(!w){$('lpr').style.borderColor='var(--neg)';return}t.prop.state='rejected';t.prop.rb=U.name;t.prop.ra=Date.now();t.prop.rr=w;lg('Ledger edit rejected',cname()+' · '+tk(t.amt)+' — '+w);save();$('ov').hidden=true;ledUI()}}
+function dueState(c){if(!c.due||c.del||!lBal(c.id))return'';var t=iso(new Date()),s=new Date();s.setDate(s.getDate()+3);return c.due<t?'over':c.due<=iso(s)?'soon':''}
+function dueTxt(c){var s=dueState(c);return sd(c.due)+(s==='over'?' · '+lb('Overdue','মেয়াদ পার'):s==='soon'?' · '+lb('Due soon','শীঘ্রই')+'':'')}
+function ledDue(id){var c=S.cust.find(function(x){return x.id===id});if(!c||!lEd())return;
+ ask(lb('Due date and reminder','নির্ধারিত তারিখ ও রিমাইন্ডার'),'<div class="f"><label>'+lb('Due date','নির্ধারিত তারিখ')+'</label><input id="cdd" type="date" value="'+esc(c.due||'')+'"></div><div class="f"><label>'+lb('Reminder note (optional)','রিমাইন্ডার নোট (ঐচ্ছিক)')+'</label><input id="cdn" maxlength="120" value="'+esc(c.dueNote||'')+'"></div>',function(){c.due=$('cdd').value;c.dueNote=$('cdn').value.trim();lg('Ledger due date',c.name+' · '+(c.due?sd(c.due):'cleared'));save();ledUI()},lb('Save','সংরক্ষণ'))}
+function ledDueBar(c){if(!c.due)return'';var b=lBal(c.id);return'<div class="card cbn noprint"><span><b>'+lb('Due date','নির্ধারিত তারিখ')+'</b> · '+esc(dueTxt(c))+(b?' · '+tk(Math.abs(b)):'')+(c.dueNote?' · '+esc(c.dueNote):'')+'</span></div>'}
+function ledDueTop(){var L=S.cust.filter(function(c){return dueState(c)}).sort(function(a,b){return a.due.localeCompare(b.due)});if(!L.length)return'';
+ return'<div class="card cbn"><span><b>'+lb('Reminders','রিমাইন্ডার')+'</b> · '+L.length+'</span>'+L.slice(0,6).map(function(c){var b=lBal(c.id);return'<button class="ghost" data-a="open" data-id="'+c.id+'">'+esc(c.name)+' · '+esc(dueTxt(c))+' · '+tk(Math.abs(b))+'</button>'}).join('')+'</div>'}
+async function ledImg(){var c=S.cust.find(function(x){return x.id===LC});if(!c)return;try{
+ var all=lSort(S.ltx.filter(function(x){return x.c===LC&&!x.void})),rows=ledRows(all,LF,LE),ob=LF?all.filter(function(x){return(x.d||'9999')<LF}).reduce(function(s,x){return s+(x.dir==='in'?x.amt:-x.amt)},0):null;
+ if(document.fonts&&document.fonts.ready)await document.fonts.ready;
+ var W=760,H=170+(rows.length+(ob!=null?1:0)+1)*30+20,cv=document.createElement('canvas'),F='SolaimanLipi, Inter, sans-serif';cv.width=W;cv.height=H;var g=cv.getContext('2d');
+ g.fillStyle='#fff';g.fillRect(0,0,W,H);g.fillStyle='#111';g.font='700 22px '+F;g.fillText(shopN(),24,38);g.font='16px '+F;g.fillText(c.name+(c.phone?' · '+c.phone:''),24,66);g.fillStyle='#666';g.fillText((LF?sd(LF):'…')+' – '+(LE?sd(LE):sd(iso(new Date()))),24,90);
+ var y=128,T=function(a,b,d,e,f,col){g.textAlign='left';g.fillStyle=col||'#111';g.fillText(String(a).slice(0,12),24,y);g.fillText(String(b).slice(0,34),140,y);g.textAlign='right';g.fillStyle=col||'#1E7A47';g.fillText(d,520,y);g.fillStyle=col||'#C23B3B';g.fillText(e,620,y);g.fillStyle=col||'#111';g.fillText(f,736,y);y+=30};
+ g.font='600 14px '+F;T('Date','Details','পেলাম','দিলাম','Balance','#111');g.font='14px '+F;
+ if(ob!=null)T('','Opening balance','','',n(ob));var ti=0,to=0,last=ob||0;
+ rows.forEach(function(r){var x=r[0];if(x.dir==='in')ti+=x.amt;else to+=x.amt;last=r[1];T(x.d?sd(x.d):'?',(x.who||'')+(x.note?' · '+x.note:''),x.dir==='in'?n(x.amt):'',x.dir==='out'?n(x.amt):'',n(r[1]))});
+ g.font='600 14px '+F;T('','Total',n(ti),n(to),n(last));
+ var b=await new Promise(function(r){cv.toBlob(r,'image/png')}),fn='Statement_'+c.name.replace(/[^\w\u0980-\u09FF]+/g,'_')+'.png',f=new File([b],fn,{type:'image/png'});lg('Ledger share image',c.name);save();
+ if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],title:c.name})}catch(e){}}
+ else{var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=fn;a.click();ltoast(lb('Image saved. Share it from your gallery or WhatsApp.','ছবি সেভ হয়েছে।'))}
+ }catch(e){ltoast('Image error: '+e.message)}}
+var LFQ='',LFD='',LFM='',LFA='',LFB='',LFC=null;
+function ledFilt(){if(LFC!==LC){LFC=LC;LFQ=LFD=LFM=LFA=LFB=''}
+ var o=function(v,l,s){return'<option value="'+v+'"'+(s===v?' selected':'')+'>'+l+'</option>'};
+ return'<section class="card fb noprint"><input data-lf="q" value="'+esc(LFQ)+'" placeholder="'+lb('Search name, note, amount','নাম, নোট, টাকা খুঁজুন')+'"><select data-lf="d">'+o('',lb('All directions','সব'),LFD)+o('in','পেলাম',LFD)+o('out','দিলাম',LFD)+'</select><select data-lf="m">'+o('',lb('All methods','সব মাধ্যম'),LFM)+['Cash','Bkash Personal','Bkash Agent','Nagad','Rocket','Bank','Other','Due sale'].map(function(m){return o(m,mL(m),LFM)}).join('')+'</select><input data-lf="a" type="date" title="From" value="'+LFA+'"><input data-lf="b" type="date" title="To" value="'+LFB+'"><button class="ghost" data-a="fltclr">'+lb('Clear','মুছুন')+'</button></section>'}
+function ledFlt(rows){var q=LFQ.trim().toLowerCase().replace(/,/g,'');return rows.filter(function(r){var x=r[0],k=x.d||'9999';return(!q||((x.who||'')+' '+(x.note||'')+' '+x.amt+' '+(x.parts||[]).join(' ')).toLowerCase().includes(q))&&(!LFD||x.dir===LFD)&&(!LFM||mN(x.m)===LFM)&&(!(LFA||LFB)||x.d)&&(!LFA||k>=LFA)&&(!LFB||k<=LFB)})}
+$('vLed').addEventListener('input',function(e){var k=e.target.dataset&&e.target.dataset.lf;if(!k)return;var p=e.target.selectionStart,v=e.target.value;if(k==='q')LFQ=v;else if(k==='d')LFD=v;else if(k==='m')LFM=v;else if(k==='a')LFA=v;else LFB=v;ledUI();var i=$('vLed').querySelector('[data-lf="'+k+'"]');if(i){i.focus();if(k==='q')i.setSelectionRange(p,p)}});
+function ledFlagN(c){return S.ltx.filter(function(t){return t.c===c.id&&!t.void&&((t.flag&&t.flag.state==='pending')||(t.prop&&t.prop.state==='pending')||(t.voidReq&&t.voidReq.state==='pending'))}).length}
+function ledSample(){var c={id:Date.now(),name:'রিয়াদ',phone:'',note:''},R=function(dir,amt,d,w,x){return Object.assign({id:Date.now()+Math.random(),c:c.id,by:U.name,dir:dir,amt:amt,d:d,d2:'',m:'Cash',who:w,note:''},x)};S.cust.push(c);LC=c.id;lg('Ledger customer','Sample imported');save();ledUI()}
+(function(){
+  var M="Claude Sonnet 5.5 · owner's Claude account";
+  APP_VERSION='9.19';
+  VERS.unshift({v:'9.19',d:'2026-10-18',t:'Storage notice, sync dot, theme, transitions and refresh',by:M,n:['Storage warning card only appears on genuine save failures; Dismiss now works','Sync indicator is a single dot with a calm periodic pulse; the Motion button is removed (OS prefers-reduced-motion still honoured)','Theme switcher is a single top-bar icon cycling Auto → Light → Dark (Day/Night removed)','Tabs fade in on switch','Refresh button has a cleaner icon and a spin animation on tap','Self test no longer shows false failures for const-bound helpers; review-queue Open for reconciliation items lands on the correct day']});
+  UPC.unshift({v:'9.19',s:'Done',t:['Storage warning only shows on real save failures','Single pulsing sync dot; Motion button removed','Three-mode theme switcher in the top bar (Auto / Light / Dark)','Tab fade-in animation','Refresh button cleaner icon + spin','Self test and review-queue Open bug fixes']});
+  BUGS.unshift(
+    {d:'2026-10-18 --:--',v:'9.19',w:M,a:'Storage warning card appeared on every entry save and could not be dismissed (blocking the POS Charge button on mobile)',b:'persist() called storageNotice() on every successful save with an empty message, and the notice box had inline display:flex which overrode the hidden attribute; the Dismiss button also set hidden, which had no effect',c:'storageNotice is only called on genuine save failures; hidden state now uses style.display; Dismiss sets display:none'},
+    {d:'2026-10-18 --:--',v:'9.19',w:M,a:'Self test reported false failures for const-bound helpers',b:'selfTest used typeof window[name], which cannot see const bindings inside a classic <script>',c:'Use eval("typeof " + name) so the check runs in the current lexical scope'},
+    {d:'2026-10-18 --:--',v:'9.19',w:M,a:'Review queue Open for a reconciliation item jumped to Accounts on today instead of the entry\'s date',b:'The handler set cur before go(\'acc\'), but go(\'acc\') resets cur to today internally',c:'Call go(\'acc\') first, then set cur and render'}
+  );
+})();
 applyLang();start();
 if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js'));
 </script>
