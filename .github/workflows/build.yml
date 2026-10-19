@@ -1,0 +1,146 @@
+name: Build NCS apps
+
+# Runs when you upload new files to the main branch, or when you press "Run workflow".
+# It only builds when APP_VERSION in index.html is NEW (no release with that version exists yet).
+on:
+  push:
+    branches: [main, master]
+    paths-ignore:
+      - '**.md'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-ncs
+  cancel-in-progress: false
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.v.outputs.version }}
+      versionCode: ${{ steps.v.outputs.versionCode }}
+      exists: ${{ steps.chk.outputs.exists }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Read app version from index.html
+        id: v
+        run: node scripts/prepare-www.js
+      - name: Is this version already released?
+        id: chk
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "v${{ steps.v.outputs.version }}" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "### Nothing to build" >> "$GITHUB_STEP_SUMMARY"
+            echo "Version ${{ steps.v.outputs.version }} is already released. Raise APP_VERSION in index.html to publish a new one." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  windows:
+    needs: version
+    if: needs.version.outputs.exists == 'false'
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: node scripts/prepare-www.js
+      - run: npm pkg set version=${{ needs.version.outputs.version }}
+      - run: npx electron-builder --config electron-builder.config.js --win --x64 --publish never
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows
+          path: |
+            dist/*.exe
+            dist/*.blockmap
+            dist/latest.yml
+          if-no-files-found: error
+
+  android:
+    needs: version
+    if: needs.version.outputs.exists == 'false'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: npm ci
+      - run: node scripts/prepare-www.js
+      - name: Create Android project
+        run: node scripts/android-setup.js
+      - name: Prepare signing key
+        env:
+          KS: ${{ secrets.ANDROID_KEYSTORE_B64 }}
+        run: |
+          if [ -z "$KS" ]; then
+            echo "::error::The secret ANDROID_KEYSTORE_B64 is missing. Follow SETUP.md, step 4."
+            exit 1
+          fi
+          echo "$KS" | base64 -d > "$RUNNER_TEMP/ncs.keystore"
+      - name: Build signed APK
+        working-directory: android
+        env:
+          KEYSTORE_PATH: ${{ runner.temp }}/ncs.keystore
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ncs
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          VERSION_CODE: ${{ needs.version.outputs.versionCode }}
+          VERSION_NAME: ${{ needs.version.outputs.version }}
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleRelease --no-daemon
+      - name: Collect files
+        env:
+          V: ${{ needs.version.outputs.version }}
+        run: |
+          mkdir release
+          cp android/app/build/outputs/apk/release/app-release.apk "release/NCS-Accounts-$V.apk"
+          (cd www && zip -r -q ../release/www.zip .)
+          printf '{"version":"%s","url":"https://github.com/%s/releases/download/v%s/www.zip"}\n' "$V" "$GITHUB_REPOSITORY" "$V" > release/update.json
+          cat release/update.json
+      - name: Check APK signature
+        continue-on-error: true
+        run: |
+          BT=$(ls "$ANDROID_HOME/build-tools" | sort -V | tail -1)
+          "$ANDROID_HOME/build-tools/$BT/apksigner" verify --print-certs release/*.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android
+          path: release/*
+          if-no-files-found: error
+
+  release:
+    needs: [version, windows, android]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: release
+          merge-multiple: true
+      - run: ls -la release
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ needs.version.outputs.version }}
+          name: NCS Accounts ${{ needs.version.outputs.version }}
+          make_latest: true
+          fail_on_unmatched_files: true
+          files: release/*
+          body: |
+            Install once, then updates arrive on their own.
+            - Phone: install the .apk
+            - PC: run the Setup .exe
