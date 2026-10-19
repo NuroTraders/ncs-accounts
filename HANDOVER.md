@@ -1,6 +1,6 @@
 # NCS Daily Accounts: Handover Note
 
-Shop: Nur Computer & Stationery. Current version: **v9.21** (service worker cache `ncs-v41`).
+Shop: Nur Computer & Stationery. Current version: **v9.22** (service worker cache `ncs-v42`).
 Two Claude profiles work on this app and do NOT share memory. This file is the shared memory.
 
 ## 0. Start-of-session checklist (both profiles)
@@ -26,21 +26,23 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 - **State:** one object `S`, saved to `localStorage` key `ncs_accounts_v2` by `save()`.
 - **Collections:** `entries`, `products`, `bills`, `moves`, `cust`, `ltx`, `atts`. Stamped with `u`, merged by `mergeById`.
 - **Other synced keys:** `days`, `names`, `parties`, `log`, `users`, `start`, `walletDates`; `pending` and `history` merged by id.
-- **Local-only keys:** theme, dayStart, dayEnd, lang, lockout, sync, snaps, logSent, synced, posSince, lastBackup.
+- **Local-only keys (v9.22):** theme, dayStart, dayEnd, lang, lockout, sync, snaps, logSent, synced, posSince, motion, **sound**, lastBackup.
 - **Sync (v9.20):** Google Apps Script blob. Conflict → `mergeState`.
 - **Sync status:** single dot, periodic blink (green 6s, yellow 3s, red 2s). Off = static outline.
 - **Theme (v9.20):** three modes — `auto` (OS default), `light`, `dark`. Icon button `#themeBtn` in top bar cycles Auto → Light → Dark → Auto. Day/Night removed.
 - **Tab transitions (v9.20):** `.view.on` fades in (220ms). Skipped under OS reduced motion.
 - **Refresh (v9.20):** two-arrow SVG spins once on tap.
 - **Storage warning (v9.20):** only shows on genuine `localStorage.setItem` failure. Dismiss hides it (`style.display='none'`).
-- **Reduced motion (v9.20):** auto from OS `prefers-reduced-motion`; no manual toggle.
+- **Reduced motion (v9.20):** auto from OS `prefers-reduced-motion`; no manual toggle. **v9.22 also silences the sound engine under reduced motion.**
 - **Keeper tabs (v9.20):** Products and More only. POS, Accounts, Ledger hidden.
 - **Party kinds (v9.20):** Customer, Investor, Supplier, Borrower/Lender. Kind tabs filter the Ledger list. Legacy Lender/Borrower are treated as Borrower/Lender.
 - **Wallet openings (v9.20):** `S.walletDates` array of date-anchored openings (`{d, by, at, reason, bk, ng, rk, bka, gp, robi, cir, prev, discrepancy}`). `S.wallets` is the base opening. `wltRun` resets the wallet balance at each date anchor. Setting an opening for a past date requires Admin PIN and logs a `walletAdjust` entry. Admin sees a discrepancy report if the entered amount differs from the carried-forward balance.
 - **Cash adjustment (v9.20):** past-date targets require Admin PIN; Adjustment entries carry `pinBy` and `pinAt`. Present-day adjustments still roll to `nextOpenDay` without PIN.
 - **POS void (v9.20):** reason matching `/^test$/i` marks the bill `test:1` and the entry `test:1`; these appear in a "Test" section (admin only) and are excluded from every total. Admin can also "Remove permanently" a voided bill: `b.removed=1`, `e.removed=1`. Removed bills are hidden everywhere.
 - **Borrower/Lender transactions (v9.20):** identical rules to Customer — any In/Out with any method (Cash, MFS, Recharge). No special direction.
-- **Other architecture:** unchanged from v9.19. See rules 4, 5, 13, 20 for the traps.
+- **Sound engine (v9.22):** `var Sound` module using Web Audio. `Sound.tick` (tab/dialog), `Sound.chaChing` (sale/entry save), `Sound.buzz` (errors), `Sound.chime` (background sync). `enabled()` requires `S.sound` and no `data-rm`. AudioContext is created/resumed on the first pointerdown/keydown/touchstart. Default off; toggle in Settings (admin-only, like the rest of Settings).
+- **Motion (v9.22):** `animateCounts()` counts `.cnt` elements from 0 to `data-to` over 400ms (Home hero + Total Sell/Buy). `saveCheck()` shows a green SVG tick overlay. `button:active` scales to 0.97. POS cart rows use `.slidein` / `.slideout`. All are no-ops under `data-rm` or missing elements.
+- **Download safety (v9.22):** `dlFile` appends the `<a>` to the DOM before clicking (some wrappers require it) and falls back to a `window.open` data URL if the blob download throws.
 
 ## 3. Data model
 - **`cust`:** `{id, name, phone, fb?, img?, note, kind?, addr?, rel?, due?, dueNote?, del?, delReason?, dby?, dts?}`. `kind` ∈ Customer, Investor, Supplier, Borrower/Lender (legacy `Lender`/`Borrower` map to Borrower/Lender at read time). `due`/`dueNote` shown as party reminder.
@@ -49,7 +51,7 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 - **`ltx.prop`:** `{state: pending|approved|rejected, by, at, reason, to, rb?, ra?, rr?}`.
 - **`ltx.voidReq`:** `{state: pending|approved|rejected, by, at, reason, rb?, ra?, rr?, vb2?}`.
 - **`atts`:** `{id, ref, d, by, at, del?, db?, dt?}`. ref = `'e'+entryId` or `'l'+ltxId`.
-- **`walletDates` (v9.20):** `[{d: 'YYYY-MM-DD', by, at, reason, bk, ng, rk, bka, gp, robi, cir, prev: {...}, discrepancy: {...}, pinBy?, pinAt?}]`. Most recent entry ≤ a given date is the active opening. `prev` and `discrepancy` are snapshots of the computed balance at `d` before the override and the difference (so an admin can review a chain of adjustments).
+- **`walletDates` (v9.20):** `[{d: 'YYYY-MM-DD', by, at, reason, bk, ng, rk, bka, gp, robi, cir, prev: {...}, discrepancy: {...}, pinBy?, pinAt?}]`. Most recent entry ≤ a given date is the active opening.
 - **`entries`:** daily accounts; `cash()` and `calc()`.
 - **POS bill flags (v9.20):** `b.test = 1` for reason=`test`; `b.removed = 1` for admin-permanent-removal; corresponding entry also flagged.
 - **Party balance:** sum of `in` − `out` over non-void entries.
@@ -87,6 +89,8 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 29. Theme has exactly three modes (v9.20).
 30. **Wallet openings are date-anchored (v9.20).** Setting an opening for a past date requires Admin PIN. Never write directly to `S.wallets` when a dated entry is the right tool. Show the discrepancy in the Management opening-history list.
 31. **POS void reasons matching `/^test$/i` go to the Test section (v9.20).** Test bills are excluded from all totals. `removed` is admin-only, requires a reason, and can never be undone from the UI.
+32. **Sound is a local device preference (v9.22).** Stored in `S.sound`, listed in `LOCAL`, never synced. The sound engine is a no-op when `S.sound` is falsy or `document.documentElement.dataset.rm` is set. Do not call `Sound.*` outside guarded sites; wrap in `try/catch` where it is a fire-and-forget call.
+33. **Motion helpers respect `data-rm` (v9.22).** `animateCounts`, `saveCheck`, `slideInLast`, `removeLineAnimated` and the global `button:active` scale all turn off under reduced motion. Keep the `.cnt` / `data-to` convention if you add more count-ups.
 
 ## 5. Known quirks
 - Start fresh carries balances forward; queues a reconciliation item.
@@ -106,31 +110,33 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 - Photos live in the synced blob (v9.14); Sheet size tolerance unknown.
 - **Wallet opening anchors (v9.20):** the first anchor may be a migration of `S.wallets`. Later anchors override the running balance at their date. Any discrepancy is logged with a snapshot of the computed value.
 - **POS Test/Removed (v9.20):** test bills are visible only in the POS Bills dialog filter "Test". Removed bills are hidden everywhere; not even in Test.
+- **Sound default (v9.22):** off. The toggle lives in Settings, which is admin-only, so non-admin users cannot turn sound on from the UI. AudioContext is created lazily on the first tap.
+- **Motion (v9.22):** the count-up uses `requestAnimationFrame` and re-runs every time Home is drawn (including period tab changes). The checkmark overlay is pointer-events:none and self-removes.
 
 ## 6. Roadmap
-**v9.21: DONE.** Clock, phone top-bar tidy, Accounts Void data section with Admin restore. **Agreed next order:** v9.22 sub-accounts (optional parent link, combined balance; owner delegated design to Claude); v9.23-9.24 Loans tab (needs owner decisions: direction, flat vs reducing interest, installment rules, late fees, collateral notes, conversion of old Borrow/Lend, one worked example); v10.0 Apps Script items (key rotation, changed-only sync, Ledger sheet; needs the script with secrets removed); effectiveness pass needs the owner's top daily tasks per role.
+**v9.22: DONE.** Sound engine (tick / cha-ching / buzz / sync chime), count-up, save checkmark, tap feedback, POS cart slide in/out, wrapper download fallback. **Agreed next order:** v9.23 sub-accounts (optional parent link, combined balance; owner delegated design to Claude); v9.24-9.25 Loans tab (needs owner decisions: direction, flat vs reducing interest, installment rules, late fees, collateral notes, conversion of old Borrow/Lend, one worked example); v10.0 Apps Script items (key rotation, changed-only sync, Ledger sheet; needs the script with secrets removed); effectiveness pass needs the owner's top daily tasks per role.
 
 
-**v9.20 owner feedback round 2: DONE.** POS search no longer prefills stale values. POS voids matching `test` go to a Test section; admin can also permanently remove a voided bill. Refresh no longer logs the session out even if the UI throws during `enter()`. Keeper tabs reduced to Products + More. Party kinds reworked to Customer / Investor / Supplier / Borrower-Lender with kind tabs in the ledger. Wallet openings are date-anchored with admin PIN + discrepancy logging. Past-date cash adjustments require admin PIN.
-
-**v9.19 storage notice, sync dot, theme, transitions, refresh: DONE.**
-**v9.18 Home dashboard: DONE.**
-**v9.17 admin PIN change, self test, by backfill: DONE.**
-**v9.16 review queue complete: DONE.**
-**v9.15 docs cleanup: DONE.**
-**v9.14 receipt photos: DONE.**
-**v9.13 reduced motion: DONE.**
-**v9.12 dashboard clock: DONE.**
-**v9.11 restore: DONE.**
-**v9.10 ledger search, flags, statement, due dates: DONE.**
-**v9.9 POS bill-first: DONE.**
-**v9.8 nav/refresh/visual: DONE.**
-**v9.7 discount percent/speed: DONE.**
-**v9.6 audit hardening: DONE.**
-**v9.5 party/carry-forward: DONE.**
-**v9.3 no due purchases: DONE.**
-**v9.0 ledger-cash link: DONE.**
-**v8.9 wallets: DONE.**
+**v9.21: DONE.** Clock, phone top-bar tidy, Accounts Void data section with Admin restore.
+**v9.20: DONE.** Owner feedback round 2: POS search, Test/Remove, refresh fix, keeper tabs, party kinds, date-anchored wallet openings, past-date PIN.
+**v9.19: DONE.** Storage notice, single sync dot, three-mode theme, transitions, refresh.
+**v9.18: DONE.** Home dashboard.
+**v9.17: DONE.** Admin PIN change, self test, by backfill.
+**v9.16: DONE.** Review queue complete.
+**v9.15: DONE.** Docs cleanup.
+**v9.14: DONE.** Receipt photos.
+**v9.13: DONE.** Reduced motion.
+**v9.12: DONE.** Dashboard clock.
+**v9.11: DONE.** Restore.
+**v9.10: DONE.** Ledger search, flags, statement, due dates.
+**v9.9: DONE.** Bill-first POS.
+**v9.8: DONE.** Nav/refresh/visual.
+**v9.7: DONE.** Discount percent/speed.
+**v9.6: DONE.** Audit hardening.
+**v9.5: DONE.** Party/carry-forward.
+**v9.3: DONE.** No due purchases.
+**v9.0: DONE.** Ledger-cash link.
+**v8.9: DONE.** Wallets.
 
 **Still open (next)**
 1. Sync key rotation (needs Apps Script).
@@ -146,6 +152,7 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 - Canvas image compression, camera, statement image, Bengali text in real browser.
 - Apps Script / Sheet blob tolerance with `atts`.
 - iOS Safari layout, animation, reduced-motion.
+- **v9.22 sound and motion on a real phone** (Android WebView and iOS Safari), especially AudioContext resume timing and the `button:active` scale on the bottom tab bar.
 
 **Known limits (v8.7)**
 - imo/Facebook links from phone unavailable.
@@ -162,13 +169,13 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 - Split into modules only if asked. Automated smoke test.
 
 ## 7. Session log (append newest on top)
-- **Native packaging, 2026-10-19 (Claude Sonnet 5.5, owner's Claude account):** No change to `index.html`, version stays v9.21. Added Android (Capacitor) and Windows (Electron) apps with auto-update from GitHub Releases, built by GitHub Actions. See section 9 and `SETUP.md`. Tests: `node --check` on all scripts; bridge logic against mocked Capacitor plugins (update check, 9.9 to 9.10 ordering, blob save, share, print); Windows build packaged on Linux and the app launched under a virtual display (loads, bridge active, service worker off, Bengali font and crypto available). **Not tested:** Android Gradle build, real phone, real Windows install and update.
-- **v9.21, 2026-10-19 (Claude Sonnet 5.5, owner's Claude account):** (1) **Clock:** shared `clkTick()` (function declaration) updates the Home hero clock (`#hClkT/#hClkD`) and a new top-bar clock (`#tclk`). `clkVis()` (called from `go()`) shows the top clock for Admin on every tab except Home (Home has its own large clock) and for other roles only on their first tab `TABS[role()][0]`. **Bug found and fixed:** `homeUI()` called `clkTick()` since v9.12 but the function was never defined, so Home stopped rendering after the hero card (likely the real cause of the 'refresh logs out / broken Home' reports). (2) **Phone top bar:** theme, refresh and sync are equal-size icon buttons; sync is dot-only under 900px (aria-label kept); logo hides under 520px. Written without the owner's screenshot (it did not arrive), so the layout is a best guess to be checked on the phone. (3) **Accounts void section:** `render()` now splits `tv0` into live rows (`tv`) and voids (`vd`, Admin and Accountant only). `#avBar` shows `Void data (n)`; `AV` toggles `avTable()`. Admin can restore through `restoreEntry()`: blocked for POS entries (`pos`), ledger-linked entries (`lk`/`type:'Ledger'`), closed days and wallet-negative cases; it calls `snap()`, clears void fields, sets `rb`, logs `Restore entry` and `save()` reconciles any due-sale posting. Accounts void now stores `vb` (who voided). `AV` is declared with `ACC_N` above `start()` and reset in `go('acc')`. `sw.js` cache `ncs-v41`. Tests: `node --check`; jsdom with all four roles: Home renders with clock, clock visibility per role and tab, void split, totals exclude voids, restore (admin), restore blocked for closed day, wallet-negative and POS entries, accountant has no restore button, refresh with a saved session. **Not tested:** real browser or phone layout of the top bar, iOS Safari, production sync.
-- **v9.20, 2026-10-19 (Claude Sonnet 5.5, owner's Claude account):** Owner feedback round 2 — four bugs and five feature requests. (1) **POS search stale prefill** — `POS.refresh()` now clears `#q.value` (browser autofill or a saved search could prefill it with "Accountant" or any other form value; clearing on every refresh removes that class of bug entirely). (2) **Void test/remove** — `voidBill`'s onOk marks `b.test=1, e.test=1` when reason matches `/^test$/i`. New `removeBillPermanently(b)` requires a reason (admin only), sets `b.removed=1, e.removed=1`; a `removeBill` Change Log entry is written. `billsUI` filters `!b.removed` from the main list and shows a "Test" section for admins. `cash()` and totals never count flagged bills because they are also voided. (3) **Refresh logout fix** — `resume()` now wraps `enter()` in its own try/catch that logs the error to the console but still returns `true` (session valid). This means a UI error no longer ejects the user to the login screen; they see whatever broken view and can report it. (4) **Keeper tabs** — `TABS.keeper=['prod','more']` (POS, Accounts and Ledger removed). (5) **Party kinds** — `ledCust` now offers four kinds only: Customer, Investor, Supplier, Borrower/Lender. Legacy `Lender` / `Borrower` / `Other` continue to display but are grouped under Borrower/Lender via `kindMatch()`. The `ledList` header has a kind filter tab strip (`LK` variable). (6) **Wallet openings date-anchored** — new synced array `S.walletDates`; new helpers `wOpenAt(k, d)`, `walletAdjust()`, `walletAdjustmentReport()`. `wltRun` resets the wallet balance when it crosses each anchor date. Setting an anchor for a past date requires the admin PIN and writes a `walletAdjust` entry with `prev` and `discrepancy` snapshots. `openWltSettings` becomes a management dialog showing anchor history and an "Add opening for a date" form. **Backward compatibility:** if `S.walletDates` is missing but `S.wallets` exists, a single anchor is created at the earliest entry date on first run (idempotent via `S.walletMigrated`). (7) **Past-date adjustments require PIN** — `cashAdjust` checks `td < today` and asks for the admin PIN; approved adjustments store `pinBy`, `pinAt` on the entry. Present-day adjustments still roll to `nextOpenDay` with no PIN. (8) **Borrower/Lender transaction rules** — unchanged logic; with kinds reworked, the customer-style In/Out + any method (Cash, MFS, Recharge) works for these parties exactly as it does for customers. No new validation. `sw.js` cache `ncs-v40`. Not tested in a real browser, against production Apps Script, or multi-device. Because the file was too large to send in one message, `index.html` is delivered in three consecutive messages to be concatenated in order.
-
-- **v9.19, 2026-10-19 (Claude Sonnet 5.5, owner's Claude account):** Seven owner-reported issues. Storage popup only on real failures; `Dismiss` uses `style.display='none'`. Sync dot single with periodic blink. Motion button removed. Theme = three modes, single icon button in top bar. Tab transitions (220ms). Refresh icon + spin. Self test uses `eval('typeof '+n)`. Review queue Open lands on the correct day. `sw.js` cache `ncs-v39`.
-- **v9.18, 2026-10-18 (Claude Sonnet 5.5, owner's Claude account):** Home dashboard (today cash strip, who-owes-whom card, stock value tile). Sample "Load Riyad notes" removed. `sw.js` cache `ncs-v38`.
-- **v9.17, 2026-10-18 (Claude Sonnet 5.5):** Change admin PIN, Run self test, VERS.by backfill. `sw.js` cache `ncs-v37`.
+- **v9.22, 2026-10-19 (Claude Sonnet 5.5, owner's Claude account):** Sound + motion + wrapper download safety, built on the uploaded v9.21 base. (1) **Sound:** new `Sound` module (Web Audio, no files): `tick` on tab switch and dialog open (`go`, `ask`), `chaChing` on POS sale (`finishBill`), Accounts entry save, and Ledger entry save, `buzz` on wrong PIN (`lockUI.err`), form validation and wallet-limit failures, `chime` on successful background `push` and applied `pull`. Toggle `#snd` in Settings, default off, stored in `S.sound` (added to `LOCAL`). AudioContext is created/resumed on the first pointerdown/keydown/touchstart. All calls are no-ops when `S.sound` is falsy or `data-rm` is set. (2) **Motion:** `animateCounts()` counts `.cnt[data-to]` from 0 over 400ms; Home hero Cash Balance plus Total Sell/Total Buy now use it. `saveCheck()` draws a green SVG tick overlay. Global `button:active{transform:scale(.97)}`. POS cart rows use `.slidein` on add and `.slideout` on delete through `slideInLast()` / `removeLineAnimated()`. All respect `data-rm`. (3) **Download safety:** `dlFile` appends the `<a>` to the DOM and falls back to `window.open` on failure. `sw.js` cache `ncs-v42`. Tests: `node --check` on `index.html` script and `sw.js`; headless DOM smoke (Sound guarded when off, count-up sets final value under reduced motion, checkmark removes itself, slide classes added/removed, settings toggle round-trips through `save`/reload). **Not tested:** real device audio timing, iOS Safari AudioContext, visual result of the global `button:active` rule on the bottom tab bar. Delivered as complete files.
+- **Native packaging, 2026-10-19 (Claude Sonnet 5.5, owner's Claude account):** No change to `index.html`, version stays v9.21. Added Android (Capacitor) and Windows (Electron) apps with auto-update from GitHub Releases, built by GitHub Actions. See section 9 and `SETUP.md`. Tests: `node --check` on all scripts; bridge logic against mocked Capacitor plugins. **Not tested:** Android Gradle build, real phone, real Windows install and update.
+- **v9.21, 2026-10-19 (Claude Sonnet 5.5):** Clock, phone top bar tidy, Accounts Void data section with Admin restore. `sw.js` cache `ncs-v41`. **Bug found and fixed:** `homeUI()` called a missing `clkTick()`; shared clock function now defined.
+- **v9.20, 2026-10-19 (Claude Sonnet 5.5):** POS search, Test/Remove, refresh, keeper tabs, party kinds, date-anchored wallet openings, past-date PIN. `sw.js` cache `ncs-v40`.
+- **v9.19, 2026-10-19 (Claude Sonnet 5.5):** Storage popup only on real failures; single sync dot; three-mode theme; tab transitions; refresh spin; self-test and review-queue fixes. `sw.js` cache `ncs-v39`.
+- **v9.18, 2026-10-18 (Claude Sonnet 5.5):** Home dashboard. `sw.js` cache `ncs-v38`.
+- **v9.17, 2026-10-18 (Claude Sonnet 5.5):** Change admin PIN, self test, VERS.by backfill. `sw.js` cache `ncs-v37`.
 - **v9.16, 2026-10-18 (Claude Sonnet 5.5):** Complete admin review queue. `sw.js` cache `ncs-v36`.
 - **v9.15, 2026-10-18 (Claude Sonnet 5.5):** Docs/metadata cleanup. `sw.js` cache `ncs-v35`.
 - **v9.14, 2026-10-18 (Claude Sonnet 5.5):** Optional receipt photos.
@@ -185,11 +192,12 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 
 ## 8. Bug fix history (newest on top)
 Format: `YYYY-MM-DD HH:MM (UTC+6) · version · who · what was wrong · cause · fix`. Times before this rule was made were recorded as `--:--`.
+- 2026-10-19 --:-- (UTC+6) · v9.22 · Claude Sonnet 5.5 · owner's Claude account · CSV/JSON downloads could fail silently inside the native wrappers because the `<a download>` element was never attached to the DOM and wrappers sometimes block blob downloads · `dlFile` clicked a detached anchor and swallowed the error · the anchor is appended before `click()`, removed after 1s, and a `window.open` data-URL fallback runs if the blob path throws.
 - 2026-10-19 --:-- (UTC+6) · v9.21 · Claude Sonnet 5.5 · owner's Claude account · Home stopped drawing after the hero card (stats, charts, recent bills missing) · `homeUI()` called `clkTick()`, which was never defined (ReferenceError) · `clkTick()` defined; shared by Home and top-bar clocks.
 - 2026-10-19 --:-- (UTC+6) · v9.21 · Claude Sonnet 5.5 · owner's Claude account · Voided entries cluttered the Accounts day table · void rows were listed with strike-through · filtered into a Void data view (Admin and Accountant) with Admin restore.
 - 2026-10-19 --:-- (UTC+6) · v9.21 · Claude Sonnet 5.5 · owner's Claude account · Theme, refresh and sync controls looked crowded in the phone top bar · sync showed a full text label beside two icons plus logo and title · equal-size icons, sync dot-only on phones, logo hidden when very narrow.
 - 2026-10-19 --:-- (UTC+6) · v9.20 · Claude Sonnet 5.5 · owner's Claude account · POS search pre-filled with stale content (e.g. "Accountant") on entering the POS tab · `#q` value was never cleared on refresh and could retain browser autofill or a previously typed value · `POS.refresh()` clears `$('q').value` on every enter.
-- 2026-10-19 --:-- (UTC+6) · v9.20 · Claude Sonnet 5.5 · owner's Claude account · Refresh made the admin log out (same symptom as v8.9.1) · any throw inside `enter()` after `resume()` restored a valid session caused the outer catch to return `false` · `resume()` wraps `enter()` in a nested try/catch that logs the error but still returns `true` so the login screen is not shown; the broken view is visible for reporting.
+- 2026-10-19 --:-- (UTC+6) · v9.20 · Claude Sonnet 5.5 · owner's Claude account · Refresh made the admin log out (same symptom as v8.9.1) · any throw inside `enter()` after `resume()` restored a valid session caused the outer catch to return `false` · `resume()` wraps `enter()` in a nested try/catch that logs the error but still returns `true`.
 - 2026-10-19 --:-- (UTC+6) · v9.20 · Claude Sonnet 5.5 · owner's Claude account · Voids from POS could not be fully removed and had no test-only pathway · the void flow only set the `void` flag with a reason · `voidBill` now auto-marks `test` reasons; admin gets `removeBillPermanently` with a reason; bills UI shows a "Test" section for admins.
 - 2026-10-19 --:-- (UTC+6) · v9.20 · Claude Sonnet 5.5 · owner's Claude account · Keeper had too many tabs · `TABS.keeper` included POS which is not part of the keeper workflow · reduced to `['prod','more']`.
 - 2026-10-19 --:-- (UTC+6) · v9.20 · Claude Sonnet 5.5 · owner's Claude account · Wallet opening balances could only be set once and always applied from the beginning · `S.wallets` was a single fixed value · new `S.walletDates` array; `wltRun` resets at each anchor date; management dialog adds/removes anchors with admin PIN on past dates.
@@ -224,7 +232,7 @@ Format: `YYYY-MM-DD HH:MM (UTC+6) · version · who · what was wrong · cause �
 
 ## 9. Native apps (Android APK and Windows .exe)
 Added 2026-10-19. The PWA is unchanged and still works. The native apps wrap the same files.
-- **Build:** GitHub Actions (`.github/workflows/build.yml`) runs on every upload to `main`. It builds only if `APP_VERSION` in `index.html` has no release yet (tag `v<major>.<minor>.0`, e.g. 9.21 becomes `v9.21.0`). If a version is not raised, nothing is built.
+- **Build:** GitHub Actions (`.github/workflows/build.yml`) runs on every upload to `main`. It builds only if `APP_VERSION` in `index.html` has no release yet (tag `v<major>.<minor>.0`, e.g. 9.22 becomes `v9.22.0`). If a version is not raised, nothing is built.
 - **Release contents:** `NCS-Accounts-<v>.apk`, `NCS-Accounts-Setup-<v>.exe`, `latest.yml` and `.blockmap` (Windows updater), `www.zip` and `update.json` (Android live update).
 - **No edits to `index.html` for native.** `scripts/prepare-www.js` copies the app to `www/` and injects `native/bridge.js` just before `<script src="config.js"></script>`. **If that script tag is ever removed or changed, the build fails on purpose.** Keep it.
 - **Android:** Capacitor 8 plus `@capgo/capacitor-updater` in manual mode. On start and on resume (max once per 30 min) `bridge.js` reads `releases/latest/download/update.json`, downloads `www.zip`, calls `next()` and shows a "Restart now" bar. A bundle that does not call `notifyAppReady()` is rolled back by the plugin. The bridge also supplies `navigator.share`, blob downloads (saved to cache, then the share sheet), and `window.print` (custom `NativePrint` plugin using Android PrintManager).
@@ -234,3 +242,4 @@ Added 2026-10-19. The PWA is unchanged and still works. The native apps wrap the
 - **Native changes need a manual APK install:** new Android permission, new Capacitor plugin, new icon. Web code changes never do.
 - **Signing key:** GitHub secrets `ANDROID_KEYSTORE_B64` and `ANDROID_KEYSTORE_PASSWORD` (alias `ncs`). The owner keeps the backup. If lost, the phone app must be uninstalled and reinstalled once.
 - **Not yet verified on real devices:** Android build in CI, APK install and live update, camera scan in the APK, print dialog on Android, Windows installer and auto-update. Windows app was launched and rendered under a virtual display only.
+- **v9.22 note:** the sound engine uses the standard Web Audio API, which works in both the Android WebView and Electron. On Android, sounds triggered by background sync can be blocked if no recent tap occurred — that is an OS limit, not a bug. Audio is disabled entirely under reduced motion by design.
