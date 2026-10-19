@@ -35,8 +35,12 @@ patch(M,
   'android.permission.CAMERA');
 
 const G = 'android/app/build.gradle';
-patch(G, 'versionCode 1', 'versionCode (System.getenv("VERSION_CODE") ?: "1").toInteger()', 'VERSION_CODE');
-patch(G, 'versionName "1.0"', 'versionName (System.getenv("VERSION_NAME") ?: "1.0")', 'VERSION_NAME');
+patch(G, "apply plugin: 'com.android.application'",
+  "apply plugin: 'com.android.application'\n\n" +
+  "def ncsVersionCode = Integer.parseInt(System.getenv('VERSION_CODE') ?: '1')\n" +
+  "def ncsVersionName = System.getenv('VERSION_NAME') ?: '1.0'", 'ncsVersionCode');
+patch(G, 'versionCode 1', 'versionCode ncsVersionCode', 'versionCode ncsVersionCode');
+patch(G, 'versionName "1.0"', 'versionName ncsVersionName', 'versionName ncsVersionName');
 patch(G, '    buildTypes {',
 `    signingConfigs {
         release {
@@ -68,4 +72,7 @@ patch('android/app/src/main/res/values/styles.xml',
   '<item name="android:background">@drawable/splash</item>\n        <item name="windowSplashScreenBackground">#2F5D3A</item>',
   'windowSplashScreenBackground');
 
+// Shows the first lines of build.gradle in the build log (helps find problems quickly)
+console.log('--- android/app/build.gradle (first 40 lines) ---');
+console.log(read(G).split('\n').slice(0, 40).join('\n'));
 console.log('Android project ready.');
