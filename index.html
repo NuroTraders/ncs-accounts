@@ -50,8 +50,8 @@ td.d small{display:block;color:var(--mut);font-size:12px}
 .b.o{background:transparent;border:1px solid var(--gold);color:var(--gold)}.b.v{background:transparent;border:1px solid var(--neg);color:var(--neg)}
 tr.void td{opacity:.5;text-decoration:line-through}tr.void td:last-child,tr.void td.d small{text-decoration:none}
 td.cb{font-weight:600}.pos{color:var(--pos)}.neg{color:var(--neg)}.zero{color:var(--mut)}.warn{color:var(--warn)}
-.lnk{background:none;border:0;color:var(--mut);cursor:pointer;padding:2px 6px;font-size:13px}
-.lnk:hover{color:var(--ink)}.lnk.adj{color:var(--gold);font-weight:600}
+.lnk{background:none;border:0;color:var(--mut);cursor:pointer;padding:7px 10px;font-size:13px;border-radius:8px;display:inline-flex;align-items:center;min-height:34px;margin:2px 3px;touch-action:manipulation}
+.lnk:hover{color:var(--ink);background:var(--soft)}.lnk.adj{color:var(--gold);font-weight:600}
 .empty{padding:34px;text-align:center;color:var(--mut)}
 form{padding:16px}
 .g{display:grid;grid-template-columns:repeat(12,1fr);gap:10px;align-items:end}
@@ -81,9 +81,10 @@ label{display:block;font-size:12.5px;color:var(--mut);margin-bottom:5px}
 .pt,.pf{display:none}
 .ov{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:18px;z-index:9}
 .ov[hidden]{display:none}
-.dlg{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;width:100%;max-width:380px}
-.dlg h3{margin:0 0 12px;font-size:17px}.dlg .f{margin-bottom:10px}
-.oa{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
+.dlg{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;width:100%;max-width:380px;max-height:88vh;display:flex;flex-direction:column;box-sizing:border-box}
+.dlg h3{margin:0 0 12px;font-size:17px;flex-shrink:0}.dlg .f{margin-bottom:10px}
+.dlg>#ob{overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;flex:1 1 auto;min-height:0;padding-right:2px}
+.oa{display:flex;justify-content:flex-end;gap:8px;margin-top:14px;flex-shrink:0;position:sticky;bottom:0;background:var(--card);padding-top:8px;border-top:1px solid var(--line);z-index:2}
 .fb{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr auto;gap:8px;padding:10px 12px}
 .fb input,.fb select{height:36px}
 .cc{display:grid;grid-template-columns:56px 1fr 84px;gap:6px 10px;align-items:center}.cc label{margin:0}.cc b{text-align:right;font-weight:500;font-size:13px}
@@ -137,11 +138,12 @@ body{padding-bottom:78px}
 .tile span{display:block;font-weight:500;line-height:1.25;margin:8px 2px 0;font-size:14px}.tile small{display:block;margin:2px;color:var(--mut)}
 .sb{position:absolute;top:12px;right:12px;background:var(--card);border:1px solid var(--line);border-radius:10px;font-size:11px;padding:0 7px;font-weight:600}.sb.low{color:var(--neg);border-color:var(--neg)}
 #vPos .cart{padding:14px}#vPos .cart h3{margin:0 0 6px;font-size:15px}
-.line{display:grid;grid-template-columns:1fr 78px auto 62px 22px;gap:6px;align-items:center;padding:9px 0;border-top:1px solid var(--line)}
+.line{display:grid;grid-template-columns:1fr 78px auto 62px 40px;gap:6px;align-items:center;padding:9px 0;border-top:1px solid var(--line)}
 .line input{height:34px;padding:0 6px;text-align:right}.line small{display:block;font-size:11.5px;color:var(--mut)}
 .qty{display:flex;align-items:center;gap:4px}.qty button{border:1px solid var(--line);background:var(--card);border-radius:8px;width:28px;height:28px;cursor:pointer}
 .lt{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
-.line .x{border:0;background:none;color:var(--mut);cursor:pointer;width:22px}
+.line .x{border:0;background:none;color:var(--mut);cursor:pointer;width:40px;height:40px;min-width:40px;display:inline-grid;place-items:center;border-radius:8px;touch-action:manipulation;font-size:18px;line-height:1}
+.line .x:hover{color:var(--neg);background:var(--soft)}
 .tot{display:flex;justify-content:space-between;align-items:center;padding:6px 0;color:var(--mut)}.tot b{color:var(--ink);font-variant-numeric:tabular-nums}
 .tot.big{font-size:20px;color:var(--ink);font-weight:700}.tot input{width:90px;text-align:right;height:32px}
 #vPos .go,#vPos .fab{width:100%}.go:disabled{opacity:.4;cursor:default}
@@ -158,7 +160,7 @@ body{padding-bottom:78px}
 #sc video{width:100%;border-radius:12px;background:#000}
 #rcp{display:none;white-space:pre;font:13px/1.4 monospace}
 .pf1{display:flex;gap:8px;align-items:center;margin-bottom:10px}.pf1 .pimg{width:64px;height:64px;font-size:22px;flex:none}
-@media(max-width:800px){.line{grid-template-columns:1fr 70px auto 54px 20px}#vPos .fab{display:block;position:fixed;left:14px;right:14px;bottom:calc(80px + env(safe-area-inset-bottom,0px));z-index:5;width:auto}}
+@media(max-width:800px){.line{grid-template-columns:1fr 70px auto 54px 38px}#vPos .fab{display:block;position:fixed;left:14px;right:14px;bottom:calc(80px + env(safe-area-inset-bottom,0px));z-index:5;width:auto}}
 @media(max-width:700px){.hs{grid-template-columns:1fr 1fr}.qa{grid-template-columns:1fr 1fr}}
 #vPos .tools .ghost{white-space:nowrap}#vPos .tools input{min-width:0}#vPos .fab:disabled{display:none}
 @media(max-width:800px){#bPay{display:none}}
@@ -240,6 +242,8 @@ body.lp .ctag,body.pr .ctag{display:none!important}@media print{.cbn{display:non
 .wlt-card{background:var(--card);border-radius:14px;padding:12px;box-shadow:var(--sh)}
 .wlt-title{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:13px;font-weight:600;color:var(--mut);margin-bottom:8px}.wlt-title b{color:var(--ink);font-size:14px}
 .wlt-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.wlt-grid-3{grid-template-columns:repeat(3,1fr)}
+@media(max-width:480px){.wlt-grid-3{grid-template-columns:repeat(3,1fr)}}
 .wlt-item{background:var(--soft);border-radius:10px;padding:10px;text-align:center;cursor:pointer;transition:transform .1s}.wlt-item:hover{transform:translateY(-2px)}.wlt-item:active{transform:scale(.97)}
 .wlt-item .wname{font-size:12px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.wlt-item .wbal{font-size:16px;font-weight:700;color:var(--ink);margin-top:2px;font-variant-numeric:tabular-nums}.wlt-item.neg .wbal{color:var(--neg)}
 #whp{position:fixed;z-index:25;width:260px;padding:12px;box-shadow:0 12px 32px rgba(0,0,0,.2);font-size:13px}#whp[hidden]{display:none}.whr{display:flex;justify-content:space-between;gap:8px;padding:3px 0;border-bottom:1px solid var(--line)}.whr span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -414,6 +418,21 @@ body:has(#vHome.on){background:linear-gradient(180deg,var(--dhg) 0,var(--bg) 340
 .kindTabs{margin-bottom:10px}
 .kindTabs button.on{background:var(--acc);color:var(--btnink);border-color:var(--acc)}
 
+
+/* v9.25: POS Desktop 2-column & Mobile streamlined layout */
+@media(min-width:900px){
+  .pos-layout{display:grid;grid-template-columns:1fr 380px;gap:18px;align-items:start}
+  .pos-sidebar{position:sticky;top:16px}
+  #vPos .pos-cart{position:sticky;top:16px}
+  #vPos .pos-products{margin-top:0}
+}
+@media(max-width:899px){
+  .pos-layout{display:flex;flex-direction:column}
+  .pos-main{order:1}
+  .pos-sidebar{order:2;margin-top:12px}
+  #vPos .pos-products{margin-top:6px}
+}
+
 /* v9.21: tidy phone top bar, top-bar clock, Accounts void section */
 #topR{display:flex;align-items:center;gap:2px}
 .tclk{display:flex;flex-direction:column;align-items:flex-end;line-height:1.15;margin-right:8px;white-space:nowrap}
@@ -509,19 +528,25 @@ button:active{transform:scale(.97)}
   <header style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px"><div><div class="shop">Point of sale</div><h1>POS</h1></div>
     <div class="seg"><button id="mS" class="on">Sale</button><button id="mP">Purchase</button></div>
     <div class="nav"><button class="ghost" id="bHeld">Held</button><button class="ghost" id="bBills">Bills</button><button class="ghost" id="bDrawer">Drawer</button></div></header>
-  <div class="pos-tools" role="search">
-    <div class="pos-search"><label id="qLabel" for="q">Product Name/ID/Barcode</label><input id="q" placeholder="Search products" autocomplete="off"></div>
-    <button class="ghost" id="bScan" type="button">Scan</button><button class="ghost" id="bNew" type="button">Add Product</button>
+  <div class="pos-layout">
+    <div class="pos-main">
+      <div class="pos-tools" role="search">
+        <div class="pos-search"><label id="qLabel" for="q">Product Name/ID/Barcode</label><input id="q" placeholder="Search products" autocomplete="off"></div>
+        <button class="ghost" id="bScan" type="button">Scan</button><button class="ghost" id="bNew" type="button">Add Product</button>
+      </div>
+      <details class="pos-products" id="productPanel" open><summary id="productSummary">Browse products / Add to bill</summary><div class="top7" id="top7"></div><div class="grid" id="grid"></div></details>
+    </div>
+    <aside class="pos-sidebar">
+      <section class="card cart pos-cart"><h3 id="ct">Sale cart</h3><div id="lines"></div>
+        <div class="tot"><span>Subtotal</span><b id="st">0</b></div>
+        <div class="tot"><span>Discount</span><div class="dcw"><input id="dc" type="number" inputmode="decimal" min="0" placeholder="0" aria-label="Discount amount"><div class="dcp"><button type="button" id="dpm" aria-label="Lower discount percent">−</button><input id="dp" type="number" inputmode="decimal" min="0" max="100" step="0.5" placeholder="%" aria-label="Discount percent"><span>%</span><button type="button" id="dpp" aria-label="Raise discount percent">+</button></div></div></div>
+        <div class="dcn" id="dcn" hidden></div>
+        <div class="tot big"><span>Total</span><b id="tt">৳0</b></div>
+        <div style="display:flex;gap:8px;margin:8px 0"><button class="ghost" id="bHold" style="flex:1">Hold bill</button><button class="ghost" id="bCustom" style="flex:1">+ Custom item</button></div>
+        <button class="go" id="bPay">Charge</button>
+      </section>
+    </aside>
   </div>
-  <section class="card cart pos-cart"><h3 id="ct">Sale cart</h3><div id="lines"></div>
-    <div class="tot"><span>Subtotal</span><b id="st">0</b></div>
-    <div class="tot"><span>Discount</span><div class="dcw"><input id="dc" type="number" inputmode="decimal" min="0" placeholder="0" aria-label="Discount amount"><div class="dcp"><button type="button" id="dpm" aria-label="Lower discount percent">−</button><input id="dp" type="number" inputmode="decimal" min="0" max="100" step="0.5" placeholder="%" aria-label="Discount percent"><span>%</span><button type="button" id="dpp" aria-label="Raise discount percent">+</button></div></div></div>
-    <div class="dcn" id="dcn" hidden></div>
-    <div class="tot big"><span>Total</span><b id="tt">৳0</b></div>
-    <div style="display:flex;gap:8px;margin:8px 0"><button class="ghost" id="bHold" style="flex:1">Hold bill</button><button class="ghost" id="bCustom" style="flex:1">+ Custom item</button></div>
-    <button class="go" id="bPay">Charge</button>
-  </section>
-  <details class="pos-products" id="productPanel"><summary id="productSummary">Browse products / Add to bill</summary><div class="top7" id="top7"></div><div class="grid" id="grid"></div></details>
   <button class="go fab" id="fab">Charge</button></div>
 <div class="wrap view" id="vProd"><header style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px"><div><div class="shop">Stock and prices</div><h1>Products</h1></div><button class="go" id="pdNew" style="width:auto">+ New product</button></header>
   <section class="hs" id="pdS"></section>
@@ -1230,7 +1255,15 @@ function ledProfile(){
     body='<div class="card noprint" style="padding:12px;display:flex;gap:10px;flex-wrap:wrap;align-items:end"><div><label>'+lb('From','থেকে')+'</label><input id="lsa" type="date" value="'+LF+'"></div><div><label>'+lb('To','পর্যন্ত')+'</label><input id="lse" type="date" value="'+LE+'"></div><button class="ghost" data-a="print">'+lb('Print / Save PDF','প্রিন্ট / পিডিএফ')+'</button><button class="ghost" data-a="img">'+lb('Share image','ছবি শেয়ার')+'</button><button class="ghost" data-a="csv">CSV</button></div><div class="lph"><h2>'+esc(shopN())+'</h2><div>'+esc(c.name)+' · '+esc(c.phone||'')+' · '+(LF?sd(LF):'…')+' – '+(LE?sd(LE):sd(iso(new Date())))+'</div></div>'+ledTable(ledRows(act,LF,LE),ob)}
   else if(LT==='void')body=ledVoidTab(all);else if(LT==='note')body='<div class="card" style="padding:14px"><textarea id="lnt" rows="6" style="width:100%;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px;font:inherit;color:inherit">'+esc(c.note||'')+'</textarea><div style="margin-top:10px"><button class="go" data-a="savenote">'+lb('Save','সংরক্ষণ')+'</button></div></div>';
   else{var L=S.log.filter(function(l){return String(l.a).indexOf('Ledger')===0&&String(l.d).indexOf(c.name+' ·')===0});body='<div class="card lg" style="padding:6px 14px">'+(L.length?L.map(function(l){return '<div><b>'+esc(l.a)+'</b> <small>'+esc(l.ts)+' · '+esc(l.u)+'</small><br>'+esc(l.d)+'</div>'}).join(''):'<div class="mut">'+lb('No activity yet','কোনো কার্যক্রম নেই')+'</div>')+'</div>'}
-  return '<header class="noprint"><div><button class="ghost" data-a="back">‹ '+lb('All customers','সব কাস্টমার')+'</button></div><div class="nav"><button class="go" data-a="in">+ পেলাম</button><button class="go" data-a="out" style="background:var(--neg)">+ দিলাম</button><button class="ghost" data-a="borrow">+ Borrow</button><button class="ghost" data-a="lend">+ Lend</button>'+(lEd()?'<button class="ghost" data-a="due">'+lb('Due date','নির্ধারিত তারিখ')+'</button>':'')+(isA()?'<button class="ghost" data-a="editc">'+lb('Edit','সম্পাদনা')+'</button>':'')+'</div></header>'+ledPC(c,b,act)+ledChkBar(c)+ledDueBar(c)+
+  var moreMenuHtml='<div class="led-more-wrap" style="position:relative;display:inline-block">'
+    +'<button type="button" class="ghost" data-a="ledmore" aria-label="'+lb('More actions','আরও অপশন')+'" style="font-weight:700;padding:0 12px">⋯ '+lb('More','আরও')+'</button>'
+    +'<div id="ledMoreMenu" class="sg" style="right:0;left:auto;min-width:180px;display:none;position:absolute;z-index:20">'
+    +'<div class="si" data-a="borrow"><span>+ '+lb('Borrow','হাওলাত আনলাম')+'</span></div>'
+    +'<div class="si" data-a="lend"><span>+ '+lb('Lend','হাওলাত দিলাম')+'</span></div>'
+    +(lEd()?'<div class="si" data-a="due"><span>'+lb('Due date','নির্ধারিত তারিখ')+'</span></div>':'')
+    +(isA()?'<div class="si" data-a="editc"><span>'+lb('Edit party','সম্পাদনা')+'</span></div>':'')
+    +'</div></div>';
+  return '<header class="noprint"><div><button class="ghost" data-a="back">‹ '+lb('All customers','সব কাস্টমার')+'</button></div><div class="nav" style="display:flex;gap:6px;align-items:center"><button class="go" data-a="in">+ পেলাম</button><button class="go" data-a="out" style="background:var(--neg)">+ দিলাম</button>'+moreMenuHtml+'</div></header>'+ledPC(c,b,act)+ledChkBar(c)+ledDueBar(c)+
   '<div class="lst noprint"><div class="stat main"><small>'+lb('Balance','ব্যালেন্স')+'</small><b class="'+(b>0?'warn':b<0?'pos':'zero')+'">'+tk(Math.abs(b))+'</b><i>'+(b===0?lb('Settled','মিটে গেছে'):b>0?esc(c.name)+' '+lb('gets (we owe)','পাবে (আমরা দেব)'):esc(c.name)+' '+lb('owes us','দেবে (আমরা পাব)'))+'</i></div><div class="stat"><small>পেলাম</small><b class="pos">'+tk(ti)+'</b></div><div class="stat"><small>দিলাম</small><b class="neg">'+tk(to)+'</b></div></div>'+
   '<div class="ptabs noprint">'+T.map(function(t){return '<button data-a="tab" data-t="'+t[0]+'" class="'+(LT===t[0]?'on':'')+'">'+t[1]+'</button>'}).join('')+'</div>'+body}
 var LS='all',LI=null,LP=0,LPAL=['#DCD8F0','#D4F8FC','#FFE9BC','#B1F1CC','#F8D4C8'];
@@ -1393,7 +1426,7 @@ function verUI(){ask(lb('Version history','সংস্করণ ইতিহা
 (function(){
   var v=$('vLed');
   v.addEventListener('click',function(e){var b=e.target.closest('[data-a]');if(!b)return;var a=b.dataset.a,id=+b.dataset.id;if(a==='open'&&Date.now()-LP<700)return;
-    if(a==='open'){LC=id;LT='led';LF=LE='';ledUI();scrollTo(0,0)}else if(a==='back'){LC=null;ledUI()}else if(a==='newc')ledCust();else if(a==='editc')ledCust(LC);else if(a==='kind'){LK=b.dataset.f;ledUI()}else if(a==='flt'){LS=b.dataset.f;ledUI()}else if(a==='restore')ledRestore(id);else if(a==='crestore'){var cc=S.cust.find(function(x){return x.id===id});if(cc){cc.del=0;cc.dby='';cc.delReason='';lg('Ledger party','Restored '+cc.name);save();ledUI()}}
+    if(a==='open'){LC=id;LT='led';LF=LE='';ledUI();scrollTo(0,0)}else if(a==='back'){LC=null;ledUI()}else if(a==='ledmore'){var mm=$('ledMoreMenu');if(mm)mm.style.display=(mm.style.display==='none'||!mm.style.display)?'block':'none';e.stopPropagation();return;}else if(a==='newc')ledCust();else if(a==='editc'){var mm=$('ledMoreMenu');if(mm)mm.style.display='none';ledCust(LC);}else if(a==='due'){var mm=$('ledMoreMenu');if(mm)mm.style.display='none';ledDue(LC);}else if(a==='kind'){LK=b.dataset.f;ledUI()}else if(a==='flt'){LS=b.dataset.f;ledUI()}else if(a==='restore')ledRestore(id);else if(a==='crestore'){var cc=S.cust.find(function(x){return x.id===id});if(cc){cc.del=0;cc.dby='';cc.delReason='';lg('Ledger party','Restored '+cc.name);save();ledUI()}}
     else if(a==='in'||a==='out'||a==='borrow'||a==='lend')ledForm(a);else if(a==='tab'){LT=b.dataset.t;ledUI()}else if(a==='tx')ledTx(id);else if(a==='accall')ledAcceptAll(LC);
     else if(a==='savenote'){var c=S.cust.find(function(x){return x.id===LC});c.note=$('lnt').value;lg('Ledger note',c.name+' · note updated');save();ltoast(lb('Saved','সংরক্ষিত'))}
     else if(a==='fltclr'){LFQ=LFD=LFM=LFA=LFB='';ledUI()}else if(a==='img')ledImg();else if(a==='due')ledDue(LC);else if(a==='print'){document.body.classList.add('lp');lg('Ledger print',cname());save();window.print()}
@@ -1414,6 +1447,7 @@ function verUI(){ask(lb('Version history','সংস্করণ ইতিহা
   ['touchend','touchmove','touchcancel'].forEach(function(t){v.addEventListener(t,function(){clearTimeout(TP)},{passive:true})});
   v.addEventListener('contextmenu',function(e){var el=e.target.closest('.lcc');if(!el)return;e.preventDefault();if(Date.now()-LP<900)return;LP=Date.now();dlgFor(+el.dataset.id)});
   document.addEventListener('scroll',hide,{passive:true});
+  document.addEventListener('click',function(e){var mm=$('ledMoreMenu');if(mm&&!e.target.closest('.led-more-wrap'))mm.style.display='none';});
 })();
 function synNote(){return SY()?'':'<div class="card" style="grid-column:1/-1;padding:12px;border-color:var(--warn)"><b>'+lb('Sync is off on this device','এই ডিভাইসে সিঙ্ক বন্ধ')+'</b><br><small>'+lb('Products added on other devices will not appear here until sync is set up.','অন্য ডিভাইসের পণ্য দেখা যাবে না যতক্ষণ সিঙ্ক না হয়।')+'</small></div>'}
 
@@ -1561,7 +1595,7 @@ function wltForm(){var ty=$('fy').value,wc=!!(WLTC[ty]&&WLTC[ty][$('fc').value])
 function renderWalletCards(){
   var b=calcWallets(),mk=function(k){return'<div class="wlt-item'+(b[k]<0?' neg':'')+'" data-w="'+k+'"><div class="wname">'+esc(wN(k))+'</div><div class="wbal">'+tk(b[k])+'</div></div>'},
   sum=function(a){return a.reduce(function(s,k){return s+b[k]},0)},
-  h='<div class="wlt-card"><div class="wlt-title"><span>'+lb('Mobile financial services','মোবাইল ফিন্যান্সিয়াল সার্ভিস')+(isA()?' <button type="button" class="lnk adj" style="font-size:12px;font-weight:600;padding:0 4px" data-wadj="mfs">'+lb('Adjust','সমন্বয়')+'</button>':'')+'</span><b>'+tk(sum(WLT_MFS))+'</b></div><div class="wlt-grid">'+WLT_MFS.map(mk).join('')+'</div></div><div class="wlt-card"><div class="wlt-title"><span>'+lb('Recharge balances','রিচার্জ ব্যালেন্স')+(isA()?' <button type="button" class="lnk adj" style="font-size:12px;font-weight:600;padding:0 4px" data-wadj="rcr">'+lb('Adjust','সমন্বয়')+'</button>':'')+'</span><b>'+tk(sum(WLT_RCR))+'</b></div><div class="wlt-grid">'+WLT_RCR.map(mk).join('')+'</div></div>';
+  h='<div class="wlt-card"><div class="wlt-title"><span>'+lb('Mobile financial services','মোবাইল ফিন্যান্সিয়াল সার্ভিস')+(isA()?' <button type="button" class="lnk adj" style="font-size:12px;font-weight:600;padding:0 4px" data-wadj="mfs">'+lb('Adjust','সমন্বয়')+'</button>':'')+'</span><b>'+tk(sum(WLT_MFS))+'</b></div><div class="wlt-grid">'+WLT_MFS.map(mk).join('')+'</div></div><div class="wlt-card"><div class="wlt-title"><span>'+lb('Recharge balances','রিচার্জ ব্যালেন্স')+(isA()?' <button type="button" class="lnk adj" style="font-size:12px;font-weight:600;padding:0 4px" data-wadj="rcr">'+lb('Adjust','সমন্বয়')+'</button>':'')+'</span><b>'+tk(sum(WLT_RCR))+'</b></div><div class="wlt-grid wlt-grid-3">'+WLT_RCR.map(mk).join('')+'</div></div>';
   ['wltWrap','wltWrapH'].forEach(function(id){var el=$(id);if(el)el.innerHTML=h})}
 function wltRows(key,lim){
   var L=sorted().filter(function(e){var f=wltEff(e);return f&&f.w===key}).reverse();if(lim)L=L.slice(0,lim);
@@ -2082,15 +2116,17 @@ var Sound=(function(){
 ['pointerdown','keydown','touchstart'].forEach(function(ev){document.addEventListener(ev,function(){try{Sound.init()}catch(e){}},{once:true})});
 $('ob').addEventListener('click',function(e){if(e.target.id==='sndTest'){try{Sound.test()}catch(err){}}});
 function animateCounts(){if(document.documentElement.dataset.rm)return;document.querySelectorAll('.cnt').forEach(function(el){var to=+el.dataset.to||0,st=performance.now();if(!to){el.textContent=tk(0);return}function step(t){var p=Math.min(1,(t-st)/400);el.textContent=tk(Math.round(to*p));if(p<1)requestAnimationFrame(step)}requestAnimationFrame(step)})}
-function saveCheck(){if(document.documentElement.dataset.rm)return;var d=document.createElement('div');d.className='savechk';d.innerHTML='<svg viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="22" fill="none" stroke="#2CC56F" stroke-width="3"/><path d="M14 27l8 8 16-16" fill="none" stroke="#2CC56F" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>';document.body.appendChild(d);setTimeout(function(){d.classList.add('out')},700);setTimeout(function(){d.remove()},1250)}
+function saveCheck(){if(document.documentElement.dataset.rm)return;var d=document.createElement('div');d.className='savechk';d.innerHTML='<svg viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="22" fill="none" stroke="var(--acc)" stroke-width="3"/><path d="M14 27l8 8 16-16" fill="none" stroke="var(--acc)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>';document.body.appendChild(d);setTimeout(function(){d.classList.add('out')},700);setTimeout(function(){d.remove()},1250)}
 (function(){
   var M="Claude Sonnet 5.5 · owner's Claude account";
-  APP_VERSION='9.24';
+  APP_VERSION='9.25';
+  VERS.unshift({v:'9.25',d:'2026-10-21',t:'Responsive UI overhaul: Modal safety, touch targets, POS split grid & clean Ledger header',by:M,n:['Modal & dialog safety: .dlg gets max-height:88vh with smooth scroll and sticky confirmation/action buttons (.oa) so actions are never pushed offscreen','Ergonomic touch targets: Cart delete (.x) expanded to 40px; Accounts/Ledger table action buttons given generous tap padding and minimum 34px height','Recharge balances grid: 3-column balanced row on both desktop and mobile without awkward empty gaps','Dark mode token integrity: saveCheck checkmark and accent icons use var(--acc) for complete orange/dark harmony','POS desktop & mobile overhaul: Desktop (>=900px) gets a 2-column layout with sticky cart on the right and catalog on the left; mobile search sits directly above catalog without scrolling past cart','Ledger header streamlining: Primary + পেলাম [green] and + দিলাম [red] stay front-and-center while secondary actions (+ Borrow, + Lend, Due date, Edit) are neatly organized under a single ⋯ More dropdown menu']});
   VERS.unshift({v:'9.24',d:'2026-10-21',t:'Flexible MFS/Recharge adjustment & Cash denomination history log',by:M,n:['Individual MFS & Recharge wallet adjustments directly from wallet cards and detail dialogs with full audit trail in S.walletDates','Every cash count and note breakdown is now permanently saved by date and time in S.counts with full denomination history','New "Cash count history" dialog accessible from the Accounts cash strip showing past counts, note denominations, counted vs book difference, and reason']});
   VERS.unshift({v:'9.23',d:'2026-10-21',t:'WhatsApp & SMS polite due reminder links in Ledger',by:M,n:['One-tap WhatsApp & SMS due reminder links on customer cards and profile when party owes money (they owe)','Pre-formats polite Bengali payment notice with customer name, shop name, and due amount','Uses iOS and Android standard SMS parameter scheme (?body= / &body=) and wa.me/?text=','Normal Call/SMS/WhatsApp links preserved when balance is settled or zero']});
   VERS.unshift({v:'9.22.2',d:'2026-10-19',t:'Sound toggle visible in More, Settings unhidden',by:M,n:['Sound effects ON/OFF button now appears directly in the More tab (no need to open Settings)','Removed the CSS rule that was hiding the Settings button in the More tab','Settings still shows the Sound effects checkbox and the ▶ Test sound button']});
   VERS.unshift({v:'9.22.1',d:'2026-10-19',t:'Sound resume fix + Test button',by:M,n:['AudioContext resume() race fixed: tones now play after the context is running (fixes silent playback on Android WebView, iOS Safari and after idle tabs)','▶ Test sound button inside Settings for instant verification','Louder gains for tick and cha-ching so phone speakers are audible']});
   VERS.unshift({v:'9.22',d:'2026-10-19',t:'Sound effects, motion polish and wrapper download safety',by:M,n:['Web Audio sound engine: soft tick on tabs/dialogs, cha-ching on sale/entry save, low buzz on errors, sync chime on background sync','Sound toggle in Settings, default off; AudioContext created on first tap','All sound and motion automatically off when the OS asks for reduced motion','Number count-up on Home (Cash Balance, Total Sell, Total Buy) over 0.4s on load and period change','Save checkmark pop on POS sale and Accounts/Ledger entry save','Tap feedback: buttons scale to 0.97 on press','POS cart rows slide in when added and slide out when removed','dlFile falls back to a data URL window if the wrapper blocks the <a download> tag']});
+  UPC.unshift({v:'9.25',s:'Done',t:['Responsive modal safety with sticky buttons','40px touch targets & safe table links','POS desktop 2-column and mobile search-first layout','Recharge 3-column balanced grid','Ledger clean header with More dropdown menu']});
   UPC.unshift({v:'9.24',s:'Done',t:['MFS & Recharge quick balance adjustment','Permanent cash count and currency denomination history']});
   UPC.unshift({v:'9.23',s:'Done',t:['WhatsApp & SMS due reminder links in Ledger','Polite Bengali payment reminder text']});
   UPC.unshift({v:'9.22.2',s:'Done',t:['Sound toggle visible in More tab','Settings button unhidden']});
