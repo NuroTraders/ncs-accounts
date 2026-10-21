@@ -878,14 +878,7 @@ function schedule(){if(!SY())return;setSt('pend');clearTimeout(tm);tm=setTimeout
 const HEAD=['Date','Time','Type','Description','Category','Payment','Amount','Previous Cash','Cash Balance','Actual Cash','Difference','Status','Entered by','Party','Phone'];
 function rowsOut(){const m=calc();return sorted().map(e=>{const r=m[e.id]||{};return[e.d,e.t,e.type,e.desc,e.cat||'',e.pay,e.amt,r.p??'',r.bal??'',e.act??'',r.df??'',e.void?'Void: '+e.vr:'Active',e.by||'',e.party||'',e.phone||'']})}
 function stateOut(){const o={};for(const k in S)if(!LOCAL.includes(k))o[k]=S[k];return o}
-const getRemote=async()=>{
-  try{
-    const res=await fetch(S.sync.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'pull',key:S.sync.key})});
-    const data=await res.json();
-    if(data&&data.ok!==undefined)return data;
-  }catch(e){}
-  return (await fetch(S.sync.url+(S.sync.url.includes('?')?'&':'?')+'action=pull&key='+encodeURIComponent(S.sync.key))).json();
-};
+const getRemote=async()=>(await fetch(S.sync.url+(S.sync.url.includes('?')?'&':'?')+'action=pull&key='+encodeURIComponent(S.sync.key))).json();
 async function push(force,tries){tries=tries||0;
   if(!SY()||!U||busy)return;busy=true;
   try{
@@ -899,14 +892,7 @@ async function push(force,tries){tries=tries||0;
 function applyRemote(r){const k={};LOCAL.forEach(x=>{if(x in S)k[x]=S[x]});S=Object.assign({},JSON.parse(r.state),k,{rev:r.rev,synced:r.rev});ensureCols();primeLH();persist();if(U){if(CUR==='acc')reset();redrawActiveView()}setSt('ok');try{Sound.chime()}catch(e){}}
 async function importPos(){
   if(!SY())return;
-  try{
-    let r=null;
-    try{
-      const res=await fetch(S.sync.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'inbox',key:S.sync.key,since:S.posSince||0})});
-      const d=await res.json();
-      if(d&&d.ok!==undefined)r=d;
-    }catch(e){}
-    if(!r)r=await(await fetch(S.sync.url+(S.sync.url.includes('?')?'&':'?')+'action=inbox&key='+encodeURIComponent(S.sync.key)+'&since='+(S.posSince||0))).json();
+  try{const r=await(await fetch(S.sync.url+(S.sync.url.includes('?')?'&':'?')+'action=inbox&key='+encodeURIComponent(S.sync.key)+'&since='+(S.posSince||0))).json();
     if(!r.ok||!r.rows||!r.rows.length)return;
     let c=0,mx=S.posSince||0;
     r.rows.forEach(x=>{mx=Math.max(mx,x.seq);const b=x.bill;if(b.voidOf){const w=S.entries.find(e=>e.id===b.voidOf);if(w&&!w.void){w.void=1;w.vr='POS void: '+b.reason;c++}return}if(S.entries.some(e=>e.id===b.id))return;
@@ -936,7 +922,7 @@ const b64=a=>btoa(String.fromCharCode(...new Uint8Array(a))),ub=x=>Uint8Array.fr
 async function kdf(pw,salt,n){const k=await crypto.subtle.importKey('raw',new TextEncoder().encode(pw),'PBKDF2',false,['deriveKey']);return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:n,hash:'SHA-256'},k,{name:'AES-GCM',length:256},false,['encrypt','decrypt'])}
 async function encCfg(o,pw){const salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12)),n=600000,k=await kdf(pw,salt,n);return{s:b64(salt),i:b64(iv),c:b64(await crypto.subtle.encrypt({name:'AES-GCM',iv},k,new TextEncoder().encode(JSON.stringify(o)))),n}}
 async function decCfg(e,pw){const k=await kdf(pw,ub(e.s),e.n);return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:ub(e.i)},k,ub(e.c))))}
-function badKey(){setSt('offl');if(!ENC||!U)return;S.sync=null;persist();ask('Reconnect sync','<p>The sync key changed. Enter the shop passphrase to reconnect.</p><div class="f"><label>Shop passphrase</label><input id="rcp" type="password"></div>',async()=>{try{const c=await decCfg(ENC,$('rcp').value);S.sync={url:c.url,key:c.key};persist();pull()}catch(e){$('rcp').value='';$('rcp').placeholder='Wrong passphrase';return false}},'Reconnect')}
+function badKey(){setSt('offl');if(!ENC||!U)return;ask('Reconnect sync','<p>The sync key changed. Enter the shop passphrase to reconnect.</p><div class="f"><label>Shop passphrase</label><input id="rcp" type="password" autocomplete="off"></div>',async()=>{try{const c=await decCfg(ENC,$('rcp').value);S.sync={url:c.url,key:c.key};persist();pull()}catch(e){$('rcp').value='';$('rcp').placeholder='Wrong passphrase';return false}},'Reconnect')}
 $('ob').addEventListener('click',e=>{if(e.target.id!=='ssu')return;
   ask('Secure sync setup',`<p>Creates an encrypted config.js that is safe in a public repository.</p><div class="f"><label>Web app URL</label><input id="g1" value="${esc(S.sync?S.sync.url:'')}"></div><div class="f"><label>Sync key (the key in your Apps Script)</label><input id="g2" type="password"></div><div class="f"><label>Shop passphrase (12+ characters)</label><input id="g3" type="password"></div><div class="f"><label>Repeat passphrase</label><input id="g4" type="password"></div>`,async()=>{
     const u=$('g1').value.trim(),k=$('g2').value.trim(),p=$('g3').value;
@@ -977,14 +963,7 @@ function checkMergedMismatches(){S.pending=S.pending||[];var seen={};S.pending.f
 function mergeRemoteFrom(r){if(!r||!r.ok||!r.state)return false;try{mergeState(JSON.parse(r.state));checkMergedMismatches();ensureCols();S.synced=r.rev;S.rev=r.rev+1;primeLH();persist();if(U){render();try{homeUI()}catch(e){}POS.refresh();if(CUR==='led')ledUI()}return true}catch(e){return false}}
 const mergeRemote=async()=>{try{return mergeRemoteFrom(await getRemote())}catch(e){return false}};
 async function importCatalog(){if(S.catImported||S.products.length||!SY())return;
-  try{
-    let r=null;
-    try{
-      const res=await fetch(S.sync.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'catalog',key:S.sync.key})});
-      const d=await res.json();
-      if(d&&d.ok!==undefined)r=d;
-    }catch(e){}
-    if(!r)r=await(await fetch(S.sync.url+(S.sync.url.includes('?')?'&':'?')+'action=catalog&key='+encodeURIComponent(S.sync.key))).json();
+  try{const r=await(await fetch(S.sync.url+(S.sync.url.includes('?')?'&':'?')+'action=catalog&key='+encodeURIComponent(S.sync.key))).json();
     if(r.ok&&r.items&&r.items.length){r.items.filter(p=>!p.del).forEach(p=>S.products.push({id:p.id,name:p.name,barcode:p.barcode||'',buy:0,price:+p.price||0,img:''}));S.catImported=1;save();if(U)POS.refresh()}
     else{S.catImported=1;persist()}}catch(e){}}
 
@@ -2165,8 +2144,9 @@ function animateCounts(){
 function saveCheck(){if(document.documentElement.dataset.rm)return;var d=document.createElement('div');d.className='savechk';d.innerHTML='<svg viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="22" fill="none" stroke="var(--acc)" stroke-width="3"/><path d="M14 27l8 8 16-16" fill="none" stroke="var(--acc)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>';document.body.appendChild(d);setTimeout(function(){d.classList.add('out')},700);setTimeout(function(){d.remove()},1250)}
 (function(){
   var M="Claude Sonnet 5.5 · owner's Claude account";
-  APP_VERSION='9.27';
-  VERS.unshift({v:'9.27',d:'2026-10-22',t:'System Audit Hardening: Cryptographic ID, Monetary Precision, Storage Safeguard & Sync Security',by:M,n:['Cryptographic collision-proof UID generator replaces pseudo-random financial and log identifiers','Monetary arithmetic precision: r2 helper eliminates floating-point rounding jitter in cash, wallet, and ledger running balances','Storage quota safeguard: 4MB pre-warning advisory with session dismissal memory prevents quota-exceeded crashes','Security: Autocomplete disabled and numeric inputmode enforced across all staff and administrative PIN fields','Sync protocol: Secure POST request payload with seamless backward-compatible GET fallback for pull, inbox and catalog','Mobile responsiveness: touch-action manipulation eliminates 300ms click delay across buttons and action items','Accessibility: Theme button dynamically updates aria-label and tooltip on mode change']});
+  APP_VERSION='9.28';
+  VERS.unshift({v:'9.28',d:'2026-10-22',t:'Google Apps Script GET compatibility restore & Reconnect fix',by:M,n:['Restored standard GET protocol in getRemote(), importPos() and importCatalog() to maintain exact compatibility with Google Apps Script web app endpoint','Fixed infinite Reconnect sync modal loop caused by Apps Script returning ok:false on POST pulls','Prevented badKey() from prematurely wiping S.sync before passphrase verification']});
+  VERS.unshift({v:'9.27',d:'2026-10-22',t:'System Audit Hardening: Cryptographic ID, Monetary Precision, Storage Safeguard & Sync Security',by:M,n:['Cryptographic collision-proof UID generator replaces pseudo-random financial and log identifiers','Monetary arithmetic precision: r2 helper eliminates floating-point rounding jitter in cash, wallet, and ledger running balances','Storage quota safeguard: 4MB pre-warning advisory with session dismissal memory prevents quota-exceeded crashes','Security: Autocomplete disabled and numeric inputmode enforced across all staff and administrative PIN fields','Mobile responsiveness: touch-action manipulation eliminates 300ms click delay across buttons and action items','Accessibility: Theme button dynamically updates aria-label and tooltip on mode change']});
   VERS.unshift({v:'9.26',d:'2026-10-21',t:'Mobile Home Cash Balance fix & Count-Up fallback safety',by:M,n:['Fixed bug where Home hero Cash Balance stayed at 0 on mobile phones: initial DOM now pre-renders the computed balance immediately','animateCounts() now safely sets the target balance even under OS reduced-motion or battery-saver animation throttling instead of returning early']});
   VERS.unshift({v:'9.25',d:'2026-10-21',t:'Responsive UI overhaul: Modal safety, touch targets, POS split grid & clean Ledger header',by:M,n:['Modal & dialog safety: .dlg gets max-height:88vh with smooth scroll and sticky confirmation/action buttons (.oa) so actions are never pushed offscreen','Ergonomic touch targets: Cart delete (.x) expanded to 40px; Accounts/Ledger table action buttons given generous tap padding and minimum 34px height','Recharge balances grid: 3-column balanced row on both desktop and mobile without awkward empty gaps','Dark mode token integrity: saveCheck checkmark and accent icons use var(--acc) for complete orange/dark harmony','POS desktop & mobile overhaul: Desktop (>=900px) gets a 2-column layout with sticky cart on the right and catalog on the left; mobile search sits directly above catalog without scrolling past cart','Ledger header streamlining: Primary + পেলাম [green] and + দিলাম [red] stay front-and-center while secondary actions (+ Borrow, + Lend, Due date, Edit) are neatly organized under a single ⋯ More dropdown menu']});
   VERS.unshift({v:'9.24',d:'2026-10-21',t:'Flexible MFS/Recharge adjustment & Cash denomination history log',by:M,n:['Individual MFS & Recharge wallet adjustments directly from wallet cards and detail dialogs with full audit trail in S.walletDates','Every cash count and note breakdown is now permanently saved by date and time in S.counts with full denomination history','New "Cash count history" dialog accessible from the Accounts cash strip showing past counts, note denominations, counted vs book difference, and reason']});
@@ -2174,7 +2154,8 @@ function saveCheck(){if(document.documentElement.dataset.rm)return;var d=documen
   VERS.unshift({v:'9.22.2',d:'2026-10-19',t:'Sound toggle visible in More, Settings unhidden',by:M,n:['Sound effects ON/OFF button now appears directly in the More tab (no need to open Settings)','Removed the CSS rule that was hiding the Settings button in the More tab','Settings still shows the Sound effects checkbox and the ▶ Test sound button']});
   VERS.unshift({v:'9.22.1',d:'2026-10-19',t:'Sound resume fix + Test button',by:M,n:['AudioContext resume() race fixed: tones now play after the context is running (fixes silent playback on Android WebView, iOS Safari and after idle tabs)','▶ Test sound button inside Settings for instant verification','Louder gains for tick and cha-ching so phone speakers are audible']});
   VERS.unshift({v:'9.22',d:'2026-10-19',t:'Sound effects, motion polish and wrapper download safety',by:M,n:['Web Audio sound engine: soft tick on tabs/dialogs, cha-ching on sale/entry save, low buzz on errors, sync chime on background sync','Sound toggle in Settings, default off; AudioContext created on first tap','All sound and motion automatically off when the OS asks for reduced motion','Number count-up on Home (Cash Balance, Total Sell, Total Buy) over 0.4s on load and period change','Save checkmark pop on POS sale and Accounts/Ledger entry save','Tap feedback: buttons scale to 0.97 on press','POS cart rows slide in when added and slide out when removed','dlFile falls back to a data URL window if the wrapper blocks the <a download> tag']});
-  UPC.unshift({v:'9.27',s:'Done',t:['Cryptographic collision-proof UID generation for bills and logs','Floating-point monetary precision rounding across cash, wallets and ledger','Storage quota pre-warning threshold (4MB) with dismissal memory','Security autocomplete=off on administrative and staff PIN fields','Backward-compatible POST sync request body security with GET fallback','Zero-delay touch-action manipulation for snappy mobile interactions']});
+  UPC.unshift({v:'9.28',s:'Done',t:['Restored Google Apps Script GET compatibility for pull, inbox, and catalog','Fixed Reconnect sync modal infinite loop']});
+  UPC.unshift({v:'9.27',s:'Done',t:['Cryptographic collision-proof UID generation for bills and logs','Floating-point monetary precision rounding across cash, wallets and ledger','Storage quota pre-warning threshold (4MB) with dismissal memory','Security autocomplete=off on administrative and staff PIN fields','Zero-delay touch-action manipulation for snappy mobile interactions']});
   UPC.unshift({v:'9.26',s:'Done',t:['Mobile Home Cash Balance 0 bug fixed','Animation graceful fallback under OS battery saver / reduced-motion']});
   UPC.unshift({v:'9.25',s:'Done',t:['Responsive modal safety with sticky buttons','40px touch targets & safe table links','POS desktop 2-column and mobile search-first layout','Recharge 3-column balanced grid','Ledger clean header with More dropdown menu']});
   UPC.unshift({v:'9.24',s:'Done',t:['MFS & Recharge quick balance adjustment','Permanent cash count and currency denomination history']});
@@ -2186,6 +2167,7 @@ function saveCheck(){if(document.documentElement.dataset.rm)return;var d=documen
   var sp=UPC.find(function(x){return x.v==='9.22'&&x.s==='Planned'});if(sp)sp.v='9.23';
 })();
 BUGS.unshift(
+  {d:'2026-10-22 00:25 (UTC+6)',v:'9.28',w:'Claude Sonnet / Gemini',a:'Reconnect sync dialog looped repeatedly and sync stopped working',b:'v9.27 attempted HTTP POST for pull/inbox/catalog queries; Google Apps Script web app only handles POST for state push and returned ok:false, which triggered badKey() repeatedly',c:'Restored GET query calls for pull, inbox, and catalog; stopped badKey() from clearing S.sync prematurely before passphrase validation'},
   {d:'2026-10-22 00:15 (UTC+6)',v:'9.27',w:'Claude Sonnet / Gemini',a:'Financial bills and log entries used Math.random() for ID generation which is vulnerable to collisions across multi-device offline sync',b:'Math.random() produces pseudo-random floats without cryptographic collision resistance',c:'Created uid() helper using crypto.getRandomValues(new Uint32Array(1))[0] with Date.now() timestamp'},
   {d:'2026-10-22 00:15 (UTC+6)',v:'9.27',w:'Claude Sonnet / Gemini',a:'Cumulative cash, wallet and customer balances could accumulate IEEE 754 floating-point precision jitter over many entries',b:'Unrounded additions and subtractions of fractional values in calc(), wltRun() and lBal()',c:'Enforced r2 monetary rounding (Math.round((+x||0)*100)/100) on all balance accumulators and difference checks'},
   {d:'2026-10-22 00:15 (UTC+6)',v:'9.27',w:'Claude Sonnet / Gemini',a:'Local storage quota could crash unannounced when attachment photos or long ledger history approached 5MB',b:'persist() only notified on hard localStorage.setItem throw',c:'Added proactive 4MB threshold warning advising backup download with session dismissal memory'},
