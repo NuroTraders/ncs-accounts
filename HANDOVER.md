@@ -1,6 +1,6 @@
 # NCS Daily Accounts: Handover Note
 
-Shop: Nur Computer & Stationery. Current version: **v9.23** (service worker cache `ncs-v45`).
+Shop: Nur Computer & Stationery. Current version: **v9.24** (service worker cache `ncs-v46`).
 Two Claude profiles work on this app and do NOT share memory. This file is the shared memory.
 
 ## 0. Start-of-session checklist (both profiles)
@@ -25,7 +25,7 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 ## 2. Architecture
 - **State:** one object `S`, saved to `localStorage` key `ncs_accounts_v2` by `save()`.
 - **Collections:** `entries`, `products`, `bills`, `moves`, `cust`, `ltx`, `atts`. Stamped with `u`, merged by `mergeById`.
-- **Other synced keys:** `days`, `names`, `parties`, `log`, `users`, `start`, `walletDates`; `pending` and `history` merged by id.
+- **Other synced keys (v9.24):** `days`, `names`, `parties`, `log`, `users`, `start`, `walletDates`, `counts`; `pending` and `history` merged by id.
 - **Local-only keys (v9.22):** theme, dayStart, dayEnd, lang, lockout, sync, snaps, logSent, synced, posSince, motion, **sound**, lastBackup.
 - **Sync (v9.20):** Google Apps Script blob. Conflict → `mergeState`.
 - **Sync status:** single dot, periodic blink (green 6s, yellow 3s, red 2s). Off = static outline.
@@ -120,6 +120,8 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 - **More tab layout (v9.22.2):** the More tab now shows 4 buttons: বাংলা, Sound effects: ON/OFF, Settings, Lock. The Settings button is no longer hidden.
 
 ## 6. Roadmap
+**v9.24: DONE.** MFS & Recharge balance quick adjustment as needed, plus complete currency denomination counts history saved by date and time in `S.counts`.
+
 **v9.23: DONE.** WhatsApp & SMS Due Reminders in Ledger with pre-formatted polite Bengali payment text and direct links.
 
 **v9.22.2: DONE.** Sound toggle visible in More + Settings unhidden.
@@ -179,6 +181,7 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 - Split into modules only if asked. Automated smoke test.
 
 ## 7. Session log (append newest on top)
+- **v9.24, 2026-10-21 22:35 (UTC+6) (Claude Sonnet / Gemini):** Added flexible MFS & Recharge balance adjustment and complete cash count denomination history. (1) **MFS & Recharge Adjustment:** Added one-tap "Adjust" action on MFS and Recharge card headers as well as inside each wallet's transaction detail modal ("Adjust this wallet"). Admins can set any actual balance for any wallet with a required reason. Uses date-anchored opening updates (`S.walletDates`) preserving running balances of all other wallets; past dates require Admin PIN. (2) **Permanent Cash Count & Currency Breakdown Log (`S.counts`):** Every cash adjustment / count now appends a full audit record containing date, time, user, counted total, book total, difference, reason, and complete currency note counts (`৳1000×N, ৳500×N...`). (3) **Cash Count History Dialog:** New "Cash count history" button on the Accounts cash bar displays past counts with full currency breakdown and difference color-coding. Bumped to `ncs-v46`.
 - **v9.23, 2026-10-21 21:35 (UTC+6) (Claude Sonnet / Gemini):** Added one-tap WhatsApp & SMS Due Reminder links in the Ledger. (1) When a customer/party has a negative balance (they owe money to the shop), the customer card and profile links replace regular SMS/WhatsApp with direct due reminder buttons ("বকেয়া SMS" / "বকেয়া WhatsApp"). (2) Generates a pre-formatted polite Bengali payment reminder: "নমস্কার/সালাম [Party Name], [Shop Name]-এ আপনার বকেয়া হিসাবের পরিমাণ ৳[Amount]। অনুগ্রহ করে দ্রুত পরিশোধের অনুরোধ করা হলো। ধন্যবাদ।". (3) Standard SMS link handles iOS (&body=) and Android/Desktop (?body=) parameter schemes; WhatsApp link formats to https://wa.me/[880...] with ?text= parameter. Normal communication links are preserved when balance is settled or zero. Bumped sw.js cache to `ncs-v45`.
 - **v9.22.2, 2026-10-19 (Claude Sonnet 5.5, owner's Claude account):** Owner showed a screenshot with the More tab showing only "বাংলা" and "Lock" and said "THERE IS NOTHING IN MORE SETTINGS NAMED SOUND EFFECT". Root cause: an old CSS rule `#stf,#set{display:none!important}` was hiding the Settings button in the More list because in earlier versions it had been moved under the Manage tab. The sound toggle was inside that hidden Settings dialog. Fix: changed the CSS to `#stf{display:none!important}` (so Settings appears in More again), and added a dedicated `#sndBtn` ("Sound effects: ON/OFF") button directly to the More list so the user can toggle sound without opening any dialog. Clicking it flips `S.sound`, saves, and plays the test chime if turning ON. Bumped to `ncs-v44`. Tests: `node --check`; headless DOM (SndBtn toggles `S.sound` and plays `Sound.test()` when turning ON; Settings dialog still contains `#snd` and `#sndTest`). **Not tested:** real Android WebView and iOS Safari.
 - **v9.22.1, 2026-10-19 (Claude Sonnet 5.5, owner's Claude account):** Owner reported "THERE IS NO SOUND EFFECT?". Root cause: `tone()` was scheduling tones at `ctx.currentTime` (which is 0 while the context is suspended) right after calling `ctx.resume()` — the resume promise hadn't completed yet, so the tones never fired. This is the classic Web Audio race and it hits Android WebView, iOS Safari, and any browser after the tab has been idle. Fix: `play()` now checks `ctx.state` and, if suspended, calls `ctx.resume().then(go)` so the tones are scheduled only after the context is `running`. Also added `Sound.test()` bound to a "▶ Test sound" button in Settings so the user can verify immediately, and bumped gains (tick 0.05, cha-ching 0.08, buzz 0.06, chime 0.05). Bumped to `ncs-v43`. Tests: `node --check`; headless DOM (Test button plays; toggle persists through `save()`/reload; `enabled()` respects `data-rm`). **Not tested:** real Android WebView and iOS Safari.

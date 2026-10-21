@@ -553,6 +553,7 @@ const seed=()=>({start:0,theme:'auto',dayStart:'06:00',dayEnd:'18:00',sound:fals
  catch(e){storageLoadError=e;recoveryRaw=rawStorageAtLoad;S=seed()}
 S.names=S.names||{};S.parties=S.parties||{};
 if(!Array.isArray(S.walletDates))S.walletDates=[];
+if(!Array.isArray(S.counts))S.counts=[];
 const ENC=(window.NCS_CONFIG||{}).enc;
 if(!S.sync&&window.NCS_CONFIG&&/^https:\/\//.test(NCS_CONFIG.url||'')&&NCS_CONFIG.key)S.sync={url:NCS_CONFIG.url,key:NCS_CONFIG.key};
 const LH=new Map(),sig=x=>JSON.stringify(x,(k,v)=>k==='u'?undefined:v),COLS=['entries','products','bills','moves','cust','ltx','atts'];
@@ -613,7 +614,7 @@ function render(){try{renderWalletCards()}catch(e){}
   let open=+S.start||0;all.forEach(e=>{if(!e.void&&e.d<cur)open+=cash(e)});
   const close=act.length?m[act[act.length-1].id].bal:open,adjT=act.filter(e=>e.type==='Adjustment').reduce((s,e)=>s+e.amt,0);
   $('stats').innerHTML=`<div class="stat"><small>Total Sell</small><b>${tk(tot(sl))}</b><i>${split(sl)}</i></div><div class="stat"><small>Total Buy</small><b>${tk(tot(pu))}</b><i>${split(pu)}</i></div><div class="stat"><small>Difference (pending)</small><b class="${dc(pend)}">${dif(pend)}</b><i>Counted vs account</i></div><div class="stat main"><small>Cash Balance</small><b>${tk(close)}</b><i>Account balance now</i></div>`;
-  $('cashp').innerHTML=`<div><small>Opening Cash</small><b>${tk(open)}</b></div><span class="ar">→</span><div><small>Closing Cash</small><b>${tk(close)}</b></div><div class="sp"><small>Adjustments today</small><b class="${dc(adjT)}">${dif(adjT)}</b></div>${(isA()||role()==='accountant')?'<div style="width:100%;display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="ghost" data-cadj="1">'+lb('Count and adjust cash','নগদ গণনা ও সমন্বয়')+'</button><button type="button" class="ghost" data-discq="1">High-discount reviews ('+S.bills.filter(function(b){return b.discountReview&&b.discountReview.state==='pending'&&!b.removed}).length+')</button></div>':''}`;
+  $('cashp').innerHTML=`<div><small>Opening Cash</small><b>${tk(open)}</b></div><span class="ar">→</span><div><small>Closing Cash</small><b>${tk(close)}</b></div><div class="sp"><small>Adjustments today</small><b class="${dc(adjT)}">${dif(adjT)}</b></div>${(isA()||role()==='accountant')?'<div style="width:100%;display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="ghost" data-cadj="1">'+lb('Count and adjust cash','নগদ গণনা ও সমন্বয়')+'</button><button type="button" class="ghost" data-chist="1">'+lb('Cash count history','নগদ গণনার ইতিহাস')+'</button><button type="button" class="ghost" data-discq="1">High-discount reviews ('+S.bills.filter(function(b){return b.discountReview&&b.discountReview.state==='pending'&&!b.removed}).length+')</button></div>':''}`;
   avBar(vd);
   if(AV&&lEd())$('tbl').innerHTML=avTable(vd,f);
   else if(!tv.length)$('tbl').innerHTML='<div class="empty">No entries for this date</div>';
@@ -906,13 +907,14 @@ async function start(){if(ENC&&!SY()){lockUI('connect');return}if(!S.users&&SY()
 function mergeById(L,R){const m=new Map();(R||[]).forEach(x=>m.set(x.id,x));(L||[]).forEach(x=>{const o=m.get(x.id);if(!o||(x.u||0)>(o.u||0))m.set(x.id,x)});return[...m.values()]}
 function mergeState(R){
   const re=R.epoch||0,le=S.epoch||0;S.pending=S.pending||[];
-  if(re>le){[...COLS,'days','names','parties','log','walletDates'].forEach(k=>{if(R[k]!==undefined)S[k]=R[k]});S.epoch=re;S.drawerBase=R.drawerBase||null;if(R.start!==undefined)S.start=R.start}
+  if(re>le){[...COLS,'days','names','parties','log','walletDates','counts'].forEach(k=>{if(R[k]!==undefined)S[k]=R[k]});S.epoch=re;S.drawerBase=R.drawerBase||null;if(R.start!==undefined)S.start=R.start}
   else if(re===le){
     COLS.forEach(k=>{S[k]=mergeById(S[k],R[k])});
     const d={...(R.days||{})};Object.keys(S.days||{}).forEach(k=>{const a=S.days[k],b=d[k]||{},o={prep:a.prep||b.prep||null,chk:a.chk||b.chk||null};const cl=a.closed||b.closed;if(cl)o.closed=cl;d[k]=o});S.days=d;
     ['names','parties'].forEach(k=>{const o={...(R[k]||{})};Object.keys(S[k]||{}).forEach(t=>{o[t]={...(o[t]||{}),...S[k][t]}});S[k]=o});
     if(R.drawerBase&&(!S.drawerBase||R.drawerBase.ts>S.drawerBase.ts))S.drawerBase=R.drawerBase;
     if(Array.isArray(R.walletDates)){var wm={};(S.walletDates||[]).forEach(function(x){wm[x.d]=x});R.walletDates.forEach(function(x){wm[x.d]=x});S.walletDates=Object.keys(wm).sort().map(function(k){return wm[k]})}
+    if(Array.isArray(R.counts)){var cm=new Map();(S.counts||[]).concat(R.counts||[]).forEach(function(x){cm.set(x.id,x)});S.counts=[...cm.values()].sort(function(a,b){return (b.at||b.id)-(a.at||a.id)});S.counts=S.counts.slice(0,500);}
   }
   const lm=new Map();(S.log||[]).concat(R.log||[]).forEach(l=>lm.set(l.i,l));S.log=[...lm.values()].sort((a,b)=>b.i-a.i).slice(0,500);
   if(R.users&&(!S.users||(R.users.u||0)>(S.users.u||0)))S.users=R.users;
@@ -1491,7 +1493,7 @@ function rebootAsk(){ask(lb('Force logout all?','সবাইকে লগআউ
   v.addEventListener('click',function(e){if(e.target.closest('[data-m]'))return;var h=e.target.closest('[data-bt]');if(!h)return;var c=h.closest('.bcd'),o=c.classList.toggle('on');h.setAttribute('aria-expanded',o)});
   if(window.matchMedia&&matchMedia('(hover:hover)').matches){v.addEventListener('mouseover',function(e){var c=e.target.closest('.bcd');if(c)c.classList.add('pv')});v.addEventListener('mouseout',function(e){var c=e.target.closest('.bcd');if(c&&!c.contains(e.relatedTarget))c.classList.remove('pv')})}
   setInterval(function(){if(U&&(S.rebootN||0)>(LRN||0))lock()},4000);
-  $('cashp').addEventListener('click',function(e){if(e.target.closest('[data-cadj]'))cashAdjust();if(e.target.closest('[data-discq]'))POS.bills()});
+  $('cashp').addEventListener('click',function(e){if(e.target.closest('[data-cadj]'))cashAdjust();if(e.target.closest('[data-chist]'))cashCountHistory();if(e.target.closest('[data-discq]'))POS.bills()});
 })();
 function cashBook(){var a=sorted().filter(function(e){return!e.void}),m=calc();return a.length?m[a[a.length-1].id].bal:(+S.start||0)}
 function nextOpenDay(){var x=new Date(),d=iso(x);while(S.days[d]&&S.days[d].closed){x.setDate(x.getDate()+1);d=iso(x)}return d}
@@ -1504,7 +1506,16 @@ function cashAdjust(){
     var c=cct(),df=c-book;if(!df){ltoast(lb('No difference to adjust','পার্থক্য নেই'));return false}
     var cn={};DEN.forEach(function(d){var q=+(($('ob').querySelector('[data-d="'+d+'"]')||{}).value)||0;if(q)cn[d]=q});
     var reason=$('car').value;
-    var finish=function(pinBy){snap();S.entries.push({id:Date.now(),d:td,t:nowT(),type:'Adjustment',desc:'Cash adjustment · '+reason+' (counted)'+(pinBy?' · PIN':''),cat:'',pay:'Cash',amt:df,act:c,adj:1,cnt:cn,by:U.name,pinBy:pinBy||'',pinAt:pinBy?Date.now():0});lg('Cash adjust',(df>0?'+':'')+df+' · counted '+c+(pinBy?' · PIN':''));save();cur=td;reset();render();ltoast(lb('Cash adjusted','নগদ সমন্বয় হয়েছে'))};
+    var finish=function(pinBy){
+      snap();
+      var nowTs=Date.now(),tStr=nowT();
+      S.entries.push({id:nowTs,d:td,t:tStr,type:'Adjustment',desc:'Cash adjustment · '+reason+' (counted)'+(pinBy?' · PIN':''),cat:'',pay:'Cash',amt:df,act:c,adj:1,cnt:cn,by:U.name,pinBy:pinBy||'',pinAt:pinBy?nowTs:0});
+      S.counts=S.counts||[];
+      S.counts.unshift({id:nowTs,d:td,t:tStr,at:nowTs,by:U.name,total:c,book:book,diff:df,reason:reason,den:cn,pinBy:pinBy||''});
+      S.counts=S.counts.slice(0,500);
+      lg('Cash adjust',(df>0?'+':'')+df+' · counted '+c+(pinBy?' · PIN':''));
+      save();cur=td;reset();render();ltoast(lb('Cash adjusted','নগদ সমন্বয় হয়েছে'))
+    };
     if(isPastTarget){
       setTimeout(function(){
         ask(lb('Admin PIN required','অ্যাডমিন পিন প্রয়োজন'),'<p class="mut">'+lb('You are adjusting for a past date.','আপনি আগের তারিখের সমন্বয় করছেন।')+'</p><div class="f"><label>Admin PIN</label><input id="cad_pin" type="password" inputmode="numeric" autocomplete="off"></div>',async function(){if(!(await ck(S.users.admin,$('cad_pin').value))){$('cad_pin').value='';$('cad_pin').placeholder=lb('Wrong PIN','ভুল পিন');return false}finish(U.name)},lb('Confirm','নিশ্চিত'));$('cad_pin').focus();
@@ -1550,14 +1561,67 @@ function wltForm(){var ty=$('fy').value,wc=!!(WLTC[ty]&&WLTC[ty][$('fc').value])
 function renderWalletCards(){
   var b=calcWallets(),mk=function(k){return'<div class="wlt-item'+(b[k]<0?' neg':'')+'" data-w="'+k+'"><div class="wname">'+esc(wN(k))+'</div><div class="wbal">'+tk(b[k])+'</div></div>'},
   sum=function(a){return a.reduce(function(s,k){return s+b[k]},0)},
-  h='<div class="wlt-card"><div class="wlt-title"><span>'+lb('Mobile financial services','মোবাইল ফিন্যান্সিয়াল সার্ভিস')+'</span><b>'+tk(sum(WLT_MFS))+'</b></div><div class="wlt-grid">'+WLT_MFS.map(mk).join('')+'</div></div><div class="wlt-card"><div class="wlt-title"><span>'+lb('Recharge balances','রিচার্জ ব্যালেন্স')+'</span><b>'+tk(sum(WLT_RCR))+'</b></div><div class="wlt-grid">'+WLT_RCR.map(mk).join('')+'</div></div>';
+  h='<div class="wlt-card"><div class="wlt-title"><span>'+lb('Mobile financial services','মোবাইল ফিন্যান্সিয়াল সার্ভিস')+(isA()?' <button type="button" class="lnk adj" style="font-size:12px;font-weight:600;padding:0 4px" data-wadj="mfs">'+lb('Adjust','সমন্বয়')+'</button>':'')+'</span><b>'+tk(sum(WLT_MFS))+'</b></div><div class="wlt-grid">'+WLT_MFS.map(mk).join('')+'</div></div><div class="wlt-card"><div class="wlt-title"><span>'+lb('Recharge balances','রিচার্জ ব্যালেন্স')+(isA()?' <button type="button" class="lnk adj" style="font-size:12px;font-weight:600;padding:0 4px" data-wadj="rcr">'+lb('Adjust','সমন্বয়')+'</button>':'')+'</span><b>'+tk(sum(WLT_RCR))+'</b></div><div class="wlt-grid">'+WLT_RCR.map(mk).join('')+'</div></div>';
   ['wltWrap','wltWrapH'].forEach(function(id){var el=$(id);if(el)el.innerHTML=h})}
 function wltRows(key,lim){
   var L=sorted().filter(function(e){var f=wltEff(e);return f&&f.w===key}).reverse();if(lim)L=L.slice(0,lim);
   return L.map(function(e){var f=wltEff(e),sg=f.d>0?'+':'−';return{d:sd(e.d)+' '+(e.t?t12(e.t):''),c:(e.cat==='POS'||e.type==='Ledger')?(e.desc||'POS').slice(0,40):e.cat,a:sg+n(e.amt),p:f.d>0}})}
 function showWltDetail(key){
   var b=calcWallets(),rows=wltRows(key,0).map(function(r){return'<tr><td>'+esc(r.d)+'</td><td class="d">'+esc(r.c)+'</td><td class="'+(r.p?'pos':'neg')+'">'+r.a+'</td></tr>'}).join('');
-  ldlg(wN(key),'<div style="text-align:center;margin-bottom:12px"><div class="mut">'+lb('Current balance','বর্তমান ব্যালেন্স')+'</div><div style="font-size:24px;font-weight:700">'+tk(b[key])+'</div><div class="mut" style="font-size:12.5px">'+lb('Base opening','বেস ওপেনিং')+' '+tk(wOpen(key))+'</div></div><div class="scroll" style="max-height:46vh;overflow:auto"><table class="ltb" style="min-width:0"><thead><tr><th>'+lb('Date','তারিখ')+'</th><th>'+lb('Category','ক্যাটাগরি')+'</th><th>'+lb('Amount','টাকা')+'</th></tr></thead><tbody>'+(rows||'<tr><td colspan="3" style="text-align:center;padding:24px;color:var(--mut)">'+lb('No transactions','কোনো লেনদেন নেই')+'</td></tr>')+'</tbody></table></div>',function(){},lb('Close','বন্ধ'),1)}
+  ldlg(wN(key),'<div style="text-align:center;margin-bottom:12px"><div class="mut">'+lb('Current balance','বর্তমান ব্যালেন্স')+'</div><div style="font-size:24px;font-weight:700">'+tk(b[key])+'</div><div class="mut" style="font-size:12.5px">'+lb('Base opening','বেস ওপেনিং')+' '+tk(wOpen(key))+'</div>'+(isA()?'<div style="margin-top:6px"><button type="button" class="ghost" style="height:30px;font-size:12px" id="wltAdjBtn" data-k="'+key+'">'+lb('Adjust this wallet','এই ওয়ালেট সমন্বয় করুন')+'</button></div>':'')+'</div><div class="scroll" style="max-height:46vh;overflow:auto"><table class="ltb" style="min-width:0"><thead><tr><th>'+lb('Date','তারিখ')+'</th><th>'+lb('Category','ক্যাটাগরি')+'</th><th>'+lb('Amount','টাকা')+'</th></tr></thead><tbody>'+(rows||'<tr><td colspan="3" style="text-align:center;padding:24px;color:var(--mut)">'+lb('No transactions','কোনো লেনদেন নেই')+'</td></tr>')+'</tbody></table></div>',function(){},lb('Close','বন্ধ'),1)}
+function adjustSingleWallet(targetKey){
+  if(!isA())return;
+  var today=iso(new Date()),snap0=balanceAtDate(today),curr=snap0[targetKey]||0;
+  ask(lb('Adjust balance: ','ব্যালেন্স সমন্বয়: ')+wN(targetKey),
+    '<div class="f"><label>'+lb('Date','তারিখ')+'</label><input id="swa_d" type="date" value="'+today+'"></div>'
+    +'<div class="f"><label>'+lb('Current computed balance','বর্তমান হিসাবের ব্যালেন্স')+'</label><input type="text" readonly value="'+tk(curr)+'" style="font-weight:600"></div>'
+    +'<div class="f"><label>'+lb('New actual balance','নতুন প্রকৃত ব্যালেন্স')+'</label><input id="swa_v" type="number" min="0" step="any" value="'+curr+'" required></div>'
+    +'<div class="f"><label>'+lb('Reason (required)','কারণ (আবশ্যক)')+'</label><input id="swa_r" maxlength="120" placeholder="'+lb('e.g. MFS cash in fee, recharge mismatch','যেমন: ক্যাশ ইন কমিশন, মিসম্যাচ')+'"></div>'
+    +'<p class="mut" style="font-size:12px">'+lb('All other wallets will carry forward their computed balance at this date.','অন্যান্য সব ওয়ালেটের হিসাব অবিকৃত থাকবে।')+'</p>'
+    ,async function(){
+      var d=$('swa_d').value,r=$('swa_r').value.trim(),nv=+$('swa_v').value;
+      if(!d||!r||isNaN(nv)||nv<0){if(!r)$('swa_r').style.borderColor='var(--neg)';return false}
+      var isPast=d<today;
+      var vals={};
+      var p=balanceAtDate(d);
+      Object.keys(WLT).forEach(function(k){vals[k]=(k===targetKey)?nv:(+p[k]||0)});
+      if(isPast){
+        setTimeout(function(){askPinForWallet(d,r+' ('+wN(targetKey)+')',vals);},50);
+        return;
+      }
+      doSaveWalletOpening(d,r+' ('+wN(targetKey)+')',vals,'');
+    },lb('Adjust','সমন্বয়'),1);
+}
+
+function cashCountHistory(){
+  var list=S.counts||[];
+  var h='<div class="mut" style="font-size:12.5px;margin-bottom:8px">'+lb('History of counted cash and currency note breakdowns.','প্রতিটি নগদ গণনার হিসাব ও নোটের বিস্তারিত ইতিহাস।')+'</div>';
+  if(!list.length){
+    h+='<div class="empty">'+lb('No cash counts recorded yet','এখনো কোনো নগদ গণনা সংরক্ষিত নেই')+'</div>';
+  } else {
+    h+='<div style="max-height:56vh;overflow:auto;display:grid;gap:8px">';
+    list.slice(0,100).forEach(function(item){
+      var denTxt=item.den?DEN.filter(function(d){return item.den[d]}).map(function(d){return '৳'+d+'×'+item.den[d]}).join('  '):'';
+      var df=item.diff!=null?item.diff:(item.total-item.book);
+      var dfClass=df>0?'pos':df<0?'neg':'zero';
+      h+='<div class="card" style="padding:10px 12px;margin:0;font-size:13px;border-left:4px solid var(--acc)">'
+        +'<div style="display:flex;justify-content:space-between;align-items:center;font-weight:600">'
+        +'<span>'+sd(item.d||'')+(item.t?' '+t12(item.t):'')+' · '+esc(item.by||'?')+'</span>'
+        +'<b style="font-size:15px">'+tk(item.total||0)+'</b>'
+        +'</div>'
+        +'<div style="display:flex;justify-content:space-between;color:var(--mut);font-size:12px;margin-top:2px">'
+        +'<span>'+lb('Book: ','খাতায়: ')+tk(item.book||0)+' · '+lb('Diff: ','পার্থক্য: ')+'<span class="'+dfClass+'">'+dif(df)+'</span></span>'
+        +(item.pinBy?'<span class="warn">PIN: '+esc(item.pinBy)+'</span>':'')
+        +'</div>'
+        +(item.reason?'<div class="mut" style="font-size:12px;margin-top:2px">'+lb('Reason: ','কারণ: ')+esc(item.reason)+'</div>':'')
+        +(denTxt?'<div style="margin-top:4px;padding:4px 6px;background:var(--soft);border-radius:6px;font-family:monospace;font-size:11.5px">'+esc(denTxt)+'</div>':'')
+        +'</div>';
+    });
+    h+='</div>';
+  }
+  ask(lb('Cash Count & Denominations History','নগদ গণনা ও নোটের ইতিহাস'),h,function(){},lb('Close','বন্ধ'),1);
+}
+
 function openWltSettings(){
   if(!isA())return;
   var hist=(S.walletDates||[]).slice().sort(function(a,b){return b.d.localeCompare(a.d)});
@@ -1571,7 +1635,11 @@ function openWltSettings(){
     +'<div class="waList">'+histHTML+'</div>'
     +'<button class="ghost" id="waAdd" style="margin-top:10px">+ '+lb('Add dated opening','তারিখভিত্তিক ওপেনিং যোগ করুন')+'</button>'
     ,function(){},lb('Close','বন্ধ'),1);
-  $('ob').onclick=function(e){if(e.target.id==='waAdd'){$('ov').hidden=true;setTimeout(walletAdjust,50)}};
+  $('ob').onclick=function(e){
+    if(e.target.id==='waAdd'){$('ov').hidden=true;setTimeout(function(){walletAdjust();},50)}
+    var wb=e.target.closest('#wltAdjBtn');
+    if(wb){$('ov').hidden=true;setTimeout(function(){adjustSingleWallet(wb.dataset.k);},50)}
+  };
   $('ob').onchange=null;$('ob').oninput=null;
 }
 function balanceAtDate(d){
@@ -1631,7 +1699,17 @@ function doSaveWalletOpening(d,r,vals,pinBy){
     HT=setTimeout(function(){var k=el.dataset.w,b=calcWallets(),r=wltRows(k,5);hp.innerHTML='<b>'+esc(wN(k))+'</b> <span class="mut">'+tk(b[k])+'</span>'+(r.length?r.map(function(x){return'<div class="whr"><span>'+esc(x.d)+' · '+esc(x.c)+'</span><b class="'+(x.p?'pos':'neg')+'">'+x.a+'</b></div>'}).join(''):'<div class="mut" style="margin-top:6px">'+lb('No transactions','কোনো লেনদেন নেই')+'</div>')+'<div class="mut" style="font-size:12px;margin-top:6px">'+lb('Click for all','সব দেখতে ক্লিক')+'</div>';
       hp.hidden=false;var q=el.getBoundingClientRect();hp.style.left=Math.max(8,Math.min(q.left,innerWidth-270))+'px';hp.style.top=(q.bottom+6+210>innerHeight?Math.max(8,q.top-216):q.bottom+6)+'px'},300)});
   document.addEventListener('mouseout',function(e){if(e.target.closest&&e.target.closest('.wlt-item')){clearTimeout(HT);HH=setTimeout(hide,200)}});
-  document.addEventListener('click',function(e){var el=e.target.closest&&e.target.closest('.wlt-item');if(el){hide();showWltDetail(el.dataset.w)}});
+  document.addEventListener('click',function(e){
+    var adjBtn=e.target.closest&&e.target.closest('[data-wadj]');
+    if(adjBtn){
+      e.stopPropagation();
+      var kind=adjBtn.dataset.wadj,keys=(kind==='mfs'?WLT_MFS:WLT_RCR);
+      ldlg(lb('Adjust balance','ব্যালেন্স সমন্বয়'),'<div class="mut" style="margin-bottom:10px">'+lb('Select which wallet to adjust:','কোন ওয়ালেট সমন্বয় করবেন নির্বাচন করুন:')+'</div><div style="display:grid;gap:8px">'+keys.map(function(k){return '<button type="button" class="ghost" style="text-align:left;padding:10px 14px;display:flex;justify-content:space-between" data-pickw="'+k+'"><b>'+esc(wN(k))+'</b><span>'+tk(calcWallets()[k]||0)+'</span></button>'}).join('')+'</div>',function(){},lb('Close','বন্ধ'),1);
+      $('ob').onclick=function(ev){var pb=ev.target.closest('[data-pickw]');if(pb){$('ov').hidden=true;setTimeout(function(){adjustSingleWallet(pb.dataset.pickw);},50)}};
+      return;
+    }
+    var el=e.target.closest&&e.target.closest('.wlt-item');if(el){hide();showWltDetail(el.dataset.w)}
+  });
   document.addEventListener('scroll',hide,{passive:true});
   $('fc').addEventListener('input',function(){party();preview()});
   renderWalletCards()})();
@@ -1859,6 +1937,7 @@ function selfTest(){
   ok('COLS shape',function(){COLS.forEach(function(c){if(!Array.isArray(S[c]))throw new Error(c+' not array')});return COLS.length+' collections'});
   ok('S.start is number',function(){if(typeof S.start!=='number')throw new Error('not number');return n(S.start)});
   ok('S.walletDates array',function(){if(!Array.isArray(S.walletDates))throw new Error('not array');return S.walletDates.length+' anchors'});
+  ok('S.counts array',function(){if(!Array.isArray(S.counts))throw new Error('not array');return S.counts.length+' counts'});
   ok('S.history / S.pending arrays',function(){if(S.history!==undefined&&!Array.isArray(S.history))throw new Error('history');if(S.pending!==undefined&&!Array.isArray(S.pending))throw new Error('pending');return 'ok'});
   ok('localStorage roundtrip',function(){var raw=localStorage.getItem(KEY);if(!raw)throw new Error('empty');var p=JSON.parse(raw);if(!p.rev&&p.rev!==0)throw new Error('no rev');return 'rev='+p.rev});
   ok('PBKDF2 available',function(){if(!window.crypto||!crypto.subtle)throw new Error('no subtle');return 'ok'});
@@ -2006,11 +2085,13 @@ function animateCounts(){if(document.documentElement.dataset.rm)return;document.
 function saveCheck(){if(document.documentElement.dataset.rm)return;var d=document.createElement('div');d.className='savechk';d.innerHTML='<svg viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="22" fill="none" stroke="#2CC56F" stroke-width="3"/><path d="M14 27l8 8 16-16" fill="none" stroke="#2CC56F" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>';document.body.appendChild(d);setTimeout(function(){d.classList.add('out')},700);setTimeout(function(){d.remove()},1250)}
 (function(){
   var M="Claude Sonnet 5.5 · owner's Claude account";
-  APP_VERSION='9.23';
+  APP_VERSION='9.24';
+  VERS.unshift({v:'9.24',d:'2026-10-21',t:'Flexible MFS/Recharge adjustment & Cash denomination history log',by:M,n:['Individual MFS & Recharge wallet adjustments directly from wallet cards and detail dialogs with full audit trail in S.walletDates','Every cash count and note breakdown is now permanently saved by date and time in S.counts with full denomination history','New "Cash count history" dialog accessible from the Accounts cash strip showing past counts, note denominations, counted vs book difference, and reason']});
   VERS.unshift({v:'9.23',d:'2026-10-21',t:'WhatsApp & SMS polite due reminder links in Ledger',by:M,n:['One-tap WhatsApp & SMS due reminder links on customer cards and profile when party owes money (they owe)','Pre-formats polite Bengali payment notice with customer name, shop name, and due amount','Uses iOS and Android standard SMS parameter scheme (?body= / &body=) and wa.me/?text=','Normal Call/SMS/WhatsApp links preserved when balance is settled or zero']});
   VERS.unshift({v:'9.22.2',d:'2026-10-19',t:'Sound toggle visible in More, Settings unhidden',by:M,n:['Sound effects ON/OFF button now appears directly in the More tab (no need to open Settings)','Removed the CSS rule that was hiding the Settings button in the More tab','Settings still shows the Sound effects checkbox and the ▶ Test sound button']});
   VERS.unshift({v:'9.22.1',d:'2026-10-19',t:'Sound resume fix + Test button',by:M,n:['AudioContext resume() race fixed: tones now play after the context is running (fixes silent playback on Android WebView, iOS Safari and after idle tabs)','▶ Test sound button inside Settings for instant verification','Louder gains for tick and cha-ching so phone speakers are audible']});
   VERS.unshift({v:'9.22',d:'2026-10-19',t:'Sound effects, motion polish and wrapper download safety',by:M,n:['Web Audio sound engine: soft tick on tabs/dialogs, cha-ching on sale/entry save, low buzz on errors, sync chime on background sync','Sound toggle in Settings, default off; AudioContext created on first tap','All sound and motion automatically off when the OS asks for reduced motion','Number count-up on Home (Cash Balance, Total Sell, Total Buy) over 0.4s on load and period change','Save checkmark pop on POS sale and Accounts/Ledger entry save','Tap feedback: buttons scale to 0.97 on press','POS cart rows slide in when added and slide out when removed','dlFile falls back to a data URL window if the wrapper blocks the <a download> tag']});
+  UPC.unshift({v:'9.24',s:'Done',t:['MFS & Recharge quick balance adjustment','Permanent cash count and currency denomination history']});
   UPC.unshift({v:'9.23',s:'Done',t:['WhatsApp & SMS due reminder links in Ledger','Polite Bengali payment reminder text']});
   UPC.unshift({v:'9.22.2',s:'Done',t:['Sound toggle visible in More tab','Settings button unhidden']});
   UPC.unshift({v:'9.22.1',s:'Done',t:['AudioContext resume race fixed','Test sound button in Settings','Louder gains']});
