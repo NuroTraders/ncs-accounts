@@ -597,7 +597,7 @@ ensureCols();primeLH();
      box.style.cssText='position:fixed;left:12px;right:12px;bottom:86px;z-index:1000;padding:12px 14px;border:1px solid var(--warn);border-radius:12px;background:var(--card);color:var(--ink);box-shadow:0 6px 24px rgba(0,0,0,.22);display:none;align-items:center;gap:12px;justify-content:space-between;flex-wrap:wrap';
      const text=document.createElement('span');text.dataset.storageMessage='1';
      const button=document.createElement('button');button.type='button';button.className='ghost';button.setAttribute('aria-label','Dismiss');button.textContent='Dismiss';
-     button.onclick=function(){box.style.display='none'};
+     button.onclick=function(){box.style.display='none';window._storageWarnDismissed=true};
      box.append(text,button);document.body.appendChild(box);
    }
    box.querySelector('[data-storage-message]').textContent=message;
@@ -605,7 +605,11 @@ ensureCols();primeLH();
  }
  const persist=()=>{try{
    if(storageLoadError){if(rawStorageAtLoad===null)throw new Error('Could not preserve the unreadable saved data');recoveryBackupKey=KEY+'_recovery_'+Date.now();localStorage.setItem(recoveryBackupKey,rawStorageAtLoad);recoveryRaw=rawStorageAtLoad;storageLoadError=null}
-   localStorage.setItem(KEY,JSON.stringify(S));return true
+   const sStr=JSON.stringify(S);
+   if(sStr.length>4000000&&!window._storageWarnDismissed){
+     storageNotice(lb('Storage warning: Data size is high ('+Math.round(sStr.length/1024)+' KB). Consider downloading a backup JSON or archiving old photos soon.','স্টোরেজ সতর্কতা: ডেটার আকার অনেক বেশি ('+Math.round(sStr.length/1024)+' KB)। ব্যাকআপ JSON ডাউনলোড করুন বা পুরনো ছবি পরিষ্কার করুন।'));
+   }
+   localStorage.setItem(KEY,sStr);return true
  }catch(e){console.error('Local save failed',e);storageNotice('Could not save to this device. Free browser storage and try again.');return false}};
 const save=()=>{S.rev=(S.rev||0)+1;try{ledReconcile()}catch(e){console.error('Ledger link failed',e)}stampChanged();const ok=persist();if(ok)schedule();return ok};
 const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
@@ -613,13 +617,14 @@ let cur=iso(new Date()),editing=null;
 const n=v=>Number(v).toLocaleString('en-US'),tk=v=>'৳'+n(v);
 const money=v=>v?n(v):'–',dif=v=>v===0?'0':(v>0?'+':'−')+n(Math.abs(v)),dc=v=>v>0?'pos':v<0?'neg':'zero';
 const t12=t=>{const h=+t.slice(0,2);return ((h+11)%12+1)+':'+t.slice(3,5)+' '+(h<12?'AM':'PM')};
+const r2=x=>Math.round((+x||0)*100)/100;
 const label=d=>{const x=new Date(d+'T00:00:00');return x.getDate()+'.'+String(x.getMonth()+1).padStart(2,'0')+'.'+x.getFullYear()+' – '+x.toLocaleDateString(S.lang==='bn'?'bn-BD':'en-US',{weekday:'long'})};
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const csvCell=s=>{const v=String(s??''),safe=/^[\s\u0000-\u001f]*[=+\-@]/.test(v)?"'"+v:v;return'"'+safe.replace(/"/g,'""')+'"'}
 const sorted=()=>[...S.entries].filter(e=>!e.removed).sort((a,b)=>{const x=a.d+a.t,y=b.d+b.t;return x<y?-1:x>y?1:a.id-b.id});
 const cash=e=>(e.void||e.removed)?0:e.type==='Sale'?(e.pay==='Cash'?e.amt:0):e.type==='Purchase'?(e.pay==='Cash'?-e.amt:0):e.type==='Ledger'?(e.w?0:(e.ld==='in'?e.amt:-e.amt)):e.type==='Deposit'?e.amt:e.type==='Withdrawal'?-e.amt:e.amt;
-function calc(){let p=+S.start||0;const m={};sorted().forEach(e=>{if(e.void)return;const bal=p+cash(e);m[e.id]={p,bal,df:e.act==null?null:e.act-bal};p=bal});return m}
-const prevFor=(d,t)=>{let p=+S.start||0;sorted().forEach(e=>{if(!e.void&&e.id!==editing&&(e.d+e.t)<=(d+t))p+=cash(e)});return p};
+function calc(){let p=+S.start||0;const m={};sorted().forEach(e=>{if(e.void)return;const bal=r2(p+cash(e));m[e.id]={p,bal,df:e.act==null?null:r2(e.act-bal)};p=bal});return m}
+const prevFor=(d,t)=>{let p=+S.start||0;sorted().forEach(e=>{if(!e.void&&e.id!==editing&&(e.d+e.t)<=(d+t))p=r2(p+cash(e))});return p};
 var WLT={bk:'Bkash Personal',ng:'Nagad',rk:'Rocket',bka:'Bkash Agent',gp:'GP Recharge',robi:'Robi Recharge',cir:'Circkle Recharge'};
 var WLTC={Purchase:{'Bk In - Personal':'bk','Nagad In - Personal':'ng','Rocket In - Personal':'rk','Bkash Cash Out':'bka','Recharge Balance - DSR GP':'gp','Recharge Balance - DSR Robi':'robi','Recharge Balance - DSR Circkle':'cir','Bkash B2B Balance Receive':'bka'},Sale:{'Bk Sent - Personal':'bk','Nagad Sent - Personal':'ng','Rocket Sent - Personal':'rk','Bkash Cash IN':'bka','Recharge - GP':'gp','Recharge - Robi':'robi','Recharge - Circkle':'cir'}};
  const isWalletTransfer=e=>!!(WLTC[e.type]&&WLTC[e.type][e.cat]);
@@ -724,7 +729,12 @@ function applyTheme(){
   if(m==='light'||m==='dark')document.documentElement.dataset.theme=m;
   else delete document.documentElement.dataset.theme;
   var btn=$('themeBtn');
-  if(btn)btn.dataset.mode=m;
+  if(btn){
+    btn.dataset.mode=m;
+    var tLab=m==='auto'?lb('Auto (system)','অটো (সিস্টেম)'):m==='light'?lb('Light','লাইট'):lb('Dark','ডার্ক');
+    btn.setAttribute('aria-label',lb('Theme: ','থিম: ')+tLab);
+    btn.title=lb('Theme: ','থিম: ')+tLab;
+  }
 }
 $('themeBtn').onclick=function(){
   var cur=S.theme||'auto';
@@ -747,6 +757,7 @@ const isA=()=>!!U&&U.role==='admin',closed=()=>!!(S.days[cur]&&S.days[cur].close
 const stamp=()=>{const x=new Date();return x.getDate()+'.'+String(x.getMonth()+1).padStart(2,'0')+'.'+x.getFullYear()+' '+t12(String(x.getHours()).padStart(2,'0')+':'+String(x.getMinutes()).padStart(2,'0'))};
 function lg(a,d){S.log.unshift({i:Date.now()+Math.random(),ts:stamp(),u:U?U.name:'—',a,d});S.log=S.log.slice(0,500)}
 const rnd=n=>[...crypto.getRandomValues(new Uint8Array(n))].map(x=>x.toString(36).padStart(2,'0')).join('');
+const uid=()=>Date.now()*1000+(typeof crypto!=='undefined'&&crypto.getRandomValues?(crypto.getRandomValues(new Uint32Array(1))[0]%1000):Math.floor(Math.random()*1000));
 const PIN_ITER=210000;
 async function H(p,salt,iterations=PIN_ITER){const key=await crypto.subtle.importKey('raw',new TextEncoder().encode(p),'PBKDF2',false,['deriveBits']),bits=await crypto.subtle.deriveBits({name:'PBKDF2',salt:new TextEncoder().encode(salt),iterations,hash:'SHA-256'},key,256);return[...new Uint8Array(bits)].map(x=>x.toString(16).padStart(2,'0')).join('')}
 async function legacyH(p,salt,forceFallback=false){const b=new TextEncoder().encode(salt+':'+p);try{if(forceFallback)throw new Error('legacy fallback');const d=await crypto.subtle.digest('SHA-256',b);return[...new Uint8Array(d)].map(x=>x.toString(16).padStart(2,'0')).join('')}catch(e){let h=5381;b.forEach(c=>h=(h*33^c)>>>0);return'x'+h}}
@@ -794,17 +805,17 @@ $('daybar').addEventListener('change',e=>{const D=S.days[cur]=S.days[cur]||{},k=
 $('daybar').addEventListener('click',e=>{const b=e.target.id;
   if(b==='cls'){if(!(S.days[cur]&&S.days[cur].prep))return ask('Close Day','<p>Tick "Prepared" before closing the day.</p>',()=>{},'OK');
     ask('Close Day',`<p>Lock ${label(cur)}? Entries cannot be changed until an admin reopens it.</p>`,()=>{S.days[cur].closed={by:U.name,ts:stamp()};lg('Close day',label(cur));save();{const x=new Date(cur+'T00:00:00');x.setDate(x.getDate()+1);cur=iso(x)}reset();render()},'Close Day')}
-  if(b==='reo')ask('Reopen day','<div class="f"><label>Reason (required)</label><input id="rr" maxlength="100"></div><div class="f"><label>Admin PIN</label><input id="rp" type="password" inputmode="numeric"></div>',async()=>{
+  if(b==='reo')ask('Reopen day','<div class="f"><label>Reason (required)</label><input id="rr" maxlength="100"></div><div class="f"><label>Admin PIN</label><input id="rp" type="password" inputmode="numeric" autocomplete="off"></div>',async()=>{
     const r=$('rr').value.trim();if(!r||!(await ck(S.users.admin,$('rp').value))){$('rp').value='';$('rp').placeholder='Reason or PIN is wrong';return false}
     delete S.days[cur].closed;lg('Reopen day',label(cur)+' — '+r);save();render()},'Reopen')});
 
-function staffUI(){ask('Staff',S.users.staff.map(x=>`<div class="sr"><span>${esc(x.name)} <small class="mut">· ${x.role||'cashier'}</small>${x.on?'':' <span class="b v">Off</span>'}</span><span><button class="lnk" data-s="o" data-i="${x.id}">Role</button><button class="lnk" data-s="t" data-i="${x.id}">${x.on?'Deactivate':'Activate'}</button><button class="lnk" data-s="r" data-i="${x.id}">Reset PIN</button></span></div>`).join('')+'<div class="f" style="margin-top:12px"><label>New staff name</label><input id="sn" maxlength="40"></div><div class="f"><label>Role</label><select id="sr"><option value="cashier">Cashier (POS and ledger entry)</option><option value="keeper">Stock manager (Products and More only)</option><option value="accountant">Accountant (accounts, ledger, stock and cash; read-only)</option></select></div><div class="f"><label>PIN (6+ digits)</label><input id="sp" type="password" inputmode="numeric"></div>',async()=>{
+function staffUI(){ask('Staff',S.users.staff.map(x=>`<div class="sr"><span>${esc(x.name)} <small class="mut">· ${x.role||'cashier'}</small>${x.on?'':' <span class="b v">Off</span>'}</span><span><button class="lnk" data-s="o" data-i="${x.id}">Role</button><button class="lnk" data-s="t" data-i="${x.id}">${x.on?'Deactivate':'Activate'}</button><button class="lnk" data-s="r" data-i="${x.id}">Reset PIN</button></span></div>`).join('')+'<div class="f" style="margin-top:12px"><label>New staff name</label><input id="sn" maxlength="40"></div><div class="f"><label>Role</label><select id="sr"><option value="cashier">Cashier (POS and ledger entry)</option><option value="keeper">Stock manager (Products and More only)</option><option value="accountant">Accountant (accounts, ledger, stock and cash; read-only)</option></select></div><div class="f"><label>PIN (6+ digits)</label><input id="sp" type="password" inputmode="numeric" autocomplete="off"></div>',async()=>{
   const nm=$('sn').value.trim(),p=$('sp').value;if(!nm&&!p)return;if(!nm||!/^\d{6,}$/.test(p))return false;
   S.users.staff.push({id:Date.now(),name:nm,on:1,role:$('sr').value,...await mk(p)});lg('Add staff',nm);save()},'Add staff')}
  $('ob').addEventListener('click',e=>{const b=e.target.closest('[data-s]');if(!b)return;const x=S.users.staff.find(y=>y.id==b.dataset.i);
   if(b.dataset.s==='o'){x.role={cashier:'keeper',keeper:'accountant'}[x.role||'cashier']||'cashier';lg('Change role',x.name+' → '+x.role);save();staffUI()}
   else if(b.dataset.s==='t'){x.on=!x.on;lg((x.on?'Activate':'Deactivate')+' staff',x.name);save();staffUI()}
-   else ask('Reset PIN — '+x.name,'<div class="f"><label>New PIN (6+ digits)</label><input id="np" type="password" inputmode="numeric"></div>',async()=>{if(!/^\d{6,}$/.test($('np').value))return false;Object.assign(x,await mk($('np').value));lg('Reset staff PIN',x.name);save();setTimeout(staffUI,0)},'Reset')});
+   else ask('Reset PIN — '+x.name,'<div class="f"><label>New PIN (6+ digits)</label><input id="np" type="password" inputmode="numeric" autocomplete="off"></div>',async()=>{if(!/^\d{6,}$/.test($('np').value))return false;Object.assign(x,await mk($('np').value));lg('Reset staff PIN',x.name);save();setTimeout(staffUI,0)},'Reset')});
 $('stf').onclick=staffUI;
 $('logb').onclick=()=>ask('Change Log','<div class="lg">'+(S.log.length?S.log.slice(0,100).map(l=>`<div><b>${esc(l.a)}</b> <small>${esc(l.ts)} · ${esc(l.u)}</small><br>${esc(l.d)}</div>`).join(''):'No changes yet')+'</div>',()=>{},'Close',1);
 $('prt').onclick=()=>{lg('Print',label(cur));save();try{window.print()}catch(e){}};
@@ -867,7 +878,14 @@ function schedule(){if(!SY())return;setSt('pend');clearTimeout(tm);tm=setTimeout
 const HEAD=['Date','Time','Type','Description','Category','Payment','Amount','Previous Cash','Cash Balance','Actual Cash','Difference','Status','Entered by','Party','Phone'];
 function rowsOut(){const m=calc();return sorted().map(e=>{const r=m[e.id]||{};return[e.d,e.t,e.type,e.desc,e.cat||'',e.pay,e.amt,r.p??'',r.bal??'',e.act??'',r.df??'',e.void?'Void: '+e.vr:'Active',e.by||'',e.party||'',e.phone||'']})}
 function stateOut(){const o={};for(const k in S)if(!LOCAL.includes(k))o[k]=S[k];return o}
-const getRemote=async()=>(await fetch(S.sync.url+(S.sync.url.includes('?')?'&':'?')+'action=pull&key='+encodeURIComponent(S.sync.key))).json();
+const getRemote=async()=>{
+  try{
+    const res=await fetch(S.sync.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'pull',key:S.sync.key})});
+    const data=await res.json();
+    if(data&&data.ok!==undefined)return data;
+  }catch(e){}
+  return (await fetch(S.sync.url+(S.sync.url.includes('?')?'&':'?')+'action=pull&key='+encodeURIComponent(S.sync.key))).json();
+};
 async function push(force,tries){tries=tries||0;
   if(!SY()||!U||busy)return;busy=true;
   try{
@@ -881,7 +899,14 @@ async function push(force,tries){tries=tries||0;
 function applyRemote(r){const k={};LOCAL.forEach(x=>{if(x in S)k[x]=S[x]});S=Object.assign({},JSON.parse(r.state),k,{rev:r.rev,synced:r.rev});ensureCols();primeLH();persist();if(U){if(CUR==='acc')reset();redrawActiveView()}setSt('ok');try{Sound.chime()}catch(e){}}
 async function importPos(){
   if(!SY())return;
-  try{const r=await(await fetch(S.sync.url+(S.sync.url.includes('?')?'&':'?')+'action=inbox&key='+encodeURIComponent(S.sync.key)+'&since='+(S.posSince||0))).json();
+  try{
+    let r=null;
+    try{
+      const res=await fetch(S.sync.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'inbox',key:S.sync.key,since:S.posSince||0})});
+      const d=await res.json();
+      if(d&&d.ok!==undefined)r=d;
+    }catch(e){}
+    if(!r)r=await(await fetch(S.sync.url+(S.sync.url.includes('?')?'&':'?')+'action=inbox&key='+encodeURIComponent(S.sync.key)+'&since='+(S.posSince||0))).json();
     if(!r.ok||!r.rows||!r.rows.length)return;
     let c=0,mx=S.posSince||0;
     r.rows.forEach(x=>{mx=Math.max(mx,x.seq);const b=x.bill;if(b.voidOf){const w=S.entries.find(e=>e.id===b.voidOf);if(w&&!w.void){w.void=1;w.vr='POS void: '+b.reason;c++}return}if(S.entries.some(e=>e.id===b.id))return;
@@ -897,7 +922,7 @@ async function pull(){
   }catch(e){setSt('offl')}}
 $('sync').onclick=()=>{if(st==='conf')ask('Sync conflict','<p>This device and the Google Sheet both have new changes. Choose which to keep.</p><div class="oa" style="justify-content:flex-start"><button class="ghost" id="scp">Use Sheet data</button><button class="ghost" id="scf">Keep this device</button></div>',()=>{},'Close');else if(SY())pull();else setSt('off')};
 $('ob').addEventListener('click',e=>{if(e.target.id!=='sfr')return;
-  ask('Start fresh','<p>Daily entries and bills are cleared from the active day view. Cash and wallets carry forward, ledger history and stock are retained, and an Admin reconciliation item is created.</p><div class="f"><label>Admin PIN</label><input id="sfp" type="password" inputmode="numeric"></div>',async()=>{
+  ask('Start fresh','<p>Daily entries and bills are cleared from the active day view. Cash and wallets carry forward, ledger history and stock are retained, and an Admin reconciliation item is created.</p><div class="f"><label>Admin PIN</label><input id="sfp" type="password" inputmode="numeric" autocomplete="off"></div>',async()=>{
     if(!(await ck(S.users.admin,$('sfp').value))){$('sfp').value='';$('sfp').placeholder='Wrong PIN';return false}
     snap();var carry=cashBook(),wallet=calcWallets(),batch=Date.now();S.history=S.history||[];S.history.unshift({id:batch,type:'Start fresh archive',at:batch,by:U.name,entries:S.entries.slice(),days:S.days||{},names:S.names||{}});S.start=carry;S.entries=[];S.days={};S.names={};S.wallets=Object.assign({u:batch},wallet);S.walletDates=[];S.pending=S.pending||[];S.pending.unshift({id:batch,type:'Start fresh',state:'pending',at:batch,by:U.name,reason:'Verify carried cash, wallet, ledger and stock balances',details:{cash:carry,wallets:wallet,archivedEntries:S.history[0].entries.length}});S.epoch=batch;lg('Start fresh','Archived '+S.history[0].entries.length+' daily entries; carried cash '+carry+' and wallets forward; bills, ledger and stock retained. Admin check queued.');save();reset();render()},'Carry forward')});
 $('ob').addEventListener('click',async e=>{
@@ -948,11 +973,18 @@ function mergeState(R){
   S.rebootN=Math.max(S.rebootN||0,R.rebootN||0);S.rebootAt=Math.max(S.rebootAt||0,R.rebootAt||0);
   if(R.catImported)S.catImported=1;var pm=new Map();(S.pending||[]).concat(R.pending||[]).forEach(function(x){pm.set(x.id,x)});S.pending=[...pm.values()];var hm=new Map();(S.history||[]).concat(R.history||[]).forEach(function(x){hm.set(x.id,x)});S.history=[...hm.values()];
 }
-function checkMergedMismatches(){S.pending=S.pending||[];var seen={};S.pending.forEach(function(x){if(x.type==='sync-mismatch'&&x.state==='pending')seen[x.reason]=1});var add=function(reason,details){if(seen[reason])return;S.pending.unshift({id:Date.now()+Math.random(),type:'sync-mismatch',state:'pending',at:Date.now(),reason:reason,details:details})};S.entries.forEach(function(e){if(e.type==='Sale'&&e.pay==='Due'&&e.cu&&!S.ltx.some(function(t){return t.src===e.id&&!t.void===!e.void}))add('Due sale/customer ledger mismatch',{entry:e.id,customer:e.cu})});S.ltx.forEach(function(t){if(t.lnk&&(t.le||0)===(S.epoch||0)&&!t.src&&!S.entries.some(function(e){return e.lk===t.id&&!e.void===!t.void}))add('Linked ledger/cash mismatch',{ledger:t.id,customer:t.c})});var w=checkWalletLimit();if(!w.ok)add('Wallet balance would be negative',{wallet:w.wallet,balance:w.bal})}
+function checkMergedMismatches(){S.pending=S.pending||[];var seen={};S.pending.forEach(function(x){if(x.type==='sync-mismatch'&&x.state==='pending')seen[x.reason]=1});var add=function(reason,details){if(seen[reason])return;S.pending.unshift({id:uid(),type:'sync-mismatch',state:'pending',at:Date.now(),reason:reason,details:details})};S.entries.forEach(function(e){if(e.type==='Sale'&&e.pay==='Due'&&e.cu&&!S.ltx.some(function(t){return t.src===e.id&&!t.void===!e.void}))add('Due sale/customer ledger mismatch',{entry:e.id,customer:e.cu})});S.ltx.forEach(function(t){if(t.lnk&&(t.le||0)===(S.epoch||0)&&!t.src&&!S.entries.some(function(e){return e.lk===t.id&&!e.void===!t.void}))add('Linked ledger/cash mismatch',{ledger:t.id,customer:t.c})});var w=checkWalletLimit();if(!w.ok)add('Wallet balance would be negative',{wallet:w.wallet,balance:w.bal})}
 function mergeRemoteFrom(r){if(!r||!r.ok||!r.state)return false;try{mergeState(JSON.parse(r.state));checkMergedMismatches();ensureCols();S.synced=r.rev;S.rev=r.rev+1;primeLH();persist();if(U){render();try{homeUI()}catch(e){}POS.refresh();if(CUR==='led')ledUI()}return true}catch(e){return false}}
 const mergeRemote=async()=>{try{return mergeRemoteFrom(await getRemote())}catch(e){return false}};
 async function importCatalog(){if(S.catImported||S.products.length||!SY())return;
-  try{const r=await(await fetch(S.sync.url+(S.sync.url.includes('?')?'&':'?')+'action=catalog&key='+encodeURIComponent(S.sync.key))).json();
+  try{
+    let r=null;
+    try{
+      const res=await fetch(S.sync.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'catalog',key:S.sync.key})});
+      const d=await res.json();
+      if(d&&d.ok!==undefined)r=d;
+    }catch(e){}
+    if(!r)r=await(await fetch(S.sync.url+(S.sync.url.includes('?')?'&':'?')+'action=catalog&key='+encodeURIComponent(S.sync.key))).json();
     if(r.ok&&r.items&&r.items.length){r.items.filter(p=>!p.del).forEach(p=>S.products.push({id:p.id,name:p.name,barcode:p.barcode||'',buy:0,price:+p.price||0,img:''}));S.catImported=1;save();if(U)POS.refresh()}
     else{S.catImported=1;persist()}}catch(e){}}
 
@@ -989,8 +1021,8 @@ function homeUI(){try{renderWalletCards()}catch(e){}
   $('hTabs').innerHTML=PER.map(([k,l])=>`<button data-p="${k}" class="${HP===k?'on':''}">${l}</button>`).join('');
   const[a,b]=prange(HP),E=S.entries.filter(e=>!e.void&&!e.removed&&e.d>=a&&e.d<=b),B=S.bills.filter(x=>!x.void&&!x.removed&&!x.test&&x.d>=a&&x.d<=b);
   const sm=(t,f)=>E.filter(e=>e.type===t&&!isWalletTransfer(e)&&(!f||f(e))).reduce((s,e)=>s+e.amt,0),m=calc(),act=sorted().filter(e=>!e.void),cb=act.length?m[act[act.length-1].id].bal:(+S.start||0);
-  const C=(l,v,c,num)=>`<div class="stat ${c||''}"><small>${l}</small><b${num!=null?' class="cnt" data-to="'+num+'"':''}>${num!=null?'0':v}</b></div>`;
-  $('hHero').innerHTML=`<div class="dclk" id="hClk" aria-label="${lb('Current time','বর্তমান সময়')}"><b id="hClkT"></b><small id="hClkD"></small></div><small>Cash Balance</small><b class="cnt" data-to="${cb}">0</b><i>${sd(iso(new Date()))} · ${esc(U?U.name:'')}</i>`;clkTick();
+  const C=(l,v,c,num)=>`<div class="stat ${c||''}"><small>${l}</small><b${num!=null?' class="cnt" data-to="'+num+'"':''}>${v}</b></div>`;
+  $('hHero').innerHTML=`<div class="dclk" id="hClk" aria-label="${lb('Current time','বর্তমান সময়')}"><b id="hClkT"></b><small id="hClkD"></small></div><small>Cash Balance</small><b class="cnt" data-to="${cb}">${tk(cb)}</b><i>${sd(iso(new Date()))} · ${esc(U?U.name:'')}</i>`;clkTick();
   var sellT=sm('Sale'),buyT=sm('Purchase');$('hStats').innerHTML=C('Total Sell',tk(sellT),'t3',sellT)+C('Total Buy',tk(buyT),'t2',buyT)+C('Bills',B.length,'t4')+C('To receive (Due)',tk(sm('Sale',e=>e.pay==='Due')),'t1')+C('To give (Due)',tk(sm('Purchase',e=>e.pay==='Due')),'sf');
   if(canCost()){try{var smap=(POS&&typeof POS.stockMap==='function')?POS.stockMap():{},sv=S.products.filter(function(p){return!p.del}).reduce(function(s,p){return s+Math.max(0,smap[p.id]||0)*(+p.buy||0)},0);$('hStats').insertAdjacentHTML('beforeend',C('Stock value (cost)',tk(sv),'sf'))}catch(e){}}
   var todayE=S.entries.filter(function(e){return!e.void&&!e.removed&&e.d===iso(new Date())}),inT=0,outT=0;
@@ -1135,7 +1167,7 @@ function checkout(){const T=total();if(!C.lines.length)return;
   $('ob').onclick=e=>{const b=e.target.closest('button');if(!b)return;const d=b.dataset;
     if(d.pay){ck.pay=d.pay;if(d.pay==='Mobile Banking'&&!ck.w)ck.w='bk'}if(d.w)ck.w=d.w;if(d.pl)ck.rec[d.pl]=(ck.rec[d.pl]||0)+1;if(d.m)ck.rec[d.m]=Math.max(0,(ck.rec[d.m]||0)-1);if(d.exact)ck.rec=split(T);draw()}}
 function finishBill(ck){const pm=C.mode==='purchase',T=total(),rec=ck.pay==='Cash'?ck.rec:{},chg=ck.pay==='Cash'?split(sumD(ck.rec)-T):{};
-  D.seq++;dsave();const no=D.dev+D.seq,items=C.lines.map(l=>l.qty+'× '+l.name).join(', '),id=Date.now()*1000+Math.floor(Math.random()*1000);
+  D.seq++;dsave();const no=D.dev+D.seq,items=C.lines.map(l=>l.qty+'× '+l.name).join(', '),id=uid();
   const party=ck.pay==='Due'?ck.party.trim():'',phone=ck.pay==='Due'?ck.phone.trim():'',ty=pm?'Purchase':'Sale',gross=sub(),disc=+C.disc||0,discPct=gross?disc/gross*100:0;
   const b={id,no,d:bizDate(),t:nowT(),ts:Date.now(),user:U.name,mode:C.mode,desc:'POS #'+no+': '+items,lines:C.lines,subtotal:gross,disc:disc,discPct:discPct,...(discPct>5?{discountReview:{state:'pending',pct:discPct,by:U.name,at:Date.now(),note:'Discount exceeds 5% of bill subtotal'}}:{}),total:T,pay:ck.pay,party,phone,rec,chg,...(ck.pay==='Mobile Banking'&&!pm?{w:ck.w||'bk'}:{}),...(ck.cuId&&!pm?{cu:ck.cuId}:{})};
   S.bills.unshift(b);S.entries.push({id,d:b.d,t:b.t,type:ty,desc:b.desc.slice(0,200),cat:'POS',pay:ck.pay,amt:T,by:U.name,party,phone,pos:1,act:null,...(b.w?{w:b.w}:{}),...(b.cu?{cu:b.cu}:{})});
@@ -1234,11 +1266,11 @@ function parseAmt(v){var p=bd(v).replace(/[,\s]/g,'').split('+').filter(function
 function lEd(){return isA()||role()==='accountant'}
 function cname(){var c=S.cust.find(function(x){return x.id===LC});return c?c.name:''}
 function lSort(a){return[...a].sort(function(p,q){return(p.d||'9999').localeCompare(q.d||'9999')||p.id-q.id})}
-function lBal(c){return S.ltx.filter(function(x){return x.c===c&&!x.void}).reduce(function(s,x){return s+(x.dir==='in'?x.amt:-x.amt)},0)}
+function lBal(c){return r2(S.ltx.filter(function(x){return x.c===c&&!x.void}).reduce(function(s,x){return s+(x.dir==='in'?x.amt:-x.amt)},0))}
 function dr(x){return x.d?sd(x.d)+(x.d2?' – '+sd(x.d2):''):lb('Date unknown','তারিখ নেই')}
 function kindLabel(k){if(k==='Borrower'||k==='Lender'||k==='Borrower/Lender')return 'Borrower/Lender';return k||'Customer'}
 function kindMatch(c,kind){if(!kind)return true;return kindLabel(c.kind)===kind}
-function ledRows(all,a,b){var bal=0,r=[];all.forEach(function(x){if(!x.void)bal+=x.dir==='in'?x.amt:-x.amt;var k=x.d||'9999';if((!a||k>=a)&&(!b||k<=b))r.push([x,bal])});return r}
+function ledRows(all,a,b){var bal=0,r=[];all.forEach(function(x){if(!x.void)bal=r2(bal+(x.dir==='in'?x.amt:-x.amt));var k=x.d||'9999';if((!a||k>=a)&&(!b||k<=b))r.push([x,bal])});return r}
 function ledTable(rows,ob){
   if(LPGC!==LC){LPGC=LC;LPGN=80}
   var a=rows.filter(function(r){return!r[0].void}),ti=a.filter(function(r){return r[0].dir==='in'}).reduce(function(s,r){return s+r[0].amt},0),to=a.filter(function(r){return r[0].dir==='out'}).reduce(function(s,r){return s+r[0].amt},0);
@@ -1583,7 +1615,7 @@ function wltRun(extra,ex,only){
   var b={},bad=null;Object.keys(WLT).forEach(function(k){b[k]=wOpen(k)});
   var anchors=(S.walletDates||[]).slice().sort(function(a,c){return a.d.localeCompare(c.d)}),ai=0;
   L.forEach(function(e){var d=e.d||'';while(ai<anchors.length&&anchors[ai].d<=d){var a=anchors[ai];Object.keys(WLT).forEach(function(k){if(a[k]!=null)b[k]=+a[k]||0});ai++}
-    var f=wltEff(e);if(!f)return;b[f.w]+=f.d*(+e.amt||0);if(b[f.w]<0&&!bad&&(!only||only.indexOf(f.w)>=0))bad={w:f.w,bal:b[f.w]}});
+    var f=wltEff(e);if(!f)return;b[f.w]=r2(b[f.w]+f.d*(+e.amt||0));if(b[f.w]<0&&!bad&&(!only||only.indexOf(f.w)>=0))bad={w:f.w,bal:b[f.w]}});
   while(ai<anchors.length){var a=anchors[ai];Object.keys(WLT).forEach(function(k){if(a[k]!=null)b[k]=+a[k]||0});ai++}
   return{b:b,bad:bad}}
 function calcWallets(){return wltRun().b}
@@ -1880,7 +1912,7 @@ function attShrink(f){return new Promise(function(res,rej){var r=new FileReader(
 function attAdd(ref,u){if(!/^data:image\/jpeg;base64,/.test(u)||u.length>ATT_CH*1.05)return lb('Photo is too large','ছবি বড়');
  if(attN(ref)>=ATT_MAX)return lb('Up to 3 photos per record','সর্বোচ্চ ৩টি');
  if((S.atts||[]).reduce(function(s,a){return s+(a.del?0:a.d.length)},0)+u.length>ATT_TOTAL)return lb('Photo storage is full','জায়গা ভরে গেছে');
- S.atts=S.atts||[];S.atts.push({id:Date.now()*1000+Math.floor(Math.random()*1000),ref:ref,d:u,by:U?U.name:'',at:Date.now()});lg('Receipt photo added',ref);save();if(CUR==='acc')render();return true}
+ S.atts=S.atts||[];S.atts.push({id:uid(),ref:ref,d:u,by:U?U.name:'',at:Date.now()});lg('Receipt photo added',ref);save();if(CUR==='acc')render();return true}
 function attUI(ref){var L=attList(ref);
  ldlg(lb('Receipt photos','রসিদের ছবি'),'<div class="mut" style="margin-bottom:8px">'+lb('Optional. Up to 3 photos.','ঐচ্ছিক। সর্বোচ্চ ৩টি।')+'</div><div class="atg">'+(L.length?L.map(function(a){return'<div class="atc"><img src="'+esc(a.d)+'" data-z="1" alt=""><small>'+esc(a.by||'')+' · '+sd(iso(new Date(a.at)))+'</small>'+(isA()?'<button type="button" class="lnk" data-rm="'+a.id+'">'+lb('Remove','সরান')+'</button>':'')+'</div>'}).join(''):'<div class="empty">'+lb('No photos','ছবি নেই')+'</div>')+'</div>'+(L.length<ATT_MAX?'<div class="chips" style="margin-top:10px"><button type="button" data-cam="1">'+lb('Camera','ক্যামেরা')+'</button><button type="button" data-gal="1">'+lb('Gallery','গ্যালারি')+'</button></div><input id="ati1" type="file" accept="image/*" capture="environment" hidden><input id="ati2" type="file" accept="image/*" hidden>':''),function(){},lb('Close','বন্ধ'),1);
  $('ob').onclick=function(e){var t=e.target.closest('button,img');if(!t)return;if(t.dataset.cam)$('ati1').click();else if(t.dataset.gal)$('ati2').click();else if(t.dataset.z)t.parentNode.classList.toggle('z');
@@ -1895,7 +1927,8 @@ $('ob').addEventListener('click',function(e){if(e.target.id==='backupJson'){S.la
 /* v9.15 cleanup */
 (function(){var M="Claude Sonnet 5.5 · owner's Claude account";APP_VERSION='9.15';
  VERS.unshift({v:'9.15',d:'2026-10-18',t:'Documentation and metadata cleanup',by:M,n:['Section 3 lists v9.10 fields','Section 6 marks done','Bug format moved to section 8 top','VERS.by backfilled for v9.5']});
- BUGS.unshift({d:'2026-10-18 --:--',v:'9.15',w:M,a:'Upcoming Features listed v9.8 below v9.5',b:'v9.8 updated Planned entry in place',c:'Splice old 9.8, unshift new Done 9.8'});})();
+ BUGS.unshift(
+  {d:'2026-10-21 23:55 (UTC+6)',v:'9.26',w:'Claude Sonnet / Gemini',a:'Home hero Cash Balance remained at 0 on mobile phones and OS reduced-motion',b:'DOM was initialized to literal string 0 and animateCounts returned early without painting when prefers-reduced-motion was detected by the mobile browser',c:'Pre-rendered computed balance directly into the DOM and updated animateCounts to paint the final value immediately if reduced motion is enabled'},{d:'2026-10-18 --:--',v:'9.15',w:M,a:'Upcoming Features listed v9.8 below v9.5',b:'v9.8 updated Planned entry in place',c:'Splice old 9.8, unshift new Done 9.8'});})();
 
 /* v9.16 review queue completion */
 function ledFlag(id){var t=S.ltx.find(function(x){return x.id===id});if(!t||t.void)return;
@@ -2115,17 +2148,34 @@ var Sound=(function(){
 })();
 ['pointerdown','keydown','touchstart'].forEach(function(ev){document.addEventListener(ev,function(){try{Sound.init()}catch(e){}},{once:true})});
 $('ob').addEventListener('click',function(e){if(e.target.id==='sndTest'){try{Sound.test()}catch(err){}}});
-function animateCounts(){if(document.documentElement.dataset.rm)return;document.querySelectorAll('.cnt').forEach(function(el){var to=+el.dataset.to||0,st=performance.now();if(!to){el.textContent=tk(0);return}function step(t){var p=Math.min(1,(t-st)/400);el.textContent=tk(Math.round(to*p));if(p<1)requestAnimationFrame(step)}requestAnimationFrame(step)})}
+function animateCounts(){
+  document.querySelectorAll('.cnt').forEach(function(el){
+    var to=+el.dataset.to||0;
+    if(document.documentElement.dataset.rm){el.textContent=tk(to);return;}
+    if(!to){el.textContent=tk(0);return;}
+    var st=performance.now();
+    function step(t){
+      var p=Math.min(1,(t-st)/400);
+      el.textContent=tk(Math.round(to*p));
+      if(p<1)requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  });
+}
 function saveCheck(){if(document.documentElement.dataset.rm)return;var d=document.createElement('div');d.className='savechk';d.innerHTML='<svg viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="22" fill="none" stroke="var(--acc)" stroke-width="3"/><path d="M14 27l8 8 16-16" fill="none" stroke="var(--acc)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>';document.body.appendChild(d);setTimeout(function(){d.classList.add('out')},700);setTimeout(function(){d.remove()},1250)}
 (function(){
   var M="Claude Sonnet 5.5 · owner's Claude account";
-  APP_VERSION='9.25';
+  APP_VERSION='9.27';
+  VERS.unshift({v:'9.27',d:'2026-10-22',t:'System Audit Hardening: Cryptographic ID, Monetary Precision, Storage Safeguard & Sync Security',by:M,n:['Cryptographic collision-proof UID generator replaces pseudo-random financial and log identifiers','Monetary arithmetic precision: r2 helper eliminates floating-point rounding jitter in cash, wallet, and ledger running balances','Storage quota safeguard: 4MB pre-warning advisory with session dismissal memory prevents quota-exceeded crashes','Security: Autocomplete disabled and numeric inputmode enforced across all staff and administrative PIN fields','Sync protocol: Secure POST request payload with seamless backward-compatible GET fallback for pull, inbox and catalog','Mobile responsiveness: touch-action manipulation eliminates 300ms click delay across buttons and action items','Accessibility: Theme button dynamically updates aria-label and tooltip on mode change']});
+  VERS.unshift({v:'9.26',d:'2026-10-21',t:'Mobile Home Cash Balance fix & Count-Up fallback safety',by:M,n:['Fixed bug where Home hero Cash Balance stayed at 0 on mobile phones: initial DOM now pre-renders the computed balance immediately','animateCounts() now safely sets the target balance even under OS reduced-motion or battery-saver animation throttling instead of returning early']});
   VERS.unshift({v:'9.25',d:'2026-10-21',t:'Responsive UI overhaul: Modal safety, touch targets, POS split grid & clean Ledger header',by:M,n:['Modal & dialog safety: .dlg gets max-height:88vh with smooth scroll and sticky confirmation/action buttons (.oa) so actions are never pushed offscreen','Ergonomic touch targets: Cart delete (.x) expanded to 40px; Accounts/Ledger table action buttons given generous tap padding and minimum 34px height','Recharge balances grid: 3-column balanced row on both desktop and mobile without awkward empty gaps','Dark mode token integrity: saveCheck checkmark and accent icons use var(--acc) for complete orange/dark harmony','POS desktop & mobile overhaul: Desktop (>=900px) gets a 2-column layout with sticky cart on the right and catalog on the left; mobile search sits directly above catalog without scrolling past cart','Ledger header streamlining: Primary + পেলাম [green] and + দিলাম [red] stay front-and-center while secondary actions (+ Borrow, + Lend, Due date, Edit) are neatly organized under a single ⋯ More dropdown menu']});
   VERS.unshift({v:'9.24',d:'2026-10-21',t:'Flexible MFS/Recharge adjustment & Cash denomination history log',by:M,n:['Individual MFS & Recharge wallet adjustments directly from wallet cards and detail dialogs with full audit trail in S.walletDates','Every cash count and note breakdown is now permanently saved by date and time in S.counts with full denomination history','New "Cash count history" dialog accessible from the Accounts cash strip showing past counts, note denominations, counted vs book difference, and reason']});
   VERS.unshift({v:'9.23',d:'2026-10-21',t:'WhatsApp & SMS polite due reminder links in Ledger',by:M,n:['One-tap WhatsApp & SMS due reminder links on customer cards and profile when party owes money (they owe)','Pre-formats polite Bengali payment notice with customer name, shop name, and due amount','Uses iOS and Android standard SMS parameter scheme (?body= / &body=) and wa.me/?text=','Normal Call/SMS/WhatsApp links preserved when balance is settled or zero']});
   VERS.unshift({v:'9.22.2',d:'2026-10-19',t:'Sound toggle visible in More, Settings unhidden',by:M,n:['Sound effects ON/OFF button now appears directly in the More tab (no need to open Settings)','Removed the CSS rule that was hiding the Settings button in the More tab','Settings still shows the Sound effects checkbox and the ▶ Test sound button']});
   VERS.unshift({v:'9.22.1',d:'2026-10-19',t:'Sound resume fix + Test button',by:M,n:['AudioContext resume() race fixed: tones now play after the context is running (fixes silent playback on Android WebView, iOS Safari and after idle tabs)','▶ Test sound button inside Settings for instant verification','Louder gains for tick and cha-ching so phone speakers are audible']});
   VERS.unshift({v:'9.22',d:'2026-10-19',t:'Sound effects, motion polish and wrapper download safety',by:M,n:['Web Audio sound engine: soft tick on tabs/dialogs, cha-ching on sale/entry save, low buzz on errors, sync chime on background sync','Sound toggle in Settings, default off; AudioContext created on first tap','All sound and motion automatically off when the OS asks for reduced motion','Number count-up on Home (Cash Balance, Total Sell, Total Buy) over 0.4s on load and period change','Save checkmark pop on POS sale and Accounts/Ledger entry save','Tap feedback: buttons scale to 0.97 on press','POS cart rows slide in when added and slide out when removed','dlFile falls back to a data URL window if the wrapper blocks the <a download> tag']});
+  UPC.unshift({v:'9.27',s:'Done',t:['Cryptographic collision-proof UID generation for bills and logs','Floating-point monetary precision rounding across cash, wallets and ledger','Storage quota pre-warning threshold (4MB) with dismissal memory','Security autocomplete=off on administrative and staff PIN fields','Backward-compatible POST sync request body security with GET fallback','Zero-delay touch-action manipulation for snappy mobile interactions']});
+  UPC.unshift({v:'9.26',s:'Done',t:['Mobile Home Cash Balance 0 bug fixed','Animation graceful fallback under OS battery saver / reduced-motion']});
   UPC.unshift({v:'9.25',s:'Done',t:['Responsive modal safety with sticky buttons','40px touch targets & safe table links','POS desktop 2-column and mobile search-first layout','Recharge 3-column balanced grid','Ledger clean header with More dropdown menu']});
   UPC.unshift({v:'9.24',s:'Done',t:['MFS & Recharge quick balance adjustment','Permanent cash count and currency denomination history']});
   UPC.unshift({v:'9.23',s:'Done',t:['WhatsApp & SMS due reminder links in Ledger','Polite Bengali payment reminder text']});
@@ -2136,6 +2186,11 @@ function saveCheck(){if(document.documentElement.dataset.rm)return;var d=documen
   var sp=UPC.find(function(x){return x.v==='9.22'&&x.s==='Planned'});if(sp)sp.v='9.23';
 })();
 BUGS.unshift(
+  {d:'2026-10-22 00:15 (UTC+6)',v:'9.27',w:'Claude Sonnet / Gemini',a:'Financial bills and log entries used Math.random() for ID generation which is vulnerable to collisions across multi-device offline sync',b:'Math.random() produces pseudo-random floats without cryptographic collision resistance',c:'Created uid() helper using crypto.getRandomValues(new Uint32Array(1))[0] with Date.now() timestamp'},
+  {d:'2026-10-22 00:15 (UTC+6)',v:'9.27',w:'Claude Sonnet / Gemini',a:'Cumulative cash, wallet and customer balances could accumulate IEEE 754 floating-point precision jitter over many entries',b:'Unrounded additions and subtractions of fractional values in calc(), wltRun() and lBal()',c:'Enforced r2 monetary rounding (Math.round((+x||0)*100)/100) on all balance accumulators and difference checks'},
+  {d:'2026-10-22 00:15 (UTC+6)',v:'9.27',w:'Claude Sonnet / Gemini',a:'Local storage quota could crash unannounced when attachment photos or long ledger history approached 5MB',b:'persist() only notified on hard localStorage.setItem throw',c:'Added proactive 4MB threshold warning advising backup download with session dismissal memory'},
+  {d:'2026-10-22 00:15 (UTC+6)',v:'9.27',w:'Claude Sonnet / Gemini',a:'Sync key transmitted in cleartext GET URL query parameters in getRemote(), importPos(), and importCatalog()',b:'GET query parameters are logged in server/proxy histories',c:'Transmitted sync key in HTTP POST request body with automatic fallback to GET for older Apps Script versions'},
+  {d:'2026-10-21 23:58 (UTC+6)',v:'9.26',w:'Claude Sonnet / Gemini',a:'Home hero Cash Balance remained at 0 on mobile phones',b:'DOM initialized with placeholder 0 and animateCounts() returned early without painting under OS reduced-motion/battery saver',c:'Pre-render computed balance immediately into the DOM and update animateCounts() to set target value if animations are suppressed'},
   {d:'2026-10-19 --:--',v:'9.22.2',w:'Claude Sonnet 5.5 · owner\'s Claude account',a:'Sound toggle was not visible in the More tab because the Settings button was hidden by CSS',b:'An old CSS rule `#stf,#set{display:none!important}` was hiding the Settings button; the Sound toggle lived inside that dialog',c:'Removed `#set` from the hide rule; added a dedicated "Sound effects: ON/OFF" button directly to the More list; keeps the Settings dialog the same'},
   {d:'2026-10-19 --:--',v:'9.22.1',w:'Claude Sonnet 5.5 · owner\'s Claude account',a:'Sound silent even when the Settings toggle is checked',b:'AudioContext was created but its resume() promise was racing the tone scheduling: tones were scheduled at currentTime 0 while the context was still suspended, so nothing was heard (classic on Android WebView and iOS Safari, and after the tab was idle)',c:'play() now waits for ctx.resume() before scheduling tones (`.then(go)`); Added Test sound button in Settings; Bumped gains so phone speakers are audible'},
   {d:'2026-10-19 --:--',v:'9.22',w:'Claude Sonnet 5.5 · owner\'s Claude account',a:'CSV/JSON downloads could fail silently inside the native wrappers because the <a download> element was never attached to the DOM and wrappers sometimes block blob downloads',b:'dlFile clicked a detached anchor and swallowed the error',c:'The anchor is appended before click(), removed after 1s, and a window.open data-URL fallback runs if the blob path throws'}
