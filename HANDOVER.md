@@ -1,6 +1,6 @@
 # NCS Daily Accounts: Handover Note
 
-Shop: Nur Computer & Stationery. Current version: **v9.28** (service worker cache `ncs-v50`).
+Shop: Nur Computer & Stationery. Current version: **v9.28.1** (service worker cache `ncs-v51`).
 Two Claude profiles work on this app and do NOT share memory. This file is the shared memory.
 
 ## 0. Start-of-session checklist (both profiles)
@@ -32,18 +32,22 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 - **Theme (v9.20):** three modes — `auto` (OS default), `light`, `dark`. Icon button `#themeBtn` in top bar cycles Auto → Light → Dark → Auto. Day/Night removed.
 - **Tab transitions (v9.20):** `.view.on` fades in (220ms). Skipped under OS reduced motion.
 - **Refresh (v9.20):** two-arrow SVG spins once on tap.
-- **Storage warning (v9.20):** only shows on genuine `localStorage.setItem` failure. Dismiss hides it (`style.display='none'`).
+- **Storage warning (v9.27):** 4MB pre-warning advisory shown on save failure or threshold exceed. Dismiss hides it (`style.display='none'`).
 - **Reduced motion (v9.20):** auto from OS `prefers-reduced-motion`; no manual toggle. **v9.22 also silences the sound engine under reduced motion.**
 - **Keeper tabs (v9.20):** Products and More only. POS, Accounts, Ledger hidden.
 - **Party kinds (v9.20):** Customer, Investor, Supplier, Borrower/Lender. Kind tabs filter the Ledger list. Legacy Lender/Borrower are treated as Borrower/Lender.
-- **Wallet openings (v9.20):** `S.walletDates` array of date-anchored openings (`{d, by, at, reason, bk, ng, rk, bka, gp, robi, cir, prev, discrepancy}`). `S.wallets` is the base opening. `wltRun` resets the wallet balance at each date anchor. Setting an opening for a past date requires Admin PIN and logs a `walletAdjust` entry. Admin sees a discrepancy report if the entered amount differs from the carried-forward balance.
-- **Cash adjustment (v9.20):** past-date targets require Admin PIN; Adjustment entries carry `pinBy` and `pinAt`. Present-day adjustments still roll to `nextOpenDay` without PIN.
+- **Wallet openings (v9.20, adjust v9.24):** `S.walletDates` array of date-anchored openings (`{d, by, at, reason, bk, ng, rk, bka, gp, robi, cir, prev, discrepancy}`). `S.wallets` is the base opening. `wltRun` resets the wallet balance at each date anchor. Setting an opening for a past date requires Admin PIN and logs a `walletAdjust` entry. Admin sees a discrepancy report if the entered amount differs from the carried-forward balance. **v9.24 adds individual MFS/Recharge wallet adjustment** (`adjustSingleWallet`) accessible from the wallet cards and detail modals.
+- **Cash adjustment (v9.20, history v9.24):** past-date targets require Admin PIN; Adjustment entries carry `pinBy` and `pinAt`. Present-day adjustments still roll to `nextOpenDay` without PIN. **v9.24 adds permanent `S.counts` history** with currency note denominations, book total, difference, and reason, accessible via `cashCountHistory()`.
 - **POS void (v9.20):** reason matching `/^test$/i` marks the bill `test:1` and the entry `test:1`; these appear in a "Test" section (admin only) and are excluded from every total. Admin can also "Remove permanently" a voided bill: `b.removed=1`, `e.removed=1`. Removed bills are hidden everywhere.
 - **Borrower/Lender transactions (v9.20):** identical rules to Customer — any In/Out with any method (Cash, MFS, Recharge). No special direction.
 - **Sound engine (v9.22.2):** `var Sound` module using Web Audio. `Sound.tick` (tab/dialog), `Sound.chaChing` (sale/entry save), `Sound.buzz` (errors), `Sound.chime` (background sync), `Sound.test` (Settings "Test sound" button). `enabled()` requires `S.sound` and no `data-rm`. AudioContext is created/resumed on the first pointerdown/keydown/touchstart. **`play()` waits for `ctx.resume()` before scheduling tones** — that's the v9.22.1 fix. Default off; toggle in Settings (admin-only, like the rest of Settings). A "▶ Test sound" button sits right under the toggle.
 - **Sound toggle in More tab (v9.22.2):** a new button `#sndBtn` was appended to the More list, directly above the Settings and Lock buttons. It reads "Sound effects: ON/OFF". Clicking it flips `S.sound`, saves, and plays the test chime if turning ON. The Settings button is also no longer hidden in the More list (the old `#stf,#set{display:none!important}` rule was rewritten to just `#stf{display:none!important}`).
-- **Motion (v9.22):** `animateCounts()` counts `.cnt` elements from 0 to `data-to` over 400ms (Home hero + Total Sell/Buy). `saveCheck()` shows a green SVG tick overlay. `button:active` scales to 0.97. POS cart rows use `.slidein` / `.slideout`. All are no-ops under `data-rm` or missing elements.
+- **Motion (v9.22):** `animateCounts()` counts `.cnt` elements from 0 to `data-to` over 400ms (Home hero + Total Sell/Buy). Under `data-rm`, it skips animation and sets the final value immediately. `saveCheck()` shows a green SVG tick overlay. `button:active` scales to 0.97. POS cart rows use `.slidein` / `.slideout`. All are no-ops under `data-rm` or missing elements.
 - **Download safety (v9.22):** `dlFile` appends the `<a>` to the DOM before clicking (some wrappers require it) and falls back to a `window.open` data URL if the blob download throws.
+- **Due reminders (v9.23):** `dueNoticeText()` generates a polite Bengali reminder. `lLinks()` detects negative balance and swaps normal SMS/WhatsApp links for "বকেয়া SMS" / "বকেয়া WhatsApp" prefilled links.
+- **UI/UX Overhaul (v9.25):** Modal `.dlg` capped at 88vh with `.oa` sticky bottom actions. Touch targets `.lnk` (min-height 34px) and POS cart `.x` (40px) enlarged. POS 2-column layout on desktop (sticky cart) and search-first on mobile. Ledger header consolidated with `⋯ More` dropdown for secondary actions.
+- **System Audit (v9.27):** Cryptographic `uid()` for ID generation. `r2()` rounding applied to `calc()`, `prevFor()`, `lBal()`, `ledRows()`, `wltRun()`. `autocomplete="off"` on PIN fields. `touch-action: manipulation` on buttons. Theme button `aria-label` dynamic update.
+- **Sync restore (v9.28):** GET protocol restored for `getRemote()`, `importPos()`, `importCatalog()`. `badKey()` no longer wipes `S.sync` prematurely.
 
 ## 3. Data model
 - **`cust`:** `{id, name, phone, fb?, img?, note, kind?, addr?, rel?, due?, dueNote?, del?, delReason?, dby?, dts?}`. `kind` ∈ Customer, Investor, Supplier, Borrower/Lender (legacy `Lender`/`Borrower` map to Borrower/Lender at read time). `due`/`dueNote` shown as party reminder.
@@ -53,6 +57,7 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 - **`ltx.voidReq`:** `{state: pending|approved|rejected, by, at, reason, rb?, ra?, rr?, vb2?}`.
 - **`atts`:** `{id, ref, d, by, at, del?, db?, dt?}`. ref = `'e'+entryId` or `'l'+ltxId`.
 - **`walletDates` (v9.20):** `[{d: 'YYYY-MM-DD', by, at, reason, bk, ng, rk, bka, gp, robi, cir, prev: {...}, discrepancy: {...}, pinBy?, pinAt?}]`. Most recent entry ≤ a given date is the active opening.
+- **`counts` (v9.24):** `[{id, d, t, at, by, total, book, diff, reason, den: {1000: N, 500: N, ...}, pinBy?}]`. Permanent cash count history.
 - **`entries`:** daily accounts; `cash()` and `calc()`.
 - **POS bill flags (v9.20):** `b.test = 1` for reason=`test`; `b.removed = 1` for admin-permanent-removal; corresponding entry also flagged.
 - **Party balance:** sum of `in` − `out` over non-void entries.
@@ -94,6 +99,7 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 33. **Motion helpers respect `data-rm` (v9.22).** `animateCounts`, `saveCheck`, `slideInLast`, `removeLineAnimated` and the global `button:active` scale all turn off under reduced motion. Keep the `.cnt` / `data-to` convention if you add more count-ups.
 34. **`play()` must await `ctx.resume()` (v9.22.1).** Never schedule tones before the AudioContext is `running`. `play()` and `Sound.test()` both use `.then(go)` after `resume()`. This is the fix that made sound audible on Android WebView and iOS Safari.
 35. **Sound is OFF by default.** The user has to tick "Sound effects" in Settings (admin-only) or use the new `#sndBtn` toggle on the More tab. Don't change the default without owner approval. The "▶ Test sound" button is the fastest way to verify.
+36. **VERS order is ascending (v9.28.1).** Do not prepend versions in descending order. `VERS.unshift` from oldest to newest in the same IIFE ensures the latest version ends up at `VERS[0]`.
 
 ## 5. Known quirks
 - Start fresh carries balances forward; queues a reconciliation item.
@@ -105,7 +111,7 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 - Wallet-transfer categories excluded from Sell/Buy totals (v9.6).
 - Undo checks wallet balances (v9.6).
 - Stock overrides excluded while pending (v9.6).
-- Sync key transport still in GET URLs.
+- Sync key transport still in GET URLs (accepted limitation, POST causes loop).
 - Bills imported from external POS inbox carry no wallet.
 - Sync dot: single dot, periodic blink (v9.20).
 - Cashier flags; accountant proposes; admin approves (v9.10–9.16).
@@ -118,16 +124,17 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 - **iOS Safari sound (v9.22.1):** iOS may require the AudioContext to be created synchronously inside a real user gesture. If no sound plays even after the Resume-fix, ask the user to tap the "Test sound" button — that qualifies as a gesture. If it still fails, the browser is blocking audio and this is out of our control.
 - **Reduced motion still silences sound (v9.22.1):** if the OS has "reduce motion" on, `Sound.enabled()` returns false. The Test button bypasses this by design (it's a user-requested sound).
 - **More tab layout (v9.22.2):** the More tab now shows 4 buttons: বাংলা, Sound effects: ON/OFF, Settings, Lock. The Settings button is no longer hidden.
+- **Storage quota safeguard (v9.27):** `persist()` shows a 4MB threshold warning; `window._storageWarnDismissed` is in-memory only and resets on page reload.
 
 ## 6. Roadmap
-**v9.26: DONE.** Mobile Home Cash Balance bug fixed and full security/architecture audit completed for v10 upgrade.
+**v9.28.1: DONE.** Version history cleanup.
 
-**v9.25: DONE.** Comprehensive UI & ergonomics overhaul: Modal & dialog safety with sticky action bar, 40px cart delete, 34px table links, Recharge 3-col grid, POS 2-col desktop layout, and clean Ledger header with More menu.
-
-**v9.24: DONE.** MFS & Recharge balance quick adjustment as needed, plus complete currency denomination counts history saved by date and time in `S.counts`.
-
-**v9.23: DONE.** WhatsApp & SMS Due Reminders in Ledger with pre-formatted polite Bengali payment text and direct links.
-
+**v9.28: DONE.** Sync GET restore + Reconnect fix.
+**v9.27: DONE.** System audit hardening.
+**v9.26: DONE.** Mobile Home Cash Balance bug fixed.
+**v9.25: DONE.** Comprehensive UI & ergonomics overhaul.
+**v9.24: DONE.** MFS & Recharge balance quick adjustment.
+**v9.23: DONE.** WhatsApp & SMS Due Reminders in Ledger.
 **v9.22.2: DONE.** Sound toggle visible in More + Settings unhidden.
 **v9.22.1: DONE.** Sound resume race fixed + Test button + louder gains.
 **v9.22: DONE.** Sound engine, count-up, save checkmark, tap feedback, POS cart slide in/out, wrapper download fallback.
@@ -185,6 +192,7 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 - Split into modules only if asked. Automated smoke test.
 
 ## 7. Session log (append newest on top)
+- **v9.28.1, 2026-10-23 (Claude Sonnet 5.5, owner's Claude account):** Version history cleanup. (1) Reversed the order of the `VERS.unshift` and `UPC.unshift` calls in the final IIFE so the version history dialog displays v9.28.1 at the top and v9.22 at the bottom (previously v9.22 was at the top due to descending order). (2) Added the missing `VERS.unshift` entry for v9.16 (Complete admin review queue). (3) Removed the stray v9.26 BUGS entry from the v9.15 block. Bumped to `ncs-v51`. Tests: `node --check`; version history dialog visually checked.
 - **v9.28, 2026-10-22 00:25 (UTC+6) (Claude Sonnet / Gemini):** Restored Google Apps Script sync compatibility and fixed Reconnect loop. (1) **Root cause & Fix:** In v9.27, getRemote(), importPos() and importCatalog() attempted HTTP POST with JSON body for pull actions; the owner's Google Apps Script web app handles pull/inbox/catalog strictly via GET query parameters and returns `{ok: false}` on unrecognized POST actions. This falsely triggered `badKey()`, which cleared `S.sync` and showed the 'Reconnect sync' modal in an endless loop upon each reconnect attempt. Fixed by restoring standard GET requests across getRemote, importPos and importCatalog, and stopping `badKey()` from wiping `S.sync` prior to passphrase verification. Bumped sw.js cache to `ncs-v50`.
 - **v9.27, 2026-10-22 00:15 (UTC+6) (Claude Sonnet / Gemini):** Comprehensive System Audit Hardening (Security, Storage, Precision, Protocol & UI/UX): (1) **Cryptographic UID Generator:** Implemented universal collision-resistant `uid()` combining timestamp and Web Cryptography API (`crypto.getRandomValues`) for financial receipts and log identifiers. (2) **Monetary Precision Rounding:** Enforced `r2()` (`Math.round((+x||0)*100)/100`) across `calc()`, `prevFor()`, `wltRun()`, `lBal()`, and `ledRows()`, eliminating IEEE 754 floating-point precision jitter. (3) **Storage Quota Safeguard:** Added proactive 4MB threshold warning in `persist()` advising backup JSON download or photo cleanup with session dismissal memory before reaching browser 5MB limit. (4) **Security Hardening on PIN Fields:** Added `autocomplete="off"` to staff and admin PIN inputs (`#rp`, `#sp`, `#np`, `#sfp`). (5) **Sync Protocol Security:** Upgraded `getRemote()`, `importPos()`, and `importCatalog()` to transmit sync credentials via HTTP `POST` body with seamless fallback to `GET` for older Google Apps Script deployments. (6) **Snappy Mobile Interactions:** Added `touch-action: manipulation` across all buttons and interactive items to eliminate mobile tap latency. (7) **Accessibility:** Theme button dynamically announces and updates `aria-label` and tooltip to active mode. Bumped sw.js cache to `ncs-v49`.
 - **v9.26, 2026-10-21 23:58 (UTC+6) (Claude Sonnet / Gemini):** Fixed mobile Home Cash Balance '0' bug and conducted a full-project security and UI/UX audit. (1) **Root cause & Fix:** Mobile devices with accessibility or battery-saver settings trigger `prefers-reduced-motion: reduce` (setting `data-rm`). `homeUI()` was initializing the Cash Balance DOM with a placeholder text of literal `0`, and `animateCounts()` returned early without painting when `data-rm` was active. Fixed by pre-rendering `tk(cb)` immediately on initial paint and ensuring `animateCounts()` sets the final target value directly when animations are suppressed. (2) Full system audit report written for v10 modernization roadmap. Bumped sw.js cache to `ncs-v48`.
@@ -216,6 +224,7 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 
 ## 8. Bug fix history (newest on top)
 Format: YYYY-MM-DD HH:MM (UTC+6) — version — who — what was wrong — cause — fix. Times before this rule was made were recorded as --:--.
+- 2026-10-23 --:-- (UTC+6) — v9.28.1 — Claude Sonnet 5.5 — Version history displayed v9.22 as the latest version — `VERS.unshift` calls were written in descending order (9.28 first, 9.22 last), so 9.22 ended up at `VERS[0]` — Reversed the order of `VERS.unshift` and `UPC.unshift` calls to ascending so the newest version is prepended last.
 - 2026-10-22 00:25 (UTC+6) — v9.28 — Claude Sonnet / Gemini — 'Reconnect sync' modal appeared and looped indefinitely on PC and phone — v9.27 sent HTTP POST for pull/inbox/catalog actions which Google Apps Script web app rejects with `{ok: false}`, causing pull() to immediately trigger badKey() in a loop — Restored GET queries for pull, inbox, and catalog, and guarded badKey() from wiping `S.sync` before passphrase verification.
 - 2026-10-22 00:15 (UTC+6) — v9.27 — Claude Sonnet / Gemini — Financial bills and log entries used Math.random() for ID generation which is vulnerable to collisions across multi-device offline sync — Math.random() produces pseudo-random floats without cryptographic collision resistance — Created uid() helper using crypto.getRandomValues(new Uint32Array(1))[0] with Date.now() timestamp.
 - 2026-10-22 00:15 (UTC+6) — v9.27 — Claude Sonnet / Gemini — Cumulative cash, wallet and customer balances could accumulate IEEE 754 floating-point precision jitter over many entries — Unrounded additions and subtractions of fractional values in calc(), wltRun() and lBal() — Enforced r2 monetary rounding (Math.round((+x||0)*100)/100) on all balance accumulators and difference checks.
@@ -240,7 +249,7 @@ Format: YYYY-MM-DD HH:MM (UTC+6) — version — who — what was wrong — caus
 - 2026-10-18 --:-- (UTC+6) · v9.19 · Claude Sonnet 5.5 · owner's Claude account · Review queue Open for a reconciliation item jumped to today · `go('acc')` reset `cur` to today internally · call `go('acc')` first, then set `cur`.
 - 2026-10-18 --:-- (UTC+6) · v9.18 · Claude Sonnet 5.5 · owner's Claude account · Sample "Load Riyad notes" could appear when the customer list was momentarily empty · button lived in the empty-customers card · removed from the empty-customers card.
 - 2026-10-18 --:-- (UTC+6) · v9.16 · Claude Sonnet 5.5 · owner's Claude account · Accountant voids applied directly while edits required approval · v9.10 added proposal flow for edits but not voids · voids become approval requests.
-- 2026-10-18 --:-- (UTC+6) · v9.15 · Claude Sonnet 5.5 · owner's Claude account · Upcoming Features card listed v9.8 below v9.5 · v9.8 updated its Planned entry in place · splice out old 9.8, unshift new Done 9.8.
+- 2026-10-18 --:-- (UTC+6) · v9.15 · Claude Sonnet 5.5 · owner's Claude account · Upcoming Features card listed v9.8 below v9.5 · v9.8 updated Planned entry in place · splice out old 9.8, unshift new Done 9.8.
 - 2026-10-18 00:56 (UTC+6) · v9.9 · product catalog always visible, competed with cart · fixed two-column workspace · full-width cart, collapsed disclosure.
 - 2026-10-18 00:56 (UTC+6) · v9.9 · product ID did not work in search · filtering only checked name/barcode · include ID.
 - 2026-10-18 00:32 (UTC+6) · v9.8 · POS/Ledger scaling differed · no explicit reset · normal scale.
@@ -264,7 +273,7 @@ Format: YYYY-MM-DD HH:MM (UTC+6) — version — who — what was wrong — caus
 
 ## 9. Native apps (Android APK and Windows .exe)
 Added 2026-10-19. The PWA is unchanged and still works. The native apps wrap the same files.
-- **Build:** GitHub Actions (`.github/workflows/build.yml`) runs on every upload to `main`. It builds only if `APP_VERSION` in `index.html` has no release yet (tag `v<major>.<minor>.<patch>`, e.g. 9.22.2 becomes `v9.22.2`). If a version is not raised, nothing is built.
+- **Build:** GitHub Actions (`.github/workflows/build.yml`) runs on every upload to `main`. It builds only if `APP_VERSION` in `index.html` has no release yet (tag `v<major>.<minor>.<patch>`, e.g. 9.28.1 becomes `v9.28.1`). If a version is not raised, nothing is built.
 - **Release contents:** `NCS-Accounts-<v>.apk`, `NCS-Accounts-Setup-<v>.exe`, `latest.yml` and `.blockmap` (Windows updater), `www.zip` and `update.json` (Android live update).
 - **No edits to `index.html` for native.** `scripts/prepare-www.js` copies the app to `www/` and injects `native/bridge.js` just before `<script src="config.js"></script>`. **If that script tag is ever removed or changed, the build fails on purpose.** Keep it.
 - **Android:** Capacitor 8 plus `@capgo/capacitor-updater` in manual mode. On start and on resume (max once per 30 min) `bridge.js` reads `releases/latest/download/update.json`, downloads `www.zip`, calls `next()` and shows a "Restart now" bar. A bundle that does not call `notifyAppReady()` is rolled back by the plugin. The bridge also supplies `navigator.share`, blob downloads (saved to cache, then the share sheet), and `window.print` (custom `NativePrint` plugin using Android PrintManager).
