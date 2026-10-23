@@ -493,11 +493,6 @@ button:active{transform:scale(.97)}
   <div id="wltWrap" class="wlt-wrap"></div>
   <div id="chkBar" class="card cbn" hidden></div>
   <section class="card daybar" id="daybar"></section>
-  <section class="card fb" id="fb"><input id="sq" placeholder="Search description or category" autocomplete="off"><select id="sty"><option value="">All types</option><option value="Sale">Sale</option><option value="Purchase">Purchase / Expense</option><option value="Deposit">Owner Deposit</option><option value="Withdrawal">Owner Withdrawal</option><option value="Adjustment">Cash Adjustment (±)</option><option value="Ledger">Ledger cash / wallet</option><option value="Check">Needs check</option></select><select id="spy"><option value="">All payments</option><option>Cash</option><option>Mobile Banking</option><option>Bank</option><option>Due</option></select><input id="sfa" type="date" title="From"><input id="sfb" type="date" title="To"><button class="ghost" id="sclr">Clear</button></section>
-  <div id="avBar"></div>
-  <section class="card scroll"><div id="tbl"></div></section>
-  <div class="pf" id="pf"></div>
-
   <div class="card empty" id="cn" hidden>This day is closed. An admin can reopen it to add or change entries.</div>
   <section class="card" id="fsec"><form id="form" autocomplete="off"><div class="g">
     <div><label for="ft">Time</label><input id="ft" type="time" required></div>
@@ -511,6 +506,11 @@ button:active{transform:scale(.97)}
     <div class="pp" id="pcu" hidden><label for="fcu">Customer</label><select id="fcu"></select></div><div class="pp" id="ppn" hidden><label for="fpn" id="fpl">Customer name</label><input id="fpn" list="pl" maxlength="60" autocomplete="off"><datalist id="pl"></datalist></div><div class="pp" id="ppt" hidden><label for="fph">Phone (optional)</label><input id="fph" type="tel" maxlength="20" autocomplete="off"></div>
     <div class="act"><div class="prev" id="prev"></div><div><button type="button" class="ghost" id="cancel" style="display:none">Cancel edit</button> <button class="go" id="go" type="submit">Add entry</button></div></div>
   </div></form></section>
+
+  <section class="card fb" id="fb"><input id="sq" placeholder="Search description or category" autocomplete="off"><select id="sty"><option value="">All types</option><option value="Sale">Sale</option><option value="Purchase">Purchase / Expense</option><option value="Deposit">Owner Deposit</option><option value="Withdrawal">Owner Withdrawal</option><option value="Adjustment">Cash Adjustment (±)</option><option value="Ledger">Ledger cash / wallet</option><option value="Check">Needs check</option></select><select id="spy"><option value="">All payments</option><option>Cash</option><option>Mobile Banking</option><option>Bank</option><option>Due</option></select><input id="sfa" type="date" title="From"><input id="sfb" type="date" title="To"><button class="ghost" id="sclr">Clear</button></section>
+  <div id="avBar"></div>
+  <section class="card scroll"><div id="tbl"></div></section>
+  <div class="pf" id="pf"></div>
 
   <div class="foot"><span id="who"></span><button class="ghost" id="stf">Staff</button><button class="ghost" id="logb">Change Log</button><button class="ghost" id="rpb">Reports</button><button class="ghost" id="und" disabled>Undo</button><button class="ghost" id="prt">Print</button><button class="ghost" id="csv">Export CSV</button></div>
 </div>
@@ -633,7 +633,7 @@ var ACC_N=150,ACC_D='',LPGN=80,LPGC=null,AV=false;
 function imgCap(c,q){var u=c.toDataURL('image/jpeg',q);while(u.length>24000&&q>.3){q-=.1;u=c.toDataURL('image/jpeg',q)}return u}
 const CATS={Sale:['Printing','Stationery','Computer Service','Other'].concat(Object.keys(WLTC.Sale)),Purchase:['Stock','Rent','Salary','Utilities','Transport','Other'].concat(Object.keys(WLTC.Purchase))};
 
-function render(){try{renderWalletCards()}catch(e){}
+function render(){try{renderWalletCards()}catch(e){}try{applyCardSettings()}catch(e){}
   $('title').textContent=label(cur);$('pick').value=cur;
   const m=calc(),all=sorted(),day=all.filter(e=>e.d===cur),act=day.filter(e=>!e.void),f=flt(),tv0=f?all.filter(e=>match(e,f)):day,tv=tv0.filter(e=>!e.void),vd=lEd()?tv0.filter(e=>e.void):[];
   if(ACC_D!==cur+'|'+(f?JSON.stringify(f):'')){ACC_D=cur+'|'+(f?JSON.stringify(f):'');ACC_N=150}
@@ -650,7 +650,9 @@ function render(){try{renderWalletCards()}catch(e){}
   else if(!tv.length)$('tbl').innerHTML='<div class="empty">No entries for this date</div>';
   else $('tbl').innerHTML='<table><thead><tr><th>Sl</th><th>Time</th><th>Description</th><th>Sell</th><th>Buy</th><th>Previous Cash</th><th>Cash Balance</th><th>Actual Cash</th><th>Difference</th><th></th></tr></thead><tbody>'+tv.slice(0,ACC_N).map((e,i)=>{
     const r=m[e.id],v=e.void,inn=e.type==='Sale'||e.type==='Deposit'||(e.type==='Adjustment'&&e.amt>0)||(e.type==='Ledger'&&e.ld==='in'),amt=Math.abs(e.amt),wo=e.type==='Ledger'&&!!e.w;
-    const badge=(e.type!=='Sale'&&e.type!=='Purchase'?`<span class="b o">${e.type==='Adjustment'?'Adjustment':e.type==='Deposit'?'Deposit':e.type==='Ledger'?'Ledger':'Withdrawal'}</span>`:'')+(e.pay!=='Cash'&&(e.type==='Sale'||e.type==='Purchase')?`<span class="b">${e.pay}</span>`:'')+(v?'<span class="b v">Void</span>':'')+(!v&&likelyDupEntry(e)?'<span class="b ctag">Possible duplicate</span>':'')+(!v&&lEd()&&entChk(e)?'<span class="b ctag">Check</span>':'');
+    const isCol=!v&&isWalletCollision(e.id);
+    const colBadge=isCol?`<span class="b v" style="background:var(--neg);color:#fff" title="${lb('Wallet deficit after adjustment under review','ওয়ালেট ঘাটতি: রিভিউ প্রয়োজন')}">${lb('Deficit Review','ঘাটতি রিভিউ')}</span>`:'';
+    const badge=(e.type!=='Sale'&&e.type!=='Purchase'?`<span class="b o">${e.type==='Adjustment'?'Adjustment':e.type==='Deposit'?'Deposit':e.type==='Ledger'?'Ledger':'Withdrawal'}</span>`:'')+(e.pay!=='Cash'&&(e.type==='Sale'||e.type==='Purchase')?`<span class="b">${e.pay}</span>`:'')+(v?'<span class="b v">Void</span>':'')+(!v&&likelyDupEntry(e)?'<span class="b ctag">Possible duplicate</span>':'')+(!v&&lEd()&&entChk(e)?'<span class="b ctag">Check</span>':'')+colBadge;
     const sub=v?`Reason: ${esc(e.vr)}`:(f?sd(e.d)+' · ':'')+esc(e.cat)+(e.party?' · '+esc(e.party)+(e.phone?' ('+esc(e.phone)+')':''):'')+(wo?' · '+esc(wN(e.w))+' '+(inn?'+':'−')+n(amt):'')+(e.by?' · '+esc(e.by):'');
     const dfc=!v&&r.df!=null?`<span class="${dc(r.df)}">${dif(r.df)}</span>${e.adj?' <span class="b">Adjusted</span>':''}`:'–';
     const isDS=e.type==='Sale'&&e.pay==='Due'&&!e.cu,dupAct=(!v&&isA()&&likelyDupEntry(e)?'<button class="lnk" data-a="dd" data-i="'+e.id+'">Dismiss duplicate</button>':''),ck0=(!v&&isA()&&entChk(e))?(isDS?`<button class="lnk" data-a="lc" data-i="${e.id}">Link customer</button>`:'')+`<button class="lnk" data-a="ok" data-i="${e.id}">Accept</button>`:'',acts=dupAct+ck0+((v||f||!isA()||closed()||e.lk)?'':`<button class="lnk" data-a="e" data-i="${e.id}">Edit</button><button class="lnk" data-a="v" data-i="${e.id}">Void</button>`+(r.df&&!e.adj?`<button class="lnk adj" data-a="a" data-i="${e.id}">Adjust</button>`:''));
@@ -863,11 +865,11 @@ function tx(root){const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);l
   x.nodeValue=S.lang==='bn'?o.split(' · ').map(trp).join(' · '):o}
   document.querySelectorAll('[placeholder]').forEach(e=>{if(e.id==='fd'||e.id==='sq')return;if(e.dataset.ph===undefined)e.dataset.ph=e.getAttribute('placeholder');const v=e.dataset.ph;e.setAttribute('placeholder',S.lang==='bn'&&BN[v]?BN[v]:v)})}
 new MutationObserver(()=>tx(document.body)).observe(document.body,{childList:true,subtree:true});
-function applyLang(){const b=S.lang==='bn';document.documentElement.lang=b?'bn':'en';$('lang').textContent=b?'English':'বাংলা';setRefreshLabel();$('fd').placeholder=b?'পণ্য বা খরচের নাম লিখুন':'Type product or cost name';$('sq').placeholder=b?'বিবরণ বা ক্যাটাগরি খুঁজুন':'Search description or category';tx(document.body);if(U)render();updateSndBtn();}
+function applyLang(){const b=S.lang==='bn';document.documentElement.lang=b?'bn':'en';$('lang').textContent=b?'English':'বাংলা';setRefreshLabel();$('fd').placeholder=b?'পণ্য বা খরচের নাম লিখুন':'Type product or cost name';$('sq').placeholder=b?'বিবরণ বা ক্যাটাগরি খুঁজুন':'Search description or category';tx(document.body);if(U)render();try{updateMoreTab()}catch(e){}}
 $('lang').onclick=()=>{S.lang=S.lang==='bn'?'en':'bn';save();applyLang()};
 
 async function dlFile(name,data){try{if(typeof claude!=='undefined'){const dl=await claude.use('downloads');if(dl)return dl.save({filename:name,data})}const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type:'text/csv'}));a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){a.remove()},1000)}catch(e){try{window.open('data:text/plain;charset=utf-8,'+encodeURIComponent(data),'_blank')}catch(x){}}}
-const LOCAL=['theme','dayStart','dayEnd','lang','lockout','sync','snaps','logSent','synced','posSince','motion','sound','lastBackup'];
+const LOCAL=['theme','dayStart','dayEnd','lang','lockout','sync','snaps','logSent','synced','posSince','motion','sound','lastBackup','cardSettings'];
 const SY=()=>!!(S.sync&&S.sync.url&&S.sync.key),isDirty=()=>(S.rev||0)!==(S.synced||0);
 let st='off',tm,busy=false;
 function setSt(x){st=x;var c=x==='ok'?'ok':x==='pend'?'pend':(x==='offl'||x==='conf')?'bad':'off',lab={off:'Off',ok:'Synced',pend:'Pending',offl:'Offline',conf:'Conflict'}[x];
@@ -974,13 +976,22 @@ let CUR=null;
 const role=()=>!U?'':U.role==='admin'?'admin':U.role==='accountant'?'accountant':U.role==='keeper'?'keeper':'cashier',canCost=()=>isA()||role()==='keeper'||role()==='accountant';
 function buildTabs(){const T=TABS[role()];$('tabs').innerHTML=T.map(k=>`<button data-v="${k}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICO[k]}</svg>${TL[k]}</button>`).join('');$('tabs').hidden=false;$('tsub').textContent=(U.name.toLowerCase()===role()?'':U.name+' · ')+role();let saved=CUR;try{if(!saved)saved=sessionStorage.getItem('ncs_active_view_v1_'+role())}catch(e){}go(saved&&T.includes(saved)?saved:T[0])}
 function go(v){try{Sound.tick()}catch(e){}CUR=v;try{sessionStorage.setItem('ncs_active_view_v1_'+role(),v)}catch(e){}document.querySelectorAll('.view').forEach(x=>x.classList.toggle('on',x.id==='v'+v[0].toUpperCase()+v.slice(1)));document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
-  if(v==='home')homeUI();if(v==='pos')POS.refresh();if(v==='prod')POS.prodUI();if(v==='acc'){AV=false;cur=iso(new Date());reset();render()}if(v==='led')ledUI();if(v==='mgmt')mgmtUI();document.body.classList.toggle('kp',role()==='keeper');document.body.classList.toggle('ro',role()==='accountant');clkVis();scrollTo(0,0)}
+  if(v==='home'){homeUI();try{applyCardSettings()}catch(e){}}if(v==='pos')POS.refresh();if(v==='prod')POS.prodUI();if(v==='acc'){AV=false;cur=iso(new Date());reset();render();try{applyCardSettings()}catch(e){}}if(v==='led')ledUI();if(v==='mgmt')mgmtUI();if(v==='more')updateMoreTab();document.body.classList.toggle('kp',role()==='keeper');document.body.classList.toggle('ro',role()==='accountant');clkVis();scrollTo(0,0)}
 $('tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(b)go(b.dataset.v)});
 var sndBtn=document.createElement('button');sndBtn.className='ghost';sndBtn.id='sndBtn';sndBtn.style.height='48px';sndBtn.style.textAlign='left';sndBtn.style.fontSize='15px';sndBtn.style.borderRadius='14px';
-$('topR').append($('sync'));$('moreList').append($('lang'),sndBtn,$('set'),$('lockb'));
+var secCardBtn=document.createElement('button');secCardBtn.className='ghost';secCardBtn.id='secCardBtn';secCardBtn.style.height='48px';secCardBtn.style.textAlign='left';secCardBtn.style.fontSize='15px';secCardBtn.style.borderRadius='14px';
+$('topR').append($('sync'));$('moreList').append($('lang'),sndBtn,secCardBtn,$('set'),$('lockb'));
 function updateSndBtn(){var b=$('sndBtn');if(b)b.textContent='Sound effects: '+(S.sound?'ON':'OFF');}
 sndBtn.onclick=function(){S.sound=!S.sound;save();updateSndBtn();if(S.sound){try{Sound.test()}catch(e){}}};
-function redrawActiveView(){if(CUR==='home')homeUI();else if(CUR==='pos')POS.refresh();else if(CUR==='prod')POS.prodUI();else if(CUR==='acc')render();else if(CUR==='led')ledUI();else if(CUR==='mgmt')mgmtUI()}
+secCardBtn.onclick=function(){if(isA())openCardSectionSettings()};
+function updateMoreTab(){
+  updateSndBtn();
+  if(secCardBtn){
+    secCardBtn.style.display=isA()?'':'none';
+    secCardBtn.innerHTML='<span style="display:flex;align-items:center;gap:10px"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg><b>'+lb('Section & card settings','সেকশন ও কার্ড সমন্বয় সেটিংস')+'</b></span>';
+  }
+}
+function redrawActiveView(){if(CUR==='home'){homeUI();try{applyCardSettings()}catch(e){}}else if(CUR==='pos')POS.refresh();else if(CUR==='prod')POS.prodUI();else if(CUR==='acc'){render();try{applyCardSettings()}catch(e){}}else if(CUR==='led')ledUI();else if(CUR==='mgmt')mgmtUI()}
 function refreshCurrentView(){
   if(!U||!CUR)return;
   var svg=$('refresh').querySelector('svg');
@@ -994,7 +1005,7 @@ function setRefreshLabel(){var t=lb('Refresh current view','বর্তমা�
 /* ---------- home ---------- */
 const PER=[['today','Today'],['yest','Yesterday'],['7','7 days'],['30','1 month'],['90','3 months'],['180','6 months'],['all','Overall']];let HP='today';
 function prange(p){const t=new Date(),a=new Date();if(p==='today')return[iso(t),iso(t)];if(p==='yest'){a.setDate(a.getDate()-1);return[iso(a),iso(a)]}if(p==='all')return['0000','9999'];a.setDate(a.getDate()-(+p-1));return[iso(a),iso(t)]}
-function homeUI(){try{renderWalletCards()}catch(e){}
+function homeUI(){try{renderWalletCards()}catch(e){}try{applyCardSettings()}catch(e){}
   $('hTitle').textContent=lb('Hello, ','হ্যালো, ')+(U?U.name:'');
   $('hQa').querySelectorAll('[data-q]').forEach(function(b){var k=b.dataset.q,l=k==='sale'?lb('New sale','নতুন বিক্রয়'):k==='purchase'?lb('New purchase','নতুন ক্রয়'):k==='acc'?lb('Accounts','হিসাব'):lb("Today's bills",'আজকের বিল');b.querySelector('.qal').textContent=l});
   $('hTabs').innerHTML=PER.map(([k,l])=>`<button data-p="${k}" class="${HP===k?'on':''}">${l}</button>`).join('');
@@ -1498,6 +1509,8 @@ function reviewQueueCount(){
 function reviewQueue(){
   if(!isA())return;
   var P=(S.pending||[]).filter(function(x){return x.state==='pending'});
+  var W=P.filter(function(x){return x.type==='wallet-collision'});
+  var P_other=P.filter(function(x){return x.type!=='wallet-collision'});
   var M=S.moves.filter(function(x){return x.adminCheck&&!x.adminChecked&&!x.adminRejected});
   var F=S.ltx.filter(function(t){return !t.void&&t.flag&&t.flag.state==='pending'});
   var E=S.ltx.filter(function(t){return !t.void&&t.prop&&t.prop.state==='pending'});
@@ -1505,7 +1518,11 @@ function reviewQueue(){
   var total=P.length+M.length+F.length+E.length+V.length;
   var sec=function(label,items){return items.length?'<h4 style="margin:12px 0 6px;font-size:13.5px;color:var(--mut);font-weight:600">'+label+' ('+items.length+')</h4>'+items:''};
   var html=
-    sec('Reconciliation', P.map(function(x){var open=(x.details&&(x.details.entry||x.details.customer||x.details.ledger))?'<button class="ghost pbtn" data-rq-open="'+x.id+'">Open</button> ':'';return '<div class="prow"><span>'+esc(x.type)+' · '+esc(x.reason)+'<small class="mut" style="display:block">'+esc(JSON.stringify(x.details||{}))+'</small></span><span>'+open+'<button class="ghost pbtn" data-pr="'+x.id+'">Checked</button></span></div>'}).join(''))
+    sec(lb('Wallet collision / Deficits','ওয়ালেট ঘাটতি ও অসংগতি'), W.map(function(x){
+      var open=(x.details&&x.details.entry)?'<button class="ghost pbtn" data-rq-open="'+x.id+'">'+lb('Open','দেখুন')+'</button> ':'';
+      return '<div class="prow"><span><b>'+esc(x.details.walletName||wN(x.details.wallet)||'Wallet')+'</b> · '+esc(x.reason)+'<small class="mut" style="display:block">Entry #'+x.details.entry+' · '+esc(x.details.desc||'')+' · '+tk(x.details.amt||0)+' ('+sd(x.details.date||'')+')</small></span><span>'+open+'<button class="ghost pbtn" data-pr="'+x.id+'">'+lb('Checked','গৃহীত')+'</button></span></div>';
+    }).join(''))
+    +sec('Reconciliation', P_other.map(function(x){var open=(x.details&&(x.details.entry||x.details.customer||x.details.ledger))?'<button class="ghost pbtn" data-rq-open="'+x.id+'">Open</button> ':'';return '<div class="prow"><span>'+esc(x.type)+' · '+esc(x.reason)+'<small class="mut" style="display:block">'+esc(JSON.stringify(x.details||{}))+'</small></span><span>'+open+'<button class="ghost pbtn" data-pr="'+x.id+'">Checked</button></span></div>'}).join(''))
     +sec('Stock overrides', M.map(function(x){var cur=POS.stock(x.pid),tg=Number.isFinite(Number(x.target))?Number(x.target):cur+(+x.q||0);return '<div class="prow"><span>Stock · '+esc(((S.products||[]).find(function(p){return p.id===x.pid})||{}).name||'Product')+' · '+n(cur)+' → '+n(tg)+' · '+esc(x.reason||'')+'</span><span><button class="ghost pbtn" data-sm="'+x.id+'">Approve</button> <button class="ghost pbtn" data-sr="'+x.id+'">Reject</button></span></div>'}).join(''))
     +sec('Cashier flags', F.map(function(t){return '<div class="prow"><span>'+esc(cN(t.c))+' · '+tk(t.amt)+' · '+dr(t)+'<small class="mut" style="display:block">'+esc(t.flag.reason||'')+' · '+esc(t.flag.by||'')+'</small></span><span><button class="ghost pbtn" data-rq-flag="'+t.id+'">Open</button> <button class="ghost pbtn" data-fc="'+t.id+'">Checked</button> <button class="ghost pbtn" data-fr="'+t.id+'">Reject</button></span></div>'}).join(''))
     +sec('Edit proposals', E.map(function(t){return '<div class="prow"><span>'+esc(cN(t.c))+' · '+tk(t.amt)+' · '+dr(t)+'<small class="mut" style="display:block">'+esc(t.prop.reason||'')+' · '+esc(t.prop.by||'')+'</small></span><span><button class="ghost pbtn" data-rq-prop="'+t.id+'">Review</button></span></div>'}).join(''))
@@ -1620,9 +1637,9 @@ function adjustSingleWallet(targetKey){
   ask(lb('Adjust balance: ','ব্যালেন্স সমন্বয়: ')+wN(targetKey),
     '<div class="f"><label>'+lb('Date','তারিখ')+'</label><input id="swa_d" type="date" value="'+today+'"></div>'
     +'<div class="f"><label>'+lb('Current computed balance','বর্তমান হিসাবের ব্যালেন্স')+'</label><input type="text" readonly value="'+tk(curr)+'" style="font-weight:600"></div>'
-    +'<div class="f"><label>'+lb('New actual balance','নতুন প্রকৃত ব্যালেন্স')+'</label><input id="swa_v" type="number" min="0" step="any" value="'+curr+'" required></div>'
+    +'<div class="f"><label>'+lb('New actual balance (Prime)','নতুন প্রকৃত ব্যালেন্স (প্রাইম)')+'</label><input id="swa_v" type="number" min="0" step="any" value="'+curr+'" required></div>'
     +'<div class="f"><label>'+lb('Reason (required)','কারণ (আবশ্যক)')+'</label><input id="swa_r" maxlength="120" placeholder="'+lb('e.g. MFS cash in fee, recharge mismatch','যেমন: ক্যাশ ইন কমিশন, মিসম্যাচ')+'"></div>'
-    +'<p class="mut" style="font-size:12px">'+lb('All other wallets will carry forward their computed balance at this date.','অন্যান্য সব ওয়ালেটের হিসাব অবিকৃত থাকবে।')+'</p>'
+    +'<p class="mut" style="font-size:12px">'+lb('This adjustment is Prime. Other wallets will carry forward their computed balance; any colliding entries will be queued for admin review.','এই সমন্বয় প্রাইম হিসেবে সর্বত্র প্রযোজ্য হবে। অন্যান্য ওয়ালেটের হিসাব অবিকৃত থাকবে এবং ঘাটতি হলে রিভিউ কিউতে যাবে।')+'</p>'
     ,async function(){
       var d=$('swa_d').value,r=$('swa_r').value.trim(),nv=+$('swa_v').value;
       if(!d||!r||isNaN(nv)||nv<0){if(!r)$('swa_r').style.borderColor='var(--neg)';return false}
@@ -1722,6 +1739,56 @@ async function askPinForWallet(d,r,vals){
     },lb('Confirm','নিশ্চিত'));
   $('wa_pin').focus();
 }
+
+function checkWalletCollisions(){
+  S.pending=S.pending||[];
+  var L=S.entries.filter(function(e){return !e.void&&!e.removed&&wltEff(e)});
+  L.sort(function(a,b){var x=(a.d||'')+(a.t||''),y=(b.d||'')+(b.t||'');return x<y?-1:x>y?1:a.id-b.id});
+  var b={};Object.keys(WLT).forEach(function(k){b[k]=wOpen(k)});
+  var anchors=(S.walletDates||[]).slice().sort(function(a,c){return a.d.localeCompare(c.d)}),ai=0;
+  var collisions=[];
+  L.forEach(function(e){
+    var d=e.d||'';
+    while(ai<anchors.length&&anchors[ai].d<=d){
+      var a=anchors[ai];
+      Object.keys(WLT).forEach(function(k){if(a[k]!=null)b[k]=+a[k]||0});
+      ai++;
+    }
+    var f=wltEff(e);if(!f)return;
+    b[f.w]=r2(b[f.w]+f.d*(+e.amt||0));
+    if(b[f.w]<0){
+      collisions.push({entry:e,wallet:f.w,deficit:r2(-b[f.w])});
+      var exists=S.pending.some(function(p){return p.type==='wallet-collision'&&p.details&&p.details.entry===e.id&&p.state==='pending'});
+      if(!exists){
+        S.pending.unshift({
+          id:uid(),
+          type:'wallet-collision',
+          state:'pending',
+          at:Date.now(),
+          reason:lb('Wallet deficit after admin adjust: ','অ্যাডমিন সমন্বয়ের পর ওয়ালেট ঘাটতি: ')+wN(f.w)+' ('+tk(b[f.w])+')',
+          details:{entry:e.id,date:e.d,wallet:f.w,walletName:WLT[f.w],amt:e.amt,desc:e.desc||e.cat,deficit:r2(-b[f.w])}
+        });
+      }
+    }
+  });
+  var colIds=new Set(collisions.map(function(c){return c.entry.id}));
+  S.pending.forEach(function(p){
+    if(p.type==='wallet-collision'&&p.state==='pending'&&p.details&&p.details.entry){
+      if(!colIds.has(p.details.entry)){
+        p.state='cleared';
+        p.clearedAt=Date.now();
+      }
+    }
+  });
+  return collisions;
+}
+
+function isWalletCollision(eid){
+  return (S.pending||[]).some(function(p){
+    return p.type==='wallet-collision'&&p.details&&p.details.entry===eid&&p.state==='pending';
+  });
+}
+
 function doSaveWalletOpening(d,r,vals,pinBy){
   var prev=balanceAtDate(d),disc={};
   Object.keys(WLT).forEach(function(k){disc[k]=vals[k]-(+prev[k]||0)});
@@ -1729,13 +1796,136 @@ function doSaveWalletOpening(d,r,vals,pinBy){
   Object.keys(WLT).forEach(function(k){anchor[k]=vals[k]});
   var old=S.walletDates||[];
   S.walletDates=[...old,anchor].sort(function(a,b){return a.d.localeCompare(b.d)});
-  var run=wltRun();
-  if(run.bad){S.walletDates=old;ltoast(lb('Rejected: ','বাতিল: ')+WLT[run.bad.w]+lb(' would go negative',' ঋণাত্মক হবে'));return false}
+  var collisions=checkWalletCollisions();
   var anyDisc=Object.keys(disc).some(function(k){return Math.abs(disc[k])>0.5});
-  lg('Wallet opening',d+' · '+r+(pinBy?' · PIN':'')+(anyDisc?' · discrepancy':''));
+  lg('Wallet adjustment (prime)',d+' · '+r+(pinBy?' · PIN':'')+(collisions.length?' · '+collisions.length+' collision(s)':'')+(anyDisc?' · discrepancy':''));
   save();
-  ltoast(lb('Opening saved','ওপেনিং সংরক্ষিত')+(anyDisc?' · '+lb('differs from running balance','পার্থক্য আছে'):''));
+  if(collisions.length){
+    ltoast(lb('Adjustment applied (Prime). ','সমন্বয় কার্যকর হয়েছে (প্রাইম)। ')+collisions.length+lb(' collision(s) queued for review','টি লেনদেন রিভিউ কিউতে রাখা হয়েছে'));
+  } else {
+    ltoast(lb('Opening saved','ওপেনিং সংরক্ষিত')+(anyDisc?' · '+lb('differs from running balance','পার্থক্য আছে'):''));
+  }
+  renderWalletCards();
+  if(CUR==='acc')render();
   setTimeout(openWltSettings,50);
+}
+
+function getCardSettings(){
+  var def={hHero:1,hStats:1,hToday:1,hOwe:1,hWlt:1,hQa:1,hCharts:1,hRecent:1,accStats:1,accCash:1,accWlt:1,accFilter:1};
+  return Object.assign({},def,S.cardSettings||{});
+}
+
+function applyCardSettings(){
+  var cs=getCardSettings();
+  var hHero=$('hHero'),hStats=$('hStats'),hToday=$('hToday'),hWltH=$('wltWrapH'),hQa=$('hQa'),dg=document.querySelector('.dgrid'),hRec=$('hRecent');
+  if(hHero)hHero.style.display=cs.hHero?'':'none';
+  if(hStats)hStats.style.display=cs.hStats?'':'none';
+  if(hToday)hToday.style.display=cs.hToday?'':'none';
+  if(hWltH)hWltH.style.display=cs.hWlt?'':'none';
+  if(hQa)hQa.style.display=cs.hQa?'':'none';
+  if(dg)dg.style.display=cs.hCharts?'':'none';
+  if(hRec){
+    hRec.style.display=cs.hRecent?'':'none';
+    var prevH3=hRec.previousElementSibling;
+    if(prevH3&&prevH3.tagName==='H3')prevH3.style.display=cs.hRecent?'':'none';
+  }
+  var st=$('stats'),cp=$('cashp'),wltA=$('wltWrap'),fb=$('fb');
+  if(st)st.style.display=cs.accStats?'':'none';
+  if(cp)cp.style.display=cs.accCash?'':'none';
+  if(wltA)wltA.style.display=cs.accWlt?'':'none';
+  if(fb)fb.style.display=cs.accFilter?'':'none';
+}
+
+function openCardSectionSettings(){
+  if(!isA())return;
+  var cs=getCardSettings(),b=calcWallets(),cashB=cashBook();
+  var wltBtn=function(k){
+    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 10px;background:var(--soft);border-radius:8px">'
+      +'<div><b>'+esc(wN(k))+'</b> <span class="mut" style="font-size:13px">'+tk(b[k]||0)+'</span></div>'
+      +'<button type="button" class="ghost" style="height:28px;font-size:12px;padding:0 8px" data-scw="'+k+'">'+lb('Adjust','সমন্বয়')+'</button>'
+      +'</div>';
+  };
+  var tg=function(id,label,checked){
+    return '<label class="tg" style="justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);font-size:13.5px">'
+      +'<span>'+label+'</span>'
+      +'<input type="checkbox" id="cs_'+id+'" '+(checked?'checked':'')+'>'
+      +'</label>';
+  };
+  var h='<div style="max-height:68vh;overflow:auto;display:grid;gap:14px">'
+    +'<div class="card" style="margin:0;padding:12px">'
+    +'<h4 style="margin:0 0 8px;font-size:14px;color:var(--acc);display:flex;align-items:center;gap:6px">'
+    +'<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>'
+    +lb('Quick balance adjustments','দ্রুত ব্যালেন্স সমন্বয় (প্রাইম)')+'</h4>'
+    +'<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 10px;background:var(--soft);border-radius:8px;margin-bottom:8px">'
+    +'<div><b>'+lb('Cash drawer','ক্যাশ ড্রয়ার')+'</b> <span class="mut" style="font-size:13px">'+tk(cashB)+'</span></div>'
+    +'<button type="button" class="ghost" style="height:28px;font-size:12px;padding:0 8px" id="sc_cashAdj">'+lb('Count & adjust','গণনা ও সমন্বয়')+'</button>'
+    +'</div>'
+    +'<div style="font-size:12px;font-weight:600;color:var(--mut);margin:8px 0 4px">'+lb('MFS Wallets','এমএফএস ওয়ালেট')+'</div>'
+    +'<div style="display:grid;gap:6px">'+WLT_MFS.map(wltBtn).join('')+'</div>'
+    +'<div style="font-size:12px;font-weight:600;color:var(--mut);margin:10px 0 4px">'+lb('Recharge balances','রিচার্জ ব্যালেন্স')+'</div>'
+    +'<div style="display:grid;gap:6px">'+WLT_RCR.map(wltBtn).join('')+'</div>'
+    +'<div style="margin-top:10px;display:flex;justify-content:flex-end">'
+    +'<button type="button" class="ghost" id="sc_wltHist" style="font-size:12px;height:30px">📜 '+lb('Full wallet opening history','ওয়ালেট ওপেনিং ইতিহাস')+'</button>'
+    +'</div>'
+    +'</div>'
+    +'<div class="card" style="margin:0;padding:12px">'
+    +'<h4 style="margin:0 0 8px;font-size:14px;color:var(--acc);display:flex;align-items:center;gap:6px">'
+    +'<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>'
+    +lb('Dashboard section visibility','ড্যাশবোর্ড সেকশন দৃশ্যমানতা')+'</h4>'
+    +'<div style="font-weight:600;font-size:12.5px;color:var(--mut);margin-bottom:4px">'+lb('Home tab sections','হোম ট্যাব সেকশনসমূহ')+'</div>'
+    +tg('hHero', lb('Cash Balance Hero Banner','ক্যাশ ব্যালেন্স হিরো ব্যানার'), cs.hHero)
+    +tg('hStats', lb('Stats Summary (Total Sell, Buy, Due)','সারসংক্ষেপ পরিসংখ্যান'), cs.hStats)
+    +tg('hToday', lb("Today's Cash Flow Strip",'আজকের ক্যাশ ফ্লো স্ট্রিপ'), cs.hToday)
+    +tg('hOwe', lb('Net Receivable / Payable (Due Summary)','বকেয়া দেওয়া-নেওয়ার হিসাব'), cs.hOwe)
+    +tg('hWlt', lb('MFS & Recharge Wallet Cards','এমএফএস ও রিচার্জ ওয়ালেট কার্ড'), cs.hWlt)
+    +tg('hQa', lb('Quick Action Buttons (New Sale, etc.)','কুইক অ্যাকশন বাটন'), cs.hQa)
+    +tg('hCharts', lb('7-Day Sell/Buy & Payment Charts','৭ দিনের চার্ট ও গ্রাফ'), cs.hCharts)
+    +tg('hRecent', lb('Recent POS Bills Card','সাম্প্রতিক বিলসমূহ'), cs.hRecent)
+    +'<div style="font-weight:600;font-size:12.5px;color:var(--mut);margin:12px 0 4px">'+lb('Accounts tab sections','অ্যাকাউন্টস ট্যাব সেকশনসমূহ')+'</div>'
+    +tg('accStats', lb('Accounts Stats Summary','অ্যাকাউন্টস পরিসংখ্যান'), cs.accStats)
+    +tg('accCash', lb('Opening & Closing Cash Panel','ক্যাশ ড্রয়ার প্যানেল ও সমন্বয় বাটন'), cs.accCash)
+    +tg('accWlt', lb('Accounts MFS & Recharge Wallets','অ্যাকাউন্টস ওয়ালেট কার্ড'), cs.accWlt)
+    +tg('accFilter', lb('Search & Filter Controls','অনুসন্ধান ও ফিল্টার বার'), cs.accFilter)
+    +'<div style="margin-top:10px;display:flex;justify-content:space-between;align-items:center">'
+    +'<button type="button" class="ghost" id="sc_resetAll" style="font-size:12px;height:30px">'+lb('Show all sections','সব সেকশন দেখান')+'</button>'
+    +'</div>'
+    +'</div>'
+    +'</div>';
+  ask(lb('Section & Card Settings','সেকশন ও কার্ড সমন্বয় সেটিংস'),h,function(){
+    var newCs={
+      hHero:$('cs_hHero')?$('cs_hHero').checked:true,
+      hStats:$('cs_hStats')?$('cs_hStats').checked:true,
+      hToday:$('cs_hToday')?$('cs_hToday').checked:true,
+      hOwe:$('cs_hOwe')?$('cs_hOwe').checked:true,
+      hWlt:$('cs_hWlt')?$('cs_hWlt').checked:true,
+      hQa:$('cs_hQa')?$('cs_hQa').checked:true,
+      hCharts:$('cs_hCharts')?$('cs_hCharts').checked:true,
+      hRecent:$('cs_hRecent')?$('cs_hRecent').checked:true,
+      accStats:$('cs_accStats')?$('cs_accStats').checked:true,
+      accCash:$('cs_accCash')?$('cs_accCash').checked:true,
+      accWlt:$('cs_accWlt')?$('cs_accWlt').checked:true,
+      accFilter:$('cs_accFilter')?$('cs_accFilter').checked:true
+    };
+    S.cardSettings=newCs;
+    save();
+    applyCardSettings();
+    if(CUR==='home')homeUI();
+    if(CUR==='acc')render();
+    ltoast(lb('Card & section settings saved','কার্ড ও সেকশন সেটিংস সংরক্ষিত'));
+  },lb('Save settings','সংরক্ষণ'),1);
+  var ob=$('ob');
+  ob.onclick=function(e){
+    var wBtn=e.target.closest('[data-scw]');
+    if(wBtn){$('ov').hidden=true;setTimeout(function(){adjustSingleWallet(wBtn.dataset.scw);},50);return}
+    if(e.target.closest('#sc_cashAdj')){$('ov').hidden=true;setTimeout(function(){cashAdjust();},50);return}
+    if(e.target.closest('#sc_wltHist')){$('ov').hidden=true;setTimeout(function(){openWltSettings();},50);return}
+    if(e.target.closest('#sc_resetAll')){
+      ['cs_hHero','cs_hStats','cs_hToday','cs_hOwe','cs_hWlt','cs_hQa','cs_hCharts','cs_hRecent','cs_accStats','cs_accCash','cs_accWlt','cs_accFilter'].forEach(function(id){
+        var el=$(id);if(el)el.checked=true;
+      });
+      return;
+    }
+  };
 }
 (function(){
   var hp=document.createElement('div'),HT,HH;hp.id='whp';hp.className='card';hp.hidden=true;document.body.appendChild(hp);
@@ -1972,7 +2162,7 @@ function changeAdminPin(){
 function selfTest(){
   if(!U||!isA())return;
   var r=[],ok=function(name,fn){try{var v=fn();r.push({n:name,p:true,v:v})}catch(e){r.push({n:name,p:false,e:e.message||String(e)})}};
-  ok('Core functions',function(){var f=['calc','calcWallets','save','cash','wltEff','sorted','mN','n','tk','esc','ledReconcile','ledVoidReq','ledVoidReqReview','ledFlagReject','reviewQueue','reviewQueueCount','bugTxt','upcTxt','verTxt','mk','ck','H','walletAdjust','doSaveWalletOpening'];var miss=f.filter(function(nm){try{return eval('typeof '+nm)!=='function'}catch(e){return true}});if(miss.length)throw new Error('missing: '+miss.join(', '));return f.length+' checked'});
+  ok('Core functions',function(){var f=['calc','calcWallets','save','cash','wltEff','sorted','mN','n','tk','esc','ledReconcile','ledVoidReq','ledVoidReqReview','ledFlagReject','reviewQueue','reviewQueueCount','bugTxt','upcTxt','verTxt','mk','ck','H','walletAdjust','doSaveWalletOpening','checkWalletCollisions','openCardSectionSettings'];var miss=f.filter(function(nm){try{return eval('typeof '+nm)!=='function'}catch(e){return true}});if(miss.length)throw new Error('missing: '+miss.join(', '));return f.length+' checked'});
   ok('n() and tk()',function(){if(n(1234)!=='1,234')throw new Error('n wrong');if(tk(100)!=='৳100')throw new Error('tk wrong');return 'ok'});
   ok('mN(Bkash)',function(){if(mN('Bkash')!=='Bkash Personal')throw new Error('wrong');return 'ok'});
   ok('calc()',function(){var m=calc();if(!m||typeof m!=='object')throw new Error('not object');return Object.keys(m).length+' rows'});
@@ -2146,7 +2336,7 @@ function animateCounts(){
 function saveCheck(){if(document.documentElement.dataset.rm)return;var d=document.createElement('div');d.className='savechk';d.innerHTML='<svg viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="22" fill="none" stroke="var(--acc)" stroke-width="3"/><path d="M14 27l8 8 16-16" fill="none" stroke="var(--acc)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>';document.body.appendChild(d);setTimeout(function(){d.classList.add('out')},700);setTimeout(function(){d.remove()},1250)}
 (function(){
   var M="Claude Sonnet 5.5 · owner's Claude account";
-  APP_VERSION='9.28.1';
+  APP_VERSION='9.29';
   VERS.unshift({v:'9.22',d:'2026-10-19',t:'Sound effects, motion polish and wrapper download safety',by:M,n:['Web Audio sound engine: soft tick on tabs/dialogs, cha-ching on sale/entry save, low buzz on errors, sync chime on background sync','Sound toggle in Settings, default off; AudioContext created on first tap','All sound and motion automatically off when the OS asks for reduced motion','Number count-up on Home (Cash Balance, Total Sell, Total Buy) over 0.4s on load and period change','Save checkmark pop on POS sale and Accounts/Ledger entry save','Tap feedback: buttons scale to 0.97 on press','POS cart rows slide in when added and slide out when removed','dlFile falls back to a data URL window if the wrapper blocks the <a download> tag']});
   VERS.unshift({v:'9.22.1',d:'2026-10-19',t:'Sound resume fix + Test button',by:M,n:['AudioContext resume() race fixed: tones now play after the context is running (fixes silent playback on Android WebView, iOS Safari and after idle tabs)','▶ Test sound button inside Settings for instant verification','Louder gains for tick and cha-ching so phone speakers are audible']});
   VERS.unshift({v:'9.22.2',d:'2026-10-19',t:'Sound toggle visible in More, Settings unhidden',by:M,n:['Sound effects ON/OFF button now appears directly in the More tab (no need to open Settings)','Removed the CSS rule that was hiding the Settings button in the More tab','Settings still shows the Sound effects checkbox and the ▶ Test sound button']});
@@ -2157,6 +2347,7 @@ function saveCheck(){if(document.documentElement.dataset.rm)return;var d=documen
   VERS.unshift({v:'9.27',d:'2026-10-22',t:'System Audit Hardening: Cryptographic ID, Monetary Precision, Storage Safeguard & Sync Security',by:M,n:['Cryptographic collision-proof UID generator replaces pseudo-random financial and log identifiers','Monetary arithmetic precision: r2 helper eliminates floating-point rounding jitter in cash, wallet, and ledger running balances','Storage quota safeguard: 4MB pre-warning advisory with session dismissal memory prevents quota-exceeded crashes','Security: Autocomplete disabled and numeric inputmode enforced across all staff and administrative PIN fields','Mobile responsiveness: touch-action manipulation eliminates 300ms click delay across buttons and action items','Accessibility: Theme button dynamically updates aria-label and tooltip on mode change']});
   VERS.unshift({v:'9.28',d:'2026-10-22',t:'Google Apps Script GET compatibility restore & Reconnect fix',by:M,n:['Restored standard GET protocol in getRemote(), importPos() and importCatalog() to maintain exact compatibility with Google Apps Script web app endpoint','Fixed infinite Reconnect sync modal loop caused by Apps Script returning ok:false on POST pulls','Prevented badKey() from prematurely wiping S.sync before passphrase verification']});
   VERS.unshift({v:'9.28.1',d:'2026-10-23',t:'Version History cleanup',by:M,n:['Fixed version history display order','Added missing v9.16 history entry','Removed duplicate v9.26 bug entry']});
+  VERS.unshift({v:'9.29',d:'2026-10-24',t:'Admin Prime Wallet Adjustments, Accounts Streamlining & Card Adjustment Settings',by:'Claude Sonnet / Gemini',n:['MFS & Recharge balance adjustments are now Prime: Admin balance input is never rejected, takes effect everywhere immediately, and conflicting deficit entries are automatically routed to the Admin Review Queue','Offending collision entries display a high-visibility Deficit Review badge in Accounts and direct one-click navigation from Review Queue','Accounts tab layout streamlined: Transaction Details table and filter bar moved directly below the new transaction entry section for faster data entry','Section & Card Adjustment Settings added to More tab (Admin-only): Quick balance adjustment shortcuts for cash drawer, MFS and recharge cards plus dashboard section visibility toggles for Home and Accounts']});
   
   UPC.unshift({v:'9.22',s:'Done',t:['Web Audio sound engine (tick, cha-ching, buzz, sync chime), default off','Count-up numbers on Home','Save checkmark','Tap feedback','POS cart slide in/out','All respect OS reduced-motion','Download fallback']});
   UPC.unshift({v:'9.22.1',s:'Done',t:['AudioContext resume race fixed','Test sound button in Settings','Louder gains']});
@@ -2168,11 +2359,13 @@ function saveCheck(){if(document.documentElement.dataset.rm)return;var d=documen
   UPC.unshift({v:'9.27',s:'Done',t:['Cryptographic collision-proof UID generation for bills and logs','Floating-point monetary precision rounding across cash, wallets and ledger','Storage quota pre-warning threshold (4MB) with dismissal memory','Security autocomplete=off on administrative and staff PIN fields','Zero-delay touch-action manipulation for snappy mobile interactions']});
   UPC.unshift({v:'9.28',s:'Done',t:['Restored Google Apps Script GET compatibility for pull, inbox, and catalog','Fixed Reconnect sync modal infinite loop']});
   UPC.unshift({v:'9.28.1',s:'Done',t:['Version history cleanup']});
+  UPC.unshift({v:'9.29',s:'Done',t:['Admin Prime MFS & Recharge wallet adjustments with automatic collision queueing','Accounts tab Transaction Details positioned below entry form','More tab Section & Card Adjustment Settings hub (Option C: quick balance adjust & layout customizer, Admin-only)']});
   
   var sl=UPC.find(function(x){return x.v==='9.23'&&x.s==='Planned'});if(sl)sl.v='9.24';
   var sp=UPC.find(function(x){return x.v==='9.22'&&x.s==='Planned'});if(sp)sp.v='9.23';
 })();
 BUGS.unshift(
+  {d:'2026-10-24 00:20 (UTC+6)',v:'9.29',w:'Claude Sonnet / Gemini',a:'Admin wallet balance adjustments were rejected with "would go negative" error when later transactions exceeded new balance',b:'doSaveWalletOpening aborted when wltRun().bad was detected, blocking admin from setting the real actual balance',c:'Made Admin wallet adjustments Prime (unblocked); checkWalletCollisions automatically detects deficit collisions and routes them to Admin Review Queue with visual badges'},
   {d:'2026-10-23 --:-- (UTC+6)',v:'9.28.1',w:'Claude Sonnet 5.5 · owner\'s Claude account',a:'Version history displayed v9.22 as the latest version',b:'VERS.unshift calls were written in descending order (9.28 first, 9.22 last), so 9.22 ended up at VERS[0]',c:'Reversed the order of VERS.unshift and UPC.unshift calls to ascending so the newest version is prepended last'},
   {d:'2026-10-22 00:25 (UTC+6)',v:'9.28',w:'Claude Sonnet / Gemini',a:'Reconnect sync dialog looped repeatedly and sync stopped working',b:'v9.27 attempted HTTP POST for pull/inbox/catalog queries; Google Apps Script web app only handles POST for state push and returned ok:false, which triggered badKey() repeatedly',c:'Restored GET query calls for pull, inbox, and catalog; stopped badKey() from clearing S.sync prematurely before passphrase validation'},
   {d:'2026-10-22 00:15 (UTC+6)',v:'9.27',w:'Claude Sonnet / Gemini',a:'Financial bills and log entries used Math.random() for ID generation which is vulnerable to collisions across multi-device offline sync',b:'Math.random() produces pseudo-random floats without cryptographic collision resistance',c:'Created uid() helper using crypto.getRandomValues(new Uint32Array(1))[0] with Date.now() timestamp'},
