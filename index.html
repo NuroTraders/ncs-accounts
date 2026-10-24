@@ -1790,7 +1790,13 @@ function isWalletCollision(eid){
 }
 
 function doSaveWalletOpening(d,r,vals,pinBy){
+  /* Compute prev WITHOUT the anchor for this exact date so discrepancy
+     reflects deviation from the pure transaction-based running balance,
+     not from a previously-saved (now-being-replaced) anchor. */
+  var _saved=S.walletDates;
+  S.walletDates=(S.walletDates||[]).filter(function(a){return a.d!==d});
   var prev=balanceAtDate(d),disc={};
+  S.walletDates=_saved;
   Object.keys(WLT).forEach(function(k){disc[k]=vals[k]-(+prev[k]||0)});
   var anchor={d:d,by:U.name,at:Date.now(),reason:r,prev:prev,discrepancy:disc,pinBy:pinBy||'',pinAt:pinBy?Date.now():0};
   Object.keys(WLT).forEach(function(k){anchor[k]=vals[k]});
