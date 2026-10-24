@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -958,6 +958,8 @@ function mergeState(R){
   if(R.users&&(!S.users||(R.users.u||0)>(S.users.u||0)))S.users=R.users;
   if(!S.start)S.start=R.start||0;
   if(R.wallets&&(R.wallets.u||0)>((S.wallets&&S.wallets.u)||0))S.wallets=R.wallets;
+    /* Merge wManual: propagate remote manual balances */
+    if(R.wManual&&typeof R.wManual==='object'){S.wManual=S.wManual||{};Object.keys(R.wManual).forEach(function(k){if(R.wManual[k]!=null)S.wManual[k]=R.wManual[k]})}
   S.rebootN=Math.max(S.rebootN||0,R.rebootN||0);S.rebootAt=Math.max(S.rebootAt||0,R.rebootAt||0);
   if(R.catImported)S.catImported=1;var pm=new Map();(S.pending||[]).concat(R.pending||[]).forEach(function(x){pm.set(x.id,x)});S.pending=[...pm.values()];var hm=new Map();(S.history||[]).concat(R.history||[]).forEach(function(x){hm.set(x.id,x)});S.history=[...hm.values()];
 }
@@ -1599,10 +1601,18 @@ function ledVoidTab(all){var V=all.filter(function(x){return x.void});
 function mN(m){return(m==='bKash'||m==='Bkash')?'Bkash Personal':m}
 function mL(m){return m==='Due sale'?lb('Due sale','বাকি বিক্রি'):mN(m)}
 
-/* ---------- wallets ---------- */
+/* ---------- wallets (manual balance sheet) ---------- */
 if(!S.wallets)S.wallets={};
+/* S.wManual stores manually-set balances per wallet key.
+   These are the SINGLE SOURCE OF TRUTH displayed on wallet cards.
+   They are not computed from transactions — admin sets them directly. */
+if(!S.wManual)S.wManual={};
 function wN(k){return lb(WLT[k],WLT_BN[k])}
 function wOpen(k){return+((S.wallets||{})[k])||0}
+/* Manual balance: always read from S.wManual[k], fallback to 0 */
+function wManBal(k){return r2(+(S.wManual&&S.wManual[k]!=null?S.wManual[k]:0))}
+/* calcWallets: return manual balances for all wallets */
+function calcWallets(){var b={};Object.keys(WLT).forEach(function(k){b[k]=wManBal(k)});return b}
 function wOpenAt(k,d){var anchors=(S.walletDates||[]).filter(function(a){return a.d<=d}).sort(function(a,b){return a.d.localeCompare(b.d)});if(!anchors.length)return wOpen(k);var last=anchors[anchors.length-1];if(last[k]!=null)return+last[k]||0;return wOpen(k)}
 function wltEff(e){if(e.void||e.removed)return null;var m=WLTC[e.type];if(m&&m[e.cat])return{w:m[e.cat],d:e.type==='Purchase'?1:-1};if(e.type==='Ledger')return(e.w&&WLT[e.w])?{w:e.w,d:e.ld==='in'?1:-1}:null;if(e.type==='Sale'&&e.pay==='Mobile Banking'&&e.w&&WLT[e.w])return{w:e.w,d:1};return null}
 function wltRun(extra,ex,only){
@@ -1614,7 +1624,6 @@ function wltRun(extra,ex,only){
     var f=wltEff(e);if(!f)return;b[f.w]=r2(b[f.w]+f.d*(+e.amt||0));if(b[f.w]<0&&!bad&&(!only||only.indexOf(f.w)>=0))bad={w:f.w,bal:b[f.w]}});
   while(ai<anchors.length){var a=anchors[ai];Object.keys(WLT).forEach(function(k){if(a[k]!=null)b[k]=+a[k]||0});ai++}
   return{b:b,bad:bad}}
-function calcWallets(){return wltRun().b}
 function checkWalletLimit(extra,ex,only){var r=wltRun(extra,ex,only);return r.bad?{ok:false,wallet:WLT[r.bad.w],bal:r.bad.bal}:{ok:true}}
 function wltVoidBlocked(e){var f=wltEff(e);if(!f||f.d<0)return false;var r=checkWalletLimit(null,e.id,[f.w]);if(r.ok)return false;ltoast(lb('Cannot void: later entries would take ','বাতিল হবে না: ')+(r.wallet||'')+lb(' below zero.',' ঋণাত্মক হবে।'));return true}
 function wltForm(){var ty=$('fy').value,wc=!!(WLTC[ty]&&WLTC[ty][$('fc').value]);
@@ -1633,26 +1642,40 @@ function showWltDetail(key){
   ldlg(wN(key),'<div style="text-align:center;margin-bottom:12px"><div class="mut">'+lb('Current balance','বর্তমান ব্যালেন্স')+'</div><div style="font-size:24px;font-weight:700">'+tk(b[key])+'</div><div class="mut" style="font-size:12.5px">'+lb('Base opening','বেস ওপেনিং')+' '+tk(wOpen(key))+'</div>'+(isA()?'<div style="margin-top:6px"><button type="button" class="ghost" style="height:30px;font-size:12px" id="wltAdjBtn" data-k="'+key+'">'+lb('Adjust this wallet','এই ওয়ালেট সমন্বয় করুন')+'</button></div>':'')+'</div><div class="scroll" style="max-height:46vh;overflow:auto"><table class="ltb" style="min-width:0"><thead><tr><th>'+lb('Date','তারিখ')+'</th><th>'+lb('Category','ক্যাটাগরি')+'</th><th>'+lb('Amount','টাকা')+'</th></tr></thead><tbody>'+(rows||'<tr><td colspan="3" style="text-align:center;padding:24px;color:var(--mut)">'+lb('No transactions','কোনো লেনদেন নেই')+'</td></tr>')+'</tbody></table></div>',function(){},lb('Close','বন্ধ'),1)}
 function adjustSingleWallet(targetKey){
   if(!isA())return;
-  var today=iso(new Date()),snap0=balanceAtDate(today),curr=snap0[targetKey]||0;
-  ask(lb('Adjust balance: ','ব্যালেন্স সমন্বয়: ')+wN(targetKey),
-    '<div class="f"><label>'+lb('Date','তারিখ')+'</label><input id="swa_d" type="date" value="'+today+'"></div>'
-    +'<div class="f"><label>'+lb('Current computed balance','বর্তমান হিসাবের ব্যালেন্স')+'</label><input type="text" readonly value="'+tk(curr)+'" style="font-weight:600"></div>'
-    +'<div class="f"><label>'+lb('New actual balance (Prime)','নতুন প্রকৃত ব্যালেন্স (প্রাইম)')+'</label><input id="swa_v" type="number" min="0" step="any" value="'+curr+'" required></div>'
-    +'<div class="f"><label>'+lb('Reason (required)','কারণ (আবশ্যক)')+'</label><input id="swa_r" maxlength="120" placeholder="'+lb('e.g. MFS cash in fee, recharge mismatch','যেমন: ক্যাশ ইন কমিশন, মিসম্যাচ')+'"></div>'
-    +'<p class="mut" style="font-size:12px">'+lb('This adjustment is Prime. Other wallets will carry forward their computed balance; any colliding entries will be queued for admin review.','এই সমন্বয় প্রাইম হিসেবে সর্বত্র প্রযোজ্য হবে। অন্যান্য ওয়ালেটের হিসাব অবিকৃত থাকবে এবং ঘাটতি হলে রিভিউ কিউতে যাবে।')+'</p>'
-    ,async function(){
-      var d=$('swa_d').value,r=$('swa_r').value.trim(),nv=+$('swa_v').value;
-      if(!d||!r||isNaN(nv)||nv<0){if(!r)$('swa_r').style.borderColor='var(--neg)';return false}
-      var isPast=d<today;
-      var vals={};
-      var p=balanceAtDate(d);
-      Object.keys(WLT).forEach(function(k){vals[k]=(k===targetKey)?nv:(+p[k]||0)});
-      if(isPast){
-        setTimeout(function(){askPinForWallet(d,r+' ('+wN(targetKey)+')',vals);},50);
-        return;
-      }
-      doSaveWalletOpening(d,r+' ('+wN(targetKey)+')',vals,'');
-    },lb('Adjust','সমন্বয়'),1);
+  if(!S.wManual)S.wManual={};
+  var curr=wManBal(targetKey);
+  ask(lb('Set balance: ','ব্যালেন্স নির্ধারণ: ')+wN(targetKey),
+    '<div class="f"><label>'+lb('Current balance','বর্তমান ব্যালেন্স')+'</label>'
+    +'<input type="text" readonly value="'+tk(curr)+'" style="font-weight:600"></div>'
+    +'<div class="f"><label>'+lb('New balance','নতুন ব্যালেন্স')+'</label>'
+    +'<input id="swa_v" type="number" inputmode="decimal" min="0" step="any" value="'+curr+'" required></div>'
+    +'<div class="f"><label>'+lb('Reason (required)','কারণ (আবশ্যক)')+'</label>'
+    +'<input id="swa_r" maxlength="120" placeholder="'+lb('e.g. counted actual balance','যেমন: গণনা করে প্রকৃত ব্যালেন্স')+'" autocomplete="off"></div>'
+    +'<button type="button" class="ghost" id="swa_zero" style="margin-top:4px;color:var(--neg);font-size:12px;height:28px">🔴 '+lb('Reset to zero','শূন্যে রিসেট করুন')+'</button>'
+    ,function(){
+      var r=$('swa_r').value.trim(),nv=+$('swa_v').value;
+      if(!r||isNaN(nv)||nv<0){if(!r)$('swa_r').style.borderColor='var(--neg)';return false}
+      S.wManual[targetKey]=r2(nv);
+      lg('Wallet set (manual)',wN(targetKey)+' → '+tk(nv)+' · '+r);
+      save();
+      renderWalletCards();
+      if(CUR==='acc')render();
+      ltoast(lb('Balance saved','ব্যালেন্স সংরক্ষিত')+': '+wN(targetKey)+' = '+tk(nv));
+    },lb('Save','সংরক্ষণ'),1);
+  /* Reset to zero button */
+  setTimeout(function(){
+    var z=$('swa_zero');
+    if(z)z.onclick=function(){
+      if(!confirm(lb('Reset ','রিসেট করবেন? ')+wN(targetKey)+lb(' to zero?',' শূন্যে?')))return;
+      S.wManual[targetKey]=0;
+      lg('Wallet reset to zero',wN(targetKey));
+      save();
+      renderWalletCards();
+      if(CUR==='acc')render();
+      ltoast(lb('Reset to zero','শূন্যে রিসেট')+': '+wN(targetKey));
+      var ov=$('ov');if(ov)ov.hidden=true;
+    };
+  },50);
 }
 
 function cashCountHistory(){
@@ -1715,19 +1738,25 @@ function balanceAtDate(d){
 }
 function walletAdjust(){
   if(!isA())return;
-  var today=iso(new Date()),snap0=balanceAtDate(today);
-  ask(lb('Add wallet opening','ওয়ালেট ওপেনিং যোগ করুন'),
-    '<div class="f"><label>'+lb('Date','তারিখ')+'</label><input id="wa_d" type="date" value="'+today+'"></div>'
-    +'<div class="f"><label>'+lb('Reason (required)','কারণ (আবশ্যক)')+'</label><input id="wa_r" maxlength="120"></div>'
-    +Object.keys(WLT).map(function(k){return'<div class="f"><label>'+esc(wN(k))+'</label><input class="wa-k" data-k="'+k+'" type="number" min="0" step="any" value="'+(snap0[k]||0)+'"></div>'}).join('')
-    ,async function(){
-      var d=$('wa_d').value,r=$('wa_r').value.trim();
-      if(!d||!r){if(!r)$('wa_r').style.borderColor='var(--neg)';return false}
-      var vals={};document.querySelectorAll('.wa-k').forEach(function(i){vals[i.dataset.k]=Math.max(0,+i.value||0)});
-      var isPast=d<today;
-      if(isPast){setTimeout(function(){askPinForWallet(d,r,vals);},50);return;}
-      doSaveWalletOpening(d,r,vals,'');
-    },lb('Save','সংরক্ষণ'),1);
+  if(!S.wManual)S.wManual={};
+  var h='<div class="mut" style="font-size:12.5px;margin-bottom:10px">'+lb('Set the actual balance for each wallet. These values are stored directly and displayed as-is.','প্রতিটি ওয়ালেটের প্রকৃত ব্যালেন্স সরাসরি এখানে লিখুন।')+'</div>'
+    +'<div class="f"><label>'+lb('Reason (required)','কারণ (আবশ্যক)')+'</label><input id="wa_r" maxlength="120" autocomplete="off"></div>'
+    +Object.keys(WLT).map(function(k){return'<div class="f"><label>'+esc(wN(k))+'</label><input class="wa-k" data-k="'+k+'" type="number" inputmode="decimal" min="0" step="any" value="'+wManBal(k)+'"></div>'}).join('');
+  ask(lb('Set all wallet balances','সব ওয়ালেট ব্যালেন্স নির্ধারণ'),h,function(){
+    var r=$('wa_r').value.trim();
+    if(!r){$('wa_r').style.borderColor='var(--neg)';return false}
+    var changed=[];
+    document.querySelectorAll('.wa-k').forEach(function(i){
+      var k=i.dataset.k,nv=r2(Math.max(0,+i.value||0));
+      if(nv!==wManBal(k))changed.push(wN(k)+': '+tk(wManBal(k))+'→'+tk(nv));
+      S.wManual[k]=nv;
+    });
+    lg('Wallet balances set (manual)',r+(changed.length?' · '+changed.join(', '):''));
+    save();
+    renderWalletCards();
+    if(CUR==='acc')render();
+    ltoast(lb('All wallet balances saved','সব ওয়ালেট ব্যালেন্স সংরক্ষিত'));
+  },lb('Save','সংরক্ষণ'),1);
 }
 async function askPinForWallet(d,r,vals){
   ask(lb('Admin PIN required','অ্যাডমিন পিন প্রয়োজন'),
@@ -2371,6 +2400,7 @@ function saveCheck(){if(document.documentElement.dataset.rm)return;var d=documen
   var sp=UPC.find(function(x){return x.v==='9.22'&&x.s==='Planned'});if(sp)sp.v='9.23';
 })();
 BUGS.unshift(
+  {d:'2026-10-24 23:28 (UTC+6)',v:'9.29',w:'Antigravity / Claude',a:'Adjusting Bkash Personal balance incorrectly inflated Nagad balance instead',b:'Anchors stored the already-transaction-processed balance for all wallets at date d; wltRun then applied the anchor as a reset and added all transactions on top again, double-counting them — Nagad transactions appeared twice',c:'Wallet cards are now a pure manual balance sheet: S.wManual stores each wallet balance directly; calcWallets() reads S.wManual; adjustSingleWallet saves only to S.wManual[key]; a Reset to Zero button is included; no transaction computation or anchor system involved'},
   {d:'2026-10-24 23:15 (UTC+6)',v:'9.29',w:'Antigravity / Claude',a:'Adjusting wallet balance multiple times adds previous amounts on top of each other and the wrong total persists',b:'doSaveWalletOpening always appended a new anchor to S.walletDates without removing an existing anchor for the same date; wltRun and balanceAtDate then applied both anchors sequentially, causing old adjustments to compound with new ones',c:'doSaveWalletOpening now removes any existing anchor for the same date before inserting the new one, so each date can only have one anchor'},
   {d:'2026-10-24 00:20 (UTC+6)',v:'9.29',w:'Claude Sonnet / Gemini',a:'Admin wallet balance adjustments were rejected with "would go negative" error when later transactions exceeded new balance',b:'doSaveWalletOpening aborted when wltRun().bad was detected, blocking admin from setting the real actual balance',c:'Made Admin wallet adjustments Prime (unblocked); checkWalletCollisions automatically detects deficit collisions and routes them to Admin Review Queue with visual badges'},
   {d:'2026-10-23 --:-- (UTC+6)',v:'9.28.1',w:'Claude Sonnet 5.5 · owner\'s Claude account',a:'Version history displayed v9.22 as the latest version',b:'VERS.unshift calls were written in descending order (9.28 first, 9.22 last), so 9.22 ended up at VERS[0]',c:'Reversed the order of VERS.unshift and UPC.unshift calls to ascending so the newest version is prepended last'},
