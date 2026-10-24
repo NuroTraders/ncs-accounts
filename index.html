@@ -1794,7 +1794,7 @@ function doSaveWalletOpening(d,r,vals,pinBy){
   Object.keys(WLT).forEach(function(k){disc[k]=vals[k]-(+prev[k]||0)});
   var anchor={d:d,by:U.name,at:Date.now(),reason:r,prev:prev,discrepancy:disc,pinBy:pinBy||'',pinAt:pinBy?Date.now():0};
   Object.keys(WLT).forEach(function(k){anchor[k]=vals[k]});
-  var old=S.walletDates||[];
+  var old=(S.walletDates||[]).filter(function(a){return a.d!==d});
   S.walletDates=[...old,anchor].sort(function(a,b){return a.d.localeCompare(b.d)});
   var collisions=checkWalletCollisions();
   var anyDisc=Object.keys(disc).some(function(k){return Math.abs(disc[k])>0.5});
@@ -2365,6 +2365,7 @@ function saveCheck(){if(document.documentElement.dataset.rm)return;var d=documen
   var sp=UPC.find(function(x){return x.v==='9.22'&&x.s==='Planned'});if(sp)sp.v='9.23';
 })();
 BUGS.unshift(
+  {d:'2026-10-24 23:15 (UTC+6)',v:'9.29',w:'Antigravity / Claude',a:'Adjusting wallet balance multiple times adds previous amounts on top of each other and the wrong total persists',b:'doSaveWalletOpening always appended a new anchor to S.walletDates without removing an existing anchor for the same date; wltRun and balanceAtDate then applied both anchors sequentially, causing old adjustments to compound with new ones',c:'doSaveWalletOpening now removes any existing anchor for the same date before inserting the new one, so each date can only have one anchor'},
   {d:'2026-10-24 00:20 (UTC+6)',v:'9.29',w:'Claude Sonnet / Gemini',a:'Admin wallet balance adjustments were rejected with "would go negative" error when later transactions exceeded new balance',b:'doSaveWalletOpening aborted when wltRun().bad was detected, blocking admin from setting the real actual balance',c:'Made Admin wallet adjustments Prime (unblocked); checkWalletCollisions automatically detects deficit collisions and routes them to Admin Review Queue with visual badges'},
   {d:'2026-10-23 --:-- (UTC+6)',v:'9.28.1',w:'Claude Sonnet 5.5 · owner\'s Claude account',a:'Version history displayed v9.22 as the latest version',b:'VERS.unshift calls were written in descending order (9.28 first, 9.22 last), so 9.22 ended up at VERS[0]',c:'Reversed the order of VERS.unshift and UPC.unshift calls to ascending so the newest version is prepended last'},
   {d:'2026-10-22 00:25 (UTC+6)',v:'9.28',w:'Claude Sonnet / Gemini',a:'Reconnect sync dialog looped repeatedly and sync stopped working',b:'v9.27 attempted HTTP POST for pull/inbox/catalog queries; Google Apps Script web app only handles POST for state push and returned ok:false, which triggered badKey() repeatedly',c:'Restored GET query calls for pull, inbox, and catalog; stopped badKey() from clearing S.sync prematurely before passphrase validation'},
