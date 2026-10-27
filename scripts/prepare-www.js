@@ -9,13 +9,14 @@ const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'))
 
 // ---- 1. Read the app version from index.html (the LAST assignment wins, like in the app) ----
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
-const all = [...html.matchAll(/APP_VERSION\s*=\s*'(\d+(?:\.\d+){1,2})'/g)];
+const all = [...html.matchAll(/APP_VERSION\s*=\s*'([^']+)'/g)];
 if (!all.length) throw new Error("Could not find APP_VERSION='x.y' in index.html");
 const appVersion = all[all.length - 1][1];
-const parts = appVersion.split('.').map(Number);
+const cleanVersion = appVersion.replace(/-.*$/, '');
+const parts = cleanVersion.split('.').map(Number);
 while (parts.length < 3) parts.push(0);
-const version = parts.join('.');                       // e.g. 9.21 -> 9.21.0
-const versionCode = parts[0] * 10000 + parts[1] * 100 + parts[2]; // Android versionCode, e.g. 92100
+const version = parts.join('.');                       // e.g. 10.0.0
+const versionCode = parts[0] * 10000 + parts[1] * 100 + parts[2]; // Android versionCode, e.g. 100000
 
 // ---- 2. Which GitHub repo hosts the releases ----
 let repo = process.env.GITHUB_REPOSITORY || '';
@@ -28,7 +29,7 @@ if (!repo && pkg.repository) {
 // ---- 3. Copy web files ----
 fs.rmSync(www, { recursive: true, force: true });
 fs.mkdirSync(www, { recursive: true });
-const keep = /^(index\.html|config\.js|icon-.*\.png|logo-.*\.png|.*\.ttf)$/i;
+const keep = /^(index\.html|config\.js|diag\.js|sync\.js|manifest\.webmanifest|icon-.*\.png|logo-.*\.png|.*\.ttf)$/i;
 for (const f of fs.readdirSync(root)) {
   if (keep.test(f) && fs.statSync(path.join(root, f)).isFile()) fs.copyFileSync(path.join(root, f), path.join(www, f));
 }
