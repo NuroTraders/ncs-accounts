@@ -1,2 +1,6 @@
-// Encrypted sync setup. Safe to keep in a public repository.
-window.NCS_CONFIG = {"enc":{"s":"fdL8DZBVSQMCwgW/NAE9cg==","i":"qlUaojmNP6J288FN","c":"V5itTKBTtGamyVTVHHAZc7fokzi/MVDMdq52IgIIbNMEGqOyiBCk9pvlWznUAHmqNYz9MzOfeeX8YKbPfSZs5wVrFXs9OrmHJnW/bkwSTzvg0f1MsaSknqzSUCuJTdeMsUDdCxzLhV7BqUevmY4MDGbJEjxfY7sTlwvq4WEBGzPoZHhuaaqTiyorNfZzphlQupFV0ZJUDSU7W9HWp/IRIxj3z23pZLEJmgLSfCpBOIXKC3o=","n":600000}};
+window.NCS_CONFIG = {
+  SYNC_MODE: 'v2',
+  API_URL: 'https://script.google.com/macros/s/AKfycbwKY0oGUamAaDlDxy2Cmf8WMlePkdR1bue8qbDfU8UkmyQpIT51x9W19ikoOJz5BykU/exec',
+  API_TOKEN: 'ncs_7Kp9mQ2xR8vL4nJ6wT1yB3cD5fG0hS3a',
+  BETA: true
+};

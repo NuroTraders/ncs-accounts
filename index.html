@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -611,7 +611,23 @@ ensureCols();primeLH();
    }
    localStorage.setItem(KEY,sStr);return true
  }catch(e){console.error('Local save failed',e);storageNotice('Could not save to this device. Free browser storage and try again.');return false}};
-const save=()=>{S.rev=(S.rev||0)+1;try{ledReconcile()}catch(e){console.error('Ledger link failed',e)}stampChanged();const ok=persist();if(ok)schedule();return ok};
+ 
+// --- NCS V10 PATCH START ---
+const save=()=>{
+    if (window.NCS_CONFIG && window.NCS_CONFIG.SYNC_MODE === 'v2') {
+        const now = Date.now();
+        ['entries', 'bills', 'products', 'moves', 'cust', 'ltx', 'walletDates', 'counts', 'pending'].forEach(k => {
+            if (S[k] && Array.isArray(S[k])) {
+                S[k].forEach(r => { 
+                    if (!r.u || r.v === 1 || r.removed === 1) r.u = now; 
+                });
+            }
+        });
+    }
+    S.rev=(S.rev||0)+1;try{ledReconcile()}catch(e){console.error('Ledger link failed',e)}stampChanged();const ok=persist();if(ok)schedule();return ok
+};
+// --- NCS V10 PATCH END ---
+
 const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 let cur=iso(new Date()),editing=null;
 const n=v=>Number(v).toLocaleString('en-US'),tk=v=>'৳'+n(v);
@@ -776,7 +792,7 @@ function lockUI(mode,msg){
   else if(mode==='code'){title='Recovery code';btn='Continue';h=`<p>Write this code down. It is the only way to reset the admin PIN.</p><h2 style="letter-spacing:.15em;text-align:center">${msg}</h2>`}
   else h=`<div class="f"><label>User</label><select id="lu"><option value="admin">Admin</option>${S.users.staff.filter(x=>x.on).map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('')}</select></div>`+F('p1','PIN');
   lk.innerHTML=`<div class="dlg"><div style="text-align:center;margin-bottom:8px"><img class="lg-b" src="logo-full-black.png" style="height:96px" alt=""><img class="lg-w" src="logo-full-white.png" style="height:96px" alt=""></div><h3>${title}</h3>${h}<div id="le" class="neg"></div><div class="oa">${mode==='login'?'<button class="ghost" id="fg">Forgot admin PIN</button>':''}<button class="go" id="lgo">${btn}</button></div></div>`;
-  const err=t=>{try{Sound.buzz()}catch(e){};$('le').textContent=t},v=id=>$(id)?$(id).value:'';
+  const err=t=>{try{Sound.buzz()}catch(e){}$('le').textContent=t},v=id=>$(id)?$(id).value:'';
   if($('p1'))$('p1').focus();else if($('rc'))$('rc').focus();else if($('pw'))$('pw').focus();
   if($('fg'))$('fg').onclick=()=>lockUI('recover');
   const go=async()=>{
@@ -856,7 +872,7 @@ $('ob').addEventListener('click',async e=>{
     await dlFile('NCS_Report_'+RR.a+'.csv',r.map(x=>csvCell(x[0])+','+x[1]).join('\n'))}});
 
 S.lang=S.lang||'en';
-const BN={'Daily Accounts':'দৈনিক হিসাব','Nur Computer & Stationery':'নুর কম্পিউটার এন্ড স্টেশনারী','Today':'আজ','Settings':'সেটিংস','Lock':'লক','Total Sell':'মোট বিক্রয়','Total Buy':'মোট ক্রয়','Difference (pending)':'পার্থক্য (বাকি)','Counted vs account':'গণনা বনাম হিসাব','Cash Balance':'ক্যাশ ব্যালেন্স','Account balance now':'বর্তমান হিসাবের ব্যালেন্স','Opening Cash':'প্রারম্ভিক ক্যাশ','Closing Cash':'সমাপনী ক্যাশ','Adjustments today':'আজকের সমন্বয়','Prepared':'প্রস্তুতকারী','Checked':'যাচাইকারী','Open':'খোলা','Closed':'বন্ধ','Close Day':'দিন বন্ধ করুন','Reopen':'পুনরায় খুলুন','Sl':'ক্র.','Time':'সময়','Description':'বিবরণ','Sell':'বিক্রয়','Buy':'ক্রয়','Previous Cash':'পূর্বের ক্যাশ','Actual Cash':'প্রকৃত ক্যাশ','Difference':'পার্থক্য','Type':'ধরন','Category':'ক্যাটাগরি','Payment method':'পেমেন্ট পদ্ধতি','Amount':'পরিমাণ','Actual cash (optional)':'গণনা করা প্রকৃত ক্যাশ (ঐচ্ছিক)','Count':'গণনা','Add entry':'এন্ট্রি যোগ করুন','Save changes':'পরিবর্তন সংরক্ষণ','Cancel edit':'সম্পাদনা বাতিল','Staff':'কর্মী','Change Log':'পরিবর্তন লগ','Print':'প্রিন্ট','Export CSV':'CSV এক্সপোর্ট','Reports':'রিপোর্ট','Undo':'পূর্বাবস্থা','Edit':'সম্পাদনা','Void':'বাতিল','Adjust':'সমন্বয়','Adjusted':'সমন্বিত','Sale':'বিক্রয়','Purchase / Expense':'ক্রয় / খরচ','Owner Deposit':'মালিকের জমা','Owner Withdrawal':'মালিকের উত্তোলন','Cash Adjustment (±)':'ক্যাশ সমন্বয় (±)','Cash':'নগদ','Mobile Banking':'মোবাইল ব্যাংকিং','Bank':'ব্যাংক','Due':'বাকি','All types':'সব ধরন','All payments':'সব পেমেন্ট','Clear':'মুছুন','No entries for this date':'এই তারিখে কোনো এন্ট্রি নেই','Previous':'পূর্বের','Sign in':'সাইন ইন','User':'ব্যবহারকারী','Unlock':'আনলক','Admin':'অ্যাডমিন','Close':'বন্ধ করুন','Cancel':'বাতিল','Confirm':'নিশ্চিত করুন','Day':'দিন','Week (Sat–Fri)':'সপ্তাহ (শনি–শুক্র)','Month':'মাস','Net (Sell − Buy)':'নিট (বিক্রয় − ক্রয়)','Adjustments':'সমন্বয়','Sales by category':'ক্যাটাগরি অনুযায়ী বিক্রয়','Expenses by category':'ক্যাটাগরি অনুযায়ী খরচ','Total':'মোট','Use total':'মোট ব্যবহার করুন','Cash Counter':'ক্যাশ কাউন্টার','Home':'হোম','Products':'পণ্য','POS':'পস','Accounts':'হিসাব','More':'আরও','New sale':'নতুন বিক্রয়','New purchase':'নতুন ক্রয়','Recent bills':'সাম্প্রতিক বিল','Overview':'সারসংক্ষেপ','Customer name':'গ্রাহকের নাম','Supplier name':'সরবরাহকারীর নাম','Phone (optional)':'ফোন (ঐচ্ছিক)','PIN':'পিন','Forgot admin PIN':'অ্যাডমিন পিন ভুলে গেছেন','DAILY ACCOUNTS':'দৈনিক হিসাব','Sync: Off':'সিঙ্ক: বন্ধ','Sync: Synced':'সিঙ্ক: সম্পন্ন','Sync: Pending':'সিঙ্ক: অপেক্ষমাণ','Sync: Offline':'সিঙ্ক: অফলাইন','Sync: Conflict':'সিঙ্ক: দ্বন্দ্ব','Ledger':'খাতা','Today\'s bills':'আজকের বিল','Point of sale':'বিক্রয় কেন্দ্র','Purchase':'ক্রয়','Held':'হোল্ড','Bills':'বিল','Drawer':'ক্যাশ ড্রয়ার','Scan':'স্ক্যান','Sale cart':'বিক্রয় কার্ট','Purchase cart':'ক্রয় কার্ট','Subtotal':'উপমোট','Discount':'ছাড়','Hold bill':'বিল হোল্ড','+ Custom item':'+ নিজের আইটেম','Charge':'বিল নিন','Stock and prices':'স্টক ও দাম','+ New product':'+ নতুন পণ্য','All':'সব','Low stock':'কম স্টক','Out of stock':'স্টক শেষ','Settings and tools':'সেটিংস ও টুলস','Scan barcode':'বারকোড স্ক্যান','This day is closed. An admin can reopen it to add or change entries.':'এই দিনটি বন্ধ। অ্যাডমিন আবার খুলে দিলে এন্ট্রি যোগ বা পরিবর্তন করা যাবে।','Balance would be negative':'ব্যালেন্স ঋণাত্মক হয়ে যাবে','Reason (required)':'কারণ (আবশ্যক)','Account will change by':'হিসাব পরিবর্তিত হবে','to match counted cash':'গণনা করা নগদের সাথে মেলাতে','Other':'অন্যান্য','Starting cash':'শুরুর নগদ','Day starts (Day/Night theme)':'দিন শুরু (দিন/রাত থিম)','Night starts':'রাত শুরু','Google Sheet sync URL':'গুগল শিট সিঙ্ক ইউআরএল','Sync key':'সিঙ্ক কী','Secure sync setup':'নিরাপদ সিঙ্ক সেটআপ','Start fresh (carry forward balances)':'নতুন করে শুরু','Admin PIN':'অ্যাডমিন পিন','Off':'বন্ধ','Role':'ভূমিকা','Reset PIN':'পিন রিসেট','New staff name':'নতুন স্টাফের নাম','Cashier (POS and ledger entry)':'ক্যাশিয়ার (বিক্রয় ও খাতা এন্ট্রি)','Stock manager (Products and More only)':'স্টক ম্যানেজার','Accountant (accounts, ledger, stock and cash; read-only)':'হিসাবরক্ষক','PIN (4+ digits)':'পিন (৪+ সংখ্যা)','New PIN (4+ digits)':'নতুন পিন (৪+ সংখ্যা)','Use Sheet data':'শিটের তথ্য নিন','Keep this device':'এই ডিভাইস রাখুন','Shop passphrase':'দোকানের পাসফ্রেজ','Web app URL':'ওয়েব অ্যাপ ইউআরএল','Repeat passphrase':'পাসফ্রেজ আবার দিন','Copy':'কপি','VOID':'বাতিল','No bills yet':'এখনো কোনো বিল নেই','Long-press or right-click a product to edit it.':'পণ্য এডিট করতে চেপে ধরুন বা রাইট-ক্লিক করুন।','No products yet. Use Add Product, scan a barcode, or use Custom item.':'এখনো কোনো পণ্য নেই।','Cart is empty':'কার্ট খালি','Camera':'ক্যামেরা','Gallery':'গ্যালারি','Name':'নাম','Barcode (optional)':'বারকোড (ঐচ্ছিক)','Buying cost':'ক্রয়মূল্য','Selling price':'বিক্রয়মূল্য','Opening stock':'শুরুর স্টক','Delete product':'পণ্য মুছুন','Item name':'আইটেমের নাম','Price':'দাম','Exact':'সঠিক','Short by':'কম আছে','Share':'শেয়ার','Sales':'বিক্রয়','Purchases':'ক্রয়','Receipt':'রসিদ','No bills today':'আজ কোনো বিল নেই','Resume':'চালু করুন','Delete':'মুছুন','No held bills':'কোনো হোল্ড বিল নেই','Add stock':'স্টক যোগ','No products found':'কোনো পণ্য পাওয়া যায়নি','Quantity':'পরিমাণ','How did it come?':'কীভাবে এলো?','Bought':'কেনা','Brought in':'নিয়ে আসা','Date':'তারিখ','Void entry':'এন্ট্রি বাতিল','Adjust cash':'নগদ সমন্বয়','Reopen day':'দিন আবার খুলুন','Sync conflict':'সিঙ্ক দ্বন্দ্ব','Start fresh':'নতুন করে শুরু','Reconnect sync':'সিঙ্ক আবার যুক্ত করুন','Custom item':'নিজের আইটেম','Day closed':'দিন বন্ধ','Held bills':'হোল্ড বিল','Drawer notes and coins':'ড্রয়ারের নোট ও কয়েন','Set drawer counts':'ড্রয়ার গণনা দিন','Search products':'পণ্য খুঁজুন','Saved':'সংরক্ষিত','Copied':'কপি হয়েছে','Voided':'বাতিল হয়েছে','Bill held':'বিল হোল্ড হয়েছে','Stock added':'স্টক যোগ হয়েছে','Search or scan barcode':'খুঁজুন বা বারকোড স্ক্যান করুন','Stock':'স্টক','Cost not set':'ক্রয়মূল্য দেওয়া নেই','Version history':'সংস্করণ ইতিহাস','Units in stock':'মোট ইউনিট','Low or out of stock':'কম বা শেষ স্টক','Stock value (cost)':'স্টকের মূল্য (ক্রয়)','Manage':'ব্যবস্থাপনা','Customer':'কাস্টমার','Check':'যাচাই','Needs check':'যাচাই দরকার','Ledger cash / wallet':'খাতা ক্যাশ / ওয়ালেট','Link customer':'কাস্টমার যুক্ত করুন','Accept':'গ্রহণ','Ledger cash (received − given)':'খাতার ক্যাশ (পেলাম − দিলাম)','Product Name/ID/Barcode':'পণ্যের নাম/আইডি/বারকোড','Add Product':'পণ্য যোগ করুন','Browse products / Add to bill':'পণ্য দেখুন / বিলে যোগ করুন','Cash in':'নগদ এসেছে','Cash out':'নগদ গেছে','Net':'নিট','Entries':'এন্ট্রি','No cash movements today':'আজ কোনো নগদ লেনদেন নেই','Who owes whom':'কার কাছে পাওনা / দেনা','They owe us':'আমরা পাব','We owe':'আমরা দেব','parties':'পক্ষ','Net receivable':'নিট পাওনা','Net payable':'নিট দেনা','Open Ledger':'খাতা খুলুন','Change admin PIN':'অ্যাডমিন পিন পরিবর্তন','Current PIN':'বর্তমান পিন','New PIN (6+ digits)':'নতুন পিন (৬+ সংখ্যা)','Confirm new PIN':'নতুন পিন নিশ্চিত করুন','Wrong PIN':'ভুল পিন','Could not save. Try again.':'সংরক্ষণ হয়নি। আবার চেষ্টা করুন।','Admin PIN changed':'অ্যাডমিন পিন পরিবর্তন হয়েছে','Run self test':'সেলফ টেস্ট','Check calculations, storage and key modules':'হিসাব, স্টোরেজ ও মূল মডিউল পরীক্ষা','Request void':'বাতিলের অনুরোধ','Void request':'বাতিলের অনুরোধ','Review void request':'বাতিলের অনুরোধ দেখুন','Void requested — awaiting Admin':'বাতিলের অনুরোধ অপেক্ষমাণ','A void request is already pending':'বাতিলের অনুরোধ অপেক্ষমাণ','Admin must approve this request before the entry is voided.':'অ্যাডমিন অনুমোদন করার আগে এন্ট্রি বাতিল হবে না।','Request':'অনুরোধ','Reason to reject':'প্রত্যাখ্যানের কারণ','Reject':'প্রত্যাখ্যান','Approve':'অনুমোদন','Reject flag':'চিহ্ন প্রত্যাখ্যান','Flag for Admin check':'অ্যাডমিন যাচাইয়ের জন্য চিহ্নিত করুন','Sound effects':'সাউন্ড ইফেক্ট','Test sound':'সাউন্ড পরীক্ষা'};
+const BN={'Daily Accounts':'দৈনিক হিসাব','Nur Computer & Stationery':'নুর কম্পিউটার এন্ড স্টেশনারী','Today':'আজ','Settings':'সেটিংস','Lock':'লক','Total Sell':'মোট বিক্রয়','Total Buy':'মোট ক্রয়','Difference (pending)':'পার্থক্য (বাকি)','Counted vs account':'গণনা বনাম হিসাব','Cash Balance':'ক্যাশ ব্যালেন্স','Account balance now':'বর্তমান হিসাবের ব্যালেন্স','Opening Cash':'প্রারম্ভিক ক্যাশ','Closing Cash':'সমাপনী ক্যাশ','Adjustments today':'আজকের সমন্বয়','Prepared':'প্রস্তুতকারী','Checked':'যাচাইকারী','Open':'খোলা','Closed':'বন্ধ','Close Day':'দিন বন্ধ করুন','Reopen':'পুনরায় খুলুন','Sl':'ক্র.','Time':'সময়','Description':'বিবরণ','Sell':'বিক্রয়','Buy':'ক্রয়','Previous Cash':'পূর্বের ক্যাশ','Actual Cash':'প্রকৃত ক্যাশ','Difference':'পার্থক্য','Type':'ধরন','Category':'ক্যাটাগরি','Payment method':'পেমেন্ট পদ্ধতি','Amount':'পরিমাণ','Actual cash (optional)':'গণনা করা প্রকৃত ক্যাশ (ঐচ্ছিক)','Count':'গণনা','Add entry':'এন্ট্রি যোগ করুন','Save changes':'পরিবর্তন সংরক্ষণ','Cancel edit':'সম্পাদনা বাতিল','Staff':'কর্মী','Change Log':'পরিবর্তন লগ','Print':'প্রিন্ট','Export CSV':'CSV এক্সপোর্ট','Reports':'রিপোর্ট','Undo':'পূর্বাবস্থা','Edit':'সম্পাদনা','Void':'বাতিল','Adjust':'সমন্বয়','Adjusted':'সমন্বিত','Sale':'বিক্রয়','Purchase / Expense':'ক্রয় / খরচ','Owner Deposit':'মালিকের জমা','Owner Withdrawal':'মালিকের উত্তোলন','Cash Adjustment (±)':'ক্যাশ সমন্বয় (±)','Cash':'নগদ','Mobile Banking':'মোবাইল ব্যাংকিং','Bank':'ব্যাংক','Due':'বাকি','All types':'সব ধরন','All payments':'সব পেমেন্ট','Clear':'মুছুন','No entries for this date':'এই তারিখে কোনো এন্ট্রি নেই','Previous':'পূর্বের','Sign in':'সাইন ইন','User':'ব্যবহারকারী','Unlock':'আনলক','Admin':'অ্যাডমিন','Close':'বন্ধ করুন','Cancel':'বাতিল','Confirm':'নিশ্চিত করুন','Day':'দিন','Week (Sat–Fri)':'সপ্তাহ (শনি–শুক্র)','Month':'মাস','Net (Sell − Buy)':'নিট (বিক্রয় − ক্রয়)','Adjustments':'সমন্বয়','Sales by category':'ক্যাটাগরি অনুযায়ী বিক্রয়','Expenses by category':'ক্যাটাগরি অনুযায়ী খরচ','Total':'মোট','Use total':'মোট ব্যবহার করুন','Cash Counter':'ক্যাশ কাউন্টার','Home':'হোম','Products':'পণ্য','POS':'পস','Accounts':'হিসাব','More':'আরও','New sale':'নতুন বিক্রয়','New purchase':'নতুন ক্রয়','Recent bills':'সাম্প্রতিক বিল','Overview':'সারসংক্ষেপ','Customer name':'গ্রাহকের নাম','Supplier name':'সরবরাহকারীর নাম','Phone (optional)':'ফোন (ঐচ্ছিক)','PIN':'পিন','Forgot admin PIN':'অ্যাডমিন পিন ভুলে গেছেন','DAILY ACCOUNTS':'দৈনিক হিসাব','Sync: Off':'সিঙ্ক: বন্ধ','Sync: Synced':'সিঙ্ক: সম্পন্ন','Sync: Pending':'সিঙ্ক: অপেক্ষমাণ','Sync: Offline':'সিঙ্ক: অফলাইন','Sync: Conflict':'সিঙ্ক: দ্বন্দ্ব','Ledger':'খাতা','Today\'s bills':'আজকের বিল','Point of sale':'বিক্রয় কেন্দ্র','Purchase':'ক্রয়','Held':'হোল্ড','Bills':'বিল','Drawer':'ক্যাশ ড্রয়ার','Scan':'স্ক্যান','Sale cart':'বিক্রয় কার্ট','Purchase cart':'ক্রয় কার্ট','Subtotal':'উপমোট','Discount':'ছাড়','Hold bill':'বিল হোল্ড','+ Custom item':'+ নিজের আইটেম','Charge':'বিল নিন','Stock and prices':'স্টক ও দাম','+ New product':'+ নতুন পণ্য','All':'সব','Low stock':'কম স্টক','Out of stock':'স্টক শেষ','Settings and tools':'সেটিংস ও টুলস','Scan barcode':'বারকোড স্ক্যান','This day is closed. An admin can reopen it to add or change entries.':'এই দিনটি বন্ধ। অ্যাডমিন আবার খুলে দিলে এন্ট্রি যোগ বা পরিবর্তন করা যাবে।','Balance would be negative':'ব্যালেন্স ঋণাত্মক হয়ে যাবে','Reason (required)':'কারণ (আবশ্যক)','Account will change by':'হিসাব পরিবর্তিত হবে','to match counted cash':'গণনা করা নগদের সাথে মেলাতে','Other':'অন্যান্য','Starting cash':'শুরুর নগদ','Day starts (Day/Night theme)':'দিন শুরু (দিন/রাত থিম)','Night starts':'রাত শুরু','Google Sheet sync URL':'গুগল শিট সিঙ্ক ইউআরএল','Sync key':'সিঙ্ক কী','Secure sync setup':'নিরাপদ সিঙ্ক সেটআপ','Start fresh (carry forward balances)':'নতুন করে শুরু','Admin PIN':'অ্যাডমিন পিন','Off':'বন্ধ','Role':'ভূমিকা','Reset PIN':'পিন রিসেট','New staff name':'নতুন স্টাফের নাম','Cashier (POS and ledger entry)':'ক্যাশিয়ার (বিক্রয় ও খাতা এন্ট্রি)','Stock manager (Products and More only)':'স্টক ম্যানেজার','Accountant (accounts, ledger, stock and cash; read-only)':'হিসাবরক্ষক','PIN (4+ digits)':'পিন (৪+ সংখ্যা)','New PIN (4+ digits)':'নতুন পিন (৪+ সংখ্যা)','Use Sheet data':'শিটের তথ্য নিন','Keep this device':'এই ডিভাইস রাখুন','Shop passphrase':'দোকানের পাসফ্রেজ','Web app URL':'ওয়েব অ্যাপ ইউআরএল','Repeat passphrase':'পাসফ্রেজ আবার দিন','Copy':'কপি','VOID':'বাতিল','No bills yet':'এখনো কোনো বিল নেই','Long-press or right-click a product to edit it.':'পণ্য এডিট করতে চেপে ধরুন বা রাইট-ক্লিক করুন।','No products yet. Use Add Product, scan a barcode, or use Custom item.':'এখনো কোনো পণ্য নেই।','Cart is empty':'কার্ট খালি','Camera':'ক্যামেরা','Gallery':'গ্যালারি','Name':'নাম','Barcode (optional)':'বারকোড (ঐচ্ছিক)','Buying cost':'ক্রয়মূল্য','Selling price':'বিক্রয়মূল্য','Opening stock':'শুরুর স্টক','Delete product':'পণ্য মছুন','Item name':'আইটেমের নাম','Price':'দাম','Exact':'সঠিক','Short by':'কম আছে','Share':'শেয়ার','Sales':'বিক্রয়','Purchases':'ক্রয়','Receipt':'রসিদ','No bills today':'আজ কোনো বিল নেই','Resume':'চালু করুন','Delete':'মুছুন','No held bills':'কোনো হোল্ড বিল নেই','Add stock':'স্টক যোগ','No products found':'কোনো পণ্য পাওয়া যায়নি','Quantity':'পরিমাণ','How did it come?':'কীভাবে এলো?','Bought':'কেনা','Brought in':'নিয়ে আসা','Date':'তারিখ','Void entry':'এন্ট্রি বাতিল','Adjust cash':'নগদ সমন্বয়','Reopen day':'দিন আবার খুলুন','Sync conflict':'সিঙ্ক দ্বন্দ্ব','Start fresh':'নতুন করে শুরু','Reconnect sync':'সিঙ্ক আবার যুক্ত করুন','Custom item':'নিজের আইটেম','Day closed':'দিন বন্ধ','Held bills':'হোল্ড বিল','Drawer notes and coins':'ড্রয়ারের নোট ও কয়েন','Set drawer counts':'ড্রয়ার গণনা দিন','Search products':'পণ্য খুঁজুন','Saved':'সংরক্ষিত','Copied':'কপি হয়েছে','Voided':'বাতিল হয়েছে','Bill held':'বিল হোল্ড হয়েছে','Stock added':'স্টক যোগ হয়েছে','Search or scan barcode':'খুঁজুন বা বারকোড স্ক্যান করুন','Stock':'স্টক','Cost not set':'ক্রয়মূল্য দেওয়া নেই','Version history':'সংস্করণ ইতিহাস','Units in stock':'মোট ইউনিট','Low or out of stock':'কম বা শেষ স্টক','Stock value (cost)':'স্টকের মূল্য (ক্রয়)','Manage':'ব্যবস্থাপনা','Customer':'কাস্টমার','Check':'যাচাই','Needs check':'যাচাই দরকার','Ledger cash / wallet':'খাতা ক্যাশ / ওয়ালেট','Link customer':'কাস্টমার যুক্ত করুন','Accept':'গ্রহণ','Ledger cash (received − given)':'খাতার ক্যাশ (পেলাম − দিলাম)','Product Name/ID/Barcode':'পণ্যের নাম/আইডি/বারকোড','Add Product':'পণ্য যোগ করুন','Browse products / Add to bill':'পণ্য দেখুন / বিলে যোগ করুন','Cash in':'নগদ এসেছে','Cash out':'নগদ গেছে','Net':'নিট','Entries':'এন্ট্রি','No cash movements today':'আজ কোনো নগদ লেনদেন নেই','Who owes whom':'কার কাছে পাওনা / দেনা','They owe us':'আমরা পাব','We owe':'আমরা দেব','parties':'পক্ষ','Net receivable':'নিট পাওনা','Net payable':'নিট দেনা','Open Ledger':'খাতা খুলুন','Change admin PIN':'অ্যাডমিন পিন পরিবর্তন','Current PIN':'বর্তমান পিন','New PIN (6+ digits)':'নতুন পিন (৬+ সংখ্যা)','Confirm new PIN':'নতুন পিন নিশ্চিত করুন','Wrong PIN':'ভুল পিন','Could not save. Try again.':'সংরক্ষণ হয়নি। আবার চেষ্টা করুন।','Admin PIN changed':'অ্যাডমিন পিন পরিবর্তন হয়েছে','Run self test':'সেলফ টেস্ট','Check calculations, storage and key modules':'হিসাব, স্টোরেজ ও মূল মডিউল পরীক্ষা','Request void':'বাতিলের অনুরোধ','Void request':'বাতিলের অনুরোধ','Review void request':'বাতিলের অনুরোধ দেখুন','Void requested — awaiting Admin':'বাতিলের অনুরোধ অপেক্ষমাণ','A void request is already pending':'বাতিলের অনুরোধ অপেক্ষমাণ','Admin must approve this request before the entry is voided.':'অ্যাডমিন অনুমোদন করার আগে এন্ট্রি বাতিল হবে না।','Request':'অনুরোধ','Reason to reject':'প্রত্যাখ্যানের কারণ','Reject':'প্রত্যাখ্যান','Approve':'অনুমোদন','Reject flag':'চিহ্ন প্রত্যাখ্যান','Flag for Admin check':'অ্যাডমিন যাচাইয়ের জন্য চিহ্নিত করুন','Sound effects':'সাউন্ড ইফেক্ট','Test sound':'সাউন্ড পরীক্ষা'};
 var SHOP_EN='Nur Computer & Stationery',SHOP_BN='নুর কম্পিউটার এন্ড স্টেশনারী';function shopN(){return S.lang==='bn'?SHOP_BN:SHOP_EN}
 const orig=new WeakMap();
 function trp(q){var t=q.trim();if(BN[t])return q.replace(t,BN[t]);var m=t.match(/^([A-Za-z][A-Za-z\/ ]*?)(\s+[0-9৳#−+(\-].*)$/);return m&&BN[m[1]]?q.replace(m[1],BN[m[1]]):q}
@@ -876,13 +892,25 @@ function setSt(x){st=x;var c=x==='ok'?'ok':x==='pend'?'pend':(x==='offl'||x==='c
   $('sync').innerHTML='<i class="sdot '+c+'" aria-hidden="true"></i>'+lab;
   var labBn={off:'বন্ধ',ok:'সিঙ্ক সম্পন্ন',pend:'অপেক্ষমাণ',offl:'অফলাইন',conf:'দ্বন্দ্ব'}[x]||lab;$('sync').setAttribute('aria-label',lb('Sync status: ','সিঙ্ক অবস্থা: ')+(S.lang==='bn'?labBn:lab));
   $('sync').title=c==='ok'?'All changes are synced':c==='pend'?'Saving changes…':x==='conf'?'Sync conflict — tap to resolve':c==='bad'?'Offline — will sync when back online':'Sync is not set up on this device'}
-function schedule(){if(!SY())return;setSt('pend');clearTimeout(tm);tm=setTimeout(()=>push(),2000)}
+
+// --- NCS V10 PATCH START ---
+function schedule(){
+  if (window.NCS_CONFIG && window.NCS_CONFIG.SYNC_MODE === 'v2') return; // NCS V10 PATCH
+  if(!SY())return;setSt('pend');clearTimeout(tm);tm=setTimeout(()=>push(),2000)
+}
+// --- NCS V10 PATCH END ---
+
 const HEAD=['Date','Time','Type','Description','Category','Payment','Amount','Previous Cash','Cash Balance','Actual Cash','Difference','Status','Entered by','Party','Phone'];
 function rowsOut(){const m=calc();return sorted().map(e=>{const r=m[e.id]||{};return[e.d,e.t,e.type,e.desc,e.cat||'',e.pay,e.amt,r.p??'',r.bal??'',e.act??'',r.df??'',e.void?'Void: '+e.vr:'Active',e.by||'',e.party||'',e.phone||'']})}
 function stateOut(){const o={};for(const k in S)if(!LOCAL.includes(k))o[k]=S[k];return o}
 const getRemote=async()=>(await fetch(S.sync.url+(S.sync.url.includes('?')?'&':'?')+'action=pull&key='+encodeURIComponent(S.sync.key))).json();
-async function push(force,tries){tries=tries||0;
+
+// --- NCS V10 PATCH START ---
+async function push(force,tries){
+  if (window.NCS_CONFIG && window.NCS_CONFIG.SYNC_MODE === 'v2') return; // NCS V10 PATCH
+  tries=tries||0;
   if(!SY()||!U||busy)return;busy=true;
+// --- NCS V10 PATCH END ---
   try{
     const sn=Object.keys(S.days).filter(d=>S.days[d].closed&&!(S.snaps||[]).includes(d)),nl=S.log.filter(l=>l.i>(S.logSent||0)).reverse(),rev=S.rev;
     const r=await(await fetch(S.sync.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({key:S.sync.key,base:S.synced||0,force:!!force,rev,state:JSON.stringify(stateOut()),head:HEAD,rows:rowsOut(),log:nl.map(l=>[l.ts,l.u,l.a,l.d]),snaps:sn})})).json();
@@ -902,9 +930,13 @@ async function importPos(){
       S.entries.push({id:b.id,d,t:b.t,type:b.mode==='purchase'?'Purchase':'Sale',desc:String(b.desc).slice(0,200),cat:'POS',pay:b.pay,amt:b.total,by:b.user,party:b.party||'',phone:b.phone||'',pos:1,act:null});c++});
     S.posSince=mx;if(c){lg('POS import',c+' bill(s)');save()}else persist();if(U)render()
   }catch(e){}}
+
+// --- NCS V10 PATCH START ---
 async function pull(){
+  if (window.NCS_CONFIG && window.NCS_CONFIG.SYNC_MODE === 'v2') return; // NCS V10 PATCH
   if(!SY()||busy)return;
   try{const r=await getRemote();if(r.ok===false)return badKey();if(!r.ok)throw 0;
+// --- NCS V10 PATCH END ---
     if(r.rev>(S.synced||0)){if(isDirty()){if(mergeRemoteFrom(r))push();else setSt('conf');return}applyRemote(r)}
     else if(isDirty()||(!r.rev&&S.entries.length))push();else setSt('ok');importPos();importCatalog()
   }catch(e){setSt('offl')}}
@@ -982,7 +1014,29 @@ function go(v){try{Sound.tick()}catch(e){}CUR=v;try{sessionStorage.setItem('ncs_
 $('tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(b)go(b.dataset.v)});
 var sndBtn=document.createElement('button');sndBtn.className='ghost';sndBtn.id='sndBtn';sndBtn.style.height='48px';sndBtn.style.textAlign='left';sndBtn.style.fontSize='15px';sndBtn.style.borderRadius='14px';
 var secCardBtn=document.createElement('button');secCardBtn.className='ghost';secCardBtn.id='secCardBtn';secCardBtn.style.height='48px';secCardBtn.style.textAlign='left';secCardBtn.style.fontSize='15px';secCardBtn.style.borderRadius='14px';
-$('topR').append($('sync'));$('moreList').append($('lang'),sndBtn,secCardBtn,$('set'),$('lockb'));
+var bugBtn = document.createElement('button');
+bugBtn.className = 'ghost';
+bugBtn.id = 'bugBtn';
+bugBtn.style.height = '48px';
+bugBtn.style.textAlign = 'left';
+bugBtn.style.fontSize = '15px';
+bugBtn.style.borderRadius = '14px';
+bugBtn.textContent = '🐞 Report a Bug (Beta)';
+bugBtn.onclick = function() {
+  if (!window.NcsDiag) return alert('Diagnostics not loaded');
+  ask('Report a Bug', '<div class="f"><label>What happened?</label><textarea id="bugDesc" rows="3" style="width:100%;border:1px solid var(--line);border-radius:8px;padding:8px;background:var(--bg);color:var(--ink)"></textarea></div><div class="f"><label>What were you doing?</label><select id="bugAct"><option>General</option><option>Adding Entry</option><option>POS Bill</option><option>Ledger</option><option>Sync</option><option>Wallet</option></select></div><p class="mut">This will attach your last 200 app events (no PII, no PINs).</p>', function() {
+    const desc = $('bugDesc').value;
+    const act = $('bugAct').value;
+    const report = window.NcsDiag.makeReport(desc, act);
+    const filename = 'NCS_Bug_Report_' + Date.now() + '.txt';
+    dlFile(filename, report.text + '\n\n--- JSON ---\n' + JSON.stringify(report, null, 2));
+    if (navigator.share) {
+       navigator.share({title: 'NCS Bug Report', text: report.text}).catch(()=>{});
+    }
+  }, 'Export');
+};
+
+$('topR').append($('sync'));$('moreList').append($('lang'),sndBtn,secCardBtn,bugBtn,$('set'),$('lockb'));
 function updateSndBtn(){var b=$('sndBtn');if(b)b.textContent='Sound effects: '+(S.sound?'ON':'OFF');}
 sndBtn.onclick=function(){S.sound=!S.sound;save();updateSndBtn();if(S.sound){try{Sound.test()}catch(e){}}};
 secCardBtn.onclick=function(){if(isA())openCardSectionSettings()};
@@ -2415,8 +2469,19 @@ BUGS.unshift(
   {d:'2026-10-19 --:--',v:'9.22',w:'Claude Sonnet 5.5 · owner\'s Claude account',a:'CSV/JSON downloads could fail silently inside the native wrappers because the <a download> element was never attached to the DOM and wrappers sometimes block blob downloads',b:'dlFile clicked a detached anchor and swallowed the error',c:'The anchor is appended before click(), removed after 1s, and a window.open data-URL fallback runs if the blob path throws'}
 );
 
+// Expose to window for v10 Sync engine
+window.save = save;
+window.render = render;
+window.homeUI = homeUI;
+window.POS = POS;
+window.ledUI = ledUI;
+window.S = S;
+
 applyLang();start();
 if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js'));
 </script>
+<!-- NCS v10 Sync Engine -->
+<script src="diag.js"></script>
+<script src="sync.js"></script>
 </body>
 </html>
