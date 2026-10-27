@@ -886,7 +886,7 @@ $('lang').onclick=()=>{S.lang=S.lang==='bn'?'en':'bn';save();applyLang()};
 
 async function dlFile(name,data){try{if(typeof claude!=='undefined'){const dl=await claude.use('downloads');if(dl)return dl.save({filename:name,data})}const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type:'text/csv'}));a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){a.remove()},1000)}catch(e){try{window.open('data:text/plain;charset=utf-8,'+encodeURIComponent(data),'_blank')}catch(x){}}}
 const LOCAL=['theme','dayStart','dayEnd','lang','lockout','sync','snaps','logSent','synced','posSince','motion','sound','lastBackup','cardSettings'];
-const SY=()=>!!(S.sync&&S.sync.url&&S.sync.key),isDirty=()=>(S.rev||0)!==(S.synced||0);
+const SY=()=>(window.NCS_CONFIG && window.NCS_CONFIG.SYNC_MODE === 'v2') ? !!(window.NCS_CONFIG.API_URL) : !!(S.sync&&S.sync.url&&S.sync.key),isDirty=()=>(window.NCS_CONFIG && window.NCS_CONFIG.SYNC_MODE === 'v2') ? false : (S.rev||0)!==(S.synced||0);
 let st='off',tm,busy=false;
 function setSt(x){st=x;var c=x==='ok'?'ok':x==='pend'?'pend':(x==='offl'||x==='conf')?'bad':'off',lab={off:'Off',ok:'Synced',pend:'Pending',offl:'Offline',conf:'Conflict'}[x];
   $('sync').innerHTML='<i class="sdot '+c+'" aria-hidden="true"></i>'+lab;
@@ -895,7 +895,10 @@ function setSt(x){st=x;var c=x==='ok'?'ok':x==='pend'?'pend':(x==='offl'||x==='c
 
 // --- NCS V10 PATCH START ---
 function schedule(){
-  if (window.NCS_CONFIG && window.NCS_CONFIG.SYNC_MODE === 'v2') return; // NCS V10 PATCH
+  if (window.NCS_CONFIG && window.NCS_CONFIG.SYNC_MODE === 'v2') {
+    if (window.NcsSync) window.NcsSync.schedulePush();
+    return;
+  }
   if(!SY())return;setSt('pend');clearTimeout(tm);tm=setTimeout(()=>push(),2000)
 }
 // --- NCS V10 PATCH END ---
@@ -907,7 +910,10 @@ const getRemote=async()=>(await fetch(S.sync.url+(S.sync.url.includes('?')?'&':'
 
 // --- NCS V10 PATCH START ---
 async function push(force,tries){
-  if (window.NCS_CONFIG && window.NCS_CONFIG.SYNC_MODE === 'v2') return; // NCS V10 PATCH
+  if (window.NCS_CONFIG && window.NCS_CONFIG.SYNC_MODE === 'v2') {
+    if (window.NcsSync) window.NcsSync.push(force);
+    return;
+  }
   tries=tries||0;
   if(!SY()||!U||busy)return;busy=true;
 // --- NCS V10 PATCH END ---
@@ -933,14 +939,26 @@ async function importPos(){
 
 // --- NCS V10 PATCH START ---
 async function pull(){
-  if (window.NCS_CONFIG && window.NCS_CONFIG.SYNC_MODE === 'v2') return; // NCS V10 PATCH
+  if (window.NCS_CONFIG && window.NCS_CONFIG.SYNC_MODE === 'v2') {
+    if (window.NcsSync) window.NcsSync.pull();
+    return;
+  }
   if(!SY()||busy)return;
   try{const r=await getRemote();if(r.ok===false)return badKey();if(!r.ok)throw 0;
 // --- NCS V10 PATCH END ---
     if(r.rev>(S.synced||0)){if(isDirty()){if(mergeRemoteFrom(r))push();else setSt('conf');return}applyRemote(r)}
     else if(isDirty()||(!r.rev&&S.entries.length))push();else setSt('ok');importPos();importCatalog()
   }catch(e){setSt('offl')}}
-$('sync').onclick=()=>{if(st==='conf')ask('Sync conflict','<p>This device and the Google Sheet both have new changes. Choose which to keep.</p><div class="oa" style="justify-content:flex-start"><button class="ghost" id="scp">Use Sheet data</button><button class="ghost" id="scf">Keep this device</button></div>',()=>{},'Close');else if(SY())pull();else setSt('off')};
+$('sync').onclick=()=>{
+  if (window.NCS_CONFIG && window.NCS_CONFIG.SYNC_MODE === 'v2') {
+    if (window.NcsSync) {
+      setSt('pend');
+      window.NcsSync.push(true);
+      window.NcsSync.pull();
+    }
+    return;
+  }
+  if(st==='conf')ask('Sync conflict','<p>This device and the Google Sheet both have new changes. Choose which to keep.</p><div class="oa" style="justify-content:flex-start"><button class="ghost" id="scp">Use Sheet data</button><button class="ghost" id="scf">Keep this device</button></div>',()=>{},'Close');else if(SY())pull();else setSt('off')};
 $('ob').addEventListener('click',e=>{if(e.target.id!=='sfr')return;
   ask('Start fresh','<p>Daily entries and bills are cleared from the active day view. Cash and wallets carry forward, ledger history and stock are retained, and an Admin reconciliation item is created.</p><div class="f"><label>Admin PIN</label><input id="sfp" type="password" inputmode="numeric" autocomplete="off"></div>',async()=>{
     if(!(await ck(S.users.admin,$('sfp').value))){$('sfp').value='';$('sfp').placeholder='Wrong PIN';return false}
@@ -2426,7 +2444,6 @@ function saveCheck(){if(document.documentElement.dataset.rm)return;var d=documen
 (function(){
   var M="Claude Sonnet 5.5 · owner's Claude account";
   APP_VERSION='10.0.0-beta';
-  VERS.unshift({v:'10.0.0-beta',d:'2026-10-28',t:'Model B: Delta Sync Engine & Structured Sheet Mirror',by:'Antigravity',n:['New Google Apps Script backend','Delta sync (only changes are sent)','Structured Google Sheet tabs','Per-row conflict resolution (u timestamp)','Manual-only bug reporter in More tab']});
   VERS.unshift({v:'9.22',d:'2026-10-19',t:'Sound effects, motion polish and wrapper download safety',by:M,n:['Web Audio sound engine: soft tick on tabs/dialogs, cha-ching on sale/entry save, low buzz on errors, sync chime on background sync','Sound toggle in Settings, default off; AudioContext created on first tap','All sound and motion automatically off when the OS asks for reduced motion','Number count-up on Home (Cash Balance, Total Sell, Total Buy) over 0.4s on load and period change','Save checkmark pop on POS sale and Accounts/Ledger entry save','Tap feedback: buttons scale to 0.97 on press','POS cart rows slide in when added and slide out when removed','dlFile falls back to a data URL window if the wrapper blocks the <a download> tag']});
   VERS.unshift({v:'9.22.1',d:'2026-10-19',t:'Sound resume fix + Test button',by:M,n:['AudioContext resume() race fixed: tones now play after the context is running (fixes silent playback on Android WebView, iOS Safari and after idle tabs)','▶ Test sound button inside Settings for instant verification','Louder gains for tick and cha-ching so phone speakers are audible']});
   VERS.unshift({v:'9.22.2',d:'2026-10-19',t:'Sound toggle visible in More, Settings unhidden',by:M,n:['Sound effects ON/OFF button now appears directly in the More tab (no need to open Settings)','Removed the CSS rule that was hiding the Settings button in the More tab','Settings still shows the Sound effects checkbox and the ▶ Test sound button']});
@@ -2438,6 +2455,7 @@ function saveCheck(){if(document.documentElement.dataset.rm)return;var d=documen
   VERS.unshift({v:'9.28',d:'2026-10-22',t:'Google Apps Script GET compatibility restore & Reconnect fix',by:M,n:['Restored standard GET protocol in getRemote(), importPos() and importCatalog() to maintain exact compatibility with Google Apps Script web app endpoint','Fixed infinite Reconnect sync modal loop caused by Apps Script returning ok:false on POST pulls','Prevented badKey() from prematurely wiping S.sync before passphrase verification']});
   VERS.unshift({v:'9.28.1',d:'2026-10-23',t:'Version History cleanup',by:M,n:['Fixed version history display order','Added missing v9.16 history entry','Removed duplicate v9.26 bug entry']});
   VERS.unshift({v:'9.29',d:'2026-10-24',t:'Admin Prime Wallet Adjustments, Accounts Streamlining & Card Adjustment Settings',by:'Claude Sonnet / Gemini',n:['MFS & Recharge balance adjustments are now Prime: Admin balance input is never rejected, takes effect everywhere immediately, and conflicting deficit entries are automatically routed to the Admin Review Queue','Offending collision entries display a high-visibility Deficit Review badge in Accounts and direct one-click navigation from Review Queue','Accounts tab layout streamlined: Transaction Details table and filter bar moved directly below the new transaction entry section for faster data entry','Section & Card Adjustment Settings added to More tab (Admin-only): Quick balance adjustment shortcuts for cash drawer, MFS and recharge cards plus dashboard section visibility toggles for Home and Accounts']});
+  VERS.unshift({v:'10.0.0-beta',d:'2026-10-28',t:'Model B: Delta Sync Engine & Structured Sheet Mirror',by:'Antigravity',n:['New Google Apps Script backend with 12 structured sheets','Delta sync engine (sync.js) pushing/pulling only changed rows via monotonic u timestamps','Per-row conflict resolution (highest u timestamp wins)','Diagnostics rolling logger (diag.js) & manual bug report exporter in More tab','Live sync status indicator hooks (Synced, Pending, Offline)']});
   
   UPC.unshift({v:'9.22',s:'Done',t:['Web Audio sound engine (tick, cha-ching, buzz, sync chime), default off','Count-up numbers on Home','Save checkmark','Tap feedback','POS cart slide in/out','All respect OS reduced-motion','Download fallback']});
   UPC.unshift({v:'9.22.1',s:'Done',t:['AudioContext resume race fixed','Test sound button in Settings','Louder gains']});
@@ -2450,11 +2468,14 @@ function saveCheck(){if(document.documentElement.dataset.rm)return;var d=documen
   UPC.unshift({v:'9.28',s:'Done',t:['Restored Google Apps Script GET compatibility for pull, inbox, and catalog','Fixed Reconnect sync modal infinite loop']});
   UPC.unshift({v:'9.28.1',s:'Done',t:['Version history cleanup']});
   UPC.unshift({v:'9.29',s:'Done',t:['Admin Prime MFS & Recharge wallet adjustments with automatic collision queueing','Accounts tab Transaction Details positioned below entry form','More tab Section & Card Adjustment Settings hub (Option C: quick balance adjust & layout customizer, Admin-only)']});
+  UPC.unshift({v:'10.0.0-beta',s:'Done',t:['Model B Delta Sync Engine with Google Apps Script backend','Structured 12-sheet mirror (Entries, Bills, Products, etc.)','Per-row monotonic u timestamp conflict resolution','Diagnostics rolling logger & manual Bug Reporter in More tab','Live sync indicator status hooks (Synced, Pending, Offline)']});
   
   var sl=UPC.find(function(x){return x.v==='9.23'&&x.s==='Planned'});if(sl)sl.v='9.24';
   var sp=UPC.find(function(x){return x.v==='9.22'&&x.s==='Planned'});if(sp)sp.v='9.23';
 })();
 BUGS.unshift(
+  {d:'2026-10-28 00:25 (UTC+6)',v:'10.0.0-beta',w:'Antigravity / Claude',a:'Sync pill in top navigation remained stuck on "Pending" with yellow dot and manual clicks did nothing',b:'sync.js never notified setSt() of success/failure, isDirty() remained true because S.synced was bypassed in v2, and sync button / refresh handlers returned early without calling NcsSync',c:'Wired sync.js directly to setSt() on push/pull success and failure; updated isDirty() for v2; delegated manual sync and refresh clicks directly to NcsSync.push(true) and pull()'},
+  {d:'2026-10-27 23:50 (UTC+6)',v:'10.0.0-beta',w:'Antigravity / Claude',a:'SyntaxError: Invalid or unexpected token at index.html:830 during app boot',b:'A corrupted backtick character was present instead of a single quote after .join(\'\')+\'<div...>\` on line 830, caused by clipboard formatting',c:'Replaced the stray backtick with a standard single quote before ,async()=>'},
   {d:'2026-10-24 23:28 (UTC+6)',v:'9.29',w:'Antigravity / Claude',a:'Adjusting Bkash Personal balance incorrectly inflated Nagad balance instead',b:'Anchors stored the already-transaction-processed balance for all wallets at date d; wltRun then applied the anchor as a reset and added all transactions on top again, double-counting them — Nagad transactions appeared twice',c:'Wallet cards are now a pure manual balance sheet: S.wManual stores each wallet balance directly; calcWallets() reads S.wManual; adjustSingleWallet saves only to S.wManual[key]; a Reset to Zero button is included; no transaction computation or anchor system involved'},
   {d:'2026-10-24 23:15 (UTC+6)',v:'9.29',w:'Antigravity / Claude',a:'Adjusting wallet balance multiple times adds previous amounts on top of each other and the wrong total persists',b:'doSaveWalletOpening always appended a new anchor to S.walletDates without removing an existing anchor for the same date; wltRun and balanceAtDate then applied both anchors sequentially, causing old adjustments to compound with new ones',c:'doSaveWalletOpening now removes any existing anchor for the same date before inserting the new one, so each date can only have one anchor'},
   {d:'2026-10-24 00:20 (UTC+6)',v:'9.29',w:'Claude Sonnet / Gemini',a:'Admin wallet balance adjustments were rejected with "would go negative" error when later transactions exceeded new balance',b:'doSaveWalletOpening aborted when wltRun().bad was detected, blocking admin from setting the real actual balance',c:'Made Admin wallet adjustments Prime (unblocked); checkWalletCollisions automatically detects deficit collisions and routes them to Admin Review Queue with visual badges'},
@@ -2476,6 +2497,7 @@ window.render = render;
 window.homeUI = homeUI;
 window.POS = POS;
 window.ledUI = ledUI;
+window.setSt = setSt;
 window.S = S;
 
 applyLang();start();

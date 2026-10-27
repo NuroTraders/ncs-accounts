@@ -1,6 +1,6 @@
 # NCS Daily Accounts: Handover Note
 
-Shop: Nur Computer & Stationery. Current version: **v9.29** (service worker cache `ncs-v52`).
+Shop: Nur Computer & Stationery. Current version: **v10.0.0-beta** (service worker cache `ncs-v53`).
 Two Claude profiles work on this app and do NOT share memory. This file is the shared memory.
 
 ## 0. Start-of-session checklist (both profiles)
@@ -16,10 +16,12 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 | `index.html` | The whole app (single file) |
 | `sw.js` | Offline cache. Network-first. Cache name `ncs-vN` |
 | `manifest.webmanifest` | PWA install info |
-| `config.js` | Optional sync preset. Empty on purpose |
+| `config.js` | v10 sync config (`SYNC_MODE: 'v2'`, `API_URL`, `API_TOKEN`, `BETA: true`) |
+| `diag.js` | Diagnostics engine: rolling 200-event buffer (`ncs_diag_v1`) & bug report exporter |
+| `sync.js` | Delta sync engine (Model B: push/pull delta with monotonic `u` timestamps) |
 | `SolaimanLipi-*.ttf` | Bengali font |
 | icons and logos | `icon-*.png`, `logo-*.png` |
-| Google Apps Script | Lives in the owner's Google Sheet |
+| Google Apps Script | Lives in the owner's Google Sheet (`Code.gs` Web App with 12 structured sheets) |
 | `package.json`, `package-lock.json`, `electron/`, `native/`, `scripts/`, `electron-builder.config.js`, `build/`, `.github/workflows/build.yml`, `SETUP.md` | Native Android and Windows apps (section 9). Do not edit unless the task is about the native apps |
 
 ## 2. Architecture
@@ -27,8 +29,9 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 - **Collections:** `entries`, `products`, `bills`, `moves`, `cust`, `ltx`, `atts`. Stamped with `u`, merged by `mergeById`.
 - **Other synced keys (v9.24):** `days`, `names`, `parties`, `log`, `users`, `start`, `walletDates`, `counts`; `pending` and `history` merged by id.
 - **Local-only keys (v9.22):** theme, dayStart, dayEnd, lang, lockout, sync, snaps, logSent, synced, posSince, motion, **sound**, lastBackup.
-- **Sync (v9.20):** Google Apps Script blob. Conflict → `mergeState`.
-- **Sync status:** single dot, periodic blink (green 6s, yellow 3s, red 2s). Off = static outline.
+- **Sync (v10.0 Model B):** Google Apps Script delta sync with 12 structured mirror sheets (`_Meta`, `_Blob`, `Entries`, `Bills`, `Products`, `Moves`, `Parties`, `Ledger`, `Wallets`, `Counts`, `Pending`, `Days`, `History`, `Atts`). Push and pull only transmit rows with monotonic `u` timestamp higher than local cursor. Conflict resolution is last-write-wins (higher `u`). Fallback hourly backup saved to `_Blob`. Managed by `sync.js` and `window.NcsSync`.
+- **Sync status:** single dot with label: green = `Synced` (ok), yellow = `Pending` (pend), red = `Offline` (offl) / `Conflict` (conf), outline = `Off` (off). In v10, `sync.js` updates status on push, pull and network failure. Clicking the sync pill or header refresh triggers immediate delta sync.
+- **Diagnostics & Bug Reporter (v10.0):** `diag.js` captures JS uncaught errors, unhandled rejections, and rolling 200-event buffer in `localStorage` (`ncs_diag_v1`). A "🐞 Report a Bug (Beta)" button in the More tab exports a non-PII diagnostic report for WhatsApp sharing or download.
 - **Theme (v9.20):** three modes — `auto` (OS default), `light`, `dark`. Icon button `#themeBtn` in top bar cycles Auto → Light → Dark → Auto. Day/Night removed.
 - **Tab transitions (v9.20):** `.view.on` fades in (220ms). Skipped under OS reduced motion.
 - **Refresh (v9.20):** two-arrow SVG spins once on tap.
@@ -127,6 +130,8 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 - **Storage quota safeguard (v9.27):** `persist()` shows a 4MB threshold warning; `window._storageWarnDismissed` is in-memory only and resets on page reload.
 
 ## 6. Roadmap
+**v10.0.0-beta: DONE (Current Beta).** Model B: Delta Sync Engine with Google Apps Script backend, 12 structured sheets mirror, per-row monotonic u timestamp conflict resolution, diagnostics rolling logger (`diag.js`), bug report exporter in More tab, and live UI sync indicator hooks.
+
 **v9.29: DONE.** Admin Prime MFS & Recharge adjustments, Accounts table layout repositioning & More tab Section & Card settings.
 
 **v9.28.1: DONE.** Version history cleanup.
@@ -194,6 +199,7 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 - Split into modules only if asked. Automated smoke test.
 
 ## 7. Session log (append newest on top)
+- **v10.0.0-beta, 2026-10-28 00:30 (UTC+6) (Antigravity):** Model B Delta Sync Architecture & Structured Google Sheets Mirror. (1) **Delta Sync Engine (`sync.js`):** Upgraded from v1 whole-blob sync to v10 delta sync against Google Apps Script backend (`Code.gs`). Client-side engine backfills missing `u` timestamps, pushes only changed rows, pulls delta rows using monotonic `u` timestamps with last-write-wins conflict resolution. (2) **Structured Sheet Mirror:** Backend creates and updates 12 structured sheets (`_Meta`, `_Blob`, `Entries`, `Bills`, `Products`, `Moves`, `Parties`, `Ledger`, `Wallets`, `Counts`, `Pending`, `Days`, `History`, `Atts`). (3) **Diagnostics Engine (`diag.js`):** In-memory and localStorage rolling 200-event log buffer (`ncs_diag_v1`) capturing JS uncaught errors, network events, and app state size. Integrated '🐞 Report a Bug (Beta)' button into More tab for exporting diagnostic text/JSON. (4) **Sync UI Hook:** Fixed UI status pill (`setSt()`) so `sync.js` drives live green 'Synced', yellow 'Pending', and red 'Offline' states; clicking the sync pill or header refresh forces an immediate delta push/pull. (5) **Syntax & Build Fixes:** Fixed corrupted string concatenation backtick on line 830 in `staffUI`; updated `scripts/prepare-www.js` to bundle `diag.js`, `sync.js`, and support semver `10.0.0`; bumped service worker cache to `ncs-v53`.
 - **v9.29, 2026-10-24 00:20 (UTC+6) (Claude Sonnet / Gemini):** Admin Prime Wallet Adjustments, Accounts Streamlining & Card Adjustment Settings. (1) **Admin Prime Wallet Adjustments:** MFS and Recharge adjustments entered by Admin are now Prime: `doSaveWalletOpening` never aborts or rejects. The adjustment immediately anchors the actual balance everywhere in the app. Any colliding/invalid entries that subsequently cause a wallet deficit are automatically detected by `checkWalletCollisions()`, routed to the Admin Review Queue (`S.pending`) as `wallet-collision` items, and highlighted with a high-visibility 'Deficit Review' badge in the Accounts table. (2) **Accounts Tab Ergonomics:** Moved the Transaction Details table, Search & Filter bar, and check bars to directly below the New Transaction entry section (`#fsec`), ensuring quick and natural data entry without scrolling past transaction lists. (3) **Section & Card Adjustment Settings (Option C):** Added an Admin-only 'Section & card settings' button under the More tab. Combines quick balance adjustment shortcuts for cash drawer, MFS wallets and recharge balances, with granular dashboard section visibility toggles for both Home and Accounts tabs (persisted in `S.cardSettings` and protected in `LOCAL`). Bumped to `ncs-v52`. Tests: `node --check` syntax validation and simulated execution.
 - **v9.28.1, 2026-10-23 (Claude Sonnet 5.5, owner's Claude account):** Version history cleanup. (1) Reversed the order of the `VERS.unshift` and `UPC.unshift` calls in the final IIFE so the version history dialog displays v9.28.1 at the top and v9.22 at the bottom (previously v9.22 was at the top due to descending order). (2) Added the missing `VERS.unshift` entry for v9.16 (Complete admin review queue). (3) Removed the stray v9.26 BUGS entry from the v9.15 block. Bumped to `ncs-v51`. Tests: `node --check`; version history dialog visually checked.
 - **v9.28, 2026-10-22 00:25 (UTC+6) (Claude Sonnet / Gemini):** Restored Google Apps Script sync compatibility and fixed Reconnect loop. (1) **Root cause & Fix:** In v9.27, getRemote(), importPos() and importCatalog() attempted HTTP POST with JSON body for pull actions; the owner's Google Apps Script web app handles pull/inbox/catalog strictly via GET query parameters and returns `{ok: false}` on unrecognized POST actions. This falsely triggered `badKey()`, which cleared `S.sync` and showed the 'Reconnect sync' modal in an endless loop upon each reconnect attempt. Fixed by restoring standard GET requests across getRemote, importPos and importCatalog, and stopping `badKey()` from wiping `S.sync` prior to passphrase verification. Bumped sw.js cache to `ncs-v50`.
@@ -227,6 +233,10 @@ Two Claude profiles work on this app and do NOT share memory. This file is the s
 
 ## 8. Bug fix history (newest on top)
 Format: YYYY-MM-DD HH:MM (UTC+6) — version — who — what was wrong — cause — fix. Times before this rule was made were recorded as --:--.
+- 2026-10-28 00:25 (UTC+6) — v10.0.0-beta — Antigravity / Claude — Sync pill in top navigation remained stuck on "Pending" with yellow dot and manual clicks did nothing — sync.js never notified setSt() of success/failure, isDirty() remained true because S.synced was bypassed in v2, and sync button / refresh handlers returned early without calling NcsSync — Wired sync.js directly to setSt() on push/pull success and failure; updated isDirty() for v2; delegated manual sync and refresh clicks directly to NcsSync.push(true) and pull().
+- 2026-10-27 23:50 (UTC+6) — v10.0.0-beta — Antigravity / Claude — SyntaxError: Invalid or unexpected token at index.html:830 during app boot — A corrupted backtick character was present instead of a single quote after .join('')+'<div...>` on line 830, caused by clipboard formatting — Replaced the stray backtick with a standard single quote before ,async()=>.
+- 2026-10-24 23:28 (UTC+6) — v9.29 — Antigravity / Claude — Adjusting Bkash Personal balance incorrectly inflated Nagad balance instead — Anchors stored the already-transaction-processed balance for all wallets at date d; wltRun then applied the anchor as a reset and added all transactions on top again, double-counting them — Nagad transactions appeared twice — Wallet cards are now a pure manual balance sheet: S.wManual stores each wallet balance directly; calcWallets() reads S.wManual; adjustSingleWallet saves only to S.wManual[key]; a Reset to Zero button is included; no transaction computation or anchor system involved.
+- 2026-10-24 23:15 (UTC+6) — v9.29 — Antigravity / Claude — Adjusting wallet balance multiple times adds previous amounts on top of each other and the wrong total persists — doSaveWalletOpening always appended a new anchor to S.walletDates without removing an existing anchor for the same date; wltRun and balanceAtDate then applied both anchors sequentially, causing old adjustments to compound with new ones — doSaveWalletOpening now removes any existing anchor for the same date before inserting the new one, so each date can only have one anchor.
 - 2026-10-24 00:20 (UTC+6) — v9.29 — Claude Sonnet / Gemini — Admin wallet balance adjustments were rejected with "would go negative" error when later transactions exceeded new balance — `doSaveWalletOpening` aborted when `wltRun().bad` was detected, blocking admin from setting the real actual balance — Made Admin wallet adjustments Prime (unblocked); `checkWalletCollisions` automatically detects deficit collisions and routes them to Admin Review Queue with visual badges.
 - 2026-10-23 --:-- (UTC+6) — v9.28.1 — Claude Sonnet 5.5 — Version history displayed v9.22 as the latest version — `VERS.unshift` calls were written in descending order (9.28 first, 9.22 last), so 9.22 ended up at `VERS[0]` — Reversed the order of `VERS.unshift` and `UPC.unshift` calls to ascending so the newest version is prepended last.
 - 2026-10-22 00:25 (UTC+6) — v9.28 — Claude Sonnet / Gemini — 'Reconnect sync' modal appeared and looped indefinitely on PC and phone — v9.27 sent HTTP POST for pull/inbox/catalog actions which Google Apps Script web app rejects with `{ok: false}`, causing pull() to immediately trigger badKey() in a loop — Restored GET queries for pull, inbox, and catalog, and guarded badKey() from wiping `S.sync` before passphrase verification.

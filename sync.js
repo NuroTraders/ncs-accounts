@@ -50,9 +50,15 @@
     else console.log(`[Sync] ${tag}: ${msg}`, meta || '');
   }
   
-  function logErr(tag, msg, meta) {
+    function logErr(tag, msg, meta) {
     if (window.NcsDiag) window.NcsDiag.err(tag, msg, meta);
     else console.error(`[Sync] ${tag}: ${msg}`, meta || '');
+  }
+
+  function updateStatus(status) {
+    if (typeof window.setSt === 'function') {
+      window.setSt(status);
+    }
   }
 
   // Load state from localStorage
@@ -227,9 +233,10 @@
           syncState.lastPullU = res.serverU;
           saveState();
         }
+        updateStatus('ok');
       }
     })
-    .catch(err => logErr('sync', 'Pull network error', err))
+    .catch(err => { updateStatus('offl'); logErr('sync', 'Pull network error', err); })
     .finally(() => { isPulling = false; });
   }
 
@@ -268,8 +275,12 @@
                 window._syncWrapped = true;
             }
             
+            // Initial push to send any local un-synced data
+            push();
+            
             // Initial pull
             pull();
+            updateStatus('ok');
         
         // Set up polling
         if (pullInterval) clearInterval(pullInterval);
