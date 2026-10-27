@@ -253,10 +253,23 @@
       if (window.S && window.save) {
         clearInterval(initInterval);
         
-        backfill();
-        
-        // Initial pull
-        pull();
+                   backfill();
+            
+            // ✨ FIX: Wrap window.save so it triggers the sync engine automatically
+            if (!window._syncWrapped) {
+                const originalSave = window.save;
+                window.save = function() {
+                    const result = originalSave.apply(this, arguments);
+                    if (window.NCS_CONFIG && window.NCS_CONFIG.SYNC_MODE === 'v2') {
+                        schedulePush(); // This tells sync.js to push the changes!
+                    }
+                    return result;
+                };
+                window._syncWrapped = true;
+            }
+            
+            // Initial pull
+            pull();
         
         // Set up polling
         if (pullInterval) clearInterval(pullInterval);
