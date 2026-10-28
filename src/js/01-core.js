@@ -177,7 +177,11 @@ const save=()=>{
             }
         });
     }
-    S.rev=(S.rev||0)+1;try{ledReconcile()}catch(e){console.error('Ledger link failed',e)}stampChanged();const ok=persist();if(ok)schedule();return ok
+    S.rev=(S.rev||0)+1;try{ledReconcile()}catch(e){console.error('Ledger link failed',e)}stampChanged();const ok=persist();if(ok)schedule();
+    if(window.NcsSync && typeof window.NcsSync.schedulePush === 'function'){
+        window.NcsSync.schedulePush();
+    }
+    return ok
 };
 // --- NCS V10 PATCH END ---
 

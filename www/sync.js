@@ -3,7 +3,7 @@
  *  NCS Accounts — Sync Engine v2 (Model B: Delta + Structured Mirror)
  * ═══════════════════════════════════════════════════════════════════════════
  *  - Implements delta push/pull using per-row 'u' timestamps.
- *  - Backfills existing data on first run.
+ *  - Bidirectional schema normalization between client model and Sheet columns.
  *  - Integrates with window.NcsDiag for logging.
  *  - Requires window.NCS_CONFIG, window.S, and window.save()
  * ═══════════════════════════════════════════════════════════════════════════
@@ -50,7 +50,7 @@
     else console.log(`[Sync] ${tag}: ${msg}`, meta || '');
   }
   
-    function logErr(tag, msg, meta) {
+  function logErr(tag, msg, meta) {
     if (window.NcsDiag) window.NcsDiag.err(tag, msg, meta);
     else console.error(`[Sync] ${tag}: ${msg}`, meta || '');
   }
@@ -109,7 +109,8 @@
 
     if (changed) {
       log('state', 'Backfilled missing u/v/removed fields');
-      if (window.save) window.save();
+      if (typeof window.persist === 'function') window.persist();
+      else if (typeof window.save === 'function') window.save();
     }
   }
 
@@ -120,6 +121,170 @@
     const newU = Math.max(now, window.S._lastU + 1);
     window.S._lastU = newU;
     return newU;
+  }
+
+  // ─── DUAL SCHEMA TRANSLATORS ────────────────────────────────────────────────
+
+  function formatRowForServer(table, r) {
+    if (!r) return r;
+    if (table === 'entries') {
+      const dVal = r.d || (r.date ? (String(r.date).includes('T') ? String(r.date).slice(0, 10) : String(r.date)) : '');
+      const tVal = r.t || (r.at ? new Date(+r.at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',hour12:false}) : '');
+      const payVal = r.pay || (r.wallet ? r.wallet : (r.cash ? 'Cash' : 'Cash'));
+      return Object.assign({}, r, {
+        d: dVal,
+        date: dVal,
+        t: tVal,
+        pay: payVal,
+        wallet: r.w || (payVal !== 'Cash' ? payVal : ''),
+        cash: (payVal === 'Cash' ? r.amt : ''),
+        by: r.by || r.user || 'Admin',
+        at: r.at || r.u || Date.now()
+      });
+    }
+    if (table === 'bills') {
+      const dVal = r.d || (r.date ? String(r.date).slice(0, 10) : '');
+      return Object.assign({}, r, {
+        d: dVal,
+        date: dVal,
+        total: r.total || 0,
+        paid: r.rec !== undefined ? r.rec : (r.total || 0),
+        method: r.pay || 'Cash',
+        cust: r.party || '',
+        items: typeof r.lines === 'object' ? JSON.stringify(r.lines) : (r.items || ''),
+        by: r.user || r.by || 'Admin',
+        at: r.ts || r.u || Date.now()
+      });
+    }
+    if (table === 'products') {
+      return Object.assign({}, r, {
+        barcode: r.code || r.barcode || '',
+        price: r.sell !== undefined ? r.sell : r.price,
+        cost: r.buy !== undefined ? r.buy : r.cost,
+        category: r.cat || r.category || ''
+      });
+    }
+    if (table === 'cust') {
+      return Object.assign({}, r, {
+        address: r.area || r.address || '',
+        opening: r.op !== undefined ? r.op : r.opening
+      });
+    }
+    if (table === 'ltx') {
+      const dVal = r.d || (r.date ? String(r.date).slice(0, 10) : '');
+      return Object.assign({}, r, {
+        d: dVal,
+        date: dVal,
+        partyId: r.cId || r.partyId || '',
+        kind: r.type || r.kind || '',
+        note: r.note || '',
+        linkEntryId: r.link || r.linkEntryId || '',
+        by: r.by || 'Admin',
+        at: r.at || r.u || Date.now()
+      });
+    }
+    return r;
+  }
+
+  function normalizeRemoteRow(table, rRow, localRow) {
+    if (table === 'entries') {
+      let d = rRow.d;
+      if (!d && rRow.date) {
+        const s = String(rRow.date);
+        d = s.includes('T') ? s.slice(0, 10) : s.slice(0, 10);
+      }
+      if (!d && localRow && localRow.d) d = localRow.d;
+      if (!d && rRow.u) {
+        try {
+          const dt = new Date(+rRow.u);
+          if (!isNaN(dt.getTime())) d = dt.toISOString().slice(0, 10);
+        } catch(e){}
+      }
+      if (!d) d = new Date().toISOString().slice(0, 10);
+
+      let t = rRow.t;
+      if (!t && localRow && localRow.t) t = localRow.t;
+      if (!t && rRow.at) {
+        try {
+          const dt = new Date(+rRow.at);
+          if (!isNaN(dt.getTime())) t = dt.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',hour12:false});
+        } catch(e){}
+      }
+      if (!t) t = '12:00';
+
+      let pay = rRow.pay;
+      if (!pay && rRow.wallet) pay = rRow.wallet;
+      else if (!pay && rRow.cash !== undefined && rRow.cash !== '') pay = 'Cash';
+      else if (!pay && localRow && localRow.pay) pay = localRow.pay;
+      else if (!pay) pay = 'Cash';
+
+      let cat = (rRow.cat !== undefined && rRow.cat !== '') ? rRow.cat : (localRow ? localRow.cat : (rRow.category || ''));
+      let amt = +(rRow.amt !== undefined && rRow.amt !== '' ? rRow.amt : (localRow ? localRow.amt : 0));
+      let type = rRow.type || (localRow ? localRow.type : 'Sale');
+      let desc = (rRow.desc !== undefined && rRow.desc !== '') ? rRow.desc : (localRow ? localRow.desc : '');
+      let party = (rRow.party !== undefined && rRow.party !== '') ? rRow.party : (localRow ? localRow.party : '');
+      let phone = (rRow.phone !== undefined && rRow.phone !== '') ? rRow.phone : (localRow ? localRow.phone : '');
+      let by = rRow.by || rRow.user || (localRow ? localRow.by : 'Admin');
+      let voidVal = rRow.void !== undefined ? rRow.void : (localRow ? localRow.void : 0);
+
+      return Object.assign({}, localRow || {}, rRow, {
+        d: d,
+        t: t,
+        pay: pay,
+        cat: cat,
+        amt: amt,
+        type: type,
+        desc: desc,
+        party: party,
+        phone: phone,
+        by: by,
+        void: voidVal
+      });
+    }
+    if (table === 'bills') {
+      let d = rRow.d || (rRow.date ? String(rRow.date).slice(0, 10) : (localRow ? localRow.d : ''));
+      let pay = rRow.pay || rRow.method || (localRow ? localRow.pay : 'Cash');
+      let lines = localRow ? localRow.lines : [];
+      if (rRow.items && typeof rRow.items === 'string' && rRow.items.startsWith('[')) {
+        try { lines = JSON.parse(rRow.items); } catch(e){}
+      }
+      return Object.assign({}, localRow || {}, rRow, {
+        d: d,
+        pay: pay,
+        lines: lines,
+        total: +(rRow.total || (localRow ? localRow.total : 0))
+      });
+    }
+    if (table === 'products') {
+      return Object.assign({}, localRow || {}, rRow, {
+        name: rRow.name || (localRow ? localRow.name : ''),
+        buy: +(rRow.buy !== undefined && rRow.buy !== '' ? rRow.buy : (rRow.cost !== undefined && rRow.cost !== '' ? rRow.cost : (localRow ? localRow.buy : 0))),
+        sell: +(rRow.sell !== undefined && rRow.sell !== '' ? rRow.sell : (rRow.price !== undefined && rRow.price !== '' ? rRow.price : (localRow ? localRow.sell : 0))),
+        code: rRow.code || rRow.barcode || (localRow ? localRow.code : ''),
+        cat: rRow.cat || rRow.category || (localRow ? localRow.cat : '')
+      });
+    }
+    if (table === 'cust') {
+      return Object.assign({}, localRow || {}, rRow, {
+        name: rRow.name || (localRow ? localRow.name : ''),
+        kind: rRow.kind || (localRow ? localRow.kind : ''),
+        phone: rRow.phone || (localRow ? localRow.phone : ''),
+        area: rRow.area || rRow.address || (localRow ? localRow.area : ''),
+        op: +(rRow.op !== undefined && rRow.op !== '' ? rRow.op : (rRow.opening !== undefined && rRow.opening !== '' ? rRow.opening : (localRow ? localRow.op : 0)))
+      });
+    }
+    if (table === 'ltx') {
+      let d = rRow.d || (rRow.date ? String(rRow.date).slice(0, 10) : (localRow ? localRow.d : ''));
+      return Object.assign({}, localRow || {}, rRow, {
+        d: d,
+        cId: rRow.cId || rRow.partyId || (localRow ? localRow.cId : ''),
+        type: rRow.type || rRow.kind || (localRow ? localRow.type : ''),
+        amt: +(rRow.amt || (localRow ? localRow.amt : 0)),
+        note: rRow.note !== undefined ? rRow.note : (localRow ? localRow.note : ''),
+        link: rRow.link || rRow.linkEntryId || (localRow ? localRow.link : '')
+      });
+    }
+    return Object.assign({}, localRow || {}, rRow);
   }
 
   // ─── PUSH ──────────────────────────────────────────────────────────────────
@@ -137,7 +302,7 @@
       const delta = window.S[sKey].filter(row => (row.u || 0) > lastU);
       
       if (delta.length > 0) {
-        changes[sKey] = delta;
+        changes[sKey] = delta.map(r => formatRowForServer(sKey, r));
         hasChanges = true;
       }
     });
@@ -149,7 +314,7 @@
 
     fetch(API_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'text/plain' }, // Apps script prefers text/plain for CORS
+      headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify({
         action: 'push',
         token: API_TOKEN,
@@ -161,14 +326,12 @@
     .then(res => res.json())
     .then(res => {
       if (res.ok) {
-        // Update lastPushU for accepted tables
-        Object.keys(res.acks).forEach(sKey => {
+        Object.keys(res.acks || {}).forEach(sKey => {
           syncState.lastPushU[sKey] = res.serverU;
         });
         saveState();
         log('sync', 'Push successful', { serverU: res.serverU });
         
-        // If there are conflicts, pull them immediately
         if (res.conflicts && res.conflicts.length > 0) {
           pull();
         }
@@ -200,21 +363,20 @@
           if (!remoteRows || remoteRows.length === 0) return;
           if (!window.S[sKey]) window.S[sKey] = [];
 
-          // Create a map of local rows by ID
           const localMap = {};
           window.S[sKey].forEach((r, i) => { localMap[r.id] = i; });
 
           remoteRows.forEach(rRow => {
             const localIdx = localMap[rRow.id];
             if (localIdx === undefined) {
-              // New row from server
-              window.S[sKey].push(rRow);
+              const normalized = normalizeRemoteRow(sKey, rRow, null);
+              window.S[sKey].push(normalized);
               applied++;
             } else {
-              // Conflict resolution: higher 'u' wins
               const localRow = window.S[sKey][localIdx];
-              if ((rRow.u || 0) > (localRow.u || 0)) {
-                window.S[sKey][localIdx] = rRow;
+              // Update if remote is newer OR if local is missing critical fields (d, t, pay)
+              if ((rRow.u || 0) > (localRow.u || 0) || !localRow.d) {
+                window.S[sKey][localIdx] = normalizeRemoteRow(sKey, rRow, localRow);
                 applied++;
               }
             }
@@ -226,9 +388,18 @@
           syncState.lastPullU = res.serverU;
           saveState();
           
-          if (window.save) window.save();
-          if (window.render) window.render();
-          if (window.homeUI) window.homeUI(); // Refresh UI if available
+          if (typeof window.persist === 'function') window.persist();
+          else if (typeof window.save === 'function') window.save();
+
+          if (typeof window.redrawActiveView === 'function') {
+            window.redrawActiveView();
+          } else {
+            if (typeof window.render === 'function') window.render();
+            if (typeof window.homeUI === 'function') window.homeUI();
+          }
+          if (typeof window.animateCounts === 'function') {
+            window.animateCounts();
+          }
         } else {
           syncState.lastPullU = res.serverU;
           saveState();
@@ -244,7 +415,7 @@
 
   function schedulePush() {
     if (pushTimer) clearTimeout(pushTimer);
-    pushTimer = setTimeout(() => push(), 2000); // 2 second debounce
+    pushTimer = setTimeout(() => push(), 1500); // 1.5 second debounce for responsive sync
   }
 
   function start() {
@@ -260,35 +431,38 @@
       if (window.S && window.save) {
         clearInterval(initInterval);
         
-                   backfill();
-            
-            // ✨ FIX: Wrap window.save so it triggers the sync engine automatically
-            if (!window._syncWrapped) {
-                const originalSave = window.save;
-                window.save = function() {
-                    const result = originalSave.apply(this, arguments);
-                    if (window.NCS_CONFIG && window.NCS_CONFIG.SYNC_MODE === 'v2') {
-                        schedulePush(); // This tells sync.js to push the changes!
-                    }
-                    return result;
-                };
-                window._syncWrapped = true;
+        backfill();
+        
+        // Wrap window.save if external callers use it
+        if (!window._syncWrapped) {
+          const originalSave = window.save;
+          window.save = function() {
+            const result = originalSave.apply(this, arguments);
+            if (window.NCS_CONFIG && window.NCS_CONFIG.SYNC_MODE === 'v2') {
+              schedulePush();
             }
-            
-            // Initial push to send any local un-synced data
-            push();
-            
-            // Initial pull
-            pull();
-            updateStatus('ok');
+            return result;
+          };
+          window._syncWrapped = true;
+        }
         
-        // Set up polling
+        // Initial push to send any local un-synced data
+        push();
+        
+        // Initial pull
+        pull();
+        updateStatus('ok');
+        
+        // Fast background polling (every 10s)
         if (pullInterval) clearInterval(pullInterval);
-        pullInterval = setInterval(pull, 30000); // Every 30s
+        pullInterval = setInterval(pull, 10000);
         
-        // Listeners
+        // Lifecycle and Mobile wakeup listeners
         window.addEventListener('online', pull);
         window.addEventListener('focus', pull);
+        document.addEventListener('visibilitychange', function() {
+          if (!document.hidden) pull();
+        });
         
         log('sync', 'Sync v2 started');
       }
