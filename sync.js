@@ -3,9 +3,9 @@
  *  NCS Accounts — Sync Engine v2 (Model B: Delta + Structured Mirror)
  * ═══════════════════════════════════════════════════════════════════════════
  *  - Implements delta push/pull using per-row 'u' timestamps.
- *  - Bidirectional schema normalization between client model and Sheet columns.
- *  - Integrates with window.NcsDiag for logging.
- *  - Requires window.NCS_CONFIG, window.S, and window.save()
+ *  - Timezone-aware schema normalization (UTC+6 Bangladesh standard).
+ *  - Automatic self-healing of empty dates/times from row IDs and timestamps.
+ *  - Instant reactive redraw across all open tabs (Home, Accounts, POS, Ledger).
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -13,8 +13,8 @@
   'use strict';
 
   const SYNC_KEY = 'ncs_sync_v10';
-  const API_URL = window.NCS_CONFIG ? window.NCS_CONFIG.API_URL : '';
-  const API_TOKEN = window.NCS_CONFIG ? window.NCS_CONFIG.API_TOKEN : '';
+  const API_URL = (window.NCS_CONFIG && (window.NCS_CONFIG.API_URL || window.NCS_CONFIG.url)) || '';
+  const API_TOKEN = (window.NCS_CONFIG && (window.NCS_CONFIG.API_TOKEN || window.NCS_CONFIG.key)) || '';
   
   let isPushing = false;
   let isPulling = false;
@@ -83,7 +83,49 @@
     localStorage.setItem(SYNC_KEY, JSON.stringify(syncState));
   }
 
-  // Backfill missing 'u', 'v', 'removed' fields
+  // Timezone helper: converts timestamp or date string to Bangladesh YYYY-MM-DD
+  function toBdDate(val) {
+    if (!val) return '';
+    const s = String(val).trim();
+    if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+    try {
+      let ms = 0;
+      if (typeof val === 'number') ms = val;
+      else if (/^\d{13}$/.test(s)) ms = +s;
+      else {
+        const parsed = new Date(s).getTime();
+        if (!isNaN(parsed)) ms = parsed;
+      }
+      if (ms > 0) {
+        // Add 6 hours to convert UTC to Bangladesh GMT+6
+        const bd = new Date(ms + (6 * 3600 * 1000));
+        return bd.toISOString().slice(0, 10);
+      }
+    } catch(e){}
+    return s.slice(0, 10);
+  }
+
+  function toBdTime(val) {
+    if (!val) return '';
+    const s = String(val).trim();
+    if (/^\d{1,2}:\d{2}$/.test(s)) return s.padStart(5, '0');
+    try {
+      let ms = 0;
+      if (typeof val === 'number') ms = val;
+      else if (/^\d{13}$/.test(s)) ms = +s;
+      else {
+        const parsed = new Date(s).getTime();
+        if (!isNaN(parsed)) ms = parsed;
+      }
+      if (ms > 0) {
+        const bd = new Date(ms + (6 * 3600 * 1000));
+        return String(bd.getUTCHours()).padStart(2, '0') + ':' + String(bd.getUTCMinutes()).padStart(2, '0');
+      }
+    } catch(e){}
+    return '12:00';
+  }
+
+  // Backfill missing 'u', 'v', 'removed', and repair empty dates locally
   function backfill() {
     let maxU = 0;
     let changed = false;
@@ -99,6 +141,20 @@
         if (row.v === undefined) { row.v = 0; changed = true; }
         if (row.removed === undefined) { row.removed = 0; changed = true; }
         if (row.u > maxU) maxU = row.u;
+
+        // Repair entries with missing dates
+        if (sKey === 'entries') {
+          if (!row.d || row.d === '') {
+            const ts = (typeof row.id === 'number' && row.id > 1600000000000) ? row.id : (row.at || row.u || Date.now());
+            row.d = toBdDate(ts);
+            if (!row.t || row.t === '') row.t = toBdTime(ts);
+            changed = true;
+          }
+          if (!row.pay) {
+            row.pay = row.wallet || (row.cash ? 'Cash' : 'Cash');
+            changed = true;
+          }
+        }
       });
     });
 
@@ -108,7 +164,7 @@
     }
 
     if (changed) {
-      log('state', 'Backfilled missing u/v/removed fields');
+      log('state', 'Self-healed local fields & backfilled u/v');
       if (typeof window.persist === 'function') window.persist();
       else if (typeof window.save === 'function') window.save();
     }
@@ -128,9 +184,9 @@
   function formatRowForServer(table, r) {
     if (!r) return r;
     if (table === 'entries') {
-      const dVal = r.d || (r.date ? (String(r.date).includes('T') ? String(r.date).slice(0, 10) : String(r.date)) : '');
-      const tVal = r.t || (r.at ? new Date(+r.at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',hour12:false}) : '');
-      const payVal = r.pay || (r.wallet ? r.wallet : (r.cash ? 'Cash' : 'Cash'));
+      const dVal = r.d || toBdDate(r.date || r.id || r.at);
+      const tVal = r.t || toBdTime(r.at || r.id);
+      const payVal = r.pay || (r.wallet ? r.wallet : 'Cash');
       return Object.assign({}, r, {
         d: dVal,
         date: dVal,
@@ -139,11 +195,11 @@
         wallet: r.w || (payVal !== 'Cash' ? payVal : ''),
         cash: (payVal === 'Cash' ? r.amt : ''),
         by: r.by || r.user || 'Admin',
-        at: r.at || r.u || Date.now()
+        at: r.at || (typeof r.id === 'number' && r.id > 1600000000000 ? r.id : Date.now())
       });
     }
     if (table === 'bills') {
-      const dVal = r.d || (r.date ? String(r.date).slice(0, 10) : '');
+      const dVal = r.d || toBdDate(r.date || r.ts || r.id);
       return Object.assign({}, r, {
         d: dVal,
         date: dVal,
@@ -153,7 +209,7 @@
         cust: r.party || '',
         items: typeof r.lines === 'object' ? JSON.stringify(r.lines) : (r.items || ''),
         by: r.user || r.by || 'Admin',
-        at: r.ts || r.u || Date.now()
+        at: r.ts || r.u || (typeof r.id === 'number' && r.id > 1600000000000 ? r.id : Date.now())
       });
     }
     if (table === 'products') {
@@ -171,7 +227,7 @@
       });
     }
     if (table === 'ltx') {
-      const dVal = r.d || (r.date ? String(r.date).slice(0, 10) : '');
+      const dVal = r.d || toBdDate(r.date || r.at || r.id);
       return Object.assign({}, r, {
         d: dVal,
         date: dVal,
@@ -180,7 +236,7 @@
         note: r.note || '',
         linkEntryId: r.link || r.linkEntryId || '',
         by: r.by || 'Admin',
-        at: r.at || r.u || Date.now()
+        at: r.at || r.u || (typeof r.id === 'number' && r.id > 1600000000000 ? r.id : Date.now())
       });
     }
     return r;
@@ -188,37 +244,49 @@
 
   function normalizeRemoteRow(table, rRow, localRow) {
     if (table === 'entries') {
+      // 1. Resolve date (d)
       let d = rRow.d;
       if (!d && rRow.date) {
-        const s = String(rRow.date);
-        d = s.includes('T') ? s.slice(0, 10) : s.slice(0, 10);
+        d = toBdDate(rRow.date);
       }
       if (!d && localRow && localRow.d) d = localRow.d;
-      if (!d && rRow.u) {
-        try {
-          const dt = new Date(+rRow.u);
-          if (!isNaN(dt.getTime())) d = dt.toISOString().slice(0, 10);
-        } catch(e){}
+      if (!d) {
+        const ts = (typeof rRow.id === 'number' && rRow.id > 1600000000000) ? rRow.id : (rRow.at || rRow.u);
+        d = toBdDate(ts);
       }
-      if (!d) d = new Date().toISOString().slice(0, 10);
+      if (!d) d = toBdDate(Date.now());
 
+      // 2. Resolve time (t)
       let t = rRow.t;
       if (!t && localRow && localRow.t) t = localRow.t;
-      if (!t && rRow.at) {
-        try {
-          const dt = new Date(+rRow.at);
-          if (!isNaN(dt.getTime())) t = dt.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',hour12:false});
-        } catch(e){}
+      if (!t) {
+        const ts = (typeof rRow.id === 'number' && rRow.id > 1600000000000) ? rRow.id : rRow.at;
+        t = toBdTime(ts);
       }
       if (!t) t = '12:00';
 
+      // 3. Resolve payment method
       let pay = rRow.pay;
       if (!pay && rRow.wallet) pay = rRow.wallet;
       else if (!pay && rRow.cash !== undefined && rRow.cash !== '') pay = 'Cash';
       else if (!pay && localRow && localRow.pay) pay = localRow.pay;
       else if (!pay) pay = 'Cash';
 
+      // 4. Resolve category (infer if missing)
       let cat = (rRow.cat !== undefined && rRow.cat !== '') ? rRow.cat : (localRow ? localRow.cat : (rRow.category || ''));
+      if (!cat && rRow.desc) {
+        const descLower = String(rRow.desc).toLowerCase();
+        if (descLower.includes('bk in') || descLower.includes('bkin')) cat = 'Bk In - Personal';
+        else if (descLower.includes('nagad in')) cat = 'Nagad In - Personal';
+        else if (descLower.includes('rocket in')) cat = 'Rocket In - Personal';
+        else if (descLower.includes('cash out')) cat = 'Bkash Cash Out';
+        else if (descLower.includes('recharge') || descLower.includes('rc')) {
+          if (descLower.includes('gp')) cat = rRow.type === 'Sale' ? 'Recharge - GP' : 'Recharge Balance - DSR GP';
+          else if (descLower.includes('robi')) cat = rRow.type === 'Sale' ? 'Recharge - Robi' : 'Recharge Balance - DSR Robi';
+          else if (descLower.includes('cir')) cat = rRow.type === 'Sale' ? 'Recharge - Circkle' : 'Recharge Balance - DSR Circkle';
+        }
+      }
+
       let amt = +(rRow.amt !== undefined && rRow.amt !== '' ? rRow.amt : (localRow ? localRow.amt : 0));
       let type = rRow.type || (localRow ? localRow.type : 'Sale');
       let desc = (rRow.desc !== undefined && rRow.desc !== '') ? rRow.desc : (localRow ? localRow.desc : '');
@@ -226,6 +294,7 @@
       let phone = (rRow.phone !== undefined && rRow.phone !== '') ? rRow.phone : (localRow ? localRow.phone : '');
       let by = rRow.by || rRow.user || (localRow ? localRow.by : 'Admin');
       let voidVal = rRow.void !== undefined ? rRow.void : (localRow ? localRow.void : 0);
+      let removedVal = rRow.removed !== undefined ? rRow.removed : (localRow ? localRow.removed : 0);
 
       return Object.assign({}, localRow || {}, rRow, {
         d: d,
@@ -238,11 +307,12 @@
         party: party,
         phone: phone,
         by: by,
-        void: voidVal
+        void: voidVal,
+        removed: removedVal
       });
     }
     if (table === 'bills') {
-      let d = rRow.d || (rRow.date ? String(rRow.date).slice(0, 10) : (localRow ? localRow.d : ''));
+      let d = rRow.d || toBdDate(rRow.date || (localRow ? localRow.d : ''));
       let pay = rRow.pay || rRow.method || (localRow ? localRow.pay : 'Cash');
       let lines = localRow ? localRow.lines : [];
       if (rRow.items && typeof rRow.items === 'string' && rRow.items.startsWith('[')) {
@@ -274,7 +344,7 @@
       });
     }
     if (table === 'ltx') {
-      let d = rRow.d || (rRow.date ? String(rRow.date).slice(0, 10) : (localRow ? localRow.d : ''));
+      let d = rRow.d || toBdDate(rRow.date || (localRow ? localRow.d : ''));
       return Object.assign({}, localRow || {}, rRow, {
         d: d,
         cId: rRow.cId || rRow.partyId || (localRow ? localRow.cId : ''),
@@ -291,6 +361,7 @@
   
   function push(force = false) {
     if (isPushing || !navigator.onLine) return;
+    if (!API_URL || API_URL.indexOf('PASTE_YOUR') !== -1) return;
     
     const changes = {};
     let hasChanges = false;
@@ -298,7 +369,7 @@
     Object.keys(TABLES).forEach(sKey => {
       if (!window.S[sKey] || !Array.isArray(window.S[sKey])) return;
       
-      const lastU = force ? 0 : syncState.lastPushU[sKey];
+      const lastU = force ? 0 : (syncState.lastPushU[sKey] || 0);
       const delta = window.S[sKey].filter(row => (row.u || 0) > lastU);
       
       if (delta.length > 0) {
@@ -310,6 +381,7 @@
     if (!hasChanges) return;
 
     isPushing = true;
+    updateStatus('pend');
     log('sync', 'Pushing changes', { tables: Object.keys(changes) });
 
     fetch(API_URL, {
@@ -331,26 +403,37 @@
         });
         saveState();
         log('sync', 'Push successful', { serverU: res.serverU });
+        updateStatus('ok');
         
         if (res.conflicts && res.conflicts.length > 0) {
           pull();
         }
       } else {
         logErr('sync', 'Push failed', res);
+        updateStatus('offl');
       }
     })
-    .catch(err => logErr('sync', 'Push network error', err))
+    .catch(err => {
+      logErr('sync', 'Push network error', err);
+      updateStatus('offl');
+    })
     .finally(() => { isPushing = false; });
   }
 
   // ─── PULL ──────────────────────────────────────────────────────────────────
 
-  function pull() {
+  function pull(force = false) {
     if (isPulling || !navigator.onLine) return;
+    if (!API_URL || API_URL.indexOf('PASTE_YOUR') !== -1) return;
     
     isPulling = true;
+    updateStatus('pend');
+
+    // If local entries are empty or force is specified, pull all historical data from since=0
+    const hasLocalEntries = window.S && Array.isArray(window.S.entries) && window.S.entries.length > 0;
+    const sinceU = (force || !hasLocalEntries) ? 0 : (syncState.lastPullU || 0);
     
-    const url = `${API_URL}?action=pull&token=${API_TOKEN}&since=${syncState.lastPullU}`;
+    const url = `${API_URL}?action=pull&token=${API_TOKEN}&since=${sinceU}`;
     
     fetch(url)
     .then(res => res.json())
@@ -374,8 +457,8 @@
               applied++;
             } else {
               const localRow = window.S[sKey][localIdx];
-              // Update if remote is newer OR if local is missing critical fields (d, t, pay)
-              if ((rRow.u || 0) > (localRow.u || 0) || !localRow.d) {
+              // Update if remote is newer OR if local has missing critical fields
+              if ((rRow.u || 0) > (localRow.u || 0) || !localRow.d || force) {
                 window.S[sKey][localIdx] = normalizeRemoteRow(sKey, rRow, localRow);
                 applied++;
               }
@@ -383,31 +466,36 @@
           });
         });
 
-        if (applied > 0) {
-          log('sync', 'Pull applied changes', { applied });
+        // Always update cursor to server timestamp
+        if (res.serverU) {
           syncState.lastPullU = res.serverU;
           saveState();
+        }
+
+        if (applied > 0 || force) {
+          log('sync', 'Pull applied changes', { applied });
           
           if (typeof window.persist === 'function') window.persist();
           else if (typeof window.save === 'function') window.save();
 
-          if (typeof window.redrawActiveView === 'function') {
-            window.redrawActiveView();
-          } else {
-            if (typeof window.render === 'function') window.render();
+          // Trigger universal UI redraw across all tabs
+          try {
+            if (typeof window.redrawActiveView === 'function') window.redrawActiveView();
             if (typeof window.homeUI === 'function') window.homeUI();
+            if (typeof window.render === 'function') window.render();
+            if (typeof window.calc === 'function') window.calc();
+            if (typeof window.animateCounts === 'function') window.animateCounts();
+          } catch(uiErr) {
+            console.warn('UI redraw warning after pull:', uiErr);
           }
-          if (typeof window.animateCounts === 'function') {
-            window.animateCounts();
-          }
-        } else {
-          syncState.lastPullU = res.serverU;
-          saveState();
         }
         updateStatus('ok');
       }
     })
-    .catch(err => { updateStatus('offl'); logErr('sync', 'Pull network error', err); })
+    .catch(err => {
+      updateStatus('offl');
+      logErr('sync', 'Pull network error', err);
+    })
     .finally(() => { isPulling = false; });
   }
 
@@ -426,21 +514,19 @@
 
     loadState();
     
-    // Wait for S to be defined
+    // Wait for S and dependencies to be defined
     const initInterval = setInterval(() => {
       if (window.S && window.save) {
         clearInterval(initInterval);
         
         backfill();
         
-        // Wrap window.save if external callers use it
+        // Wrap window.save for transparent auto-sync trigger
         if (!window._syncWrapped) {
           const originalSave = window.save;
           window.save = function() {
             const result = originalSave.apply(this, arguments);
-            if (window.NCS_CONFIG && window.NCS_CONFIG.SYNC_MODE === 'v2') {
-              schedulePush();
-            }
+            schedulePush();
             return result;
           };
           window._syncWrapped = true;
@@ -449,22 +535,22 @@
         // Initial push to send any local un-synced data
         push();
         
-        // Initial pull
+        // Initial pull (pulls with since=0 if local is empty)
         pull();
         updateStatus('ok');
         
         // Fast background polling (every 10s)
         if (pullInterval) clearInterval(pullInterval);
-        pullInterval = setInterval(pull, 10000);
+        pullInterval = setInterval(() => pull(), 10000);
         
         // Lifecycle and Mobile wakeup listeners
-        window.addEventListener('online', pull);
-        window.addEventListener('focus', pull);
+        window.addEventListener('online', () => pull());
+        window.addEventListener('focus', () => pull());
         document.addEventListener('visibilitychange', function() {
           if (!document.hidden) pull();
         });
         
-        log('sync', 'Sync v2 started');
+        log('sync', 'Sync v2 started successfully');
       }
     }, 500);
   }

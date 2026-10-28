@@ -156,7 +156,7 @@ function refreshCurrentView(){
   var svg=$('refresh').querySelector('svg');
   if(svg){svg.classList.add('spin');setTimeout(function(){svg.classList.remove('spin')},650)}
   redrawActiveView();
-  if(SY())pull();
+  if(SY())pull(true);
 }
 $('refresh').onclick=refreshCurrentView;
 function setRefreshLabel(){var t=lb('Refresh current view','বর্তমান ট্যাব রিফ্রেশ করুন');$('refresh').title=t;$('refresh').setAttribute('aria-label',t)}

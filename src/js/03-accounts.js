@@ -364,9 +364,9 @@ async function importPos(){
   }catch(e){}}
 
 // --- NCS V10 PATCH START ---
-async function pull(){
+async function pull(force){
   if (window.NCS_CONFIG && window.NCS_CONFIG.SYNC_MODE === 'v2') {
-    if (window.NcsSync) window.NcsSync.pull();
+    if (window.NcsSync) window.NcsSync.pull(force);
     return;
   }
   if(!SY()||busy)return;
@@ -380,7 +380,7 @@ $('sync').onclick=()=>{
     if (window.NcsSync) {
       setSt('pend');
       window.NcsSync.push(true);
-      window.NcsSync.pull();
+      window.NcsSync.pull(true);
     }
     return;
   }
