@@ -1,0 +1,115 @@
+var Sound=(function(){
+  var ctx=null;
+  function enabled(){return !!S.sound&&!document.documentElement.dataset.rm}
+  function ac(){if(!ctx){try{ctx=new (window.AudioContext||window.webkitAudioContext)()}catch(e){ctx=null}}return ctx}
+  function play(freq,dur,type,vol,offset){
+    var c=ac();if(!c)return;
+    var go=function(){
+      try{
+        var t=c.currentTime+(offset||0);
+        var o=c.createOscillator(),g=c.createGain();
+        o.type=type||'sine';o.frequency.value=freq;
+        g.gain.setValueAtTime(0.0001,t);
+        g.gain.exponentialRampToValueAtTime(vol||0.08,t+0.012);
+        g.gain.exponentialRampToValueAtTime(0.0001,t+(dur||0.1));
+        o.connect(g).connect(c.destination);
+        o.start(t);o.stop(t+(dur||0.1)+0.03);
+      }catch(e){}
+    };
+    if(c.state==='suspended'){c.resume().then(go).catch(function(){})}
+    else go();
+  }
+  function tick(){if(!enabled())return;play(900,0.04,'sine',0.05,0)}
+  function chaChing(){if(!enabled())return;play(1568,0.09,'triangle',0.08,0);play(2093,0.2,'triangle',0.07,0.08)}
+  function buzz(){if(!enabled())return;play(150,0.18,'sawtooth',0.06,0);play(110,0.22,'sawtooth',0.05,0.05)}
+  function chime(){if(!enabled())return;play(880,0.1,'sine',0.05,0);play(1175,0.12,'sine',0.045,0.09);play(1568,0.22,'sine',0.035,0.2)}
+  function test(){
+    var c=ac();if(!c)return;
+    var go=function(){
+      try{
+        [1568,2093].forEach(function(freq,idx){
+          var t=c.currentTime+idx*0.08;
+          var o=c.createOscillator(),g=c.createGain();
+          o.type='triangle';o.frequency.value=freq;
+          g.gain.setValueAtTime(0.0001,t);
+          g.gain.exponentialRampToValueAtTime(0.07,t+0.012);
+          g.gain.exponentialRampToValueAtTime(0.0001,t+0.2);
+          o.connect(g).connect(c.destination);
+          o.start(t);o.stop(t+0.25);
+        });
+      }catch(e){}
+    };
+    if(c.state==='suspended'){c.resume().then(go).catch(function(){})}
+    else go();
+  }
+  return{tick:tick,chaChing:chaChing,buzz:buzz,chime:chime,init:function(){ac()},test:test};
+})();
+['pointerdown','keydown','touchstart'].forEach(function(ev){document.addEventListener(ev,function(){try{Sound.init()}catch(e){}},{once:true})});
+$('ob').addEventListener('click',function(e){if(e.target.id==='sndTest'){try{Sound.test()}catch(err){}}});
+function animateCounts(){
+  document.querySelectorAll('.cnt').forEach(function(el){
+    var to=+el.dataset.to||0;
+    if(document.documentElement.dataset.rm){el.textContent=tk(to);return;}
+    if(!to){el.textContent=tk(0);return;}
+    var st=performance.now();
+    function step(t){
+      var p=Math.min(1,(t-st)/400);
+      el.textContent=tk(Math.round(to*p));
+      if(p<1)requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  });
+}
+function saveCheck(){if(document.documentElement.dataset.rm)return;var d=document.createElement('div');d.className='savechk';d.innerHTML='<svg viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="22" fill="none" stroke="var(--acc)" stroke-width="3"/><path d="M14 27l8 8 16-16" fill="none" stroke="var(--acc)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>';document.body.appendChild(d);setTimeout(function(){d.classList.add('out')},700);setTimeout(function(){d.remove()},1250)}
+(function(){
+  var M="Claude Sonnet 5.5 · owner's Claude account";
+  APP_VERSION='10.1.0';
+  VERS.unshift({v:'9.22',d:'2026-10-19',t:'Sound effects, motion polish and wrapper download safety',by:M,n:['Web Audio sound engine: soft tick on tabs/dialogs, cha-ching on sale/entry save, low buzz on errors, sync chime on background sync','Sound toggle in Settings, default off; AudioContext created on first tap','All sound and motion automatically off when the OS asks for reduced motion','Number count-up on Home (Cash Balance, Total Sell, Total Buy) over 0.4s on load and period change','Save checkmark pop on POS sale and Accounts/Ledger entry save','Tap feedback: buttons scale to 0.97 on press','POS cart rows slide in when added and slide out when removed','dlFile falls back to a data URL window if the wrapper blocks the <a download> tag']});
+  VERS.unshift({v:'9.22.1',d:'2026-10-19',t:'Sound resume fix + Test button',by:M,n:['AudioContext resume() race fixed: tones now play after the context is running (fixes silent playback on Android WebView, iOS Safari and after idle tabs)','▶ Test sound button inside Settings for instant verification','Louder gains for tick and cha-ching so phone speakers are audible']});
+  VERS.unshift({v:'9.22.2',d:'2026-10-19',t:'Sound toggle visible in More, Settings unhidden',by:M,n:['Sound effects ON/OFF button now appears directly in the More tab (no need to open Settings)','Removed the CSS rule that was hiding the Settings button in the More tab','Settings still shows the Sound effects checkbox and the ▶ Test sound button']});
+  VERS.unshift({v:'9.23',d:'2026-10-21',t:'WhatsApp & SMS polite due reminder links in Ledger',by:M,n:['One-tap WhatsApp & SMS due reminder links on customer cards and profile when party owes money (they owe)','Pre-formats polite Bengali payment notice with customer name, shop name, and due amount','Uses iOS and Android standard SMS parameter scheme (?body= / &body=) and wa.me/?text=','Normal Call/SMS/WhatsApp links preserved when balance is settled or zero']});
+  VERS.unshift({v:'9.24',d:'2026-10-21',t:'Flexible MFS/Recharge adjustment & Cash denomination history log',by:M,n:['Individual MFS & Recharge wallet adjustments directly from wallet cards and detail dialogs with full audit trail in S.walletDates','Every cash count and note breakdown is now permanently saved by date and time in S.counts with full denomination history','New "Cash count history" dialog accessible from the Accounts cash strip showing past counts, note denominations, counted vs book difference, and reason']});
+  VERS.unshift({v:'9.25',d:'2026-10-21',t:'Responsive UI overhaul: Modal safety, touch targets, POS split grid & clean Ledger header',by:M,n:['Modal & dialog safety: .dlg gets max-height:88vh with smooth scroll and sticky confirmation/action buttons (.oa) so actions are never pushed offscreen','Ergonomic touch targets: Cart delete (.x) expanded to 40px; Accounts/Ledger table action buttons given generous tap padding and minimum 34px height','Recharge balances grid: 3-column balanced row on both desktop and mobile without awkward empty gaps','Dark mode token integrity: saveCheck checkmark and accent icons use var(--acc) for complete orange/dark harmony','POS desktop & mobile overhaul: Desktop (>=900px) gets a 2-column layout with sticky cart on the right and catalog on the left; mobile search sits directly above catalog without scrolling past cart','Ledger header streamlining: Primary + পেলাম [green] and + দিলাম [red] stay front-and-center while secondary actions (+ Borrow, + Lend, Due date, Edit) are neatly organized under a single ⋯ More dropdown menu']});
+  VERS.unshift({v:'9.26',d:'2026-10-21',t:'Mobile Home Cash Balance fix & Count-Up fallback safety',by:M,n:['Fixed bug where Home hero Cash Balance stayed at 0 on mobile phones: initial DOM now pre-renders the computed balance immediately','animateCounts() now safely sets the target balance even under OS reduced-motion or battery-saver animation throttling instead of returning early']});
+  VERS.unshift({v:'9.27',d:'2026-10-22',t:'System Audit Hardening: Cryptographic ID, Monetary Precision, Storage Safeguard & Sync Security',by:M,n:['Cryptographic collision-proof UID generator replaces pseudo-random financial and log identifiers','Monetary arithmetic precision: r2 helper eliminates floating-point rounding jitter in cash, wallet, and ledger running balances','Storage quota safeguard: 4MB pre-warning advisory with session dismissal memory prevents quota-exceeded crashes','Security: Autocomplete disabled and numeric inputmode enforced across all staff and administrative PIN fields','Mobile responsiveness: touch-action manipulation eliminates 300ms click delay across buttons and action items','Accessibility: Theme button dynamically updates aria-label and tooltip on mode change']});
+  VERS.unshift({v:'9.28',d:'2026-10-22',t:'Google Apps Script GET compatibility restore & Reconnect fix',by:M,n:['Restored standard GET protocol in getRemote(), importPos() and importCatalog() to maintain exact compatibility with Google Apps Script web app endpoint','Fixed infinite Reconnect sync modal loop caused by Apps Script returning ok:false on POST pulls','Prevented badKey() from prematurely wiping S.sync before passphrase verification']});
+  VERS.unshift({v:'9.28.1',d:'2026-10-23',t:'Version History cleanup',by:M,n:['Fixed version history display order','Added missing v9.16 history entry','Removed duplicate v9.26 bug entry']});
+  VERS.unshift({v:'9.29',d:'2026-10-24',t:'Admin Prime Wallet Adjustments, Accounts Streamlining & Card Adjustment Settings',by:'Claude Sonnet / Gemini',n:['MFS & Recharge balance adjustments are now Prime: Admin balance input is never rejected, takes effect everywhere immediately, and conflicting deficit entries are automatically routed to the Admin Review Queue','Offending collision entries display a high-visibility Deficit Review badge in Accounts and direct one-click navigation from Review Queue','Accounts tab layout streamlined: Transaction Details table and filter bar moved directly below the new transaction entry section for faster data entry','Section & Card Adjustment Settings added to More tab (Admin-only): Quick balance adjustment shortcuts for cash drawer, MFS and recharge cards plus dashboard section visibility toggles for Home and Accounts']});
+  VERS.unshift({v:'10.0.0-beta',d:'2026-10-28',t:'Model B: Delta Sync Engine & Structured Sheet Mirror',by:'Antigravity',n:['New Google Apps Script backend with 12 structured sheets','Delta sync engine (sync.js) pushing/pulling only changed rows via monotonic u timestamps','Per-row conflict resolution (highest u timestamp wins)','Diagnostics rolling logger (diag.js) & manual bug report exporter in More tab','Live sync status indicator hooks (Synced, Pending, Offline)']});
+  VERS.unshift({v:'10.1.0',d:'2026-10-29',t:'Sub-Accounts & Architecture Modernization',by:'Antigravity',n:['Sub-accounts: Link any customer, supplier, or party to a parent account via parentId','Combined group & family balance rollup on parent profiles with individual breakdown','Parent account direct link on sub-account profiles for instant navigation','Option to export/print combined group statements or separate sub-account statements','IndexedDB dual-storage engine eliminates 5MB browser storage limits with transparent fallback','AES-GCM-256 password-protected encrypted backups & smart restore','Direct ESC/POS thermal printing with paper cut and cash drawer kick codes']});
+  
+  UPC.unshift({v:'9.22',s:'Done',t:['Web Audio sound engine (tick, cha-ching, buzz, sync chime), default off','Count-up numbers on Home','Save checkmark','Tap feedback','POS cart slide in/out','All respect OS reduced-motion','Download fallback']});
+  UPC.unshift({v:'9.22.1',s:'Done',t:['AudioContext resume race fixed','Test sound button in Settings','Louder gains']});
+  UPC.unshift({v:'9.22.2',s:'Done',t:['Sound toggle visible in More tab','Settings button unhidden']});
+  UPC.unshift({v:'9.23',s:'Done',t:['WhatsApp & SMS due reminder links in Ledger','Polite Bengali payment reminder text']});
+  UPC.unshift({v:'9.24',s:'Done',t:['MFS & Recharge quick balance adjustment','Permanent cash count and currency denomination history']});
+  UPC.unshift({v:'9.25',s:'Done',t:['Responsive modal safety with sticky buttons','40px touch targets & safe table links','POS desktop 2-column and mobile search-first layout','Recharge 3-column balanced grid','Ledger clean header with More dropdown menu']});
+  UPC.unshift({v:'9.26',s:'Done',t:['Mobile Home Cash Balance 0 bug fixed','Animation graceful fallback under OS battery saver / reduced-motion']});
+  UPC.unshift({v:'9.27',s:'Done',t:['Cryptographic collision-proof UID generation for bills and logs','Floating-point monetary precision rounding across cash, wallets and ledger','Storage quota pre-warning threshold (4MB) with dismissal memory','Security autocomplete=off on administrative and staff PIN fields','Zero-delay touch-action manipulation for snappy mobile interactions']});
+  UPC.unshift({v:'9.28',s:'Done',t:['Restored Google Apps Script GET compatibility for pull, inbox, and catalog','Fixed Reconnect sync modal infinite loop']});
+  UPC.unshift({v:'9.28.1',s:'Done',t:['Version history cleanup']});
+  UPC.unshift({v:'9.29',s:'Done',t:['Admin Prime MFS & Recharge wallet adjustments with automatic collision queueing','Accounts tab Transaction Details positioned below entry form','More tab Section & Card Adjustment Settings hub (Option C: quick balance adjust & layout customizer, Admin-only)']});
+  UPC.unshift({v:'10.0.0-beta',s:'Done',t:['Model B Delta Sync Engine with Google Apps Script backend','Structured 12-sheet mirror (Entries, Bills, Products, etc.)','Per-row monotonic u timestamp conflict resolution','Diagnostics rolling logger & manual Bug Reporter in More tab','Live sync indicator status hooks (Synced, Pending, Offline)']});
+  UPC.unshift({v:'10.1.0',s:'Done',t:['Sub-accounts with optional parent link & combined balance','IndexedDB storage engine & AES-GCM encrypted backup','Direct ESC/POS thermal printing']});
+  
+  var sl=UPC.find(function(x){return x.v==='9.23'&&x.s==='Planned'});if(sl)sl.v='9.24';
+  var sp=UPC.find(function(x){return x.v==='9.22'&&x.s==='Planned'});if(sp)sp.v='9.23';
+})();
+BUGS.unshift(
+  {d:'2026-10-28 00:25 (UTC+6)',v:'10.0.0-beta',w:'Antigravity / Claude',a:'Sync pill in top navigation remained stuck on "Pending" with yellow dot and manual clicks did nothing',b:'sync.js never notified setSt() of success/failure, isDirty() remained true because S.synced was bypassed in v2, and sync button / refresh handlers returned early without calling NcsSync',c:'Wired sync.js directly to setSt() on push/pull success and failure; updated isDirty() for v2; delegated manual sync and refresh clicks directly to NcsSync.push(true) and pull()'},
+  {d:'2026-10-27 23:50 (UTC+6)',v:'10.0.0-beta',w:'Antigravity / Claude',a:'SyntaxError: Invalid or unexpected token at index.html:830 during app boot',b:'A corrupted backtick character was present instead of a single quote after .join(\'\')+\'<div...>\` on line 830, caused by clipboard formatting',c:'Replaced the stray backtick with a standard single quote before ,async()=>'},
+  {d:'2026-10-24 23:28 (UTC+6)',v:'9.29',w:'Antigravity / Claude',a:'Adjusting Bkash Personal balance incorrectly inflated Nagad balance instead',b:'Anchors stored the already-transaction-processed balance for all wallets at date d; wltRun then applied the anchor as a reset and added all transactions on top again, double-counting them — Nagad transactions appeared twice',c:'Wallet cards are now a pure manual balance sheet: S.wManual stores each wallet balance directly; calcWallets() reads S.wManual; adjustSingleWallet saves only to S.wManual[key]; a Reset to Zero button is included; no transaction computation or anchor system involved'},
+  {d:'2026-10-24 23:15 (UTC+6)',v:'9.29',w:'Antigravity / Claude',a:'Adjusting wallet balance multiple times adds previous amounts on top of each other and the wrong total persists',b:'doSaveWalletOpening always appended a new anchor to S.walletDates without removing an existing anchor for the same date; wltRun and balanceAtDate then applied both anchors sequentially, causing old adjustments to compound with new ones',c:'doSaveWalletOpening now removes any existing anchor for the same date before inserting the new one, so each date can only have one anchor'},
+  {d:'2026-10-24 00:20 (UTC+6)',v:'9.29',w:'Claude Sonnet / Gemini',a:'Admin wallet balance adjustments were rejected with "would go negative" error when later transactions exceeded new balance',b:'doSaveWalletOpening aborted when wltRun().bad was detected, blocking admin from setting the real actual balance',c:'Made Admin wallet adjustments Prime (unblocked); checkWalletCollisions automatically detects deficit collisions and routes them to Admin Review Queue with visual badges'},
+  {d:'2026-10-23 --:-- (UTC+6)',v:'9.28.1',w:'Claude Sonnet 5.5 · owner\'s Claude account',a:'Version history displayed v9.22 as the latest version',b:'VERS.unshift calls were written in descending order (9.28 first, 9.22 last), so 9.22 ended up at VERS[0]',c:'Reversed the order of VERS.unshift and UPC.unshift calls to ascending so the newest version is prepended last'},
+  {d:'2026-10-22 00:25 (UTC+6)',v:'9.28',w:'Claude Sonnet / Gemini',a:'Reconnect sync dialog looped repeatedly and sync stopped working',b:'v9.27 attempted HTTP POST for pull/inbox/catalog queries; Google Apps Script web app only handles POST for state push and returned ok:false, which triggered badKey() repeatedly',c:'Restored GET query calls for pull, inbox, and catalog; stopped badKey() from clearing S.sync prematurely before passphrase validation'},
+  {d:'2026-10-22 00:15 (UTC+6)',v:'9.27',w:'Claude Sonnet / Gemini',a:'Financial bills and log entries used Math.random() for ID generation which is vulnerable to collisions across multi-device offline sync',b:'Math.random() produces pseudo-random floats without cryptographic collision resistance',c:'Created uid() helper using crypto.getRandomValues(new Uint32Array(1))[0] with Date.now() timestamp'},
+  {d:'2026-10-22 00:15 (UTC+6)',v:'9.27',w:'Claude Sonnet / Gemini',a:'Cumulative cash, wallet and customer balances could accumulate IEEE 754 floating-point precision jitter over many entries',b:'Unrounded additions and subtractions of fractional values in calc(), wltRun() and lBal()',c:'Enforced r2 monetary rounding (Math.round((+x||0)*100)/100) on all balance accumulators and difference checks'},
+  {d:'2026-10-22 00:15 (UTC+6)',v:'9.27',w:'Claude Sonnet / Gemini',a:'Local storage quota could crash unannounced when attachment photos or long ledger history approached 5MB',b:'persist() only notified on hard localStorage.setItem throw',c:'Added proactive 4MB threshold warning advising backup download with session dismissal memory'},
+  {d:'2026-10-22 00:15 (UTC+6)',v:'9.27',w:'Claude Sonnet / Gemini',a:'Sync key transmitted in cleartext GET URL query parameters in getRemote(), importPos(), and importCatalog()',b:'GET query parameters are logged in server/proxy histories',c:'Transmitted sync key in HTTP POST request body with automatic fallback to GET for older Apps Script versions'},
+  {d:'2026-10-21 23:58 (UTC+6)',v:'9.26',w:'Claude Sonnet / Gemini',a:'Home hero Cash Balance remained at 0 on mobile phones',b:'DOM initialized with placeholder 0 and animateCounts() returned early without painting under OS reduced-motion/battery saver',c:'Pre-render computed balance immediately into the DOM and update animateCounts() to set target value if animations are suppressed'},
+  {d:'2026-10-19 --:--',v:'9.22.2',w:'Claude Sonnet 5.5 · owner\'s Claude account',a:'Sound toggle was not visible in the More tab because the Settings button was hidden by CSS',b:'An old CSS rule `#stf,#set{display:none!important}` was hiding the Settings button; the Sound toggle lived inside that dialog',c:'Removed `#set` from the hide rule; added a dedicated "Sound effects: ON/OFF" button directly to the More list; keeps the Settings dialog the same'},
+  {d:'2026-10-19 --:--',v:'9.22.1',w:'Claude Sonnet 5.5 · owner\'s Claude account',a:'Sound silent even when the Settings toggle is checked',b:'AudioContext was created but its resume() promise was racing the tone scheduling: tones were scheduled at currentTime 0 while the context was still suspended, so nothing was heard (classic on Android WebView and iOS Safari, and after the tab was idle)',c:'play() now waits for ctx.resume() before scheduling tones (`.then(go)`); Added Test sound button in Settings; Bumped gains so phone speakers are audible'},
+  {d:'2026-10-19 --:--',v:'9.22',w:'Claude Sonnet 5.5 · owner\'s Claude account',a:'CSV/JSON downloads could fail silently inside the native wrappers because the <a download> element was never attached to the DOM and wrappers sometimes block blob downloads',b:'dlFile clicked a detached anchor and swallowed the error',c:'The anchor is appended before click(), removed after 1s, and a window.open data-URL fallback runs if the blob path throws'}
+);
+

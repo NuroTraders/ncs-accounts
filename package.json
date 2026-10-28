@@ -1,13 +1,15 @@
 {
   "name": "ncs-accounts",
   "productName": "NCS Accounts",
-  "version": "9.28.1",
+  "version": "10.1.0",
   "private": true,
   "description": "NCS Daily Accounts - Nur Computer & Stationery",
   "author": "Nur Computer & Stationery",
   "main": "electron/main.js",
   "scripts": {
-    "prepare-www": "node scripts/prepare-www.js",
+    "build": "node scripts/build.js",
+    "watch": "node scripts/build.js --watch",
+    "prepare-www": "node scripts/build.js && node scripts/prepare-www.js",
     "start": "npm run prepare-www && electron .",
     "dist:win": "npm run prepare-www && electron-builder --config electron-builder.config.js --win --x64 --publish never",
     "android:setup": "node scripts/android-setup.js"

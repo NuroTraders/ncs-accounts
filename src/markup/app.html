@@ -1,0 +1,90 @@
+
+<aside class="tabs" id="tabs" hidden></aside>
+<div class="top" id="top"><img class="lg-b" src="logo-icon-black.png" alt=""><img class="lg-w" src="logo-icon-white.png" alt=""><div class="tt">Nur Computer &amp; Stationery<small id="tsub"></small></div><div class="sp" id="topR"><div class="tclk" id="tclk" hidden aria-label="Current time"><b id="tclkT"></b><small id="tclkD"></small></div><button type="button" class="ic" id="themeBtn" aria-label="Theme" title="Theme" data-mode="auto"><svg class="th-auto" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor"/></svg><svg class="th-light" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg><svg class="th-dark" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button><button type="button" class="ic" id="refresh" aria-label="Refresh current view" title="Refresh current view"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 0 1 13.66-5.66L20 8"/><path d="M20 3v5h-5"/><path d="M20 12a8 8 0 0 1-13.66 5.66L4 16"/><path d="M4 21v-5h5"/></svg></button></div></div>
+<div class="wrap view" id="vAcc">
+  <div class="pt"><h2>Nur Computer &amp; Stationery</h2><div>DAILY ACCOUNTS</div></div>
+  <header>
+    <div><div class="shop">Nur Computer &amp; Stationery · Daily Accounts</div><h1 id="title"></h1></div>
+    <div class="nav">
+      <button class="ic" id="pd" aria-label="Previous day">‹</button>
+      <input type="date" id="pick" aria-label="Choose date">
+      <button class="ic" id="nd" aria-label="Next day">›</button>
+      <button class="ghost" id="today">Today</button>
+      <button class="ghost" id="set">Settings</button><button class="ghost" id="lockb">Lock</button><button class="ghost" id="lang">বাংলা</button><button class="ghost" id="sync">Sync: Off</button>
+    </div>
+  </header>
+
+  <section class="stats" id="stats"></section>
+  <section class="card cashp" id="cashp"></section>
+  <div id="wltWrap" class="wlt-wrap"></div>
+  <div id="chkBar" class="card cbn" hidden></div>
+  <section class="card daybar" id="daybar"></section>
+  <div class="card empty" id="cn" hidden>This day is closed. An admin can reopen it to add or change entries.</div>
+  <section class="card" id="fsec"><form id="form" autocomplete="off"><div class="g">
+    <div><label for="ft">Time</label><input id="ft" type="time" required></div>
+    <div><label for="fy">Type</label><select id="fy"><option value="Sale">Sale</option><option value="Purchase">Purchase / Expense</option><option value="Deposit">Owner Deposit</option><option value="Withdrawal">Owner Withdrawal</option><option value="Adjustment">Cash Adjustment (±)</option></select></div>
+    <div><label for="fd">Description</label><input id="fd" type="text" required maxlength="120" placeholder="Type product or cost name" autocomplete="off"><div class="sg" id="sg" hidden></div></div>
+    <div><label for="fc">Category</label><select id="fc"></select></div>
+    <div><label for="fp">Payment method</label><select id="fp"><option>Cash</option><option>Mobile Banking</option><option>Bank</option><option>Due</option></select></div>
+    <div id="fwb" hidden><label for="fw">Received into wallet</label><select id="fw"><option value="bk">Bkash Personal</option><option value="ng">Nagad</option><option value="rk">Rocket</option><option value="bka">Bkash Agent</option></select></div>
+    <div><label for="fa">Amount</label><input id="fa" type="number" inputmode="decimal" step="any" min="0" required placeholder="0"></div>
+    <div hidden><label for="fx">Actual cash (optional) <button type="button" class="lnk adj" id="cnt">Count</button></label><input id="fx" type="number" inputmode="decimal" step="any" min="0" placeholder="0"></div>
+    <div class="pp" id="pcu" hidden><label for="fcu">Customer</label><select id="fcu"></select></div><div class="pp" id="ppn" hidden><label for="fpn" id="fpl">Customer name</label><input id="fpn" list="pl" maxlength="60" autocomplete="off"><datalist id="pl"></datalist></div><div class="pp" id="ppt" hidden><label for="fph">Phone (optional)</label><input id="fph" type="tel" maxlength="20" autocomplete="off"></div>
+    <div class="act"><div class="prev" id="prev"></div><div><button type="button" class="ghost" id="cancel" style="display:none">Cancel edit</button> <button class="go" id="go" type="submit">Add entry</button></div></div>
+  </div></form></section>
+
+  <section class="card fb" id="fb"><input id="sq" placeholder="Search description or category" autocomplete="off"><select id="sty"><option value="">All types</option><option value="Sale">Sale</option><option value="Purchase">Purchase / Expense</option><option value="Deposit">Owner Deposit</option><option value="Withdrawal">Owner Withdrawal</option><option value="Adjustment">Cash Adjustment (±)</option><option value="Ledger">Ledger cash / wallet</option><option value="Check">Needs check</option></select><select id="spy"><option value="">All payments</option><option>Cash</option><option>Mobile Banking</option><option>Bank</option><option>Due</option></select><input id="sfa" type="date" title="From"><input id="sfb" type="date" title="To"><button class="ghost" id="sclr">Clear</button></section>
+  <div id="avBar"></div>
+  <section class="card scroll"><div id="tbl"></div></section>
+  <div class="pf" id="pf"></div>
+
+  <div class="foot"><span id="who"></span><button class="ghost" id="stf">Staff</button><button class="ghost" id="logb">Change Log</button><button class="ghost" id="rpb">Reports</button><button class="ghost" id="und" disabled>Undo</button><button class="ghost" id="prt">Print</button><button class="ghost" id="csv">Export CSV</button></div>
+</div>
+
+<div class="wrap view" id="vHome"><header><div><div class="shop">Overview</div><h1 id="hTitle">Home</h1></div></header>
+  <div class="ptabs" id="hTabs"></div><section class="dhero" id="hHero"></section>
+  <section class="hs" id="hStats"></section>
+  <section class="htoday" id="hToday"></section>
+  <section class="card howe" id="hOwe"></section>
+  <div id="wltWrapH" class="wlt-wrap"></div>
+  <div class="qa" id="hQa"><button type="button" data-q="sale"><span class="qai" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 12h16M12 4v16"/></svg></span><span class="qal">New sale</span></button><button type="button" data-q="purchase"><span class="qai" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6L5 8Z"/><path d="M9 8a3 3 0 0 1 6 0"/></svg></span><span class="qal">New purchase</span></button><button type="button" data-q="acc"><span class="qai" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 12h7M9 16h7"/></svg></span><span class="qal">Accounts</span></button><button type="button" data-q="bills"><span class="qai" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6M9 16h3"/></svg></span><span class="qal">Today's bills</span></button></div>
+  <div class="dgrid"><section class="card dchc"><h3 class="dchh">Sell &amp; Buy · Last 7 days</h3><div class="dchart" id="hChart"></div></section><section class="card dchc"><h3 class="dchh">Sales by payment</h3><div class="dpc" id="hPay"></div></section></div>
+  <h3 style="margin:6px 2px 8px;font-size:15px">Recent bills</h3><section class="card" id="hRecent"></section></div>
+<div class="wrap view" id="vPos">
+  <header style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px"><div><div class="shop">Point of sale</div><h1>POS</h1></div>
+    <div class="seg"><button id="mS" class="on">Sale</button><button id="mP">Purchase</button></div>
+    <div class="nav"><button class="ghost" id="bHeld">Held</button><button class="ghost" id="bBills">Bills</button><button class="ghost" id="bDrawer">Drawer</button></div></header>
+  <div class="pos-layout">
+    <div class="pos-main">
+      <div class="pos-tools" role="search">
+        <div class="pos-search"><label id="qLabel" for="q">Product Name/ID/Barcode</label><input id="q" placeholder="Search products" autocomplete="off"></div>
+        <button class="ghost" id="bScan" type="button">Scan</button><button class="ghost" id="bNew" type="button">Add Product</button>
+      </div>
+      <details class="pos-products" id="productPanel" open><summary id="productSummary">Browse products / Add to bill</summary><div class="top7" id="top7"></div><div class="grid" id="grid"></div></details>
+    </div>
+    <aside class="pos-sidebar">
+      <section class="card cart pos-cart"><h3 id="ct">Sale cart</h3><div id="lines"></div>
+        <div class="tot"><span>Subtotal</span><b id="st">0</b></div>
+        <div class="tot"><span>Discount</span><div class="dcw"><input id="dc" type="number" inputmode="decimal" min="0" placeholder="0" aria-label="Discount amount"><div class="dcp"><button type="button" id="dpm" aria-label="Lower discount percent">−</button><input id="dp" type="number" inputmode="decimal" min="0" max="100" step="0.5" placeholder="%" aria-label="Discount percent"><span>%</span><button type="button" id="dpp" aria-label="Raise discount percent">+</button></div></div></div>
+        <div class="dcn" id="dcn" hidden></div>
+        <div class="tot big"><span>Total</span><b id="tt">৳0</b></div>
+        <div style="display:flex;gap:8px;margin:8px 0"><button class="ghost" id="bHold" style="flex:1">Hold bill</button><button class="ghost" id="bCustom" style="flex:1">+ Custom item</button></div>
+        <button class="go" id="bPay">Charge</button>
+      </section>
+    </aside>
+  </div>
+  <button class="go fab" id="fab">Charge</button></div>
+<div class="wrap view" id="vProd"><header style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px"><div><div class="shop">Stock and prices</div><h1>Products</h1></div><button class="go" id="pdNew" style="width:auto">+ New product</button></header>
+  <section class="hs" id="pdS"></section>
+  <div class="tools" style="display:flex;gap:8px;margin-bottom:10px"><input id="pdq" placeholder="Search products" autocomplete="off"></div>
+  <div class="ptabs" id="pdF"><button data-f="all" class="on">All</button><button data-f="low">Low stock</button><button data-f="out">Out of stock</button></div>
+  <section class="card" id="pdL"></section></div>
+<div class="wrap view" id="vMore"><header><div><div class="shop">Settings and tools</div><h1>More</h1></div></header><div class="mlist" id="moreList"></div></div>
+<div class="wrap view" id="vLed"></div>
+<div class="wrap view" id="vMgmt"></div>
+<div id="rcp"></div>
+<div class="ov" id="sc" hidden><div class="dlg"><h3>Scan barcode</h3><video id="vid" playsinline muted></video><div class="oa"><button class="ghost" id="scx">Close</button></div></div></div>
+<div class="ov" id="ov" hidden><div class="dlg"><h3 id="ot"></h3><div id="ob"></div><div class="oa"><button class="ghost" id="oc">Cancel</button><button class="go" id="ok">Confirm</button></div></div></div>
+
+<div id="rpt"></div>
+<div class="ov lk" id="lk" hidden></div>

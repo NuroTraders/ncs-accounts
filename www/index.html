@@ -6,6 +6,7 @@
 <title>Daily Accounts</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
 <style>
+
 :root{--bg:#F7F7F5;--card:#FFFFFF;--ink:#17181A;--mut:#80848A;--line:#E8E8E4;--acc:#2F5D3A;--soft:#E9F0EA;--gold:#B7862F;--pos:#2F7D46;--neg:#C23B3B;--warn:#B7791F;--btn:#2F5D3A;--btnink:#fff}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0E0F10;--card:#17181A;--ink:#F1F1EF;--mut:#8C9096;--line:#26282B;--acc:#8FC79B;--soft:#1C2A20;--gold:#E0B25C;--pos:#6FCF8A;--neg:#F08585;--warn:#E3B341;--btn:#8FC79B;--btnink:#0E0F10}}
 :root[data-theme="dark"]{--bg:#0E0F10;--card:#17181A;--ink:#F1F1EF;--mut:#8C9096;--line:#26282B;--acc:#8FC79B;--soft:#1C2A20;--gold:#E0B25C;--pos:#6FCF8A;--neg:#F08585;--warn:#E3B341;--btn:#8FC79B;--btnink:#0E0F10}
@@ -468,11 +469,13 @@ button:active{transform:scale(.97)}
 #lines .line.slideout{animation:slideOut .2s ease forwards}
 :root[data-rm] .savechk{display:none!important}
 :root[data-rm] #lines .line.slidein,:root[data-rm] #lines .line.slideout{animation:none!important}
+
 </style>
 <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#2F5D3A"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes">
 <script src="native-bridge.js"></script><script src="config.js"></script>
 </head>
 <body>
+
 <aside class="tabs" id="tabs" hidden></aside>
 <div class="top" id="top"><img class="lg-b" src="logo-icon-black.png" alt=""><img class="lg-w" src="logo-icon-white.png" alt=""><div class="tt">Nur Computer &amp; Stationery<small id="tsub"></small></div><div class="sp" id="topR"><div class="tclk" id="tclk" hidden aria-label="Current time"><b id="tclkT"></b><small id="tclkD"></small></div><button type="button" class="ic" id="themeBtn" aria-label="Theme" title="Theme" data-mode="auto"><svg class="th-auto" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor"/></svg><svg class="th-light" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg><svg class="th-dark" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button><button type="button" class="ic" id="refresh" aria-label="Refresh current view" title="Refresh current view"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 0 1 13.66-5.66L20 8"/><path d="M20 3v5h-5"/><path d="M20 12a8 8 0 0 1-13.66 5.66L4 16"/><path d="M4 21v-5h5"/></svg></button></div></div>
 <div class="wrap view" id="vAcc">
@@ -562,7 +565,10 @@ button:active{transform:scale(.97)}
 
 <div id="rpt"></div>
 <div class="ov lk" id="lk" hidden></div>
+
 <script>
+/* --- Module: 01-core.js --- */
+
 const KEY='ncs_accounts_v2',$=id=>document.getElementById(id);
 const E=(id,t,type,desc,cat,amt,x)=>({id,d:'2026-10-08',t,type,desc,cat,pay:'Cash',amt,...x});
 const seed=()=>({start:0,theme:'auto',dayStart:'06:00',dayEnd:'18:00',sound:false,entries:[
@@ -587,30 +593,147 @@ function primeLH(){LH.clear();COLS.forEach(c=>S[c].forEach(x=>LH.set(c+x.id,sig(
 function stampChanged(){const now=Date.now();COLS.forEach(c=>S[c].forEach(x=>{const k=c+x.id,j=sig(x);if(LH.get(k)!==j){x.u=now;LH.set(k,j)}}));
   if(S.users){const j=sig(S.users);if(LH.get('users')!==j){S.users.u=now;LH.set('users',j)}}}
 ensureCols();primeLH();
- function storageNotice(message){
-   let box=document.getElementById('ncsStorageNotice');
-   if(!message){if(box)box.style.display='none';return}
-   if(!box){
-     box=document.createElement('div');
-     box.id='ncsStorageNotice';
-     box.setAttribute('role','alert');
-     box.style.cssText='position:fixed;left:12px;right:12px;bottom:86px;z-index:1000;padding:12px 14px;border:1px solid var(--warn);border-radius:12px;background:var(--card);color:var(--ink);box-shadow:0 6px 24px rgba(0,0,0,.22);display:none;align-items:center;gap:12px;justify-content:space-between;flex-wrap:wrap';
-     const text=document.createElement('span');text.dataset.storageMessage='1';
-     const button=document.createElement('button');button.type='button';button.className='ghost';button.setAttribute('aria-label','Dismiss');button.textContent='Dismiss';
-     button.onclick=function(){box.style.display='none';window._storageWarnDismissed=true};
-     box.append(text,button);document.body.appendChild(box);
-   }
-   box.querySelector('[data-storage-message]').textContent=message;
-   box.style.display='flex';
- }
- const persist=()=>{try{
-   if(storageLoadError){if(rawStorageAtLoad===null)throw new Error('Could not preserve the unreadable saved data');recoveryBackupKey=KEY+'_recovery_'+Date.now();localStorage.setItem(recoveryBackupKey,rawStorageAtLoad);recoveryRaw=rawStorageAtLoad;storageLoadError=null}
-   const sStr=JSON.stringify(S);
-   if(sStr.length>4000000&&!window._storageWarnDismissed){
-     storageNotice(lb('Storage warning: Data size is high ('+Math.round(sStr.length/1024)+' KB). Consider downloading a backup JSON or archiving old photos soon.','স্টোরেজ সতর্কতা: ডেটার আকার অনেক বেশি ('+Math.round(sStr.length/1024)+' KB)। ব্যাকআপ JSON ডাউনলোড করুন বা পুরনো ছবি পরিষ্কার করুন।'));
-   }
-   localStorage.setItem(KEY,sStr);return true
- }catch(e){console.error('Local save failed',e);storageNotice('Could not save to this device. Free browser storage and try again.');return false}};
+
+const NcsDB = (function() {
+  const DB_NAME = 'ncs_idb_v1';
+  const STORE_NAME = 'state';
+  let dbPromise = null;
+
+  function isSupported() {
+    try {
+      return typeof window !== 'undefined' && !!window.indexedDB;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function getDB() {
+    if (!isSupported()) return Promise.resolve(null);
+    if (!dbPromise) {
+      dbPromise = new Promise(function(resolve) {
+        try {
+          const req = window.indexedDB.open(DB_NAME, 1);
+          req.onupgradeneeded = function(e) {
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains(STORE_NAME)) {
+              db.createObjectStore(STORE_NAME);
+            }
+          };
+          req.onsuccess = function(e) { resolve(e.target.result); };
+          req.onerror = function() { resolve(null); };
+        } catch (err) {
+          resolve(null);
+        }
+      });
+    }
+    return dbPromise;
+  }
+
+  return {
+    isSupported: isSupported,
+    get: function(key) {
+      return getDB().then(function(db) {
+        if (!db) return null;
+        return new Promise(function(resolve) {
+          try {
+            const tx = db.transaction(STORE_NAME, 'readonly');
+            const store = tx.objectStore(STORE_NAME);
+            const req = store.get(key);
+            req.onsuccess = function() { resolve(req.result || null); };
+            req.onerror = function() { resolve(null); };
+          } catch (e) {
+            resolve(null);
+          }
+        });
+      });
+    },
+    set: function(key, val) {
+      return getDB().then(function(db) {
+        if (!db) return false;
+        return new Promise(function(resolve) {
+          try {
+            const tx = db.transaction(STORE_NAME, 'readwrite');
+            const store = tx.objectStore(STORE_NAME);
+            const req = store.put(val, key);
+            req.onsuccess = function() { resolve(true); };
+            req.onerror = function() { resolve(false); };
+          } catch (e) {
+            resolve(false);
+          }
+        });
+      });
+    }
+  };
+})();
+
+// Background check to synchronize from IndexedDB if it has a newer revision
+if (typeof window !== 'undefined' && NcsDB.isSupported()) {
+  NcsDB.get(KEY).then(function(idbState) {
+    if (idbState && idbState.rev && (!S || !S.rev || idbState.rev > S.rev)) {
+      console.log('IndexedDB has newer state (rev ' + idbState.rev + ' > ' + (S ? S.rev : 0) + '), updating active state...');
+      S = idbState;
+      ensureCols();
+      primeLH();
+      if (typeof redrawActiveView === 'function') redrawActiveView();
+    } else if (S) {
+      NcsDB.set(KEY, S);
+    }
+  }).catch(function(err) {
+    console.warn('IndexedDB initial sync warning:', err);
+  });
+}
+
+function storageNotice(message){
+  let box=document.getElementById('ncsStorageNotice');
+  if(!message){if(box)box.style.display='none';return}
+  if(!box){
+    box=document.createElement('div');
+    box.id='ncsStorageNotice';
+    box.setAttribute('role','alert');
+    box.style.cssText='position:fixed;left:12px;right:12px;bottom:86px;z-index:1000;padding:12px 14px;border:1px solid var(--warn);border-radius:12px;background:var(--card);color:var(--ink);box-shadow:0 6px 24px rgba(0,0,0,.22);display:none;align-items:center;gap:12px;justify-content:space-between;flex-wrap:wrap';
+    const text=document.createElement('span');text.dataset.storageMessage='1';
+    const button=document.createElement('button');button.type='button';button.className='ghost';button.setAttribute('aria-label','Dismiss');button.textContent='Dismiss';
+    button.onclick=function(){box.style.display='none';window._storageWarnDismissed=true};
+    box.append(text,button);document.body.appendChild(box);
+  }
+  box.querySelector('[data-storage-message]').textContent=message;
+  box.style.display='flex';
+}
+
+const persist=()=>{
+  try{
+    if(storageLoadError){
+      if(rawStorageAtLoad===null)throw new Error('Could not preserve the unreadable saved data');
+      recoveryBackupKey=KEY+'_recovery_'+Date.now();
+      localStorage.setItem(recoveryBackupKey,rawStorageAtLoad);
+      recoveryRaw=rawStorageAtLoad;
+      storageLoadError=null;
+    }
+    const sStr=JSON.stringify(S);
+    if(sStr.length>4000000&&!window._storageWarnDismissed){
+      storageNotice(lb('Storage advisory: Data size is high ('+Math.round(sStr.length/1024)+' KB). Saved securely in browser IndexedDB. Consider exporting a backup JSON soon.','স্টোরেজ নোটিশ: ডেটার আকার ('+Math.round(sStr.length/1024)+' KB)। ব্রাউজারের IndexedDB ডেটাবেসে নিরাপদে জমা হচ্ছে।'));
+    }
+    let lsOk=true;
+    try {
+      localStorage.setItem(KEY,sStr);
+    } catch(lsErr) {
+      lsOk=false;
+      console.warn('localStorage.setItem quota reached, persisting to IndexedDB...', lsErr);
+    }
+    if (NcsDB.isSupported()) {
+      NcsDB.set(KEY, S);
+    }
+    return lsOk || NcsDB.isSupported();
+  }catch(e){
+    console.error('Local save failed',e);
+    if (NcsDB.isSupported()) {
+      NcsDB.set(KEY, S);
+      return true;
+    }
+    storageNotice('Could not save to this device. Free browser storage and try again.');
+    return false;
+  }
+};
  
 // --- NCS V10 PATCH START ---
 const save=()=>{
@@ -639,6 +762,50 @@ const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&g
 const csvCell=s=>{const v=String(s??''),safe=/^[\s\u0000-\u001f]*[=+\-@]/.test(v)?"'"+v:v;return'"'+safe.replace(/"/g,'""')+'"'}
 const sorted=()=>[...S.entries].filter(e=>!e.removed).sort((a,b)=>{const x=a.d+a.t,y=b.d+b.t;return x<y?-1:x>y?1:a.id-b.id});
 const cash=e=>(e.void||e.removed)?0:e.type==='Sale'?(e.pay==='Cash'?e.amt:0):e.type==='Purchase'?(e.pay==='Cash'?-e.amt:0):e.type==='Ledger'?(e.w?0:(e.ld==='in'?e.amt:-e.amt)):e.type==='Deposit'?e.amt:e.type==='Withdrawal'?-e.amt:e.amt;
+
+
+async function encryptBackup(dataStr, password) {
+  const enc = new TextEncoder();
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const keyMaterial = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']);
+  const key = await crypto.subtle.deriveKey(
+    { name: 'PBKDF2', salt: salt, iterations: 100000, hash: 'SHA-256' },
+    keyMaterial,
+    { name: 'AES-GCM', length: 256 },
+    false,
+    ['encrypt']
+  );
+  const encrypted = await crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, key, enc.encode(dataStr));
+  return {
+    app: 'NCS Daily Accounts',
+    encrypted: true,
+    alg: 'AES-GCM-256',
+    salt: Array.from(salt).map(b => b.toString(16).padStart(2, '0')).join(''),
+    iv: Array.from(iv).map(b => b.toString(16).padStart(2, '0')).join(''),
+    data: Array.from(new Uint8Array(encrypted)).map(b => b.toString(16).padStart(2, '0')).join('')
+  };
+}
+
+async function decryptBackup(encObj, password) {
+  const enc = new TextEncoder();
+  const salt = new Uint8Array(encObj.salt.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+  const iv = new Uint8Array(encObj.iv.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+  const data = new Uint8Array(encObj.data.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+  const keyMaterial = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']);
+  const key = await crypto.subtle.deriveKey(
+    { name: 'PBKDF2', salt: salt, iterations: 100000, hash: 'SHA-256' },
+    keyMaterial,
+    { name: 'AES-GCM', length: 256 },
+    false,
+    ['decrypt']
+  );
+  const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: iv }, key, data);
+  return new TextDecoder().decode(decrypted);
+}
+
+
+/* --- Module: 02-calc.js --- */
 function calc(){let p=+S.start||0;const m={};sorted().forEach(e=>{if(e.void)return;const bal=r2(p+cash(e));m[e.id]={p,bal,df:e.act==null?null:r2(e.act-bal)};p=bal});return m}
 const prevFor=(d,t)=>{let p=+S.start||0;sorted().forEach(e=>{if(!e.void&&e.id!==editing&&(e.d+e.t)<=(d+t))p=r2(p+cash(e))});return p};
 var WLT={bk:'Bkash Personal',ng:'Nagad',rk:'Rocket',bka:'Bkash Agent',gp:'GP Recharge',robi:'Robi Recharge',cir:'Circkle Recharge'};
@@ -649,6 +816,9 @@ var ACC_N=150,ACC_D='',LPGN=80,LPGC=null,AV=false;
 function imgCap(c,q){var u=c.toDataURL('image/jpeg',q);while(u.length>24000&&q>.3){q-=.1;u=c.toDataURL('image/jpeg',q)}return u}
 const CATS={Sale:['Printing','Stationery','Computer Service','Other'].concat(Object.keys(WLTC.Sale)),Purchase:['Stock','Rent','Salary','Utilities','Transport','Other'].concat(Object.keys(WLTC.Purchase))};
 
+
+
+/* --- Module: 03-accounts.js --- */
 function render(){try{renderWalletCards()}catch(e){}try{applyCardSettings()}catch(e){}
   $('title').textContent=label(cur);$('pick').value=cur;
   const m=calc(),all=sorted(),day=all.filter(e=>e.d===cur),act=day.filter(e=>!e.void),f=flt(),tv0=f?all.filter(e=>match(e,f)):day,tv=tv0.filter(e=>!e.void),vd=lEd()?tv0.filter(e=>e.void):[];
@@ -762,7 +932,84 @@ $('themeBtn').onclick=function(){
   applyTheme();
 };
  $('set').onclick=()=>ask('Settings',`<div class="f"><label>Starting cash</label><input id="s1" type="number" min="0" step="any" value="${S.start||0}"></div><div class="f"><label class="tg" style="justify-content:space-between"><span>Sound effects <small class="mut">(tick, cha-ching, buzz, chime)</small></span><input type="checkbox" id="snd" ${S.sound?'checked':''}></label><button type="button" class="ghost" id="sndTest" style="margin-top:6px;height:32px;font-size:13px">▶ Test sound</button></div><div class="f"><label>Reason for changing opening cash (required when changed)</label><input id="s1r" maxlength="160"></div><div class="f"><label>Day starts (Day/Night theme)</label><input id="s2" type="time" value="${S.dayStart}"></div><div class="f"><label>Night starts</label><input id="s3" type="time" value="${S.dayEnd}"></div><div class="f"><label>Google Sheet sync URL</label><input id="s4" value="${esc(S.sync?S.sync.url:'')}"></div><div class="f"><label>Sync key</label><input id="s5" type="password" value="${esc(S.sync?S.sync.key:'')}"></div><button type="button" class="ghost" id="setpin">Change admin PIN</button> <button type="button" class="ghost" id="ssu">Secure sync setup</button> <button type="button" class="ghost" id="sfr" style="color:var(--neg)">Start fresh (carry forward balances)</button> <button type="button" class="ghost" id="backupJson">Download data backup</button> <button type="button" class="ghost" id="restoreJson">Restore from backup</button><p class="mut" style="font-size:12.5px;margin:8px 0 0">${lb('Backups are files you download; the app does not back up by itself. Data lives in this browser, and in the Google Sheet only if sync is on. Keep a recent download off this device (for example in Drive).','ব্যাকআপ হলো ডাউনলোড করা ফাইল; অ্যাপ নিজে ব্যাকআপ নেয় না। তথ্য এই ব্রাউজারে থাকে, আর সিঙ্ক চালু থাকলে গুগল শিটে। সাম্প্রতিক একটি ডাউনলোড এই ডিভাইসের বাইরে রাখুন (যেমন ড্রাইভে)।')} ${S.lastBackup?lb('Last download from this device: ','এই ডিভাইস থেকে শেষ ডাউনলোড: ')+sd(iso(new Date(S.lastBackup))):lb('No backup downloaded from this device yet.','এই ডিভাইস থেকে এখনো ব্যাকআপ ডাউনলোড হয়নি।')}</p>`,()=>{const before={start:S.start,dayStart:S.dayStart,dayEnd:S.dayEnd,sync:S.sync,sound:S.sound},raw=$('s1').value.trim(),start=raw===''?NaN:Number(raw),old=+S.start||0,reason=$('s1r').value.trim();if(!Number.isFinite(start)||start<0)return false;if(start!==old){if(!reason){$('s1r').style.borderColor='var(--neg)';return false}lg('Opening cash changed',old+' → '+start+' · '+reason);S.start=start}S.dayStart=$('s2').value||'06:00';S.dayEnd=$('s3').value||'18:00';S.sync=$('s4').value.trim()&&$('s5').value.trim()?{url:$('s4').value.trim(),key:$('s5').value.trim()}:null;S.sound=!!$('snd').checked;if(!save()){Object.assign(S,before);if(start!==old)S.log.shift();return false}pull();applyTheme();render()},'Save');
- $('ob').addEventListener('click',e=>{if(e.target.id!=='backupJson')return;const backup={app:'NCS Daily Accounts',version:APP_VERSION,exportedAt:new Date().toISOString(),state:stateOut()};dlFile('NCS_Backup_'+iso(new Date())+'.json',JSON.stringify(backup,null,2))});
+ $('ob').addEventListener('click', async e => {
+    if (e.target.id === 'backupJson') {
+      const backup = { app: 'NCS Daily Accounts', version: APP_VERSION, exportedAt: new Date().toISOString(), state: stateOut() };
+      ask(lb('Backup options', 'ব্যাকআপ অপশন'), '<div class="f"><label>' + lb('Backup format', 'ব্যাকআপের ধরন') + '</label><select id="bkFmt"><option value="plain">' + lb('Standard JSON (unencrypted)', 'সাধারণ JSON (লক ছাড়া)') + '</option><option value="enc">' + lb('Password-protected (AES-GCM encrypted)', 'পাসওয়ার্ড দিয়ে সুরক্ষিত (AES এনক্রিপ্টেড)') + '</option></select></div><div class="f" id="bkPassBox" hidden><label>' + lb('Encryption password', 'পাসওয়ার্ড দিন') + '</label><input type="password" id="bkPass" placeholder="4+ characters" autocomplete="new-password"></div>', async () => {
+        const fmt = $('bkFmt').value;
+        const pass = $('bkPass').value.trim();
+        if (fmt === 'enc') {
+          if (!pass || pass.length < 4) {
+            Sound.buzz();
+            alert(lb('Password must be at least 4 characters', 'পাসওয়ার্ড কমপক্ষে ৪ অক্ষরের হতে হবে'));
+            return false;
+          }
+          const encPayload = await encryptBackup(JSON.stringify(backup), pass);
+          dlFile('NCS_Backup_Encrypted_' + iso(new Date()) + '.json', JSON.stringify(encPayload, null, 2));
+        } else {
+          dlFile('NCS_Backup_' + iso(new Date()) + '.json', JSON.stringify(backup, null, 2));
+        }
+        S.lastBackup = Date.now();
+        save();
+      }, lb('Download', 'ডাউনলোড'));
+      setTimeout(() => {
+        const fmtSel = $('bkFmt'), box = $('bkPassBox');
+        if (fmtSel && box) fmtSel.onchange = () => { box.hidden = fmtSel.value !== 'enc'; };
+      }, 50);
+    } else if (e.target.id === 'restoreJson') {
+      const fi = document.createElement('input');
+      fi.type = 'file';
+      fi.accept = '.json';
+      fi.onchange = ev => {
+        const file = ev.target.files && ev.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = async () => {
+          try {
+            let data = JSON.parse(reader.result);
+            if (data && data.encrypted && data.alg === 'AES-GCM-256') {
+              ask(lb('Encrypted backup', 'এনক্রিপ্টেড ব্যাকআপ'), '<p>' + lb('This backup is password-protected. Enter the password to unlock:', 'এই ব্যাকআপটি পাসওয়ার্ড দিয়ে লক করা। আনলক করতে পাসওয়ার্ড দিন:') + '</p><div class="f"><label>' + lb('Password', 'পাসওয়ার্ড') + '</label><input type="password" id="rstPass" autocomplete="current-password"></div>', async () => {
+                const pass = $('rstPass').value;
+                try {
+                  const decStr = await decryptBackup(data, pass);
+                  const decData = JSON.parse(decStr);
+                  executeRestore(decData);
+                } catch (err) {
+                  Sound.buzz();
+                  alert(lb('Decryption failed! Incorrect password or corrupted file.', 'আনলক ব্যর্থ হয়েছে! ভুল পাসওয়ার্ড বা ত্রুটিপূর্ণ ফাইল।'));
+                }
+              }, lb('Unlock & Restore', 'আনলক ও রিস্টোর'));
+              return;
+            }
+            executeRestore(data);
+          } catch (err) {
+            Sound.buzz();
+            alert(lb('Invalid backup file format.', 'অকার্যকর ব্যাকআপ ফাইল।'));
+          }
+        };
+        reader.readAsText(file);
+      };
+      fi.click();
+    }
+  });
+
+  function executeRestore(raw) {
+    const st = raw.state || raw;
+    if (!st || !Array.isArray(st.entries) || !Array.isArray(st.products)) {
+      alert(lb('Invalid state: missing required collections.', 'ভুল ফরম্যাট: প্রয়োজনীয় তথ্য নেই।'));
+      return;
+    }
+    ask(lb('Confirm restore', 'রিস্টোর নিশ্চিতকরণ'), '<p><b>' + lb('Warning: Current data will be replaced!', 'সতর্কতা: বর্তমান ডেটা পরিবর্তিত হবে!') + '</b></p><p>' + lb('Found:', 'পাওয়া গেছে:') + ' ' + st.entries.length + ' ' + lb('entries', 'টি এন্ট্রি') + ', ' + st.products.length + ' ' + lb('products', 'টি পণ্য') + ', ' + (st.cust ? st.cust.length : 0) + ' ' + lb('parties', 'টি পক্ষ') + '.</p>', () => {
+      snap();
+      S = st;
+      ensureCols();
+      primeLH();
+      save();
+      lg('Restore JSON backup', 'Entries: ' + st.entries.length);
+      alert(lb('Data restored successfully! The page will now reload.', 'ডেটা সফলভাবে রিস্টোর হয়েছে! পেজ রিলোড হচ্ছে।'));
+      setTimeout(() => location.reload(), 300);
+    }, lb('Proceed & Replace', 'প্রতিস্থাপন করুন'));
+  }
 
 $('csv').onclick=async()=>{const m=calc(),q=csvCell;
   const rows=[['Date','Time','Type','Description','Category','Payment','Amount','Previous Cash','Cash Balance','Actual Cash','Difference','Status','Party','Phone'].join(',')];
@@ -991,6 +1238,9 @@ function resume(){try{const q=JSON.parse(localStorage.getItem(SESS)||'null');if(
   return true}catch(e){console.error('Session restore failed',e);return false}}
 async function start(){if(ENC&&!SY()){lockUI('connect');return}if(!S.users&&SY()){try{const r=await getRemote();if(r.ok&&r.rev&&r.state)applyRemote(r)}catch(e){}}if(S.users&&resume())return;S.users?lockUI('login'):lockUI('first')}
 
+
+
+/* --- Module: 04-sync-handlers.js --- */
 /* ---------- merge ---------- */
 function mergeById(L,R){const m=new Map();(R||[]).forEach(x=>m.set(x.id,x));(L||[]).forEach(x=>{const o=m.get(x.id);if(!o||(x.u||0)>(o.u||0))m.set(x.id,x)});return[...m.values()]}
 function mergeState(R){
@@ -1021,6 +1271,9 @@ async function importCatalog(){if(S.catImported||S.products.length||!SY())return
     if(r.ok&&r.items&&r.items.length){r.items.filter(p=>!p.del).forEach(p=>S.products.push({id:p.id,name:p.name,barcode:p.barcode||'',buy:0,price:+p.price||0,img:''}));S.catImported=1;save();if(U)POS.refresh()}
     else{S.catImported=1;persist()}}catch(e){}}
 
+
+
+/* --- Module: 05-shell.js --- */
 /* ---------- shell ---------- */
 const ICO={mgmt:'<path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/>',led:'<circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M17 8h4M17 12h4"/>',home:'<path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',pos:'<circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.5 12h11L21 7H6"/>',acc:'<path d="M5 3h11a3 3 0 0 1 3 3v15H8a3 3 0 0 1-3-3z"/><path d="M9 8h6M9 12h6"/>',prod:'<path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/>',more:'<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>'};
 const TABS={admin:['home','pos','prod','acc','led','mgmt','more'],keeper:['prod','more'],accountant:['acc','led','prod','more'],cashier:['pos','led','more']},TL={home:'Home',pos:'POS',prod:'Products',acc:'Accounts',led:'Ledger',mgmt:'Manage',more:'More'};
@@ -1076,6 +1329,9 @@ function refreshCurrentView(){
 $('refresh').onclick=refreshCurrentView;
 function setRefreshLabel(){var t=lb('Refresh current view','বর্তমান ট্যাব রিফ্রেশ করুন');$('refresh').title=t;$('refresh').setAttribute('aria-label',t)}
 
+
+
+/* --- Module: 06-home.js --- */
 /* ---------- home ---------- */
 const PER=[['today','Today'],['yest','Yesterday'],['7','7 days'],['30','1 month'],['90','3 months'],['180','6 months'],['all','Overall']];let HP='today';
 function prange(p){const t=new Date(),a=new Date();if(p==='today')return[iso(t),iso(t)];if(p==='yest'){a.setDate(a.getDate()-1);return[iso(a),iso(a)]}if(p==='all')return['0000','9999'];a.setDate(a.getDate()-(+p-1));return[iso(a),iso(t)]}
@@ -1128,6 +1384,9 @@ $('hQa').addEventListener('click',e=>{const b=e.target.closest('[data-q]');if(!b
   if(q==='sale'||q==='purchase'){POS.setMode(q);go('pos')}else if(q==='acc')go('acc');else{go('pos');POS.bills()}});
 $('hOwe').addEventListener('click',e=>{if(e.target.closest('[data-q="owe-led"]'))go('led')});
 
+
+
+/* --- Module: 07-pos-products.js --- */
 /* ---------- POS module ---------- */
 const POS=(()=>{
 const DK='ncs_dev_v1';let D=null;try{D=JSON.parse(localStorage.getItem(DK))}catch(e){}
@@ -1242,11 +1501,63 @@ $('bPay').onclick=checkout;$('fab').onclick=checkout;
 
 function rtext(b){const W=32,ln=(a,c)=>(a.length>W-c.length-1?a.slice(0,W-c.length-1):a).padEnd(W-c.length)+c,dt=sd(b.d)+' '+t12(b.t);
   return [(S.lang==='bn'?SHOP_BN:SHOP_EN.toUpperCase()),(b.mode==='purchase'?'Purchase':'Bill')+' #'+b.no,dt,'Cashier: '+b.user,'-'.repeat(W),...b.lines.map(l=>ln(l.qty+'x '+l.name,n(l.price*l.qty))),'-'.repeat(W),...(b.disc?[ln('Discount','-'+n(b.disc))]:[]),ln('TOTAL',n(b.total)),'Paid by '+b.pay+(b.party?' ('+b.party+')':''),b.void?'*** VOID ***':'','Thank you'].filter(x=>x!=='').join('\n')}
-function receipt(b){const t=rtext(b);dlg('Receipt','<pre style="font:13px monospace;white-space:pre-wrap;margin:0 0 10px">'+esc(t)+'</pre><div class="chips"><button data-sh="1">Share</button><button data-cp="1">Copy</button><button data-pt="1">Print</button></div>',()=>{},'Close',true);
+async function printThermalEscPos(text) {
+  if (typeof navigator !== 'undefined' && navigator.serial) {
+    try {
+      const port = await navigator.serial.requestPort();
+      await port.open({ baudRate: 9600 });
+      const writer = port.writable.getWriter();
+      const enc = new TextEncoder();
+      const initCmd = new Uint8Array([0x1B, 0x40]);
+      const kickCmd = new Uint8Array([0x1B, 0x70, 0x00, 0x19, 0xFA]);
+      const cutCmd = new Uint8Array([0x1D, 0x56, 0x41, 0x03]);
+      await writer.write(initCmd);
+      await writer.write(enc.encode(text + '\n\n\n'));
+      await writer.write(kickCmd);
+      await writer.write(cutCmd);
+      writer.releaseLock();
+      await port.close();
+      toast(lb('Printed via USB Thermal', 'ইউএসবি থার্মাল প্রিন্ট সম্পন্ন'));
+      return true;
+    } catch (e) {
+      if (e.name !== 'NotFoundError') console.warn('Serial print error:', e);
+    }
+  }
+  if (typeof navigator !== 'undefined' && navigator.bluetooth) {
+    try {
+      const device = await navigator.bluetooth.requestDevice({
+        acceptAllDevices: true,
+        optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb']
+      });
+      if (device && device.gatt) {
+        const server = await device.gatt.connect();
+        const service = await server.getPrimaryService('000018f0-0000-1000-8000-00805f9b34fb');
+        const char = await service.getCharacteristic('00002af1-0000-1000-8000-00805f9b34fb');
+        const enc = new TextEncoder();
+        await char.writeValue(enc.encode(text + '\n\n\n'));
+        toast(lb('Printed via Bluetooth', 'ব্লুটুথ প্রিন্ট সম্পন্ন'));
+        return true;
+      }
+    } catch (e) {
+      if (e.name !== 'NotFoundError') console.warn('Bluetooth print error:', e);
+    }
+  }
+  return false;
+}
+
+function receipt(b){const t=rtext(b);dlg('Receipt','<pre style="font:13px monospace;white-space:pre-wrap;margin:0 0 10px">'+esc(t)+'</pre><div class="chips"><button data-sh="1">Share</button><button data-cp="1">Copy</button><button data-pt="1">Print</button><button data-esc="1">⚡ Thermal ESC/POS</button></div>',()=>{},'Close',true);
   $('ob').onclick=async e=>{const x=e.target.closest('button');if(!x)return;
     if(x.dataset.sh){try{await navigator.share({text:t})}catch(err){}}
     if(x.dataset.cp){try{await navigator.clipboard.writeText(t);toast('Copied')}catch(err){}}
-    if(x.dataset.pt){$('rcp').textContent=t;document.body.classList.add('pr');try{window.print()}catch(err){}setTimeout(()=>document.body.classList.remove('pr'),800)}}}
+    if(x.dataset.pt){$('rcp').textContent=t;document.body.classList.add('pr');try{window.print()}catch(err){}setTimeout(()=>document.body.classList.remove('pr'),800)}
+    if(x.dataset.esc){
+      const ok = await printThermalEscPos(t);
+      if(!ok){
+        $('rcp').textContent=t;document.body.classList.add('pr');try{window.print()}catch(err){}setTimeout(()=>document.body.classList.remove('pr'),800);
+      }
+    }
+  };
+}
 function voidBill(b){
   if(S.days[b.d]&&S.days[b.d].closed)return dlg('Day closed','<p>That day is closed. Reopen it in Accounts before voiding the bill.</p>',()=>{},'OK');
   dlg('Void bill #'+b.no,'<div class="f"><label>Reason (required)</label><input id="vr"></div><p class="mut">The matching accounts entry is voided and stock is restored. If the reason is exactly "test", the bill goes to the Test section (admin only) and is excluded from all totals.</p>',()=>{const r=$('vr').value.trim();if(!r)return false;{const e0=S.entries.find(x=>x.id===b.id);if(e0&&wltVoidBlocked(e0))return false}b.void=1;b.vr=r;const e=S.entries.find(x=>x.id===b.id);if(e){e.void=1;e.vr='POS void: '+r}if(/^test$/i.test(r)){b.test=1;if(e)e.test=1}lg('POS void','#'+b.no+' — '+r);save();toast('Voided');renderGrid();setTimeout(billsUI,0)},'Void bill')}
@@ -1330,6 +1641,14 @@ function parseAmt(v){var p=bd(v).replace(/[,\s]/g,'').split('+').filter(function
 function lEd(){return isA()||role()==='accountant'}
 function cname(){var c=S.cust.find(function(x){return x.id===LC});return c?c.name:''}
 function lSort(a){return[...a].sort(function(p,q){return(p.d||'9999').localeCompare(q.d||'9999')||p.id-q.id})}
+function lSubAccounts(cId){
+  return S.cust.filter(function(x){return !x.del && x.parentId===cId});
+}
+function lCombinedBal(cId){
+  var direct = lBal(cId);
+  var subs = lSubAccounts(cId);
+  return r2(direct + subs.reduce(function(sum, sub){return sum + lBal(sub.id)}, 0));
+}
 function lBal(c){return r2(S.ltx.filter(function(x){return x.c===c&&!x.void}).reduce(function(s,x){return s+(x.dir==='in'?x.amt:-x.amt)},0))}
 function dr(x){return x.d?sd(x.d)+(x.d2?' – '+sd(x.d2):''):lb('Date unknown','তারিখ নেই')}
 function kindLabel(k){if(k==='Borrower'||k==='Lender'||k==='Borrower/Lender')return 'Borrower/Lender';return k||'Customer'}
@@ -1343,12 +1662,18 @@ function ledTable(rows,ob){
   (rows.length?(rows.length>LPGN?'<tr class="lmr"><td colspan="5" data-lm="1" role="button" tabindex="0" class="pgmore">'+lb('Show earlier entries','আগের এন্ট্রি দেখুন')+' ('+(rows.length-LPGN)+')</td></tr>':'')+rows.slice(-LPGN).map(function(r){var x=r[0];return '<tr class="'+(x.void?'void':'')+'" data-a="tx" data-id="'+x.id+'"><td>'+dr(x)+(x.t?'<small style="display:block;color:var(--mut);font-size:12px">'+t12(x.t)+'</small>':'')+'</td><td class="d">'+(x.void?'<span class="b v">VOID</span>':'')+(possibleDupLedger(x)?'<span class="b ctag">Possible duplicate</span>':'')+(ledChk(x)&&lEd()?'<span class="b ctag">'+lb('Check','যাচাই')+'</span>':'')+(x.flag&&x.flag.state==='pending'?'<span class="b ctag">'+lb('Flagged','চিহ্নিত')+'</span>':'')+(x.prop&&x.prop.state==='pending'?'<span class="b ctag">'+lb('Edit pending','সম্পাদনা অপেক্ষমাণ')+'</span>':'')+(x.voidReq&&x.voidReq.state==='pending'?'<span class="b ctag">'+lb('Void pending','বাতিল অপেক্ষমাণ')+'</span>':'')+esc(x.who||'')+(x.m?' <small>'+esc(mL(x.m))+'</small>':'')+(x.parts?'<small>'+x.parts.map(n).join(' + ')+'</small>':'')+(x.note?'<small>'+esc(x.note)+'</small>':'')+'</td><td class="pos">'+(x.dir==='in'?n(x.amt):'')+'</td><td class="neg">'+(x.dir==='out'?n(x.amt):'')+'</td><td class="cb">'+n(r[1])+'</td></tr>'}).join(''):'<tr><td colspan="5" style="text-align:center;padding:30px;color:var(--mut)">'+lb('No entries','কোনো এন্ট্রি নেই')+'</td></tr>')+
   '</tbody><tfoot><tr><td colspan="2">'+lb('Total','মোট')+'</td><td class="pos">'+n(ti)+'</td><td class="neg">'+n(to)+'</td><td class="cb">'+n((ob||0)+ti-to)+'</td></tr></tfoot></table></div>'}
 function ledProfile(){
-  var c=S.cust.find(function(x){return x.id===LC}),b=lBal(c.id),all=lSort(S.ltx.filter(function(x){return x.c===c.id})),act=all.filter(function(x){return!x.void}),
+  var c=S.cust.find(function(x){return x.id===LC}),b=lBal(c.id);
+  var subs=lSubAccounts(c.id),isParent=subs.length>0,combinedBal=isParent?lCombinedBal(c.id):b;
+  var allTxCustIds=(window._incSubsStatement&&isParent)?[c.id].concat(subs.map(function(s){return s.id})):[c.id];
+  var all=lSort(S.ltx.filter(function(x){return allTxCustIds.includes(x.c)})),act=all.filter(function(x){return!x.void}),
   ti=act.filter(function(x){return x.dir==='in'}).reduce(function(s,x){return s+x.amt},0),to=act.filter(function(x){return x.dir==='out'}).reduce(function(s,x){return s+x.amt},0),
   T=[['led',lb('Ledger','খাতা')],['stm',lb('Statement','স্টেটমেন্ট')],['note',lb('Notes','নোট')],['act',lb('Activity','লগ')]].concat(isA()||role()==='accountant'?[['void',lb('Void data','বাতিল তথ্য')+' ('+all.filter(function(x){return x.void}).length+')']]:[]),body='';
-  if(LT==='led')body=ledFilt()+ledTable(ledFlt(ledRows(act,'','')),null);
-  else if(LT==='stm'){var ob=LF?all.filter(function(x){return!x.void&&(x.d||'9999')<LF}).reduce(function(s,x){return s+(x.dir==='in'?x.amt:-x.amt)},0):null;
-    body='<div class="card noprint" style="padding:12px;display:flex;gap:10px;flex-wrap:wrap;align-items:end"><div><label>'+lb('From','থেকে')+'</label><input id="lsa" type="date" value="'+LF+'"></div><div><label>'+lb('To','পর্যন্ত')+'</label><input id="lse" type="date" value="'+LE+'"></div><button class="ghost" data-a="print">'+lb('Print / Save PDF','প্রিন্ট / পিডিএফ')+'</button><button class="ghost" data-a="img">'+lb('Share image','ছবি শেয়ার')+'</button><button class="ghost" data-a="csv">CSV</button></div><div class="lph"><h2>'+esc(shopN())+'</h2><div>'+esc(c.name)+' · '+esc(c.phone||'')+' · '+(LF?sd(LF):'…')+' – '+(LE?sd(LE):sd(iso(new Date())))+'</div></div>'+ledTable(ledRows(act,LF,LE),ob)}
+  var subAccsCard = isParent ? ('<div class="card" style="padding:12px;margin:10px 0;border-left:3px solid var(--acc)"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><b>'+lb('Group Sub-accounts','গ্রুপ সাব-অ্যাকাউন্ট')+' ('+subs.length+')</b><span class="mut" style="font-size:12.5px">'+lb('Combined Group Due: ','গ্রুপের মোট বকেয়া: ')+'<b class="'+(combinedBal>0?'warn':combinedBal<0?'pos':'zero')+'">'+tk(Math.abs(combinedBal))+'</b></span></div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px">'+subs.map(function(s){var sb=lBal(s.id);return '<div class="card" style="padding:8px 10px;background:var(--bg);display:flex;justify-content:space-between;align-items:center"><div><b style="font-size:13.5px">'+esc(s.name)+'</b><small style="display:block;color:var(--mut);font-size:11px">'+(s.phone?esc(s.phone):kindLabel(s.kind))+'</small></div><div style="text-align:right"><b class="'+(sb>0?'warn':sb<0?'pos':'zero')+'">'+tk(Math.abs(sb))+'</b><button type="button" class="ghost" data-a="opensub" data-id="'+s.id+'" style="margin-left:6px;padding:2px 8px;font-size:11.5px">'+lb('View','দেখুন')+'</button></div></div>'}).join('')+'</div></div>') : '';
+  if(LT==='led')body=subAccsCard+ledFilt()+ledTable(ledFlt(ledRows(act,'','')),null);
+  else if(LT==='stm'){
+    var ob=LF?all.filter(function(x){return!x.void&&(x.d||'9999')<LF}).reduce(function(s,x){return s+(x.dir==='in'?x.amt:-x.amt)},0):null;
+    var incSubsToggle=isParent?'<label style="display:inline-flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="checkbox" data-a="incsubs" style="width:auto;height:auto" '+(window._incSubsStatement?'checked':'')+'> '+lb('Combined Group Statement (All sub-accounts)','গ্রুপ স্টেটমেন্ট (সব সাব-অ্যাকাউন্টসহ)')+'</label>':'';
+    body='<div class="card noprint" style="padding:12px;display:flex;gap:10px;flex-wrap:wrap;align-items:end"><div><label>'+lb('From','থেকে')+'</label><input id="lsa" type="date" value="'+LF+'"></div><div><label>'+lb('To','পর্যন্ত')+'</label><input id="lse" type="date" value="'+LE+'"></div><button class="ghost" data-a="print">'+lb('Print / Save PDF','প্রিন্ট / পিডিএফ')+'</button><button class="ghost" data-a="img">'+lb('Share image','ছবি শেয়ার')+'</button><button class="ghost" data-a="csv">CSV</button>'+incSubsToggle+'</div><div class="lph"><h2>'+esc(shopN())+'</h2><div>'+esc(c.name)+' · '+esc(c.phone||'')+(window._incSubsStatement&&isParent?' · ['+lb('Combined Group Statement','সম্মিলিত গ্রুপ স্টেটমেন্ট')+']':'')+' · '+(LF?sd(LF):'…')+' – '+(LE?sd(LE):sd(iso(new Date())))+'</div></div>'+ledTable(ledRows(act,LF,LE),ob)}
   else if(LT==='void')body=ledVoidTab(all);else if(LT==='note')body='<div class="card" style="padding:14px"><textarea id="lnt" rows="6" style="width:100%;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px;font:inherit;color:inherit">'+esc(c.note||'')+'</textarea><div style="margin-top:10px"><button class="go" data-a="savenote">'+lb('Save','সংরক্ষণ')+'</button></div></div>';
   else{var L=S.log.filter(function(l){return String(l.a).indexOf('Ledger')===0&&String(l.d).indexOf(c.name+' ·')===0});body='<div class="card lg" style="padding:6px 14px">'+(L.length?L.map(function(l){return '<div><b>'+esc(l.a)+'</b> <small>'+esc(l.ts)+' · '+esc(l.u)+'</small><br>'+esc(l.d)+'</div>'}).join(''):'<div class="mut">'+lb('No activity yet','কোনো কার্যক্রম নেই')+'</div>')+'</div>'}
   var moreMenuHtml='<div class="led-more-wrap" style="position:relative;display:inline-block">'
@@ -1360,7 +1685,9 @@ function ledProfile(){
     +(isA()?'<div class="si" data-a="editc"><span>'+lb('Edit party','সম্পাদনা')+'</span></div>':'')
     +'</div></div>';
   return '<header class="noprint"><div><button class="ghost" data-a="back">‹ '+lb('All customers','সব কাস্টমার')+'</button></div><div class="nav" style="display:flex;gap:6px;align-items:center"><button class="go" data-a="in">+ পেলাম</button><button class="go" data-a="out" style="background:var(--neg)">+ দিলাম</button>'+moreMenuHtml+'</div></header>'+ledPC(c,b,act)+ledChkBar(c)+ledDueBar(c)+
-  '<div class="lst noprint"><div class="stat main"><small>'+lb('Balance','ব্যালেন্স')+'</small><b class="'+(b>0?'warn':b<0?'pos':'zero')+'">'+tk(Math.abs(b))+'</b><i>'+(b===0?lb('Settled','মিটে গেছে'):b>0?esc(c.name)+' '+lb('gets (we owe)','পাবে (আমরা দেব)'):esc(c.name)+' '+lb('owes us','দেবে (আমরা পাব)'))+'</i></div><div class="stat"><small>পেলাম</small><b class="pos">'+tk(ti)+'</b></div><div class="stat"><small>দিলাম</small><b class="neg">'+tk(to)+'</b></div></div>'+
+  '<div class="lst noprint"><div class="stat main"><small>'+lb('Balance','ব্যালেন্স')+'</small><b class="'+(b>0?'warn':b<0?'pos':'zero')+'">'+tk(Math.abs(b))+'</b><i>'+(b===0?lb('Settled','মিটে গেছে'):b>0?esc(c.name)+' '+lb('gets (we owe)','পাবে (আমরা দেব)'):esc(c.name)+' '+lb('owes us','দেবে (আমরা পাব)'))+'</i></div>'
+  +(isParent?'<div class="stat main" style="border-left:2px solid var(--acc)"><small>'+lb('Combined Group Due','গ্রুপের মোট বকেয়া')+'</small><b class="'+(combinedBal>0?'warn':combinedBal<0?'pos':'zero')+'">'+tk(Math.abs(combinedBal))+'</b><i>'+subs.length+' '+lb('sub-accounts linked','টি সাব-অ্যাকাউন্ট যুক্ত')+'</i></div>':'')
+  +'<div class="stat"><small>পেলাম</small><b class="pos">'+tk(ti)+'</b></div><div class="stat"><small>দিলাম</small><b class="neg">'+tk(to)+'</b></div></div>'+
   '<div class="ptabs noprint">'+T.map(function(t){return '<button data-a="tab" data-t="'+t[0]+'" class="'+(LT===t[0]?'on':'')+'">'+t[1]+'</button>'}).join('')+'</div>'+body}
 var LS='all',LI=null,LP=0,LPAL=['#DCD8F0','#D4F8FC','#FFE9BC','#B1F1CC','#F8D4C8'];
 function lAv(c,k){return c.img?'<img class="'+k+'" src="'+esc(c.img)+'" alt="">':'<div class="'+k+'" style="background:'+LPAL[c.id%5]+'">'+esc((c.name||'?').trim().slice(0,1).toUpperCase())+'</div>'}
@@ -1397,11 +1724,13 @@ function ledList(){
   '<div class="lsm">'+T('d1',lb('Total dues (they owe us)','মোট পাওনা'),tk(rec),nd+' '+lb('parties','পক্ষ'))+T('d2',lb('Total payable (we owe)','মোট দেনা'),tk(pay),np+' '+lb('parties','পক্ষ'))+T('d3',lb('Net position','নিট অবস্থা'),tk(Math.abs(rec-pay)),rec>=pay?lb('Net receivable','নিট পাওনা'):lb('Net payable','নিট দেনা'))+T('d4',lb('Borrow / Lend net','Borrow / Lend'),tk(Math.abs(S.ltx.filter(function(x){return!x.void&&x.btype}).reduce(function(a,x){return a+(x.dir==='in'?x.amt:-x.amt)},0))),S.ltx.filter(function(x){return!x.void&&x.btype==='Borrow'}).length+' Borrow · '+S.ltx.filter(function(x){return!x.void&&x.btype==='Lend'}).length+' Lend')+'</div>'+ledTopBar()+ledDueTop()+
   '<div class="ptabs kindTabs">'+KT.map(function(f){return'<button data-a="kind" data-f="'+f[0]+'" class="'+(LK===f[0]?'on':'')+'">'+f[1]+'</button>'}).join('')+'</div>'+
   '<input id="lq" value="'+esc(LQ)+'" placeholder="'+lb('Search name or phone','নাম বা ফোন খুঁজুন')+'" style="margin-bottom:10px"><div class="ptabs">'+F.map(function(f){return'<button data-a="flt" data-f="'+f[0]+'" class="'+(LS===f[0]?'on':'')+'">'+f[1]+'</button>'}).join('')+'</div>'+
-  (LS==='arc'&&isA()?ledArch():cs.length?'<div class="lcg">'+cs.map(function(r){var c=r.c,s=r.s,b=s.b;return'<div class="card lcc" data-a="open" data-id="'+c.id+'">'+lAv(c,'lav')+'<div class="lci"><b>'+esc(c.name)+'</b><small>'+esc(c.phone||'')+(c.kind?' · '+esc(kindLabel(c.kind)):'')+(dueState(c)?' · '+lb('Due ','তারিখ ')+sd(c.due):'')+'</small></div><div class="lcb '+(b>0?'warn':b<0?'pos':'zero')+'">'+(b===0?'–':tk(Math.abs(b)))+'<small>'+(b>0?lb('We owe','আমরা দেব'):b<0?lb('They owe','আমরা পাব'):lb('Settled','মিটেছে'))+'</small></div></div>'}).join('')+'</div>':'<div class="card"><div class="empty">'+lb('No parties found','কোনো পক্ষ পাওয়া যায়নি')+'</div></div>')}
+  (LS==='arc'&&isA()?ledArch():cs.length?'<div class="lcg">'+cs.map(function(r){var c=r.c,s=r.s,b=s.b;var subCnt=lSubAccounts(c.id).length,pCust=c.parentId?S.cust.find(function(x){return !x.del&&x.id===c.parentId}):null;var parentLabel=pCust?'<small class="mut" style="display:block;font-size:11px">↳ '+lb('Parent: ','অভিভাবক: ')+esc(pCust.name)+'</small>':'';var groupBadge=subCnt>0?'<span class="b o" style="font-size:10.5px;margin-left:4px">'+subCnt+' '+lb('sub-accounts','সাব-অ্যাকাউন্ট')+'</span>':'';return'<div class="card lcc" data-a="open" data-id="'+c.id+'">'+lAv(c,'lav')+'<div class="lci"><b>'+esc(c.name)+'</b>'+groupBadge+parentLabel+'<small>'+esc(c.phone||'')+(c.kind?' · '+esc(kindLabel(c.kind)):'')+(dueState(c)?' · '+lb('Due ','তারিখ ')+sd(c.due):'')+'</small></div><div class="lcb '+(b>0?'warn':b<0?'pos':'zero')+'">'+(b===0?'–':tk(Math.abs(b)))+'<small>'+(b>0?lb('We owe','আমরা দেব'):b<0?lb('They owe','আমরা পাব'):lb('Settled','মিটেছে'))+'</small></div></div>'}).join('')+'</div>':'<div class="card"><div class="empty">'+lb('No parties found','কোনো পক্ষ পাওয়া যায়নি')+'</div></div>')}
 function ledPC(c,b,act){
   var l=act.slice().sort(function(p,q){return q.id-p.id})[0]||null,sn=new Date(c.id),
+  pCust=c.parentId?S.cust.find(function(x){return !x.del&&x.id===c.parentId}):null,
+  parentBadge=pCust?'<div style="margin-top:4px"><span class="b o" role="button" tabindex="0" data-a="openparent" data-id="'+pCust.id+'" style="cursor:pointer;font-size:12px">↳ '+lb('Parent: ','অভিভাবক: ')+esc(pCust.name)+' ('+tk(Math.abs(lBal(pCust.id)))+')</span></div>':'',
   tl=function(k,p,h,v){return'<div class="pt2 '+k+'"><span class="pti"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+p+'</svg></span><div><b>'+h+'</b><small>'+v+'</small></div></div>'};
-  return'<div class="card pc noprint"><div class="pci">'+lAv(c,'pav')+'<div class="pn">'+esc(c.name)+'</div><div class="pph">'+esc(c.phone||lb('No phone','ফোন নেই'))+'</div>'+lLinks(c)+(c.kind||c.addr||c.rel?'<div class="mut" style="margin-top:8px;font-size:12px">'+[kindLabel(c.kind),c.addr,c.rel].filter(Boolean).map(esc).join(' · ')+'</div>':'')+'</div><div class="pct">'+
+  return'<div class="card pc noprint"><div class="pci">'+lAv(c,'pav')+'<div class="pn">'+esc(c.name)+'</div>'+parentBadge+'<div class="pph">'+esc(c.phone||lb('No phone','ফোন নেই'))+'</div>'+lLinks(c)+(c.kind||c.addr||c.rel?'<div class="mut" style="margin-top:8px;font-size:12px">'+[kindLabel(c.kind),c.addr,c.rel].filter(Boolean).map(esc).join(' · ')+'</div>':'')+'</div><div class="pct">'+
   tl('a','<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/>',lb('Phone','ফোন'),esc(c.phone||'–'))+
   tl('b','<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',lb('Last entry','শেষ এন্ট্রি'),l?tk(l.amt)+' · '+(l.d?sd(l.d):'?')+(l.t?' '+t12(l.t):''):'–')+
   tl('c','<path d="M4 7h16M4 12h16M4 17h10"/>',lb('Balance','ব্যালেন্স'),b===0?lb('Settled','মিটে গেছে'):tk(Math.abs(b))+' '+(b>0?lb('we owe','আমরা দেব'):lb('they owe','আমরা পাব')))+
@@ -1410,15 +1739,22 @@ function ledCust(id){
   var c=id?S.cust.find(function(x){return x.id===id}):null;LI=c&&c.img?c.img:null;
   var curKind=kindLabel(c&&c.kind);
   var pv=function(){var nm=($('lcn')&&$('lcn').value)||(c&&c.name)||'?';$('lcpv').innerHTML=LI?'<img class="lav" src="'+esc(LI)+'" alt="">':'<div class="lav" style="background:'+LPAL[(c?c.id:0)%5]+'">'+esc(nm.trim().slice(0,1).toUpperCase())+'</div>'};
-  ask(c?lb('Edit party','পক্ষ সম্পাদনা'):lb('New party','নতুন পক্ষ'),'<div class="pf1"><span id="lcpv"></span><button type="button" class="ghost" data-lc="cam">'+lb('Camera','ক্যামেরা')+'</button><button type="button" class="ghost" data-lc="gal">'+lb('Gallery','গ্যালারি')+'</button><button type="button" class="ghost" data-lc="rm">'+lb('Remove','সরান')+'</button><input id="lci1" type="file" accept="image/*" capture="environment" hidden><input id="lci2" type="file" accept="image/*" hidden></div><div class="f"><label>'+lb('Name','নাম')+'</label><input id="lcn" maxlength="60" value="'+esc(c?c.name:'')+'"></div><div class="f"><label>'+lb('Kind','ধরন')+'</label><select id="lck">'+['Customer','Investor','Supplier','Borrower/Lender'].map(function(k){return'<option'+(curKind===k?' selected':'')+'>'+k+'</option>'}).join('')+'</select></div><div class="f"><label>'+lb('Phone (optional)','ফোন (ঐচ্ছিক)')+'</label><input id="lcp" type="tel" maxlength="20" value="'+esc(c?c.phone||'':'')+'"></div><div class="f"><label>'+lb('Address','ঠিকানা')+'</label><input id="lca" maxlength="180" value="'+esc(c?c.addr||'':'')+'"></div><div class="f"><label>'+lb('Relationship','সম্পর্ক')+'</label><input id="lcr" maxlength="80" value="'+esc(c?c.rel||'':'')+'"></div><div class="f"><label>'+lb('Facebook link or username (optional)','ফেসবুক লিংক বা ইউজারনেম (ঐচ্ছিক)')+'</label><input id="lcf" maxlength="120" value="'+esc(c?c.fb||'':'')+'"></div>'+(c&&isA()?'<div class="f"><button type="button" class="ghost" data-lc="del" style="color:var(--neg)">'+lb('Archive party','পক্ষ আর্কাইভ করুন')+'</button></div>':''),function(){
+  var parents = S.cust.filter(function(x){ return !x.del && (!c || (x.id !== c.id && x.parentId !== c.id)); });
+  var parentOpts = '<option value="">-- '+lb('None (Standalone Account)','কোনোটি নয় (স্বতন্ত্র অ্যাকাউন্ট)')+' --</option>' +
+    parents.map(function(p){ return '<option value="'+p.id+'"'+(c&&c.parentId===p.id?' selected':'')+'>'+esc(p.name)+' ('+esc(kindLabel(p.kind))+')</option>'; }).join('');
+  ask(c?lb('Edit party','পক্ষ সম্পাদনা'):lb('New party','নতুন পক্ষ'),'<div class="pf1"><span id="lcpv"></span><button type="button" class="ghost" data-lc="cam">'+lb('Camera','ক্যামেরা')+'</button><button type="button" class="ghost" data-lc="gal">'+lb('Gallery','গ্যালারি')+'</button><button type="button" class="ghost" data-lc="rm">'+lb('Remove','সরান')+'</button><input id="lci1" type="file" accept="image/*" capture="environment" hidden><input id="lci2" type="file" accept="image/*" hidden></div><div class="f"><label>'+lb('Name','নাম')+'</label><input id="lcn" maxlength="60" value="'+esc(c?c.name:'')+'"></div><div class="f"><label>'+lb('Kind','ধরন')+'</label><select id="lck">'+['Customer','Investor','Supplier','Borrower/Lender'].map(function(k){return'<option'+(curKind===k?' selected':'')+'>'+k+'</option>'}).join('')+'</select></div><div class="f"><label>'+lb('Parent account (Optional for group / family / branches)','মূল অভিভাবক অ্যাকাউন্ট (গ্রুপ / পরিবার / ব্রাঞ্চের জন্য ঐচ্ছিক)')+'</label><select id="lcParent">'+parentOpts+'</select></div><div class="f"><label>'+lb('Phone (optional)','ফোন (ঐচ্ছিক)')+'</label><input id="lcp" type="tel" maxlength="20" value="'+esc(c?c.phone||'':'')+'"></div><div class="f"><label>'+lb('Address','ঠিকানা')+'</label><input id="lca" maxlength="180" value="'+esc(c?c.addr||'':'')+'"></div><div class="f"><label>'+lb('Relationship','সম্পর্ক')+'</label><input id="lcr" maxlength="80" value="'+esc(c?c.rel||'':'')+'"></div><div class="f"><label>'+lb('Facebook link or username (optional)','ফেসবুক লিংক বা ইউজারনেম (ঐচ্ছিক)')+'</label><input id="lcf" maxlength="120" value="'+esc(c?c.fb||'':'')+'"></div>'+(c&&isA()?'<div class="f"><button type="button" class="ghost" data-lc="del" style="color:var(--neg)">'+lb('Archive party','পক্ষ আর্কাইভ করুন')+'</button></div>':''),function(){
     var nm=$('lcn').value.trim();if(!nm){$('lcn').style.borderColor='var(--neg)';return false}
     if(S.cust.some(function(x){return!x.del&&(!c||x.id!==c.id)&&x.name.toLowerCase()===nm.toLowerCase()})){ltoast(lb('Name already exists','এই নামে আছে'));return false}
-    var o={name:nm,kind:$('lck').value,phone:$('lcp').value.trim(),addr:$('lca').value.trim(),rel:$('lcr').value.trim(),fb:$('lcf').value.trim(),img:LI||''};
+    var pid=$('lcParent')?(+$('lcParent').value||null):null;
+    var o={name:nm,kind:$('lck').value,parentId:pid,phone:$('lcp').value.trim(),addr:$('lca').value.trim(),rel:$('lcr').value.trim(),fb:$('lcf').value.trim(),img:LI||''};
     if(c){Object.assign(c,o);lg('Ledger party','Edited '+nm)}else{var k=Object.assign({id:Date.now(),note:''},o);S.cust.push(k);LC=k.id;LT='led';lg('Ledger party','Added '+nm+' ('+o.kind+')')}
     save();ledUI()},lb('Save','সংরক্ষণ'));
   pv();$('lcn').oninput=pv;
   $('ob').onclick=function(e){var b=e.target.closest('[data-lc]');if(!b)return;var k=b.dataset.lc;if(k==='cam')$('lci1').click();else if(k==='gal')$('lci2').click();else if(k==='del'){$('ov').hidden=true;ledDel(c.id)}else{LI=null;pv()}};
   $('ob').onchange=function(e){var f=e.target.files&&e.target.files[0];if(f)lShrink(f,function(d){LI=d;pv()})}}
+
+
+/* --- Module: 08-ledger.js --- */
 function ledUI(){if(!U)return;var v=$('vLed');if(LC&&!S.cust.find(function(c){return c.id===LC}))LC=null;v.innerHTML=LC?ledProfile():ledList()}
 function ledForm(dir,eid,fix){
   var ed=eid?S.ltx.find(function(t){return t.id===eid}):null,x=ed||{dir:dir,d:iso(new Date())},
@@ -1522,7 +1858,7 @@ function verUI(){ask(lb('Version history','সংস্করণ ইতিহা
 (function(){
   var v=$('vLed');
   v.addEventListener('click',function(e){var b=e.target.closest('[data-a]');if(!b)return;var a=b.dataset.a,id=+b.dataset.id;if(a==='open'&&Date.now()-LP<700)return;
-    if(a==='open'){LC=id;LT='led';LF=LE='';ledUI();scrollTo(0,0)}else if(a==='back'){LC=null;ledUI()}else if(a==='ledmore'){var mm=$('ledMoreMenu');if(mm)mm.style.display=(mm.style.display==='none'||!mm.style.display)?'block':'none';e.stopPropagation();return;}else if(a==='newc')ledCust();else if(a==='editc'){var mm=$('ledMoreMenu');if(mm)mm.style.display='none';ledCust(LC);}else if(a==='due'){var mm=$('ledMoreMenu');if(mm)mm.style.display='none';ledDue(LC);}else if(a==='kind'){LK=b.dataset.f;ledUI()}else if(a==='flt'){LS=b.dataset.f;ledUI()}else if(a==='restore')ledRestore(id);else if(a==='crestore'){var cc=S.cust.find(function(x){return x.id===id});if(cc){cc.del=0;cc.dby='';cc.delReason='';lg('Ledger party','Restored '+cc.name);save();ledUI()}}
+    if(a==='open'||a==='opensub'||a==='openparent'){LC=id;LT='led';LF=LE='';ledUI();scrollTo(0,0)}else if(a==='back'){LC=null;ledUI()}else if(a==='incsubs'){window._incSubsStatement=!window._incSubsStatement;ledUI()}else if(a==='ledmore'){var mm=$('ledMoreMenu');if(mm)mm.style.display=(mm.style.display==='none'||!mm.style.display)?'block':'none';e.stopPropagation();return;}else if(a==='newc')ledCust();else if(a==='editc'){var mm=$('ledMoreMenu');if(mm)mm.style.display='none';ledCust(LC);}else if(a==='due'){var mm=$('ledMoreMenu');if(mm)mm.style.display='none';ledDue(LC);}else if(a==='kind'){LK=b.dataset.f;ledUI()}else if(a==='flt'){LS=b.dataset.f;ledUI()}else if(a==='restore')ledRestore(id);else if(a==='crestore'){var cc=S.cust.find(function(x){return x.id===id});if(cc){cc.del=0;cc.dby='';cc.delReason='';lg('Ledger party','Restored '+cc.name);save();ledUI()}}
     else if(a==='in'||a==='out'||a==='borrow'||a==='lend')ledForm(a);else if(a==='tab'){LT=b.dataset.t;ledUI()}else if(a==='tx')ledTx(id);else if(a==='accall')ledAcceptAll(LC);
     else if(a==='savenote'){var c=S.cust.find(function(x){return x.id===LC});c.note=$('lnt').value;lg('Ledger note',c.name+' · note updated');save();ltoast(lb('Saved','সংরক্ষিত'))}
     else if(a==='fltclr'){LFQ=LFD=LFM=LFA=LFB='';ledUI()}else if(a==='img')ledImg();else if(a==='due')ledDue(LC);else if(a==='print'){document.body.classList.add('lp');lg('Ledger print',cname());save();window.print()}
@@ -1563,6 +1899,9 @@ function bugBody(){return BUGS.map(function(x){return'<div class="upg"><div><b>v
 (function(){var st=document.createElement('style');st.textContent='.bcd{padding:16px}.bch{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;background:none;border:0;color:var(--ink);cursor:pointer;padding:0;font:inherit;text-align:left;height:auto}.bcx{display:flex;align-items:center;gap:10px}.bcb{display:none;margin-top:6px}.bcd.on .bcb{display:block}.bcd.pv:not(.on) .bcb{display:block;max-height:150px;overflow:hidden;opacity:.85}.bcd.on .bch .vhc{transform:rotate(180deg)}';document.head.appendChild(st)})();
 var UPC=[{v:'Later',s:'Planned',t:['Sync key rotation (needs Apps Script)','Send only changed records (needs Apps Script)','Effectiveness pass','Ledger sheet in Google Sheets','Sub-accounts or linked customers']}];
 function upcTxt(){return'NCS Daily Accounts - Upcoming Features\n\n'+UPC.map(function(g){return g.v+' ('+g.s+')\n'+g.t.map(function(x){return'  - '+x}).join('\n')}).join('\n\n')+'\n'}
+
+
+/* --- Module: 09-mgmt.js --- */
 function mgmtUI(){
   if(!isA())return;var v=$('vMgmt'),B=function(k,l,d){return'<button class="ghost mg" data-m="'+k+'"><b>'+l+'</b><small>'+d+'</small></button>'};
   var sc=st==='ok'?'ok':st==='pend'?'pend':(st==='offl'||st==='conf')?'bad':'off';
@@ -2285,6 +2624,7 @@ function selfTest(){
   ok('S.counts array',function(){if(!Array.isArray(S.counts))throw new Error('not array');return S.counts.length+' counts'});
   ok('S.history / S.pending arrays',function(){if(S.history!==undefined&&!Array.isArray(S.history))throw new Error('history');if(S.pending!==undefined&&!Array.isArray(S.pending))throw new Error('pending');return 'ok'});
   ok('localStorage roundtrip',function(){var raw=localStorage.getItem(KEY);if(!raw)throw new Error('empty');var p=JSON.parse(raw);if(!p.rev&&p.rev!==0)throw new Error('no rev');return 'rev='+p.rev});
+  ok('IndexedDB engine',function(){if(!window.NcsDB||!window.NcsDB.isSupported())return 'IndexedDB unavailable, fallback active';return 'IndexedDB active'});
   ok('PBKDF2 available',function(){if(!window.crypto||!crypto.subtle)throw new Error('no subtle');return 'ok'});
   ok('VERS / UPC / BUGS arrays',function(){if(!Array.isArray(VERS)||!VERS.length)throw new Error('VERS');if(!Array.isArray(UPC)||!UPC.length)throw new Error('UPC');if(!Array.isArray(BUGS)||!BUGS.length)throw new Error('BUGS');return VERS.length+'/'+UPC.length+'/'+BUGS.length});
   ok('All v9 VERS have by',function(){var miss=VERS.filter(function(v){return /^9(\.|$)/.test(v.v)&&!v.by});if(miss.length)throw new Error(miss.map(function(v){return v.v}).join(', '));return 'ok'});
@@ -2378,6 +2718,9 @@ function restoreEntry(id){var e=S.entries.find(function(x){return x.id===id});if
 })();
 
 /* ---------- v9.22: sound engine, motion & wrapper download safety ---------- */
+
+
+/* --- Module: 10-sound-clock.js --- */
 var Sound=(function(){
   var ctx=null;
   function enabled(){return !!S.sound&&!document.documentElement.dataset.rm}
@@ -2443,7 +2786,7 @@ function animateCounts(){
 function saveCheck(){if(document.documentElement.dataset.rm)return;var d=document.createElement('div');d.className='savechk';d.innerHTML='<svg viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="22" fill="none" stroke="var(--acc)" stroke-width="3"/><path d="M14 27l8 8 16-16" fill="none" stroke="var(--acc)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>';document.body.appendChild(d);setTimeout(function(){d.classList.add('out')},700);setTimeout(function(){d.remove()},1250)}
 (function(){
   var M="Claude Sonnet 5.5 · owner's Claude account";
-  APP_VERSION='10.0.0-beta';
+  APP_VERSION='10.1.0';
   VERS.unshift({v:'9.22',d:'2026-10-19',t:'Sound effects, motion polish and wrapper download safety',by:M,n:['Web Audio sound engine: soft tick on tabs/dialogs, cha-ching on sale/entry save, low buzz on errors, sync chime on background sync','Sound toggle in Settings, default off; AudioContext created on first tap','All sound and motion automatically off when the OS asks for reduced motion','Number count-up on Home (Cash Balance, Total Sell, Total Buy) over 0.4s on load and period change','Save checkmark pop on POS sale and Accounts/Ledger entry save','Tap feedback: buttons scale to 0.97 on press','POS cart rows slide in when added and slide out when removed','dlFile falls back to a data URL window if the wrapper blocks the <a download> tag']});
   VERS.unshift({v:'9.22.1',d:'2026-10-19',t:'Sound resume fix + Test button',by:M,n:['AudioContext resume() race fixed: tones now play after the context is running (fixes silent playback on Android WebView, iOS Safari and after idle tabs)','▶ Test sound button inside Settings for instant verification','Louder gains for tick and cha-ching so phone speakers are audible']});
   VERS.unshift({v:'9.22.2',d:'2026-10-19',t:'Sound toggle visible in More, Settings unhidden',by:M,n:['Sound effects ON/OFF button now appears directly in the More tab (no need to open Settings)','Removed the CSS rule that was hiding the Settings button in the More tab','Settings still shows the Sound effects checkbox and the ▶ Test sound button']});
@@ -2456,6 +2799,7 @@ function saveCheck(){if(document.documentElement.dataset.rm)return;var d=documen
   VERS.unshift({v:'9.28.1',d:'2026-10-23',t:'Version History cleanup',by:M,n:['Fixed version history display order','Added missing v9.16 history entry','Removed duplicate v9.26 bug entry']});
   VERS.unshift({v:'9.29',d:'2026-10-24',t:'Admin Prime Wallet Adjustments, Accounts Streamlining & Card Adjustment Settings',by:'Claude Sonnet / Gemini',n:['MFS & Recharge balance adjustments are now Prime: Admin balance input is never rejected, takes effect everywhere immediately, and conflicting deficit entries are automatically routed to the Admin Review Queue','Offending collision entries display a high-visibility Deficit Review badge in Accounts and direct one-click navigation from Review Queue','Accounts tab layout streamlined: Transaction Details table and filter bar moved directly below the new transaction entry section for faster data entry','Section & Card Adjustment Settings added to More tab (Admin-only): Quick balance adjustment shortcuts for cash drawer, MFS and recharge cards plus dashboard section visibility toggles for Home and Accounts']});
   VERS.unshift({v:'10.0.0-beta',d:'2026-10-28',t:'Model B: Delta Sync Engine & Structured Sheet Mirror',by:'Antigravity',n:['New Google Apps Script backend with 12 structured sheets','Delta sync engine (sync.js) pushing/pulling only changed rows via monotonic u timestamps','Per-row conflict resolution (highest u timestamp wins)','Diagnostics rolling logger (diag.js) & manual bug report exporter in More tab','Live sync status indicator hooks (Synced, Pending, Offline)']});
+  VERS.unshift({v:'10.1.0',d:'2026-10-29',t:'Sub-Accounts & Architecture Modernization',by:'Antigravity',n:['Sub-accounts: Link any customer, supplier, or party to a parent account via parentId','Combined group & family balance rollup on parent profiles with individual breakdown','Parent account direct link on sub-account profiles for instant navigation','Option to export/print combined group statements or separate sub-account statements','IndexedDB dual-storage engine eliminates 5MB browser storage limits with transparent fallback','AES-GCM-256 password-protected encrypted backups & smart restore','Direct ESC/POS thermal printing with paper cut and cash drawer kick codes']});
   
   UPC.unshift({v:'9.22',s:'Done',t:['Web Audio sound engine (tick, cha-ching, buzz, sync chime), default off','Count-up numbers on Home','Save checkmark','Tap feedback','POS cart slide in/out','All respect OS reduced-motion','Download fallback']});
   UPC.unshift({v:'9.22.1',s:'Done',t:['AudioContext resume race fixed','Test sound button in Settings','Louder gains']});
@@ -2469,6 +2813,7 @@ function saveCheck(){if(document.documentElement.dataset.rm)return;var d=documen
   UPC.unshift({v:'9.28.1',s:'Done',t:['Version history cleanup']});
   UPC.unshift({v:'9.29',s:'Done',t:['Admin Prime MFS & Recharge wallet adjustments with automatic collision queueing','Accounts tab Transaction Details positioned below entry form','More tab Section & Card Adjustment Settings hub (Option C: quick balance adjust & layout customizer, Admin-only)']});
   UPC.unshift({v:'10.0.0-beta',s:'Done',t:['Model B Delta Sync Engine with Google Apps Script backend','Structured 12-sheet mirror (Entries, Bills, Products, etc.)','Per-row monotonic u timestamp conflict resolution','Diagnostics rolling logger & manual Bug Reporter in More tab','Live sync indicator status hooks (Synced, Pending, Offline)']});
+  UPC.unshift({v:'10.1.0',s:'Done',t:['Sub-accounts with optional parent link & combined balance','IndexedDB storage engine & AES-GCM encrypted backup','Direct ESC/POS thermal printing']});
   
   var sl=UPC.find(function(x){return x.v==='9.23'&&x.s==='Planned'});if(sl)sl.v='9.24';
   var sp=UPC.find(function(x){return x.v==='9.22'&&x.s==='Planned'});if(sp)sp.v='9.23';
@@ -2491,7 +2836,10 @@ BUGS.unshift(
   {d:'2026-10-19 --:--',v:'9.22',w:'Claude Sonnet 5.5 · owner\'s Claude account',a:'CSV/JSON downloads could fail silently inside the native wrappers because the <a download> element was never attached to the DOM and wrappers sometimes block blob downloads',b:'dlFile clicked a detached anchor and swallowed the error',c:'The anchor is appended before click(), removed after 1s, and a window.open data-URL fallback runs if the blob path throws'}
 );
 
-// Expose to window for v10 Sync engine
+
+
+/* --- Module: 11-bootstrap.js --- */
+// Expose to window for v10 Sync engine and database
 window.save = save;
 window.render = render;
 window.homeUI = homeUI;
@@ -2499,9 +2847,12 @@ window.POS = POS;
 window.ledUI = ledUI;
 window.setSt = setSt;
 window.S = S;
+window.NcsDB = NcsDB;
 
-applyLang();start();
-if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js'));
+applyLang();
+start();
+if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js'));
+
 </script>
 <!-- NCS v10 Sync Engine -->
 <script src="diag.js"></script>

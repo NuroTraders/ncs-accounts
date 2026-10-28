@@ -28,9 +28,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Read app version from index.html
+      - name: Build and read app version
         id: v
-        run: node scripts/prepare-www.js
+        run: node scripts/build.js && node scripts/prepare-www.js
       - name: Is this version already released?
         id: chk
         env:
@@ -54,7 +54,7 @@ jobs:
         with:
           node-version: 22
       - run: npm ci
-      - run: node scripts/prepare-www.js
+      - run: npm run prepare-www
       - run: npm pkg set version=${{ needs.version.outputs.version }}
       - run: npx electron-builder --config electron-builder.config.js --win --x64 --publish never
       - uses: actions/upload-artifact@v4
@@ -80,7 +80,7 @@ jobs:
           distribution: temurin
           java-version: 21
       - run: npm ci
-      - run: node scripts/prepare-www.js
+      - run: npm run prepare-www
       - name: Create Android project
         run: node scripts/android-setup.js
       - name: Prepare signing key
