@@ -5,7 +5,7 @@
 (function () {
   'use strict';
   var REPO = '';
-  var NATIVE_VERSION = '10.1.0';
+  var NATIVE_VERSION = '10.1.1';
 
   var cap = window.Capacitor;
   var isAndroid = !!(cap && cap.isNativePlatform && cap.isNativePlatform());

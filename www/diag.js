@@ -14,7 +14,7 @@
 
   const MAX_EVENTS = 200;
   const KEY = 'ncs_diag_v1';
-  const VERSION = (window.APP_VERSION || '10.0.0-beta');
+  const VERSION = (window.APP_VERSION || '10.1.1');
 
   // Helper: get current client ID if sync is initialized
   function getClientId() {
@@ -88,6 +88,15 @@
 
     // Get raw array of events
     getEvents: function() { return load(); },
+
+    // Get the most recent error event if any
+    getLastError: function() {
+      const events = load();
+      for (let i = events.length - 1; i >= 0; i--) {
+        if (events[i].lvl === 'error') return events[i];
+      }
+      return null;
+    },
 
     // Generate a full report payload for the UI to share
     makeReport: function(description, activity) {

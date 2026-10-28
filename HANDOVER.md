@@ -1,6 +1,6 @@
 # NCS Daily Accounts: Handover Note
 
-Shop: Nur Computer & Stationery. Current version: **v10.1.0** (service worker cache `ncs-v54`).
+Shop: Nur Computer & Stationery. Current version: **v10.1.1** (service worker cache `ncs-v55`).
 Two Claude profiles work on this app and do NOT share memory. This file is the shared memory.
 
 ## 🚨 IMMEDIATE ACTION REQUIRED FOR ANTIGRAVITY
@@ -13,8 +13,21 @@ Before starting the Beta Test, you must verify and fix three critical items:
 1. Ask the owner to upload the **latest** `index.html`, `sw.js`, and this `HANDOVER.md`. Never work from an older copy.
 2. Read sections 2 and 4 before changing anything.
 3. Make one feature per version. Do not refactor unrelated code.
-4. At the end: bump the version (section 4, rule 1), update section 7 (session log), and hand back all changed files. **Always deliver complete files, never patches.**
-5. **Bug fix command:** every bug you fix must be written into section 8 with date and time (HH:MM, Bangladesh time, UTC+6), version, what was wrong, the cause and the fix. The same entry must also go into the in-app `BUGS` array.
+4. **Version Release Contract (Modular Source):**
+   - Single source of truth for version is `APP_VERSION` in `src/js/10-sound-clock.js`.
+   - Update `VERS.unshift` in ascending order (Rule 36).
+   - Update `UPC.unshift` transitioning state (`Planned` -> `Done`).
+   - Bump service worker cache name in `sw.js`: `ncs-vN` -> `ncs-v(N+1)`.
+   - Bump `package.json` and `.native-version.json`.
+   - Compile via `npm run build` or `npm run prepare-www` and verify with AST syntax validator.
+   - Deliver complete runnable files, never patches.
+5. **Bug Fix Contract:**
+   - Every bug fix must follow the strict 6-field schema:
+     `{d: 'YYYY-MM-DD HH:MM (UTC+6)', v: 'VERSION', w: 'AUTHOR', a: 'SYMPTOM', b: 'CAUSE', c: 'FIX'}`
+   - Must be prepended to Section 8 in this document AND the in-app `BUGS` array.
+6. **Bug Reporting & Support Dispatch:**
+   - The in-app Bug Reporter in the More tab dispatches structured error summaries directly to the developer WhatsApp (`+8801765420566`) with device, role, timestamp, and `getLastError()`.
+   - Diagnostic event buffer is managed by `diag.js` (rolling 200 events in `localStorage: ncs_diag_v1`).
 
 ## 1. Files
 | File | Purpose |
@@ -74,7 +87,7 @@ Before starting the Beta Test, you must verify and fix three critical items:
 - **Stock override:** unchanged (`adminCheck`, `adminChecked`, `adminRejected`, `target`).
 
 ## 4. Rules (do not break)
-1. **Every release:** bump `APP_VERSION`, add `VERS`, bump `sw.js` cache, add section 7 line, sync `UPC`/`BUGS`. **Deliver complete files, not patches.**
+1. **Every release:** bump `APP_VERSION` in `src/js/10-sound-clock.js`, add `VERS` entry (ascending order), update `UPC`, bump `sw.js` cache, update `package.json` & `.native-version.json`, add Section 7 line, run `npm run prepare-www` to compile `/src` and verify syntax. **Deliver complete files, not patches.**
 2. **Synced data into `COLS`.** Always `save()`.
 3. **Never hard-delete money records.** Use `void` with reason; use `removed` flag for POS permanent removal; use `del` for parties. No physical deletion.
 4. **Ledger ↔ cash only through `ledReconcile()`.**
@@ -111,6 +124,7 @@ Before starting the Beta Test, you must verify and fix three critical items:
 35. **Sound is OFF by default.** The user has to tick "Sound effects" in Settings (admin-only) or use the new `#sndBtn` toggle on the More tab. Don't change the default without owner approval. The "▶ Test sound" button is the fastest way to verify.
 36. **VERS order is ascending (v9.28.1).** Do not prepend versions in descending order. `VERS.unshift` from oldest to newest in the same IIFE ensures the latest version ends up at `VERS[0]`.
 37. **v10 Auto-Sync (v10.0.0-beta).** `sync.js` MUST wrap `window.save` inside its `start()` method so that every `save()` call triggers `schedulePush()`. Do not rely on manual refresh buttons for sync.
+38. **Bug Reporting & Support Dispatch (v10.1.1).** The in-app Bug Report modal in the More tab provides direct 1-tap WhatsApp dispatch to developer number `+8801765420566` with pre-filled context (version, timestamp, role, activity, issue description, and `getLastError()`). Also provides 1-click clipboard copy of full diagnostic payload and log download fallback.
 
 ## 5. Known quirks
 - Start fresh carries balances forward; queues a reconciliation item.
@@ -152,6 +166,7 @@ Before starting the Beta Test, you must verify and fix three critical items:
 **v9.22.1: DONE.** Sound resume race fixed + Test button + louder gains.
 **v9.22: DONE.** Sound engine, count-up, save checkmark, tap feedback, POS cart slide in/out, wrapper download fallback.
 
+**v10.1.1: DONE.** 1-Tap WhatsApp Bug Reporter (direct to +8801765420566) with pre-filled context & recent error capture, 1-click clipboard diagnostic copy, and formalized Version/Bug/Feature rules contract.
 **v10.1.0: DONE.** Sub-accounts (optional parent link, combined family/group balance, parent breakdown, group statement), IndexedDB dual-storage engine, AES-GCM-256 encrypted backups, ESC/POS direct thermal printing, and modular source build engine.
 **v10.0.0-beta: DONE.** Model B Delta Sync Engine, 12 Structured Sheets & Diagnostics Logger.
 **v9.29: DONE.** Admin Prime Wallet Adjustments & Section Settings.
@@ -202,6 +217,7 @@ Before starting the Beta Test, you must verify and fix three critical items:
 - Currency via `tk()`.
 
 ## 7. Session log (append newest on top)
+- **v10.1.1, 2026-10-29 01:15 (UTC+6) (Antigravity):** 1-Tap WhatsApp Bug Reporter & Formalized Rules Engine. (1) **WhatsApp 1-Tap Dispatch:** Upgraded the in-app Bug Reporter in the More tab ([`src/js/05-shell.js`](file:///c:/Users/User/Desktop/NCS%20WORK%20-%20STATION/ncs-accounts-main/src/js/05-shell.js)) to dispatch directly to the developer WhatsApp (`+8801765420566`). Formats polite, structured bug reports including App Version, Local Timestamp, User Role, Activity, User Description, and the most recent system error. (2) **Diagnostic Helpers:** Added `getLastError()` to [`diag.js`](file:///c:/Users/User/Desktop/NCS%20WORK%20-%20STATION/ncs-accounts-main/diag.js) for automatic extraction of recent uncaught errors. Added 1-click full diagnostic clipboard copy with fallback textarea copy and log download fallback. (3) **Formalized Rules Contract:** Updated Section 0 and Section 4 with strict schemas for Semantic Versioning (`VERS`), 6-field Bug Fixing contracts (`BUGS`), and Roadmap lifecycle transitions (`UPC`). Bumped PWA cache to `ncs-v55` and native version to 10.1.1 (`versionCode 100101`). All AST syntax checks passed.
 - **v10.1.0, 2026-10-29 00:45 (UTC+6) (Antigravity):** Sub-Accounts, Combined Group Ledger & Modernization Release (Phase 2 & v10.1.0). (1) **Sub-Accounts Architecture:** Added hierarchical customer/party relationship model (`parentId` on party records). Added `lSubAccounts(cId)` and `lCombinedBal(cId)` calculators. (2) **Party Management & Form:** Added Parent Account dropdown selector in `ledCust()` with cycle prevention, allowing any party (family member, branch, corporate sub-unit) to be linked to a primary parent account. (3) **Profile & Rollup Statement:** Added dedicated Sub-Account summary list on parent profiles with individual dues, quick navigation, combined family balance indicator, and a Group Statement toggle (`window._incSubsStatement`) allowing single-click merged PDF/statement generation covering parent and all children. Sub-account profiles display a parent attribution link. (4) **Ledger Search & Cards:** Added `↳ Parent: [Name]` and child count pills directly on Ledger party cards. (5) **Modular Build Integration:** Tested and verified build pipeline with zero-dependency Node compiler (`npm run build`) and native packager (`npm run prepare-www`). Bumped PWA service worker cache to `ncs-v54` and native version to 10.1.0 (`versionCode 100100`). All syntax validations passed.
 - **v10.0.0-beta, 2026-10-29 00:15 (UTC+6) (Antigravity):** Storage Hardening (IndexedDB), AES-GCM Encrypted Backups & Direct Thermal ESC/POS (Phases 3, 4 & 5). (1) **IndexedDB Engine (`NcsDB`):** Implemented native browser IndexedDB dual-storage adapter (`ncs_idb_v1`) in `src/js/01-core.js`. Saves asynchronously in background with high-capacity storage, eliminating the 5MB browser storage crash limit while preserving instant synchronous boots from `localStorage`. Added IndexedDB check to in-app `selfTest()`. (2) **Encrypted Backups (AES-GCM-256):** Added Web Crypto PBKDF2 + AES-GCM 256-bit password-protected backup export option in Accounts settings, and implemented decryption-on-restore with confirmation safeguard. (3) **Direct ESC/POS Thermal Printing:** Added Web Serial and Web Bluetooth raw ESC/POS command streaming in POS receipts with automatic paper cutting and cash drawer kick codes (`ESC p 0 25 250`), with automatic fallback to standard print. Verified with clean AST compilation and `prepare-www`.
 - **v10.0.0-beta, 2026-10-28 23:35 (UTC+6) (Antigravity):** Architecture Modernization (Phase 0 & Phase 1). (1) **Baseline Snapshot:** Created `_backup_v10_baseline/` containing exact pre-modernization state (`index.html`, `config.js`, `sync.js`, `diag.js`, `sw.js`, `package.json`, `HANDOVER.md`). (2) **Modular Architecture:** Extracted 332KB monolithic `index.html` into structured, maintainable modules under `src/`: `src/template.html`, `src/styles/main.css`, `src/markup/app.html`, and 11 focused JavaScript modules under `src/js/` (`01-core.js` through `11-bootstrap.js`). (3) **Zero-Dependency Build Engine (`scripts/build.js`):** Built-in Node compiler with built-in AST syntax validator (`vm.Script`) and watch mode support (`npm run watch`), compiling `/src` into root `index.html` in ~11ms. (4) **Pipeline Compatibility:** Updated `package.json` with `npm run build` and wired `npm run prepare-www` to build from `src/` automatically, maintaining 100% compatibility with Electron and Capacitor Android workflows. Verified with clean syntax and prepare-www test executions.
