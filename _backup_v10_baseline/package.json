@@ -1,0 +1,29 @@
+{
+  "name": "ncs-accounts",
+  "productName": "NCS Accounts",
+  "version": "9.28.1",
+  "private": true,
+  "description": "NCS Daily Accounts - Nur Computer & Stationery",
+  "author": "Nur Computer & Stationery",
+  "main": "electron/main.js",
+  "scripts": {
+    "prepare-www": "node scripts/prepare-www.js",
+    "start": "npm run prepare-www && electron .",
+    "dist:win": "npm run prepare-www && electron-builder --config electron-builder.config.js --win --x64 --publish never",
+    "android:setup": "node scripts/android-setup.js"
+  },
+  "dependencies": {
+    "electron-updater": "^6.8.9"
+  },
+  "devDependencies": {
+    "@capacitor/android": "^8.5.3",
+    "@capacitor/app": "^8.1.2",
+    "@capacitor/cli": "^8.5.3",
+    "@capacitor/core": "^8.5.3",
+    "@capacitor/filesystem": "^8.1.5",
+    "@capacitor/share": "^8.0.3",
+    "@capgo/capacitor-updater": "^8.53.0",
+    "electron": "^44.9.0",
+    "electron-builder": "^26.15.3"
+  }
+}
