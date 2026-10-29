@@ -47,14 +47,13 @@ function preview(){
   const t=$('ft').value||'00:00',p=prevFor(cur,t),ty=$('fy').value,a=+$('fa').value||0,pay=$('fp').value;
   const eff=cash({type:ty,pay,amt:a}),bal=p+eff;
   let h=`<span>Previous <b>${n(p)}</b></span><span>Cash Balance <b class="${bal<0?'neg':''}">${n(bal)}</b></span>`;
-  if($('fx').value!=='')h+=`<span>Difference <b class="${dc((+$('fx').value)-bal)}">${dif((+$('fx').value)-bal)}</b></span>`;
   if(bal<0)h+='<span class="warn">Balance would be negative</span>';
   $('prev').innerHTML=h;
 }
 function reset(){editing=null;$('form').reset();$('fy').value='Sale';cats();const x=new Date();$('ft').value=String(x.getHours()).padStart(2,'0')+':'+String(x.getMinutes()).padStart(2,'0');$('go').textContent='Add entry';$('cancel').style.display='none';$('sg').hidden=true}
 
 $('form').addEventListener('submit',ev=>{ev.preventDefault();
-  const o={d:cur,t:$('ft').value,type:$('fy').value,desc:$('fd').value.trim(),cat:$('fc').value,pay:$('fp').value,amt:+$('fa').value,act:$('fx').value===''?null:+$('fx').value,party:$('fpn').value.trim(),phone:$('fph').value.trim()};
+  const o={d:cur,t:$('ft').value,type:$('fy').value,desc:$('fd').value.trim(),cat:$('fc').value,pay:$('fp').value,amt:+$('fa').value,act:editing?(S.entries.find(x=>x.id===editing)||{}).act||null:null,party:$('fpn').value.trim(),phone:$('fph').value.trim()};
   if(!o.t||!o.desc||isNaN(o.amt)){Sound.buzz();return}
   if(WLTC[o.type]&&WLTC[o.type][o.cat]){o.pay='Cash';o.w=''}else o.w=(o.type==='Sale'&&o.pay==='Mobile Banking')?$('fw').value:'';
   {const wf=wltEff(o),old=editing?S.entries.find(x=>x.id===editing):null,wo=old?wltEff(old):null,only=[wf&&wf.w,wo&&wo.w].filter(Boolean);
@@ -63,7 +62,7 @@ $('form').addEventListener('submit',ev=>{ev.preventDefault();
   if(o.pay==='Due'&&['Sale','Purchase'].includes(o.type)){(S.parties[o.type]=S.parties[o.type]||{})[o.party]=o.phone}else{o.party='';o.phone=''}
   if(closed()||!isA())return;snap();remember(o,!editing);if(editing){const e=S.entries.find(e=>e.id===editing);lg('Edit entry',`${e.type} ${e.amt} "${e.desc}" → ${o.type} ${o.amt} "${o.desc}"`);Object.assign(e,o)}else{o.by=U.name;S.entries.push({id:Date.now(),...o});lg('Add entry',`${o.type} ${o.amt} "${o.desc}"`)}
   if(save()){Sound.chaChing();saveCheck()}reset();render();$('fd').focus()});
-['ft','fy','fp','fa','fx'].forEach(id=>$(id).addEventListener('input',()=>{if(id==='fy'){cats();$('sg').hidden=true}if(id==='fp')party();preview()}));
+['ft','fy','fp','fa'].forEach(id=>$(id).addEventListener('input',()=>{if(id==='fy'){cats();$('sg').hidden=true}if(id==='fp')party();preview()}));
 $('cancel').onclick=()=>{reset();render()};
 
 function remember(o,inc){if(o.type==='Adjustment')return;const L=S.names[o.type]=S.names[o.type]||{};
@@ -88,7 +87,7 @@ function ask(title,body,onOk,okText,wide){try{Sound.tick()}catch(e){}$('ov').fir
 $('oc').onclick=()=>$('ov').hidden=true;
 $('tbl').addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b)return;const e=S.entries.find(x=>x.id==b.dataset.i);
   if(b.dataset.a==='dd'){e.dupDismissed=1;lg('Dismiss duplicate warning',e.desc||e.id);save();render()}
-  if(b.dataset.a==='e'){editing=e.id;$('ft').value=e.t;$('fy').value=e.type;cats();$('fd').value=e.desc;$('fc').value=e.cat;$('fp').value=e.pay;$('fa').value=e.amt;$('fx').value=e.act??'';party();if(e.w)$('fw').value=e.w;editCu(e);$('fpn').value=e.party||'';$('fph').value=e.phone||'';$('go').textContent='Save changes';$('cancel').style.display='';preview();$('form').scrollIntoView({behavior:document.documentElement.dataset.rm?'auto':'smooth',block:'center'})}
+  if(b.dataset.a==='e'){editing=e.id;$('ft').value=e.t;$('fy').value=e.type;cats();$('fd').value=e.desc;$('fc').value=e.cat;$('fp').value=e.pay;$('fa').value=e.amt;party();if(e.w)$('fw').value=e.w;editCu(e);$('fpn').value=e.party||'';$('fph').value=e.phone||'';$('go').textContent='Save changes';$('cancel').style.display='';preview();$('form').scrollIntoView({behavior:document.documentElement.dataset.rm?'auto':'smooth',block:'center'})}
   if(b.dataset.a==='v')ask('Void entry',`<div class="f"><label>Reason (required)</label><input id="vr" maxlength="100"></div>`,()=>{const r=$('vr').value.trim();if(!r)return false;if(wltVoidBlocked(e))return false;snap();e.void=1;e.vr=r;e.vb=U.name;lg('Void entry',`${e.type} ${e.amt} "${e.desc}" — ${r}`);save();render()},'Void');
   if(b.dataset.a==='a'){const df=calc()[e.id].df;ask('Adjust cash',`<div class="f"><label>Account will change by <b>${dif(df)}</b> to match counted cash</label><select id="ar"><option>${df>0?'Extra cash':'Cash short'}</option><option>Other</option></select></div>`,()=>{snap();S.entries.push({id:Date.now(),d:e.d,t:e.t,type:'Adjustment',desc:'Cash adjustment · '+$('ar').value,cat:'',pay:'Cash',amt:df});e.adj=1;lg('Cash adjust',`${dif(df)} on "${e.desc}"`);save();render()},'Adjust')}});
 
@@ -117,7 +116,7 @@ $('themeBtn').onclick=function(){
   save();
   applyTheme();
 };
- $('set').onclick=()=>ask('Settings',`<div class="f"><label>Starting cash</label><input id="s1" type="number" min="0" step="any" value="${S.start||0}"></div><div class="f"><label class="tg" style="justify-content:space-between"><span>Sound effects <small class="mut">(tick, cha-ching, buzz, chime)</small></span><input type="checkbox" id="snd" ${S.sound?'checked':''}></label><button type="button" class="ghost" id="sndTest" style="margin-top:6px;height:32px;font-size:13px">▶ Test sound</button></div><div class="f"><label>Reason for changing opening cash (required when changed)</label><input id="s1r" maxlength="160"></div><div class="f"><label>Day starts (Day/Night theme)</label><input id="s2" type="time" value="${S.dayStart}"></div><div class="f"><label>Night starts</label><input id="s3" type="time" value="${S.dayEnd}"></div><div class="f"><label>Google Sheet sync URL</label><input id="s4" value="${esc(S.sync?S.sync.url:'')}"></div><div class="f"><label>Sync key</label><input id="s5" type="password" value="${esc(S.sync?S.sync.key:'')}"></div><button type="button" class="ghost" id="setpin">Change admin PIN</button> <button type="button" class="ghost" id="ssu">Secure sync setup</button> <button type="button" class="ghost" id="sfr" style="color:var(--neg)">Start fresh (carry forward balances)</button> <button type="button" class="ghost" id="backupJson">Download data backup</button> <button type="button" class="ghost" id="restoreJson">Restore from backup</button><p class="mut" style="font-size:12.5px;margin:8px 0 0">${lb('Backups are files you download; the app does not back up by itself. Data lives in this browser, and in the Google Sheet only if sync is on. Keep a recent download off this device (for example in Drive).','ব্যাকআপ হলো ডাউনলোড করা ফাইল; অ্যাপ নিজে ব্যাকআপ নেয় না। তথ্য এই ব্রাউজারে থাকে, আর সিঙ্ক চালু থাকলে গুগল শিটে। সাম্প্রতিক একটি ডাউনলোড এই ডিভাইসের বাইরে রাখুন (যেমন ড্রাইভে)।')} ${S.lastBackup?lb('Last download from this device: ','এই ডিভাইস থেকে শেষ ডাউনলোড: ')+sd(iso(new Date(S.lastBackup))):lb('No backup downloaded from this device yet.','এই ডিভাইস থেকে এখনো ব্যাকআপ ডাউনলোড হয়নি।')}</p>`,()=>{const before={start:S.start,dayStart:S.dayStart,dayEnd:S.dayEnd,sync:S.sync,sound:S.sound},raw=$('s1').value.trim(),start=raw===''?NaN:Number(raw),old=+S.start||0,reason=$('s1r').value.trim();if(!Number.isFinite(start)||start<0)return false;if(start!==old){if(!reason){$('s1r').style.borderColor='var(--neg)';return false}lg('Opening cash changed',old+' → '+start+' · '+reason);S.start=start}S.dayStart=$('s2').value||'06:00';S.dayEnd=$('s3').value||'18:00';S.sync=$('s4').value.trim()&&$('s5').value.trim()?{url:$('s4').value.trim(),key:$('s5').value.trim()}:null;S.sound=!!$('snd').checked;if(!save()){Object.assign(S,before);if(start!==old)S.log.shift();return false}pull();applyTheme();render()},'Save');
+ $('set').onclick=()=>ask('Settings',`<div class="f"><label>Starting cash</label><input id="s1" type="number" min="0" step="any" value="${S.start||0}"></div><div class="f"><label class="tg" style="justify-content:space-between"><span>Sound effects <small class="mut">(tick, cha-ching, buzz, chime)</small></span><input type="checkbox" id="snd" ${S.sound?'checked':''}></label><button type="button" class="ghost" id="sndTest" style="margin-top:6px;height:32px;font-size:13px">▶ Test sound</button></div><div class="f"><label>Reason for changing opening cash (required when changed)</label><input id="s1r" maxlength="160"></div><div class="f"><label>Google Sheet sync URL</label><input id="s4" value="${esc(S.sync?S.sync.url:'')}"></div><div class="f"><label>Sync key</label><input id="s5" type="password" value="${esc(S.sync?S.sync.key:'')}"></div><button type="button" class="ghost" id="setpin">Change admin PIN</button> <button type="button" class="ghost" id="ssu">Secure sync setup</button> <button type="button" class="ghost" id="sfr" style="color:var(--neg)">Start fresh (carry forward balances)</button> <button type="button" class="ghost" id="backupJson">Download data backup</button> <button type="button" class="ghost" id="restoreJson">Restore from backup</button><p class="mut" style="font-size:12.5px;margin:8px 0 0">${lb('Backups are files you download; the app does not back up by itself. Data lives in this browser, and in the Google Sheet only if sync is on. Keep a recent download off this device (for example in Drive).','ব্যাকআপ হলো ডাউনলোড করা ফাইল; অ্যাপ নিজে ব্যাকআপ নেয় না। তথ্য এই ব্রাউজারে থাকে, আর সিঙ্ক চালু থাকলে গুগল শিটে। সাম্প্রতিক একটি ডাউনলোড এই ডিভাইসের বাইরে রাখুন (যেমন ড্রাইভে)।')} ${S.lastBackup?lb('Last download from this device: ','এই ডিভাইস থেকে শেষ ডাউনলোড: ')+sd(iso(new Date(S.lastBackup))):lb('No backup downloaded from this device yet.','এই ডিভাইস থেকে এখনো ব্যাকআপ ডাউনলোড হয়নি।')}</p>`,()=>{const before={start:S.start,sync:S.sync,sound:S.sound},raw=$('s1').value.trim(),start=raw===''?NaN:Number(raw),old=+S.start||0,reason=$('s1r').value.trim();if(!Number.isFinite(start)||start<0)return false;if(start!==old){if(!reason){$('s1r').style.borderColor='var(--neg)';return false}lg('Opening cash changed',old+' → '+start+' · '+reason);S.start=start}S.sync=$('s4').value.trim()&&$('s5').value.trim()?{url:$('s4').value.trim(),key:$('s5').value.trim()}:null;S.sound=!!$('snd').checked;if(!save()){Object.assign(S,before);if(start!==old)S.log.shift();return false}pull();applyTheme();render()},'Save');
  $('ob').addEventListener('click', async e => {
     if (e.target.id === 'backupJson') {
       const backup = { app: 'NCS Daily Accounts', version: APP_VERSION, exportedAt: new Date().toISOString(), state: stateOut() };
@@ -242,7 +241,7 @@ function lockUI(mode,msg){
   };
   $('lgo').onclick=go;lk.onkeydown=e=>{if(e.key==='Enter')go()}
 }
-function enter(){LRN=S.rebootN||0;$('lk').hidden=true;$('lk').innerHTML='';$('set').hidden=$('stf').hidden=$('und').hidden=!isA();$('logb').hidden=$('rpb').hidden=!(isA()||role()==='accountant');$('who').textContent=isA()?'Admin':U.name+' · '+role();reset();render();bump();pull();buildTabs();updateSndBtn()}
+function enter(){LRN=S.rebootN||0;$('lk').hidden=true;$('lk').innerHTML='';$('set').hidden=$('und').hidden=!isA();$('rpb').hidden=!(isA()||role()==='accountant');if($('stf'))$('stf').hidden=!isA();if($('logb'))$('logb').hidden=!(isA()||role()==='accountant');$('who').textContent=isA()?'Admin':U.name+' · '+role();reset();render();bump();pull();buildTabs();updateSndBtn()}
 function lock(){try{localStorage.removeItem(SESS)}catch(e){}U=null;$('tabs').hidden=true;$('ov').hidden=true;if(S.users)lockUI('login')}
 const bump=()=>{};setInterval(()=>{if(U&&Date.now()>exp)lock()},60000);
 ['click','keydown','touchstart'].forEach(e=>document.addEventListener(e,bump));
@@ -267,8 +266,10 @@ function staffUI(){ask('Staff',S.users.staff.map(x=>`<div class="sr"><span>${esc
   if(b.dataset.s==='o'){x.role={cashier:'keeper',keeper:'accountant'}[x.role||'cashier']||'cashier';lg('Change role',x.name+' → '+x.role);save();staffUI()}
   else if(b.dataset.s==='t'){x.on=!x.on;lg((x.on?'Activate':'Deactivate')+' staff',x.name);save();staffUI()}
    else ask('Reset PIN — '+x.name,'<div class="f"><label>New PIN (6+ digits)</label><input id="np" type="password" inputmode="numeric" autocomplete="off"></div>',async()=>{if(!/^\d{6,}$/.test($('np').value))return false;Object.assign(x,await mk($('np').value));lg('Reset staff PIN',x.name);save();setTimeout(staffUI,0)},'Reset')});
-$('stf').onclick=staffUI;
-$('logb').onclick=()=>ask('Change Log','<div class="lg">'+(S.log.length?S.log.slice(0,100).map(l=>`<div><b>${esc(l.a)}</b> <small>${esc(l.ts)} · ${esc(l.u)}</small><br>${esc(l.d)}</div>`).join(''):'No changes yet')+'</div>',()=>{},'Close',1);
+if($('stf'))$('stf').onclick=staffUI;
+function showChangeLog(){ask('Change Log','<div class="lg">'+(S.log.length?S.log.slice(0,100).map(l=>`<div><b>${esc(l.a)}</b> <small>${esc(l.ts)} · ${esc(l.u)}</small><br>${esc(l.d)}</div>`).join(''):'No changes yet')+'</div>',()=>{},'Close',1)}
+window.showChangeLog=showChangeLog;
+if($('logb'))$('logb').onclick=showChangeLog;
 $('prt').onclick=()=>{lg('Print',label(cur));save();try{window.print()}catch(e){}};
 applyTheme();
 const sd=d=>d.slice(8)+'.'+d.slice(5,7)+'.'+d.slice(0,4);
@@ -284,7 +285,7 @@ $('und').onclick=()=>{if(!UN||closed()||(!isA()&&UN.u!==U.name))return;const o=J
 
 const DEN=[1000,500,200,100,50,20,10,5,2,1];
 const cct=()=>[...$('ob').querySelectorAll('[data-d]')].reduce((a,i)=>a+(+i.value||0)*i.dataset.d,0);
-$('cnt').onclick=()=>ask('Cash Counter','<div class="cc">'+DEN.map(d=>`<label>৳${d}</label><input type="number" min="0" inputmode="numeric" data-d="${d}" placeholder="0"><b>0</b>`).join('')+'</div><div class="ct"><span>Total</span><b id="ctt">৳0</b></div>',()=>{$('fx').value=cct();preview()},'Use total');
+if($('cnt'))$('cnt').onclick=()=>ask('Cash Counter','<div class="cc">'+DEN.map(d=>`<label>৳${d}</label><input type="number" min="0" inputmode="numeric" data-d="${d}" placeholder="0"><b>0</b>`).join('')+'</div><div class="ct"><span>Total</span><b id="ctt">৳0</b></div>',()=>{$('fx').value=cct();preview()},'Use total');
 $('ob').addEventListener('input',e=>{if(!e.target.dataset.d)return;e.target.nextElementSibling.textContent=n((+e.target.value||0)*e.target.dataset.d);$('ctt').textContent=tk(cct())});
 
 let RP='day',RR=null;

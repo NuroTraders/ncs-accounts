@@ -30,7 +30,6 @@
     <div><label for="fp">Payment method</label><select id="fp"><option>Cash</option><option>Mobile Banking</option><option>Bank</option><option>Due</option></select></div>
     <div id="fwb" hidden><label for="fw">Received into wallet</label><select id="fw"><option value="bk">Bkash Personal</option><option value="ng">Nagad</option><option value="rk">Rocket</option><option value="bka">Bkash Agent</option></select></div>
     <div><label for="fa">Amount</label><input id="fa" type="number" inputmode="decimal" step="any" min="0" required placeholder="0"></div>
-    <div hidden><label for="fx">Actual cash (optional) <button type="button" class="lnk adj" id="cnt">Count</button></label><input id="fx" type="number" inputmode="decimal" step="any" min="0" placeholder="0"></div>
     <div class="pp" id="pcu" hidden><label for="fcu">Customer</label><select id="fcu"></select></div><div class="pp" id="ppn" hidden><label for="fpn" id="fpl">Customer name</label><input id="fpn" list="pl" maxlength="60" autocomplete="off"><datalist id="pl"></datalist></div><div class="pp" id="ppt" hidden><label for="fph">Phone (optional)</label><input id="fph" type="tel" maxlength="20" autocomplete="off"></div>
     <div class="act"><div class="prev" id="prev"></div><div><button type="button" class="ghost" id="cancel" style="display:none">Cancel edit</button> <button class="go" id="go" type="submit">Add entry</button></div></div>
   </div></form></section>
@@ -40,7 +39,7 @@
   <section class="card scroll"><div id="tbl"></div></section>
   <div class="pf" id="pf"></div>
 
-  <div class="foot"><span id="who"></span><button class="ghost" id="stf">Staff</button><button class="ghost" id="logb">Change Log</button><button class="ghost" id="rpb">Reports</button><button class="ghost" id="und" disabled>Undo</button><button class="ghost" id="prt">Print</button><button class="ghost" id="csv">Export CSV</button></div>
+  <div class="foot"><span id="who"></span><button class="ghost" id="rpb">Reports</button><button class="ghost" id="und" disabled>Undo</button><button class="ghost" id="prt">Print</button><button class="ghost" id="csv">Export CSV</button></div>
 </div>
 
 <div class="wrap view" id="vHome"><header><div><div class="shop">Overview</div><h1 id="hTitle">Home</h1></div></header>
