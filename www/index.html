@@ -650,38 +650,50 @@ button:active{transform:scale(.97)}
   <div class="dgrid"><section class="card dchc"><h3 class="dchh">Sell &amp; Buy · Last 7 days</h3><div class="dchart" id="hChart"></div></section><section class="card dchc"><h3 class="dchh">Sales by payment</h3><div class="dpc" id="hPay"></div><div id="hCatBar" class="dcat-wrap"></div></section></div>
   <h3 style="margin:6px 2px 8px;font-size:15px">Recent bills</h3><section class="card" id="hRecent"></section></div>
 <div class="wrap view" id="vPos">
-  <header style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px"><div><div class="shop">Point of sale</div><h1>POS</h1></div>
-    <div class="seg"><button id="mS" class="on">Sale</button><button id="mP">Purchase</button></div>
-    <div class="nav"><button class="ghost" id="bHeld">Held</button><button class="ghost" id="bBills">Bills</button><button class="ghost" id="bDrawer">Drawer</button></div></header>
-  <div class="pos-layout">
-    <div class="pos-main">
-      <div class="pos-tools" role="search">
-        <div class="pos-search"><label id="qLabel" for="q">Product Name/ID/Barcode</label><input id="q" placeholder="Search products" autocomplete="off"></div>
-        <button class="ghost" id="bScan" type="button">Scan</button><button class="ghost" id="bNew" type="button">Add Product</button>
+  <header style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px">
+    <div><div class="shop">Point of sale &amp; stock</div><h1 id="posTitle">Counter</h1></div>
+    <div class="seg" id="posViewSeg"><button type="button" id="cViewBill" class="on">🛒 Billing</button><button type="button" id="cViewStock">📦 Stock</button></div>
+    <div class="seg" id="posBillSeg"><button id="mS" class="on">Sale</button><button id="mP">Purchase</button></div>
+    <div class="nav" id="posBillNav"><button class="ghost" id="bHeld">Held</button><button class="ghost" id="bBills">Bills</button><button class="ghost" id="bDrawer">Drawer</button></div>
+    <div class="nav" id="posStockNav" style="display:none"><button class="go" id="pdNew" style="width:auto">+ New product</button></div>
+  </header>
+  <div id="posBillWrap">
+    <div class="pos-layout">
+      <div class="pos-main">
+        <div class="pos-tools" role="search">
+          <div class="pos-search"><label id="qLabel" for="q">Product Name/ID/Barcode</label><input id="q" placeholder="Search products" autocomplete="off"></div>
+          <button class="ghost" id="bScan" type="button">Scan</button><button class="ghost" id="bNew" type="button">Add Product</button>
+        </div>
+        <div class="svc-bar-wrap pos-svc-wrap"><div class="svc-bar-label"><span>⚡ 1-Tap Counter Services</span></div><div class="svc-presets" id="posPresets"></div></div>
+        <details class="pos-products" id="productPanel" open><summary id="productSummary">Browse products / Add to bill</summary><div class="top7" id="top7"></div><div class="grid" id="grid"></div></details>
       </div>
-      <div class="svc-bar-wrap pos-svc-wrap"><div class="svc-bar-label"><span>⚡ 1-Tap Counter Services</span></div><div class="svc-presets" id="posPresets"></div></div>
-      <details class="pos-products" id="productPanel" open><summary id="productSummary">Browse products / Add to bill</summary><div class="top7" id="top7"></div><div class="grid" id="grid"></div></details>
+      <aside class="pos-sidebar">
+        <section class="card cart pos-cart"><h3 id="ct">Sale cart</h3><div id="lines"></div>
+          <div class="tot"><span>Subtotal</span><b id="st">0</b></div>
+          <div class="tot"><span>Discount</span><div class="dcw"><input id="dc" type="number" inputmode="decimal" min="0" placeholder="0" aria-label="Discount amount"><div class="dcp"><button type="button" id="dpm" aria-label="Lower discount percent">−</button><input id="dp" type="number" inputmode="decimal" min="0" max="100" step="0.5" placeholder="%" aria-label="Discount percent"><span>%</span><button type="button" id="dpp" aria-label="Raise discount percent">+</button></div></div></div>
+          <div class="dcn" id="dcn" hidden></div>
+          <div class="tot big"><span>Total</span><b id="tt">৳0</b></div>
+          <div style="display:flex;gap:8px;margin:8px 0"><button class="ghost" id="bHold" style="flex:1">Hold bill</button><button class="ghost" id="bCustom" style="flex:1">+ Custom item</button></div>
+          <button class="go" id="bPay">Charge</button>
+        </section>
+      </aside>
     </div>
-    <aside class="pos-sidebar">
-      <section class="card cart pos-cart"><h3 id="ct">Sale cart</h3><div id="lines"></div>
-        <div class="tot"><span>Subtotal</span><b id="st">0</b></div>
-        <div class="tot"><span>Discount</span><div class="dcw"><input id="dc" type="number" inputmode="decimal" min="0" placeholder="0" aria-label="Discount amount"><div class="dcp"><button type="button" id="dpm" aria-label="Lower discount percent">−</button><input id="dp" type="number" inputmode="decimal" min="0" max="100" step="0.5" placeholder="%" aria-label="Discount percent"><span>%</span><button type="button" id="dpp" aria-label="Raise discount percent">+</button></div></div></div>
-        <div class="dcn" id="dcn" hidden></div>
-        <div class="tot big"><span>Total</span><b id="tt">৳0</b></div>
-        <div style="display:flex;gap:8px;margin:8px 0"><button class="ghost" id="bHold" style="flex:1">Hold bill</button><button class="ghost" id="bCustom" style="flex:1">+ Custom item</button></div>
-        <button class="go" id="bPay">Charge</button>
-      </section>
-    </aside>
+    <button class="go fab" id="fab">Charge</button>
   </div>
-  <button class="go fab" id="fab">Charge</button></div>
-<div class="wrap view" id="vProd"><header style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px"><div><div class="shop">Stock and prices</div><h1>Products</h1></div><button class="go" id="pdNew" style="width:auto">+ New product</button></header>
-  <section class="hs" id="pdS"></section>
-  <div class="tools" style="display:flex;gap:8px;margin-bottom:10px"><input id="pdq" placeholder="Search products" autocomplete="off"></div>
-  <div class="ptabs" id="pdF"><button data-f="all" class="on">All</button><button data-f="low">Low stock</button><button data-f="out">Out of stock</button></div>
-  <section class="card" id="pdL"></section></div>
-<div class="wrap view" id="vMore"><header><div><div class="shop">Settings and tools</div><h1>More</h1></div></header><div class="mlist" id="moreList"></div></div>
+  <div id="posStockWrap" style="display:none">
+    <section class="hs" id="pdS"></section>
+    <div class="tools" style="display:flex;gap:8px;margin-bottom:10px"><input id="pdq" placeholder="Search products" autocomplete="off"></div>
+    <div class="ptabs" id="pdF"><button data-f="all" class="on">All</button><button data-f="low">Low stock</button><button data-f="out">Out of stock</button></div>
+    <section class="card" id="pdL"></section>
+  </div>
+</div>
+<div class="wrap view" id="vMore">
+  <header><div><div class="shop">Settings, operations &amp; administration</div><h1>More</h1></div></header>
+  <div id="wltWrapM" class="wlt-wrap"></div>
+  <div id="moreAdminHub"></div>
+  <div class="mlist" id="moreList"></div>
+</div>
 <div class="wrap view" id="vLed"></div>
-<div class="wrap view" id="vMgmt"></div>
 <div id="rcp"></div>
 <div class="ov" id="sc" hidden><div class="dlg"><h3>Scan barcode</h3><video id="vid" playsinline muted></video><div class="oa"><button class="ghost" id="scx">Close</button></div></div></div>
 <div class="ov" id="ov" hidden><div class="dlg"><h3 id="ot"></h3><div id="ob"></div><div class="oa"><button class="ghost" id="oc">Cancel</button><button class="go" id="ok">Confirm</button></div></div></div>
@@ -1432,13 +1444,78 @@ async function importCatalog(){if(S.catImported||S.products.length||!SY())return
 
 /* --- Module: 05-shell.js --- */
 /* ---------- shell ---------- */
-const ICO={mgmt:'<path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/>',led:'<circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M17 8h4M17 12h4"/>',home:'<path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',pos:'<circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.5 12h11L21 7H6"/>',acc:'<path d="M5 3h11a3 3 0 0 1 3 3v15H8a3 3 0 0 1-3-3z"/><path d="M9 8h6M9 12h6"/>',prod:'<path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/>',more:'<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>'};
-const TABS={admin:['home','pos','prod','acc','led','mgmt','more'],keeper:['prod','more'],accountant:['acc','led','prod','more'],cashier:['pos','led','more']},TL={home:'Home',pos:'POS',prod:'Products',acc:'Accounts',led:'Ledger',mgmt:'Manage',more:'More'};
+const ICO={
+  mgmt:'<path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/>',
+  led:'<circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M17 8h4M17 12h4"/>',
+  home:'<path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+  pos:'<circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.5 12h11L21 7H6"/>',
+  acc:'<path d="M5 3h11a3 3 0 0 1 3 3v15H8a3 3 0 0 1-3-3z"/><path d="M9 8h6M9 12h6"/>',
+  prod:'<path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/>',
+  more:'<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>'
+};
+const TABS={
+  admin:['home','led','pos','acc','more'],
+  keeper:['pos','more'],
+  accountant:['acc','led','pos','more'],
+  cashier:['pos','led','more']
+};
+const TL={home:'Overview',led:'Ledger',pos:'Counter',acc:'Accounts',more:'More'};
+const TL_BN={home:'ওভারভিউ',led:'খতিয়ান',pos:'কাউন্টার',acc:'হিসাব',more:'আরও'};
 let CUR=null;
 const role=()=>!U?'':U.role==='admin'?'admin':U.role==='accountant'?'accountant':U.role==='keeper'?'keeper':'cashier',canCost=()=>isA()||role()==='keeper'||role()==='accountant';
-function buildTabs(){const T=TABS[role()];$('tabs').innerHTML=T.map(k=>`<button data-v="${k}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICO[k]}</svg>${TL[k]}</button>`).join('');$('tabs').hidden=false;$('tsub').textContent=(U.name.toLowerCase()===role()?'':U.name+' · ')+role();let saved=CUR;try{if(!saved)saved=sessionStorage.getItem('ncs_active_view_v1_'+role())}catch(e){}go(saved&&T.includes(saved)?saved:T[0])}
-function go(v){try{Sound.tick()}catch(e){}CUR=v;try{sessionStorage.setItem('ncs_active_view_v1_'+role(),v)}catch(e){}document.querySelectorAll('.view').forEach(x=>x.classList.toggle('on',x.id==='v'+v[0].toUpperCase()+v.slice(1)));document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
-  if(v==='home'){homeUI();try{applyCardSettings()}catch(e){}}if(v==='pos')POS.refresh();if(v==='prod')POS.prodUI();if(v==='acc'){AV=false;cur=iso(new Date());reset();render();try{applyCardSettings()}catch(e){}}if(v==='led')ledUI();if(v==='mgmt')mgmtUI();if(v==='more')updateMoreTab();document.body.classList.toggle('kp',role()==='keeper');document.body.classList.toggle('ro',role()==='accountant');clkVis();scrollTo(0,0)}
+
+function isCounterStock(){var s=$('posStockWrap');return s&&s.style.display!=='none'}
+function switchCounterView(mode){
+  var isStock = mode==='stock';
+  var bBill = $('cViewBill'), bStock = $('cViewStock');
+  var wBill = $('posBillWrap'), wStock = $('posStockWrap');
+  var bSeg = $('posBillSeg'), bNav = $('posBillNav'), sNav = $('posStockNav');
+  if(bBill)bBill.classList.toggle('on', !isStock);
+  if(bStock)bStock.classList.toggle('on', isStock);
+  if(wBill)wBill.style.display = isStock ? 'none' : '';
+  if(wStock)wStock.style.display = isStock ? '' : 'none';
+  if(bSeg)bSeg.style.display = isStock ? 'none' : '';
+  if(bNav)bNav.style.display = isStock ? 'none' : '';
+  if(sNav)sNav.style.display = isStock ? '' : 'none';
+  if(isStock){if(typeof POS!=='undefined'&&POS.prodUI)POS.prodUI();}
+  else{if(typeof POS!=='undefined'&&POS.refresh)POS.refresh();}
+}
+if($('cViewBill'))$('cViewBill').onclick=function(){switchCounterView('bill')};
+if($('cViewStock'))$('cViewStock').onclick=function(){switchCounterView('stock')};
+
+function buildTabs(){
+  const T=TABS[role()];
+  $('tabs').innerHTML=T.map(k=>`<button data-v="${k}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICO[k]}</svg>${(S.lang==='bn'&&TL_BN[k])?TL_BN[k]:TL[k]}</button>`).join('');
+  $('tabs').hidden=false;
+  $('tsub').textContent=(U.name.toLowerCase()===role()?'':U.name+' · ')+role();
+  let saved=CUR;
+  try{if(!saved)saved=sessionStorage.getItem('ncs_active_view_v1_'+role())}catch(e){}
+  go(saved&&T.includes(saved)?saved:T[0])
+}
+
+function go(v){
+  if(v==='prod'){go('pos');switchCounterView('stock');return}
+  if(v==='mgmt'){go('more');return}
+  try{Sound.tick()}catch(e){}
+  CUR=v;
+  try{sessionStorage.setItem('ncs_active_view_v1_'+role(),v)}catch(e){}
+  document.querySelectorAll('.view').forEach(x=>x.classList.toggle('on',x.id==='v'+v[0].toUpperCase()+v.slice(1)));
+  document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
+  if(v==='home'){homeUI();try{applyCardSettings()}catch(e){}}
+  if(v==='pos'){
+    if(role()==='keeper'){$('posViewSeg').style.display='none';switchCounterView('stock')}
+    else {$('posViewSeg').style.display=''}
+    POS.refresh();
+    if(isCounterStock())POS.prodUI();
+  }
+  if(v==='acc'){AV=false;cur=iso(new Date());reset();render();try{applyCardSettings()}catch(e){}}
+  if(v==='led')ledUI();
+  if(v==='more')updateMoreTab();
+  document.body.classList.toggle('kp',role()==='keeper');
+  document.body.classList.toggle('ro',role()==='accountant');
+  clkVis();
+  scrollTo(0,0)
+}
 $('tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(b)go(b.dataset.v)});
 var sndBtn=document.createElement('button');sndBtn.className='ghost';sndBtn.id='sndBtn';sndBtn.style.height='48px';sndBtn.style.textAlign='left';sndBtn.style.fontSize='15px';sndBtn.style.borderRadius='14px';
 var secCardBtn=document.createElement('button');secCardBtn.className='ghost';secCardBtn.id='secCardBtn';secCardBtn.style.height='48px';secCardBtn.style.textAlign='left';secCardBtn.style.fontSize='15px';secCardBtn.style.borderRadius='14px';
@@ -1595,6 +1672,16 @@ function updateMoreTab(){
     prsSettingBtn.style.display=isA()?'':'none';
     prsSettingBtn.innerHTML='<span style="display:flex;align-items:center;gap:10px"><span style="font-size:20px">⚡</span><b>'+lb('Counter service presets','কাউন্টার সার্ভিস প্রিসেট সেটিংস')+'</b></span>';
   }
+  var hub=$('moreAdminHub');
+  if(hub){
+    if(isA()){
+      hub.style.display='';
+      if(typeof mgmtUI==='function')mgmtUI();
+    } else {
+      hub.style.display='none';
+    }
+  }
+  if(typeof renderWalletCards==='function')renderWalletCards();
 }
 
 function openPresetSettings() {
@@ -1701,7 +1788,7 @@ function openPresetSettings() {
 
   showMain();
 }
-function redrawActiveView(){if(CUR==='home'){homeUI();try{applyCardSettings()}catch(e){}}else if(CUR==='pos')POS.refresh();else if(CUR==='prod')POS.prodUI();else if(CUR==='acc'){render();try{applyCardSettings()}catch(e){}}else if(CUR==='led')ledUI();else if(CUR==='mgmt')mgmtUI()}
+function redrawActiveView(){if(CUR==='home'){homeUI();try{applyCardSettings()}catch(e){}}else if(CUR==='pos'){POS.refresh();if(isCounterStock())POS.prodUI();}else if(CUR==='acc'){render();try{applyCardSettings()}catch(e){}}else if(CUR==='led')ledUI();else if(CUR==='more')updateMoreTab()}
 function refreshCurrentView(){
   if(!U||!CUR)return;
   var svg=$('refresh').querySelector('svg');
@@ -2303,11 +2390,10 @@ function upcTxt(){return'NCS Daily Accounts - Upcoming Features\n\n'+UPC.map(fun
 
 /* --- Module: 09-mgmt.js --- */
 function mgmtUI(){
-  if(!isA())return;var v=$('vMgmt'),B=function(k,l,d){return'<button class="ghost mg" data-m="'+k+'"><b>'+l+'</b><small>'+d+'</small></button>'};
+  if(!isA())return;var v=$('moreAdminHub')||$('vMore'),B=function(k,l,d){return'<button class="ghost mg" data-m="'+k+'"><b>'+l+'</b><small>'+d+'</small></button>'};
   var sc=st==='ok'?'ok':st==='pend'?'pend':(st==='offl'||st==='conf')?'bad':'off';
-  v.innerHTML='<header><div><div class="shop">'+lb('System management','সিস্টেম ব্যবস্থাপনা')+'</div><h1>'+lb('Management','ব্যবস্থাপনা')+'</h1></div></header>'+
-  '<div class="card" style="padding:16px"><h3 class="mgh">'+lb('Staff and access','কর্মী ও অ্যাক্সেস')+'</h3><div class="mgl">'+B('staff',lb('Staff and roles','কর্মী ও ভূমিকা'),lb('Add staff, accountant, stock manager','কর্মী যোগ'))+B('set',lb('Settings and security','সেটিংস ও নিরাপত্তা'),lb('Sync, PIN, cash','সিঙ্ক, পিন'))+B('log',lb('Change log','পরিবর্তন লগ'),lb('Who changed what and when','কে কী কখন'))+'</div></div>'+
-  '<div class="card" style="padding:16px"><h3 class="mgh">'+lb('System','সিস্টেম')+'</h3><div class="mgl">'+B('reboot',lb('Force logout all','সবাইকে লগআউট'),lb('Everyone logs out','সবাই লগআউট'))+B('wlt',lb('Wallet openings','ওয়ালেট শুরুর ইতিহাস'),lb('Date-anchored wallet openings and history','তারিখভিত্তিক ওপেনিং ও ইতিহাস'))+B('ver',lb('Version history','সংস্করণ ইতিহাস'),lb('Current version','বর্তমান সংস্করণ')+' v'+APP_VERSION)+B('selftest',lb('Run self test','সেলফ টেস্ট'),lb('Check calculations, storage and modules','হিসাব, স্টোরেজ পরীক্ষা'))+'</div>'+
+  v.innerHTML='<div class="card" style="padding:16px"><h3 class="mgh">'+lb('Staff and access','কর্মী ও অ্যাক্সেস')+'</h3><div class="mgl">'+B('staff',lb('Staff and roles','কর্মী ও ভূমিকা'),lb('Add staff, accountant, stock manager','কর্মী যোগ'))+B('set',lb('Settings and security','সেটিংস ও নিরাপত্তা'),lb('Sync, PIN, cash','সিঙ্ক, পিন'))+B('reports',lb('Reports Hub','রিপোর্ট হাব'),lb('Day, week, month reports and statements','দিন, সপ্তাহ ও মাসের রিপোর্ট'))+'</div></div>'+
+  '<div class="card" style="padding:16px"><h3 class="mgh">'+lb('System & Audit','সিস্টেম ও অডিট')+'</h3><div class="mgl">'+B('wlt',lb('Wallet openings','ওয়ালেট শুরুর ইতিহাস'),lb('Date-anchored wallet openings and history','তারিখভিত্তিক ওপেনিং ও ইতিহাস'))+B('log',lb('Change log','পরিবর্তন লগ'),lb('Who changed what and when','কে কী কখন'))+B('ver',lb('Version history','সংস্করণ ইতিহাস'),lb('Current version','বর্তমান সংস্করণ')+' v'+APP_VERSION)+B('selftest',lb('Run self test','সেলফ টেস্ট'),lb('Check calculations, storage and modules','হিসাব, স্টোরেজ পরীক্ষা'))+B('reboot',lb('Force logout all','সবাইকে লগআউট'),lb('Everyone logs out','সবাই লগআউট'))+'</div>'+
   '<div class="mut" style="margin-top:10px;font-size:13px"><i class="sdot '+sc+'" aria-hidden="true"></i>'+(SY()?lb('Synced','সিঙ্ক হয়েছে'):lb('Off','বন্ধ'))+' · '+lb('Staff','কর্মী')+': '+(S.users&&S.users.staff?S.users.staff.length:0)+' · '+lb('Products','পণ্য')+': '+S.products.filter(function(p){return!p.del}).length+' · '+lb('Parties','পক্ষ')+': '+S.cust.filter(function(c){return!c.del}).length+'</div></div>'+
   '<div class="card" style="padding:16px"><h3 class="mgh">Admin review queue</h3><button class="ghost mg" data-m="reviewq"><b>Review queue ('+reviewQueueCount()+')</b><small>Reconciliation, stock, flags, proposals, void requests</small></button></div>'}
 function reviewQueueCount(){
@@ -2361,11 +2447,10 @@ function reviewQueue(){
 }
 function rebootAsk(){ask(lb('Force logout all?','সবাইকে লগআউট করবেন?'),'<p>'+lb('Everyone, including you, will have to log in again.','সবাইকে লগইন করতে হবে।')+'</p>',async function(){S.rebootN=(S.rebootN||0)+1;S.rebootAt=Date.now();lg('Force logout all','By '+U.name);save();try{await push()}catch(e){}lock()},lb('Force logout','লগআউট করুন'))}
 (function(){
-  var v=$('vMgmt');
-  v.addEventListener('click',function(e){var b=e.target.closest('[data-m]');if(!b)return;var k=b.dataset.m;
-    if(k==='staff')staffUI();else if(k==='set')$('set').onclick();else if(k==='log')showChangeLog();else if(k==='ver')verUI();else if(k==='reboot')rebootAsk();else if(k==='wlt')openWltSettings();else if(k==='reviewq')reviewQueue();else if(k==='selftest')selfTest();});
-  v.addEventListener('click',function(e){if(e.target.closest('[data-m]'))return;var h=e.target.closest('[data-bt]');if(!h)return;var c=h.closest('.bcd'),o=c.classList.toggle('on');h.setAttribute('aria-expanded',o)});
-  if(window.matchMedia&&matchMedia('(hover:hover)').matches){v.addEventListener('mouseover',function(e){var c=e.target.closest('.bcd');if(c)c.classList.add('pv')});v.addEventListener('mouseout',function(e){var c=e.target.closest('.bcd');if(c&&!c.contains(e.relatedTarget))c.classList.remove('pv')})}
+  document.addEventListener('click',function(e){var b=e.target.closest('[data-m]');if(!b)return;var k=b.dataset.m;
+    if(k==='staff')staffUI();else if(k==='set')$('set').onclick();else if(k==='reports')$('rpb').onclick();else if(k==='log')showChangeLog();else if(k==='ver')verUI();else if(k==='reboot')rebootAsk();else if(k==='wlt')openWltSettings();else if(k==='reviewq')reviewQueue();else if(k==='selftest')selfTest();});
+  document.addEventListener('click',function(e){if(e.target.closest('[data-m]'))return;var h=e.target.closest('[data-bt]');if(!h)return;var c=h.closest('.bcd'),o=c.classList.toggle('on');h.setAttribute('aria-expanded',o)});
+  if(window.matchMedia&&matchMedia('(hover:hover)').matches){document.addEventListener('mouseover',function(e){var c=e.target.closest('.bcd');if(c)c.classList.add('pv')});document.addEventListener('mouseout',function(e){var c=e.target.closest('.bcd');if(c&&!c.contains(e.relatedTarget))c.classList.remove('pv')})}
   setInterval(function(){if(U&&(S.rebootN||0)>(LRN||0))lock()},4000);
   $('cashp').addEventListener('click',function(e){if(e.target.closest('[data-cadj]'))cashAdjust();if(e.target.closest('[data-chist]'))cashCountHistory();if(e.target.closest('[data-discq]'))POS.bills()});
 })();
@@ -2443,7 +2528,7 @@ function renderWalletCards(){
   var b=calcWallets(),mk=function(k){return'<div class="wlt-item'+(b[k]<0?' neg':'')+'" data-w="'+k+'"><div class="wname">'+esc(wN(k))+'</div><div class="wbal">'+tk(b[k])+'</div></div>'},
   sum=function(a){return a.reduce(function(s,k){return s+b[k]},0)},
   h='<div class="wlt-card"><div class="wlt-title"><span>'+lb('Mobile financial services','মোবাইল ফিন্যান্সিয়াল সার্ভিস')+(isA()?' <button type="button" class="lnk adj" style="font-size:12px;font-weight:600;padding:0 4px" data-wadj="mfs">'+lb('Adjust','সমন্বয়')+'</button>':'')+'</span><b>'+tk(sum(WLT_MFS))+'</b></div><div class="wlt-grid">'+WLT_MFS.map(mk).join('')+'</div></div><div class="wlt-card"><div class="wlt-title"><span>'+lb('Recharge balances','রিচার্জ ব্যালেন্স')+(isA()?' <button type="button" class="lnk adj" style="font-size:12px;font-weight:600;padding:0 4px" data-wadj="rcr">'+lb('Adjust','সমন্বয়')+'</button>':'')+'</span><b>'+tk(sum(WLT_RCR))+'</b></div><div class="wlt-grid wlt-grid-3">'+WLT_RCR.map(mk).join('')+'</div></div>';
-  ['wltWrap','wltWrapH'].forEach(function(id){var el=$(id);if(el)el.innerHTML=h})}
+  ['wltWrap','wltWrapH','wltWrapM'].forEach(function(id){var el=$(id);if(el)el.innerHTML=h})}
 function wltRows(key,lim){
   var L=sorted().filter(function(e){var f=wltEff(e);return f&&f.w===key}).reverse();if(lim)L=L.slice(0,lim);
   return L.map(function(e){var f=wltEff(e),sg=f.d>0?'+':'−';return{d:sd(e.d)+' '+(e.t?t12(e.t):''),c:(e.cat==='POS'||e.type==='Ledger')?(e.desc||'POS').slice(0,40):e.cat,a:sg+n(e.amt),p:f.d>0}})}
@@ -3185,7 +3270,7 @@ function animateCounts(){
 function saveCheck(){if(document.documentElement.dataset.rm)return;var d=document.createElement('div');d.className='savechk';d.innerHTML='<svg viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="22" fill="none" stroke="var(--acc)" stroke-width="3"/><path d="M14 27l8 8 16-16" fill="none" stroke="var(--acc)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>';document.body.appendChild(d);setTimeout(function(){d.classList.add('out')},700);setTimeout(function(){d.remove()},1250)}
 (function(){
   var M="Claude Sonnet 5.5 · owner's Claude account";
-  APP_VERSION='10.4.1';
+  APP_VERSION='10.4.2';
   VERS.unshift({v:'9.22',d:'2026-10-19',t:'Sound effects, motion polish and wrapper download safety',by:M,n:['Web Audio sound engine: soft tick on tabs/dialogs, cha-ching on sale/entry save, low buzz on errors, sync chime on background sync','Sound toggle in Settings, default off; AudioContext created on first tap','All sound and motion automatically off when the OS asks for reduced motion','Number count-up on Home (Cash Balance, Total Sell, Total Buy) over 0.4s on load and period change','Save checkmark pop on POS sale and Accounts/Ledger entry save','Tap feedback: buttons scale to 0.97 on press','POS cart rows slide in when added and slide out when removed','dlFile falls back to a data URL window if the wrapper blocks the <a download> tag']});
   VERS.unshift({v:'9.22.1',d:'2026-10-19',t:'Sound resume fix + Test button',by:M,n:['AudioContext resume() race fixed: tones now play after the context is running (fixes silent playback on Android WebView, iOS Safari and after idle tabs)','▶ Test sound button inside Settings for instant verification','Louder gains for tick and cha-ching so phone speakers are audible']});
   VERS.unshift({v:'9.22.2',d:'2026-10-19',t:'Sound toggle visible in More, Settings unhidden',by:M,n:['Sound effects ON/OFF button now appears directly in the More tab (no need to open Settings)','Removed the CSS rule that was hiding the Settings button in the More tab','Settings still shows the Sound effects checkbox and the ▶ Test sound button']});
@@ -3209,7 +3294,9 @@ function saveCheck(){if(document.documentElement.dataset.rm)return;var d=documen
   VERS.unshift({v:'10.3.1',d:'2026-10-29',t:'Five-Colour Chart Palette & Category Breakdown',by:'Antigravity',n:['Upgraded chart colour palette from 4 to 5 distinct colours: Green (Cash), Blue (Mobile Banking), Coral/Red (Bank), Gold (Due), Purple (Other)','Sales donut chart now shows 5 payment method segments instead of 3 (Cash, Mobile Banking, Bank, Due, Other)','New Sales by Category horizontal breakdown bar under the donut with top-5 category legend','Gradient bar fills on 7-day Sell & Buy chart with smooth height transitions','Dark mode: all 5 colours tuned for WCAG contrast on dark backgrounds']});
   VERS.unshift({v:'10.4.0',d:'2026-10-29',t:'Enterprise-Grade Theme (Light/Dark), Cohesive Color Palette & Workflow Contract',by:'Antigravity',n:['Enterprise-Grade Design System: Unified slate/zinc elevation hierarchy for both Light (#F8FAFC) and Dark (#0B0F19) modes','Refined Brand & Semantic Tokens: Emerald primary (#0F766E/10B981), balanced Forest pos, Crimson neg, and Amber warn across all views','Enterprise 5-Colour Data Visualization: High-contrast, WCAG-accessible chart tokens (--ch1 to --ch5) for cash, banking, MFS, dues, and services','Component Polish: Tabular numbers across financial metrics, refined tinted pill badges, crisp 8px-12px radii, and sleek category breakdown bar','Rule 38 Formalization: Two-tree synchronization and compilation contract for AI assistants to guarantee Git repository integrity']});
   VERS.unshift({v:'10.4.1',d:'2026-10-29',t:'Phase 1 Safe Cleanup: Dead Theme Settings, Obsolete Inline Cash Counter & UI Streamlining',by:'Antigravity',n:['Removed obsolete Day starts / Night starts inputs from Settings dialog (vestiges of pre-v9.20 day/night theme)','Removed permanently hidden inline Actual Cash input and old Cash Counter button from Accounts entry form (cash counting is cleanly handled by Count and Adjust Cash modal)','Removed redundant Staff and Change Log buttons from Accounts footer, keeping Change Log and Staff unified in Management','Removed static Upcoming Features and duplicate Bug .txt cards from Management view in favor of the active 1-tap WhatsApp diagnostic reporter in More']});
+  VERS.unshift({v:'10.4.2',d:'2026-10-29',t:'5-Tab Architecture Redesign: Overview, Ledger, Counter, Accounts & Unified More Hub',by:'Antigravity',n:['5-Tab ergonomic bottom navigation: Overview (Home), Ledger (clients & dues), Counter (POS & stock), Accounts (cash book), and More (unified settings & admin)','Counter View Unification: Combined fast billing with sticky cart and 1-tap counter presets, plus stock & inventory catalog toggle (Billing / Stock)','Unified More & Settings Hub: Direct Wallets & MFS quick view with 1-tap adjustments, Staff & roles management, Reports Hub, Counter service presets, and full system/diagnostic suite','Clean Architecture: Completely retired legacy vMgmt and vProd view containers, keeping views 1-to-1 with bottom tabs']});
   
+  UPC.unshift({v:'10.4.2',s:'Done',t:['5-Tab navigation layout (Overview, Ledger, Counter, Accounts, More)','Unified Counter view with Billing and Stock toggle','Unified More & Settings hub with Wallets quick view, Staff, Reports, Presets, and System suite']});
   UPC.unshift({v:'10.4.1',s:'Done',t:['Dead theme settings removed from Settings modal','Permanently hidden Actual Cash input removed from Accounts entry form','Staff and Change Log decoupled from Accounts footer into Management','Static Upcoming Features and duplicate Bug .txt cards removed from Management']});
   UPC.unshift({v:'9.22',s:'Done',t:['Web Audio sound engine (tick, cha-ching, buzz, sync chime), default off','Count-up numbers on Home','Save checkmark','Tap feedback','POS cart slide in/out','All respect OS reduced-motion','Download fallback']});
   UPC.unshift({v:'9.22.1',s:'Done',t:['AudioContext resume race fixed','Test sound button in Settings','Louder gains']});
@@ -3285,7 +3372,7 @@ if ('serviceWorker' in navigator) addEventListener('load', () => navigator.servi
 
 </script>
 <!-- NCS v10 Sync Engine -->
-<script src="diag.js?v=10.4.0"></script>
-<script src="sync.js?v=10.4.0"></script>
+<script src="diag.js?v=10.4.2"></script>
+<script src="sync.js?v=10.4.2"></script>
 </body>
 </html>

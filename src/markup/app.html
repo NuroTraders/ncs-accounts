@@ -52,38 +52,50 @@
   <div class="dgrid"><section class="card dchc"><h3 class="dchh">Sell &amp; Buy · Last 7 days</h3><div class="dchart" id="hChart"></div></section><section class="card dchc"><h3 class="dchh">Sales by payment</h3><div class="dpc" id="hPay"></div><div id="hCatBar" class="dcat-wrap"></div></section></div>
   <h3 style="margin:6px 2px 8px;font-size:15px">Recent bills</h3><section class="card" id="hRecent"></section></div>
 <div class="wrap view" id="vPos">
-  <header style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px"><div><div class="shop">Point of sale</div><h1>POS</h1></div>
-    <div class="seg"><button id="mS" class="on">Sale</button><button id="mP">Purchase</button></div>
-    <div class="nav"><button class="ghost" id="bHeld">Held</button><button class="ghost" id="bBills">Bills</button><button class="ghost" id="bDrawer">Drawer</button></div></header>
-  <div class="pos-layout">
-    <div class="pos-main">
-      <div class="pos-tools" role="search">
-        <div class="pos-search"><label id="qLabel" for="q">Product Name/ID/Barcode</label><input id="q" placeholder="Search products" autocomplete="off"></div>
-        <button class="ghost" id="bScan" type="button">Scan</button><button class="ghost" id="bNew" type="button">Add Product</button>
+  <header style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px">
+    <div><div class="shop">Point of sale &amp; stock</div><h1 id="posTitle">Counter</h1></div>
+    <div class="seg" id="posViewSeg"><button type="button" id="cViewBill" class="on">🛒 Billing</button><button type="button" id="cViewStock">📦 Stock</button></div>
+    <div class="seg" id="posBillSeg"><button id="mS" class="on">Sale</button><button id="mP">Purchase</button></div>
+    <div class="nav" id="posBillNav"><button class="ghost" id="bHeld">Held</button><button class="ghost" id="bBills">Bills</button><button class="ghost" id="bDrawer">Drawer</button></div>
+    <div class="nav" id="posStockNav" style="display:none"><button class="go" id="pdNew" style="width:auto">+ New product</button></div>
+  </header>
+  <div id="posBillWrap">
+    <div class="pos-layout">
+      <div class="pos-main">
+        <div class="pos-tools" role="search">
+          <div class="pos-search"><label id="qLabel" for="q">Product Name/ID/Barcode</label><input id="q" placeholder="Search products" autocomplete="off"></div>
+          <button class="ghost" id="bScan" type="button">Scan</button><button class="ghost" id="bNew" type="button">Add Product</button>
+        </div>
+        <div class="svc-bar-wrap pos-svc-wrap"><div class="svc-bar-label"><span>⚡ 1-Tap Counter Services</span></div><div class="svc-presets" id="posPresets"></div></div>
+        <details class="pos-products" id="productPanel" open><summary id="productSummary">Browse products / Add to bill</summary><div class="top7" id="top7"></div><div class="grid" id="grid"></div></details>
       </div>
-      <div class="svc-bar-wrap pos-svc-wrap"><div class="svc-bar-label"><span>⚡ 1-Tap Counter Services</span></div><div class="svc-presets" id="posPresets"></div></div>
-      <details class="pos-products" id="productPanel" open><summary id="productSummary">Browse products / Add to bill</summary><div class="top7" id="top7"></div><div class="grid" id="grid"></div></details>
+      <aside class="pos-sidebar">
+        <section class="card cart pos-cart"><h3 id="ct">Sale cart</h3><div id="lines"></div>
+          <div class="tot"><span>Subtotal</span><b id="st">0</b></div>
+          <div class="tot"><span>Discount</span><div class="dcw"><input id="dc" type="number" inputmode="decimal" min="0" placeholder="0" aria-label="Discount amount"><div class="dcp"><button type="button" id="dpm" aria-label="Lower discount percent">−</button><input id="dp" type="number" inputmode="decimal" min="0" max="100" step="0.5" placeholder="%" aria-label="Discount percent"><span>%</span><button type="button" id="dpp" aria-label="Raise discount percent">+</button></div></div></div>
+          <div class="dcn" id="dcn" hidden></div>
+          <div class="tot big"><span>Total</span><b id="tt">৳0</b></div>
+          <div style="display:flex;gap:8px;margin:8px 0"><button class="ghost" id="bHold" style="flex:1">Hold bill</button><button class="ghost" id="bCustom" style="flex:1">+ Custom item</button></div>
+          <button class="go" id="bPay">Charge</button>
+        </section>
+      </aside>
     </div>
-    <aside class="pos-sidebar">
-      <section class="card cart pos-cart"><h3 id="ct">Sale cart</h3><div id="lines"></div>
-        <div class="tot"><span>Subtotal</span><b id="st">0</b></div>
-        <div class="tot"><span>Discount</span><div class="dcw"><input id="dc" type="number" inputmode="decimal" min="0" placeholder="0" aria-label="Discount amount"><div class="dcp"><button type="button" id="dpm" aria-label="Lower discount percent">−</button><input id="dp" type="number" inputmode="decimal" min="0" max="100" step="0.5" placeholder="%" aria-label="Discount percent"><span>%</span><button type="button" id="dpp" aria-label="Raise discount percent">+</button></div></div></div>
-        <div class="dcn" id="dcn" hidden></div>
-        <div class="tot big"><span>Total</span><b id="tt">৳0</b></div>
-        <div style="display:flex;gap:8px;margin:8px 0"><button class="ghost" id="bHold" style="flex:1">Hold bill</button><button class="ghost" id="bCustom" style="flex:1">+ Custom item</button></div>
-        <button class="go" id="bPay">Charge</button>
-      </section>
-    </aside>
+    <button class="go fab" id="fab">Charge</button>
   </div>
-  <button class="go fab" id="fab">Charge</button></div>
-<div class="wrap view" id="vProd"><header style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px"><div><div class="shop">Stock and prices</div><h1>Products</h1></div><button class="go" id="pdNew" style="width:auto">+ New product</button></header>
-  <section class="hs" id="pdS"></section>
-  <div class="tools" style="display:flex;gap:8px;margin-bottom:10px"><input id="pdq" placeholder="Search products" autocomplete="off"></div>
-  <div class="ptabs" id="pdF"><button data-f="all" class="on">All</button><button data-f="low">Low stock</button><button data-f="out">Out of stock</button></div>
-  <section class="card" id="pdL"></section></div>
-<div class="wrap view" id="vMore"><header><div><div class="shop">Settings and tools</div><h1>More</h1></div></header><div class="mlist" id="moreList"></div></div>
+  <div id="posStockWrap" style="display:none">
+    <section class="hs" id="pdS"></section>
+    <div class="tools" style="display:flex;gap:8px;margin-bottom:10px"><input id="pdq" placeholder="Search products" autocomplete="off"></div>
+    <div class="ptabs" id="pdF"><button data-f="all" class="on">All</button><button data-f="low">Low stock</button><button data-f="out">Out of stock</button></div>
+    <section class="card" id="pdL"></section>
+  </div>
+</div>
+<div class="wrap view" id="vMore">
+  <header><div><div class="shop">Settings, operations &amp; administration</div><h1>More</h1></div></header>
+  <div id="wltWrapM" class="wlt-wrap"></div>
+  <div id="moreAdminHub"></div>
+  <div class="mlist" id="moreList"></div>
+</div>
 <div class="wrap view" id="vLed"></div>
-<div class="wrap view" id="vMgmt"></div>
 <div id="rcp"></div>
 <div class="ov" id="sc" hidden><div class="dlg"><h3>Scan barcode</h3><video id="vid" playsinline muted></video><div class="oa"><button class="ghost" id="scx">Close</button></div></div></div>
 <div class="ov" id="ov" hidden><div class="dlg"><h3 id="ot"></h3><div id="ob"></div><div class="oa"><button class="ghost" id="oc">Cancel</button><button class="go" id="ok">Confirm</button></div></div></div>

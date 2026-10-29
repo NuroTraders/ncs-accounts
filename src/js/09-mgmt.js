@@ -1,9 +1,8 @@
 function mgmtUI(){
-  if(!isA())return;var v=$('vMgmt'),B=function(k,l,d){return'<button class="ghost mg" data-m="'+k+'"><b>'+l+'</b><small>'+d+'</small></button>'};
+  if(!isA())return;var v=$('moreAdminHub')||$('vMore'),B=function(k,l,d){return'<button class="ghost mg" data-m="'+k+'"><b>'+l+'</b><small>'+d+'</small></button>'};
   var sc=st==='ok'?'ok':st==='pend'?'pend':(st==='offl'||st==='conf')?'bad':'off';
-  v.innerHTML='<header><div><div class="shop">'+lb('System management','সিস্টেম ব্যবস্থাপনা')+'</div><h1>'+lb('Management','ব্যবস্থাপনা')+'</h1></div></header>'+
-  '<div class="card" style="padding:16px"><h3 class="mgh">'+lb('Staff and access','কর্মী ও অ্যাক্সেস')+'</h3><div class="mgl">'+B('staff',lb('Staff and roles','কর্মী ও ভূমিকা'),lb('Add staff, accountant, stock manager','কর্মী যোগ'))+B('set',lb('Settings and security','সেটিংস ও নিরাপত্তা'),lb('Sync, PIN, cash','সিঙ্ক, পিন'))+B('log',lb('Change log','পরিবর্তন লগ'),lb('Who changed what and when','কে কী কখন'))+'</div></div>'+
-  '<div class="card" style="padding:16px"><h3 class="mgh">'+lb('System','সিস্টেম')+'</h3><div class="mgl">'+B('reboot',lb('Force logout all','সবাইকে লগআউট'),lb('Everyone logs out','সবাই লগআউট'))+B('wlt',lb('Wallet openings','ওয়ালেট শুরুর ইতিহাস'),lb('Date-anchored wallet openings and history','তারিখভিত্তিক ওপেনিং ও ইতিহাস'))+B('ver',lb('Version history','সংস্করণ ইতিহাস'),lb('Current version','বর্তমান সংস্করণ')+' v'+APP_VERSION)+B('selftest',lb('Run self test','সেলফ টেস্ট'),lb('Check calculations, storage and modules','হিসাব, স্টোরেজ পরীক্ষা'))+'</div>'+
+  v.innerHTML='<div class="card" style="padding:16px"><h3 class="mgh">'+lb('Staff and access','কর্মী ও অ্যাক্সেস')+'</h3><div class="mgl">'+B('staff',lb('Staff and roles','কর্মী ও ভূমিকা'),lb('Add staff, accountant, stock manager','কর্মী যোগ'))+B('set',lb('Settings and security','সেটিংস ও নিরাপত্তা'),lb('Sync, PIN, cash','সিঙ্ক, পিন'))+B('reports',lb('Reports Hub','রিপোর্ট হাব'),lb('Day, week, month reports and statements','দিন, সপ্তাহ ও মাসের রিপোর্ট'))+'</div></div>'+
+  '<div class="card" style="padding:16px"><h3 class="mgh">'+lb('System & Audit','সিস্টেম ও অডিট')+'</h3><div class="mgl">'+B('wlt',lb('Wallet openings','ওয়ালেট শুরুর ইতিহাস'),lb('Date-anchored wallet openings and history','তারিখভিত্তিক ওপেনিং ও ইতিহাস'))+B('log',lb('Change log','পরিবর্তন লগ'),lb('Who changed what and when','কে কী কখন'))+B('ver',lb('Version history','সংস্করণ ইতিহাস'),lb('Current version','বর্তমান সংস্করণ')+' v'+APP_VERSION)+B('selftest',lb('Run self test','সেলফ টেস্ট'),lb('Check calculations, storage and modules','হিসাব, স্টোরেজ পরীক্ষা'))+B('reboot',lb('Force logout all','সবাইকে লগআউট'),lb('Everyone logs out','সবাই লগআউট'))+'</div>'+
   '<div class="mut" style="margin-top:10px;font-size:13px"><i class="sdot '+sc+'" aria-hidden="true"></i>'+(SY()?lb('Synced','সিঙ্ক হয়েছে'):lb('Off','বন্ধ'))+' · '+lb('Staff','কর্মী')+': '+(S.users&&S.users.staff?S.users.staff.length:0)+' · '+lb('Products','পণ্য')+': '+S.products.filter(function(p){return!p.del}).length+' · '+lb('Parties','পক্ষ')+': '+S.cust.filter(function(c){return!c.del}).length+'</div></div>'+
   '<div class="card" style="padding:16px"><h3 class="mgh">Admin review queue</h3><button class="ghost mg" data-m="reviewq"><b>Review queue ('+reviewQueueCount()+')</b><small>Reconciliation, stock, flags, proposals, void requests</small></button></div>'}
 function reviewQueueCount(){
@@ -57,11 +56,10 @@ function reviewQueue(){
 }
 function rebootAsk(){ask(lb('Force logout all?','সবাইকে লগআউট করবেন?'),'<p>'+lb('Everyone, including you, will have to log in again.','সবাইকে লগইন করতে হবে।')+'</p>',async function(){S.rebootN=(S.rebootN||0)+1;S.rebootAt=Date.now();lg('Force logout all','By '+U.name);save();try{await push()}catch(e){}lock()},lb('Force logout','লগআউট করুন'))}
 (function(){
-  var v=$('vMgmt');
-  v.addEventListener('click',function(e){var b=e.target.closest('[data-m]');if(!b)return;var k=b.dataset.m;
-    if(k==='staff')staffUI();else if(k==='set')$('set').onclick();else if(k==='log')showChangeLog();else if(k==='ver')verUI();else if(k==='reboot')rebootAsk();else if(k==='wlt')openWltSettings();else if(k==='reviewq')reviewQueue();else if(k==='selftest')selfTest();});
-  v.addEventListener('click',function(e){if(e.target.closest('[data-m]'))return;var h=e.target.closest('[data-bt]');if(!h)return;var c=h.closest('.bcd'),o=c.classList.toggle('on');h.setAttribute('aria-expanded',o)});
-  if(window.matchMedia&&matchMedia('(hover:hover)').matches){v.addEventListener('mouseover',function(e){var c=e.target.closest('.bcd');if(c)c.classList.add('pv')});v.addEventListener('mouseout',function(e){var c=e.target.closest('.bcd');if(c&&!c.contains(e.relatedTarget))c.classList.remove('pv')})}
+  document.addEventListener('click',function(e){var b=e.target.closest('[data-m]');if(!b)return;var k=b.dataset.m;
+    if(k==='staff')staffUI();else if(k==='set')$('set').onclick();else if(k==='reports')$('rpb').onclick();else if(k==='log')showChangeLog();else if(k==='ver')verUI();else if(k==='reboot')rebootAsk();else if(k==='wlt')openWltSettings();else if(k==='reviewq')reviewQueue();else if(k==='selftest')selfTest();});
+  document.addEventListener('click',function(e){if(e.target.closest('[data-m]'))return;var h=e.target.closest('[data-bt]');if(!h)return;var c=h.closest('.bcd'),o=c.classList.toggle('on');h.setAttribute('aria-expanded',o)});
+  if(window.matchMedia&&matchMedia('(hover:hover)').matches){document.addEventListener('mouseover',function(e){var c=e.target.closest('.bcd');if(c)c.classList.add('pv')});document.addEventListener('mouseout',function(e){var c=e.target.closest('.bcd');if(c&&!c.contains(e.relatedTarget))c.classList.remove('pv')})}
   setInterval(function(){if(U&&(S.rebootN||0)>(LRN||0))lock()},4000);
   $('cashp').addEventListener('click',function(e){if(e.target.closest('[data-cadj]'))cashAdjust();if(e.target.closest('[data-chist]'))cashCountHistory();if(e.target.closest('[data-discq]'))POS.bills()});
 })();
@@ -139,7 +137,7 @@ function renderWalletCards(){
   var b=calcWallets(),mk=function(k){return'<div class="wlt-item'+(b[k]<0?' neg':'')+'" data-w="'+k+'"><div class="wname">'+esc(wN(k))+'</div><div class="wbal">'+tk(b[k])+'</div></div>'},
   sum=function(a){return a.reduce(function(s,k){return s+b[k]},0)},
   h='<div class="wlt-card"><div class="wlt-title"><span>'+lb('Mobile financial services','মোবাইল ফিন্যান্সিয়াল সার্ভিস')+(isA()?' <button type="button" class="lnk adj" style="font-size:12px;font-weight:600;padding:0 4px" data-wadj="mfs">'+lb('Adjust','সমন্বয়')+'</button>':'')+'</span><b>'+tk(sum(WLT_MFS))+'</b></div><div class="wlt-grid">'+WLT_MFS.map(mk).join('')+'</div></div><div class="wlt-card"><div class="wlt-title"><span>'+lb('Recharge balances','রিচার্জ ব্যালেন্স')+(isA()?' <button type="button" class="lnk adj" style="font-size:12px;font-weight:600;padding:0 4px" data-wadj="rcr">'+lb('Adjust','সমন্বয়')+'</button>':'')+'</span><b>'+tk(sum(WLT_RCR))+'</b></div><div class="wlt-grid wlt-grid-3">'+WLT_RCR.map(mk).join('')+'</div></div>';
-  ['wltWrap','wltWrapH'].forEach(function(id){var el=$(id);if(el)el.innerHTML=h})}
+  ['wltWrap','wltWrapH','wltWrapM'].forEach(function(id){var el=$(id);if(el)el.innerHTML=h})}
 function wltRows(key,lim){
   var L=sorted().filter(function(e){var f=wltEff(e);return f&&f.w===key}).reverse();if(lim)L=L.slice(0,lim);
   return L.map(function(e){var f=wltEff(e),sg=f.d>0?'+':'−';return{d:sd(e.d)+' '+(e.t?t12(e.t):''),c:(e.cat==='POS'||e.type==='Ledger')?(e.desc||'POS').slice(0,40):e.cat,a:sg+n(e.amt),p:f.d>0}})}

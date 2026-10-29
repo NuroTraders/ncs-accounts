@@ -1,11 +1,76 @@
 /* ---------- shell ---------- */
-const ICO={mgmt:'<path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/>',led:'<circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M17 8h4M17 12h4"/>',home:'<path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',pos:'<circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.5 12h11L21 7H6"/>',acc:'<path d="M5 3h11a3 3 0 0 1 3 3v15H8a3 3 0 0 1-3-3z"/><path d="M9 8h6M9 12h6"/>',prod:'<path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/>',more:'<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>'};
-const TABS={admin:['home','pos','prod','acc','led','mgmt','more'],keeper:['prod','more'],accountant:['acc','led','prod','more'],cashier:['pos','led','more']},TL={home:'Home',pos:'POS',prod:'Products',acc:'Accounts',led:'Ledger',mgmt:'Manage',more:'More'};
+const ICO={
+  mgmt:'<path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/>',
+  led:'<circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M17 8h4M17 12h4"/>',
+  home:'<path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+  pos:'<circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.5 12h11L21 7H6"/>',
+  acc:'<path d="M5 3h11a3 3 0 0 1 3 3v15H8a3 3 0 0 1-3-3z"/><path d="M9 8h6M9 12h6"/>',
+  prod:'<path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/>',
+  more:'<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>'
+};
+const TABS={
+  admin:['home','led','pos','acc','more'],
+  keeper:['pos','more'],
+  accountant:['acc','led','pos','more'],
+  cashier:['pos','led','more']
+};
+const TL={home:'Overview',led:'Ledger',pos:'Counter',acc:'Accounts',more:'More'};
+const TL_BN={home:'ওভারভিউ',led:'খতিয়ান',pos:'কাউন্টার',acc:'হিসাব',more:'আরও'};
 let CUR=null;
 const role=()=>!U?'':U.role==='admin'?'admin':U.role==='accountant'?'accountant':U.role==='keeper'?'keeper':'cashier',canCost=()=>isA()||role()==='keeper'||role()==='accountant';
-function buildTabs(){const T=TABS[role()];$('tabs').innerHTML=T.map(k=>`<button data-v="${k}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICO[k]}</svg>${TL[k]}</button>`).join('');$('tabs').hidden=false;$('tsub').textContent=(U.name.toLowerCase()===role()?'':U.name+' · ')+role();let saved=CUR;try{if(!saved)saved=sessionStorage.getItem('ncs_active_view_v1_'+role())}catch(e){}go(saved&&T.includes(saved)?saved:T[0])}
-function go(v){try{Sound.tick()}catch(e){}CUR=v;try{sessionStorage.setItem('ncs_active_view_v1_'+role(),v)}catch(e){}document.querySelectorAll('.view').forEach(x=>x.classList.toggle('on',x.id==='v'+v[0].toUpperCase()+v.slice(1)));document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
-  if(v==='home'){homeUI();try{applyCardSettings()}catch(e){}}if(v==='pos')POS.refresh();if(v==='prod')POS.prodUI();if(v==='acc'){AV=false;cur=iso(new Date());reset();render();try{applyCardSettings()}catch(e){}}if(v==='led')ledUI();if(v==='mgmt')mgmtUI();if(v==='more')updateMoreTab();document.body.classList.toggle('kp',role()==='keeper');document.body.classList.toggle('ro',role()==='accountant');clkVis();scrollTo(0,0)}
+
+function isCounterStock(){var s=$('posStockWrap');return s&&s.style.display!=='none'}
+function switchCounterView(mode){
+  var isStock = mode==='stock';
+  var bBill = $('cViewBill'), bStock = $('cViewStock');
+  var wBill = $('posBillWrap'), wStock = $('posStockWrap');
+  var bSeg = $('posBillSeg'), bNav = $('posBillNav'), sNav = $('posStockNav');
+  if(bBill)bBill.classList.toggle('on', !isStock);
+  if(bStock)bStock.classList.toggle('on', isStock);
+  if(wBill)wBill.style.display = isStock ? 'none' : '';
+  if(wStock)wStock.style.display = isStock ? '' : 'none';
+  if(bSeg)bSeg.style.display = isStock ? 'none' : '';
+  if(bNav)bNav.style.display = isStock ? 'none' : '';
+  if(sNav)sNav.style.display = isStock ? '' : 'none';
+  if(isStock){if(typeof POS!=='undefined'&&POS.prodUI)POS.prodUI();}
+  else{if(typeof POS!=='undefined'&&POS.refresh)POS.refresh();}
+}
+if($('cViewBill'))$('cViewBill').onclick=function(){switchCounterView('bill')};
+if($('cViewStock'))$('cViewStock').onclick=function(){switchCounterView('stock')};
+
+function buildTabs(){
+  const T=TABS[role()];
+  $('tabs').innerHTML=T.map(k=>`<button data-v="${k}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICO[k]}</svg>${(S.lang==='bn'&&TL_BN[k])?TL_BN[k]:TL[k]}</button>`).join('');
+  $('tabs').hidden=false;
+  $('tsub').textContent=(U.name.toLowerCase()===role()?'':U.name+' · ')+role();
+  let saved=CUR;
+  try{if(!saved)saved=sessionStorage.getItem('ncs_active_view_v1_'+role())}catch(e){}
+  go(saved&&T.includes(saved)?saved:T[0])
+}
+
+function go(v){
+  if(v==='prod'){go('pos');switchCounterView('stock');return}
+  if(v==='mgmt'){go('more');return}
+  try{Sound.tick()}catch(e){}
+  CUR=v;
+  try{sessionStorage.setItem('ncs_active_view_v1_'+role(),v)}catch(e){}
+  document.querySelectorAll('.view').forEach(x=>x.classList.toggle('on',x.id==='v'+v[0].toUpperCase()+v.slice(1)));
+  document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
+  if(v==='home'){homeUI();try{applyCardSettings()}catch(e){}}
+  if(v==='pos'){
+    if(role()==='keeper'){$('posViewSeg').style.display='none';switchCounterView('stock')}
+    else {$('posViewSeg').style.display=''}
+    POS.refresh();
+    if(isCounterStock())POS.prodUI();
+  }
+  if(v==='acc'){AV=false;cur=iso(new Date());reset();render();try{applyCardSettings()}catch(e){}}
+  if(v==='led')ledUI();
+  if(v==='more')updateMoreTab();
+  document.body.classList.toggle('kp',role()==='keeper');
+  document.body.classList.toggle('ro',role()==='accountant');
+  clkVis();
+  scrollTo(0,0)
+}
 $('tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(b)go(b.dataset.v)});
 var sndBtn=document.createElement('button');sndBtn.className='ghost';sndBtn.id='sndBtn';sndBtn.style.height='48px';sndBtn.style.textAlign='left';sndBtn.style.fontSize='15px';sndBtn.style.borderRadius='14px';
 var secCardBtn=document.createElement('button');secCardBtn.className='ghost';secCardBtn.id='secCardBtn';secCardBtn.style.height='48px';secCardBtn.style.textAlign='left';secCardBtn.style.fontSize='15px';secCardBtn.style.borderRadius='14px';
@@ -162,6 +227,16 @@ function updateMoreTab(){
     prsSettingBtn.style.display=isA()?'':'none';
     prsSettingBtn.innerHTML='<span style="display:flex;align-items:center;gap:10px"><span style="font-size:20px">⚡</span><b>'+lb('Counter service presets','কাউন্টার সার্ভিস প্রিসেট সেটিংস')+'</b></span>';
   }
+  var hub=$('moreAdminHub');
+  if(hub){
+    if(isA()){
+      hub.style.display='';
+      if(typeof mgmtUI==='function')mgmtUI();
+    } else {
+      hub.style.display='none';
+    }
+  }
+  if(typeof renderWalletCards==='function')renderWalletCards();
 }
 
 function openPresetSettings() {
@@ -268,7 +343,7 @@ function openPresetSettings() {
 
   showMain();
 }
-function redrawActiveView(){if(CUR==='home'){homeUI();try{applyCardSettings()}catch(e){}}else if(CUR==='pos')POS.refresh();else if(CUR==='prod')POS.prodUI();else if(CUR==='acc'){render();try{applyCardSettings()}catch(e){}}else if(CUR==='led')ledUI();else if(CUR==='mgmt')mgmtUI()}
+function redrawActiveView(){if(CUR==='home'){homeUI();try{applyCardSettings()}catch(e){}}else if(CUR==='pos'){POS.refresh();if(isCounterStock())POS.prodUI();}else if(CUR==='acc'){render();try{applyCardSettings()}catch(e){}}else if(CUR==='led')ledUI();else if(CUR==='more')updateMoreTab()}
 function refreshCurrentView(){
   if(!U||!CUR)return;
   var svg=$('refresh').querySelector('svg');
