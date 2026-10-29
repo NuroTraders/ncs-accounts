@@ -42,7 +42,7 @@
     clientId: '',
     lastPushU: {},
     lastPullU: 0,
-    schema: 2
+    schema: 3
   };
 
   function log(tag, msg, meta) {
@@ -65,12 +65,20 @@
   function loadState() {
     try {
       const saved = JSON.parse(localStorage.getItem(SYNC_KEY));
-      if (saved) syncState = Object.assign(syncState, saved);
+      if (saved) {
+        syncState = Object.assign(syncState, saved);
+        // Force a one-time full sync (since=0) when upgrading to schema 3 to normalize all dates
+        if (!syncState.schema || syncState.schema < 3) {
+          syncState.lastPullU = 0;
+          syncState.schema = 3;
+        }
+      }
     } catch(e) {}
     
     if (!syncState.clientId) {
       syncState.clientId = 'cl_' + Math.random().toString(36).substr(2, 9);
     }
+    syncState.schema = 3;
     
     Object.keys(TABLES).forEach(k => {
       if (syncState.lastPushU[k] === undefined) syncState.lastPushU[k] = 0;
@@ -170,12 +178,16 @@
     }
   }
 
-  // Generate a monotonic 'u' timestamp
+  // Generate a monotonic 'u' timestamp strictly greater than all known local and server timestamps
   function nextU() {
     const now = Date.now();
-    if (!window.S._lastU) window.S._lastU = 0;
-    const newU = Math.max(now, window.S._lastU + 1);
-    window.S._lastU = newU;
+    let maxKnown = Math.max(now, (window.S && window.S._lastU) || 0, syncState.lastPullU || 0);
+    Object.keys(syncState.lastPushU || {}).forEach(k => {
+      const v = syncState.lastPushU[k];
+      if (typeof v === 'number' && v > maxKnown) maxKnown = v;
+    });
+    const newU = maxKnown + 1;
+    if (window.S) window.S._lastU = newU;
     return newU;
   }
 
@@ -433,7 +445,8 @@
     const hasLocalEntries = window.S && Array.isArray(window.S.entries) && window.S.entries.length > 0;
     const sinceU = (force || !hasLocalEntries) ? 0 : (syncState.lastPullU || 0);
     
-    const url = `${API_URL}?action=pull&token=${API_TOKEN}&since=${sinceU}`;
+    // Add cache buster to pull URL to bypass mobile browser aggressive caching
+    const url = `${API_URL}?action=pull&token=${API_TOKEN}&since=${sinceU}&_t=${Date.now()}`;
     
     fetch(url)
     .then(res => res.json())
@@ -487,6 +500,10 @@
             if (typeof window.animateCounts === 'function') window.animateCounts();
           } catch(uiErr) {
             console.warn('UI redraw warning after pull:', uiErr);
+          }
+
+          if (force && typeof window.ltoast === 'function') {
+            window.ltoast(window.lb ? window.lb('✅ Cloud sync complete (' + applied + ' updated)', '✅ ক্লাউড সিঙ্ক সম্পন্ন (' + applied + ' আপডেট)') : '✅ Cloud sync complete');
           }
         }
         updateStatus('ok');

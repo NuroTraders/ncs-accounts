@@ -20,8 +20,24 @@ if(!S.sync&&window.NCS_CONFIG&&/^https:\/\//.test(NCS_CONFIG.url||'')&&NCS_CONFI
 const LH=new Map(),sig=x=>JSON.stringify(x,(k,v)=>k==='u'?undefined:v),COLS=['entries','products','bills','moves','cust','ltx','atts'];
 function ensureCols(){COLS.forEach(c=>{S[c]=S[c]||[]});S.days=S.days||{};S.log=S.log||[]}
 function primeLH(){LH.clear();COLS.forEach(c=>S[c].forEach(x=>LH.set(c+x.id,sig(x))));if(S.users)LH.set('users',sig(S.users))}
-function stampChanged(){const now=Date.now();COLS.forEach(c=>S[c].forEach(x=>{const k=c+x.id,j=sig(x);if(LH.get(k)!==j){x.u=now;LH.set(k,j)}}));
-  if(S.users){const j=sig(S.users);if(LH.get('users')!==j){S.users.u=now;LH.set('users',j)}}}
+function stampChanged(){
+  const now = (window.NcsSync && typeof window.NcsSync.nextU === 'function') ? window.NcsSync.nextU() : Math.max(Date.now(), (S._lastU||0)+1);
+  if (S._lastU === undefined || S._lastU < now) S._lastU = now;
+  COLS.forEach(c=>S[c].forEach(x=>{
+    const k=c+x.id,j=sig(x);
+    if(LH.get(k)!==j){
+      x.u=now;
+      LH.set(k,j);
+    }
+  }));
+  if(S.users){
+    const j=sig(S.users);
+    if(LH.get('users')!==j){
+      S.users.u=now;
+      LH.set('users',j);
+    }
+  }
+}
 ensureCols();primeLH();
 
 const NcsDB = (function() {
@@ -168,7 +184,8 @@ const persist=()=>{
 // --- NCS V10 PATCH START ---
 const save=()=>{
     if (window.NCS_CONFIG && window.NCS_CONFIG.SYNC_MODE === 'v2') {
-        const now = Date.now();
+        const now = (window.NcsSync && typeof window.NcsSync.nextU === 'function') ? window.NcsSync.nextU() : Math.max(Date.now(), (S._lastU||0)+1);
+        if (S._lastU === undefined || S._lastU < now) S._lastU = now;
         ['entries', 'bills', 'products', 'moves', 'cust', 'ltx', 'walletDates', 'counts', 'pending'].forEach(k => {
             if (S[k] && Array.isArray(S[k])) {
                 S[k].forEach(r => { 

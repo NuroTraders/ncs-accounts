@@ -590,8 +590,24 @@ if(!S.sync&&window.NCS_CONFIG&&/^https:\/\//.test(NCS_CONFIG.url||'')&&NCS_CONFI
 const LH=new Map(),sig=x=>JSON.stringify(x,(k,v)=>k==='u'?undefined:v),COLS=['entries','products','bills','moves','cust','ltx','atts'];
 function ensureCols(){COLS.forEach(c=>{S[c]=S[c]||[]});S.days=S.days||{};S.log=S.log||[]}
 function primeLH(){LH.clear();COLS.forEach(c=>S[c].forEach(x=>LH.set(c+x.id,sig(x))));if(S.users)LH.set('users',sig(S.users))}
-function stampChanged(){const now=Date.now();COLS.forEach(c=>S[c].forEach(x=>{const k=c+x.id,j=sig(x);if(LH.get(k)!==j){x.u=now;LH.set(k,j)}}));
-  if(S.users){const j=sig(S.users);if(LH.get('users')!==j){S.users.u=now;LH.set('users',j)}}}
+function stampChanged(){
+  const now = (window.NcsSync && typeof window.NcsSync.nextU === 'function') ? window.NcsSync.nextU() : Math.max(Date.now(), (S._lastU||0)+1);
+  if (S._lastU === undefined || S._lastU < now) S._lastU = now;
+  COLS.forEach(c=>S[c].forEach(x=>{
+    const k=c+x.id,j=sig(x);
+    if(LH.get(k)!==j){
+      x.u=now;
+      LH.set(k,j);
+    }
+  }));
+  if(S.users){
+    const j=sig(S.users);
+    if(LH.get('users')!==j){
+      S.users.u=now;
+      LH.set('users',j);
+    }
+  }
+}
 ensureCols();primeLH();
 
 const NcsDB = (function() {
@@ -738,7 +754,8 @@ const persist=()=>{
 // --- NCS V10 PATCH START ---
 const save=()=>{
     if (window.NCS_CONFIG && window.NCS_CONFIG.SYNC_MODE === 'v2') {
-        const now = Date.now();
+        const now = (window.NcsSync && typeof window.NcsSync.nextU === 'function') ? window.NcsSync.nextU() : Math.max(Date.now(), (S._lastU||0)+1);
+        if (S._lastU === undefined || S._lastU < now) S._lastU = now;
         ['entries', 'bills', 'products', 'moves', 'cust', 'ltx', 'walletDates', 'counts', 'pending'].forEach(k => {
             if (S[k] && Array.isArray(S[k])) {
                 S[k].forEach(r => { 
@@ -2898,7 +2915,7 @@ function animateCounts(){
 function saveCheck(){if(document.documentElement.dataset.rm)return;var d=document.createElement('div');d.className='savechk';d.innerHTML='<svg viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="22" fill="none" stroke="var(--acc)" stroke-width="3"/><path d="M14 27l8 8 16-16" fill="none" stroke="var(--acc)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>';document.body.appendChild(d);setTimeout(function(){d.classList.add('out')},700);setTimeout(function(){d.remove()},1250)}
 (function(){
   var M="Claude Sonnet 5.5 · owner's Claude account";
-  APP_VERSION='10.1.3';
+  APP_VERSION='10.1.4';
   VERS.unshift({v:'9.22',d:'2026-10-19',t:'Sound effects, motion polish and wrapper download safety',by:M,n:['Web Audio sound engine: soft tick on tabs/dialogs, cha-ching on sale/entry save, low buzz on errors, sync chime on background sync','Sound toggle in Settings, default off; AudioContext created on first tap','All sound and motion automatically off when the OS asks for reduced motion','Number count-up on Home (Cash Balance, Total Sell, Total Buy) over 0.4s on load and period change','Save checkmark pop on POS sale and Accounts/Ledger entry save','Tap feedback: buttons scale to 0.97 on press','POS cart rows slide in when added and slide out when removed','dlFile falls back to a data URL window if the wrapper blocks the <a download> tag']});
   VERS.unshift({v:'9.22.1',d:'2026-10-19',t:'Sound resume fix + Test button',by:M,n:['AudioContext resume() race fixed: tones now play after the context is running (fixes silent playback on Android WebView, iOS Safari and after idle tabs)','▶ Test sound button inside Settings for instant verification','Louder gains for tick and cha-ching so phone speakers are audible']});
   VERS.unshift({v:'9.22.2',d:'2026-10-19',t:'Sound toggle visible in More, Settings unhidden',by:M,n:['Sound effects ON/OFF button now appears directly in the More tab (no need to open Settings)','Removed the CSS rule that was hiding the Settings button in the More tab','Settings still shows the Sound effects checkbox and the ▶ Test sound button']});
@@ -2915,6 +2932,7 @@ function saveCheck(){if(document.documentElement.dataset.rm)return;var d=documen
   VERS.unshift({v:'10.1.1',d:'2026-10-29',t:'1-Tap WhatsApp Bug Reporter & Formalized Rules',by:'Antigravity',n:['Direct 1-tap WhatsApp bug reporting to developer (+8801765420566) with pre-filled context, device, role, and error info','1-click copy full diagnostic data to clipboard with fallback','Automatic capture of recent error details via NcsDiag.getLastError()','Formalized engineering rules for Versioning, Bug fixing, and Upcoming features']});
   VERS.unshift({v:'10.1.2',d:'2026-10-29',t:'Mobile Realtime Sync, Bidirectional Schema & Auto-Push Fix',by:'Antigravity',n:['Fixed save() hook so every entry and cash save automatically calls schedulePush()','Added bidirectional schema normalization in sync.js restoring d, t, pay, cat fields lost by Sheet column mapping','Fixed mobile Cash Balance and Flow calculation by self-healing missing entry dates on pull','Added mobile visibilitychange listener for instant sync on app resume & 10s background polling','Auto-rerender active view (Home, Accounts, Ledger, POS) with animateCounts on remote sync']});
   VERS.unshift({v:'10.1.3',d:'2026-10-29',t:'Multi-Device Realtime Sync & Timezone UTC+6 Fix',by:'Antigravity',n:['Fixed multi-device sync across PC app, Mobile PWA, and APK: date and time now normalized with UTC+6 Bangladesh timezone','Self-healed server sheet entries so historical and new entries retain exact dates, times, and cash flow attributes','Auto-switches to full pull (since=0) when local store is empty or on manual refresh so newly installed devices immediately download all entries','Universal reactive view redraw: Home hero Cash Balance, Accounts table, and count-up animations update immediately upon remote delta pull']});
+  VERS.unshift({v:'10.1.4',d:'2026-10-29',t:'Delta Sync Schema v3, Cache-Buster & Auto-Refresh Force',by:'Antigravity',n:['Upgraded sync engine state schema to v3: triggers automatic full sync (since=0) across all devices on upgrade to re-normalize all dates and times','Hardened nextU monotonic clock to strictly exceed all local and server-acknowledged timestamps regardless of device clock skew','Fixed save() and stampChanged() to stamp modified and newly created entries with nextU so delta push never ignores edits','Added cache-busting asset query parameters and bumped service worker to ncs-v58 to bust aggressive mobile browser PWA caching','Added visual sync toast notification and forced pull on manual refresh button click']});
   
   UPC.unshift({v:'9.22',s:'Done',t:['Web Audio sound engine (tick, cha-ching, buzz, sync chime), default off','Count-up numbers on Home','Save checkmark','Tap feedback','POS cart slide in/out','All respect OS reduced-motion','Download fallback']});
   UPC.unshift({v:'9.22.1',s:'Done',t:['AudioContext resume race fixed','Test sound button in Settings','Louder gains']});
@@ -2931,11 +2949,14 @@ function saveCheck(){if(document.documentElement.dataset.rm)return;var d=documen
   UPC.unshift({v:'10.1.0',s:'Done',t:['Sub-accounts with optional parent link & combined balance','IndexedDB storage engine & AES-GCM encrypted backup','Direct ESC/POS thermal printing']});
   UPC.unshift({v:'10.1.1',s:'Done',t:['1-Tap WhatsApp bug reporting to +8801765420566','1-Click clipboard diagnostic copy','Formalized Version, Bug, and Roadmap rules']});
   UPC.unshift({v:'10.1.2',s:'Done',t:['Mobile realtime sync, bidirectional schema translation & auto-push hook']});
+  UPC.unshift({v:'10.1.3',s:'Done',t:['Multi-device realtime sync, timezone UTC+6 normalization & empty store recovery']});
+  UPC.unshift({v:'10.1.4',s:'Done',t:['Delta sync schema v3, monotonic nextU clock hardening, PWA cache busting & sync notification toast']});
   
   var sl=UPC.find(function(x){return x.v==='9.23'&&x.s==='Planned'});if(sl)sl.v='9.24';
   var sp=UPC.find(function(x){return x.v==='9.22'&&x.s==='Planned'});if(sp)sp.v='9.23';
 })();
 BUGS.unshift(
+  {d:'2026-10-29 12:15 (UTC+6)',v:'10.1.4',w:'Antigravity',a:'Mobile PWA still displayed "No entries for this date" and failed to sync newly entered transactions after app update',b:'1) syncState.lastPullU on existing devices was already ahead of server entry timestamps, causing background pull to skip entries without force; 2) save() did not stamp edited rows with nextU(), causing modified entries to be filtered out during push; 3) PWA Service Worker served stale sync.js from browser HTTP disk cache; 4) nextU did not consider server ack timestamps, risking rows being ignored under device clock drift',c:'1) Upgraded sync engine schema to v3 which forces a one-time full sync (since=0) and date re-normalization on upgrade; 2) Hardened nextU to strictly exceed all local and server acknowledged timestamps; 3) Bound stampChanged() and save() to monotonic nextU(); 4) Added ?v=10.1.4 cache-busting query strings, bumped SW cache to ncs-v58, and added visual sync completion toast'},
   {d:'2026-10-29 02:20 (UTC+6)',v:'10.1.3',w:'Antigravity',a:'Entries and Cash Balance added on desktop PWA did not appear on PC app, mobile PWA, or APK',b:'1) Server mirror sheet date conversion to UTC string caused GMT+6 midnight/early-morning entries to shift to the previous day in client ISO slice, hiding them from today Accounts view; 2) 182 historical entries had empty date fields on server; 3) Delta pull used server timestamp instead of entry timestamp, skipping updates if local cursor jumped ahead; 4) Empty local stores on mobile did not trigger full-history fetch',c:'1) Added UTC+6 timezone conversion in toBdDate and toBdTime; 2) Repaired all 184 entries on server with accurate dates, times, and payment cash fields; 3) Made pull fallback to since=0 on empty local stores and manual sync/refresh; 4) Integrated universal redraw across Home, Accounts, POS, and Ledger views on pull'},
 {d:'2026-10-29 01:55 (UTC+6)',v:'10.1.2',w:'Antigravity',a:'Mobile version did not sync realtime data, newly saved entries, Cash Balance, or Cash Flow',b:'save() in 01-core.js shadowed window.save so schedulePush() was not triggered on entry save; additionally, Google Apps Script mirror headers stripped d, t, pay, cat fields, which caused calc() and homeUI() on mobile to filter out entries without dates',c:'Called window.NcsSync.schedulePush() directly in save(); implemented bidirectional schema normalization in sync.js to ensure d, t, pay, cat are preserved; added mobile visibilitychange wakeup and active view rerendering'},
   {d:'2026-10-28 00:25 (UTC+6)',v:'10.0.0-beta',w:'Antigravity / Claude',a:'Sync pill in top navigation remained stuck on "Pending" with yellow dot and manual clicks did nothing',b:'sync.js never notified setSt() of success/failure, isDirty() remained true because S.synced was bypassed in v2, and sync button / refresh handlers returned early without calling NcsSync',c:'Wired sync.js directly to setSt() on push/pull success and failure; updated isDirty() for v2; delegated manual sync and refresh clicks directly to NcsSync.push(true) and pull()'},
@@ -2978,7 +2999,7 @@ if ('serviceWorker' in navigator) addEventListener('load', () => navigator.servi
 
 </script>
 <!-- NCS v10 Sync Engine -->
-<script src="diag.js"></script>
-<script src="sync.js"></script>
+<script src="diag.js?v=10.1.4"></script>
+<script src="sync.js?v=10.1.4"></script>
 </body>
 </html>

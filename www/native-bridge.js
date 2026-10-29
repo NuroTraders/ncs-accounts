@@ -4,8 +4,8 @@
    - Android: share, file save, print, and live updates from GitHub Releases. */
 (function () {
   'use strict';
-  var REPO = '';
-  var NATIVE_VERSION = '10.1.3';
+  var REPO = 'NuroTraders/ncs-accounts';
+  var NATIVE_VERSION = '10.1.4';
 
   var cap = window.Capacitor;
   var isAndroid = !!(cap && cap.isNativePlatform && cap.isNativePlatform());

@@ -1,10 +1,14 @@
 {
   "name": "ncs-accounts",
   "productName": "NCS Accounts",
-  "version": "10.1.3",
+  "version": "10.1.4",
   "private": true,
   "description": "NCS Daily Accounts - Nur Computer & Stationery",
   "author": "Nur Computer & Stationery",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NuroTraders/ncs-accounts.git"
+  },
   "main": "electron/main.js",
   "scripts": {
     "build": "node scripts/build.js",
