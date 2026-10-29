@@ -417,6 +417,9 @@
         log('sync', 'Push successful', { serverU: res.serverU });
         updateStatus('ok');
         
+        // Immediately pull after push to confirm server state and sync any concurrent changes
+        setTimeout(() => pull(), 200);
+        
         if (res.conflicts && res.conflicts.length > 0) {
           pull();
         }
@@ -520,7 +523,7 @@
 
   function schedulePush() {
     if (pushTimer) clearTimeout(pushTimer);
-    pushTimer = setTimeout(() => push(), 1500); // 1.5 second debounce for responsive sync
+    pushTimer = setTimeout(() => push(), 400); // 400ms debounce for near-instant sync
   }
 
   function start() {
@@ -556,9 +559,9 @@
         pull();
         updateStatus('ok');
         
-        // Fast background polling (every 10s)
+        // Fast background polling (every 3s for near-instant cross-device sync)
         if (pullInterval) clearInterval(pullInterval);
-        pullInterval = setInterval(() => pull(), 10000);
+        pullInterval = setInterval(() => pull(), 3000);
         
         // Lifecycle and Mobile wakeup listeners
         window.addEventListener('online', () => pull());
