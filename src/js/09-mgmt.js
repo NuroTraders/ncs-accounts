@@ -1,10 +1,40 @@
 function mgmtUI(){
-  if(!isA())return;var v=$('moreAdminHub')||$('vMore'),B=function(k,l,d){return'<button class="ghost mg" data-m="'+k+'"><b>'+l+'</b><small>'+d+'</small></button>'};
+  if(!isA())return;
+  var v=$('moreAdminHub')||$('vMore');
+  var B=function(k,l,d,iconSvg){
+    return '<button type="button" class="more-item" data-m="'+k+'">' +
+      '<div class="more-item-left"><span class="more-item-icon">'+iconSvg+'</span><div class="more-item-text"><b>'+l+'</b><small>'+d+'</small></div></div>' +
+      '<span class="more-item-arrow">›</span></button>';
+  };
   var sc=st==='ok'?'ok':st==='pend'?'pend':(st==='offl'||st==='conf')?'bad':'off';
-  v.innerHTML='<div class="card" style="padding:16px"><h3 class="mgh">'+lb('Staff and access','কর্মী ও অ্যাক্সেস')+'</h3><div class="mgl">'+B('staff',lb('Staff and roles','কর্মী ও ভূমিকা'),lb('Add staff, accountant, stock manager','কর্মী যোগ'))+B('set',lb('Settings and security','সেটিংস ও নিরাপত্তা'),lb('Sync, PIN, cash','সিঙ্ক, পিন'))+B('reports',lb('Reports Hub','রিপোর্ট হাব'),lb('Day, week, month reports and statements','দিন, সপ্তাহ ও মাসের রিপোর্ট'))+'</div></div>'+
-  '<div class="card" style="padding:16px"><h3 class="mgh">'+lb('System & Audit','সিস্টেম ও অডিট')+'</h3><div class="mgl">'+B('wlt',lb('Wallet openings','ওয়ালেট শুরুর ইতিহাস'),lb('Date-anchored wallet openings and history','তারিখভিত্তিক ওপেনিং ও ইতিহাস'))+B('log',lb('Change log','পরিবর্তন লগ'),lb('Who changed what and when','কে কী কখন'))+B('ver',lb('Version history','সংস্করণ ইতিহাস'),lb('Current version','বর্তমান সংস্করণ')+' v'+APP_VERSION)+B('selftest',lb('Run self test','সেলফ টেস্ট'),lb('Check calculations, storage and modules','হিসাব, স্টোরেজ পরীক্ষা'))+B('reboot',lb('Force logout all','সবাইকে লগআউট'),lb('Everyone logs out','সবাই লগআউট'))+'</div>'+
-  '<div class="mut" style="margin-top:10px;font-size:13px"><i class="sdot '+sc+'" aria-hidden="true"></i>'+(SY()?lb('Synced','সিঙ্ক হয়েছে'):lb('Off','বন্ধ'))+' · '+lb('Staff','কর্মী')+': '+(S.users&&S.users.staff?S.users.staff.length:0)+' · '+lb('Products','পণ্য')+': '+S.products.filter(function(p){return!p.del}).length+' · '+lb('Parties','পক্ষ')+': '+S.cust.filter(function(c){return!c.del}).length+'</div></div>'+
-  '<div class="card" style="padding:16px"><h3 class="mgh">Admin review queue</h3><button class="ghost mg" data-m="reviewq"><b>Review queue ('+reviewQueueCount()+')</b><small>Reconciliation, stock, flags, proposals, void requests</small></button></div>'}
+
+  var icStaff='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>';
+  var icRep='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>';
+  var icRev='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>';
+  var icWlt='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 10h20"/><circle cx="16" cy="15" r="1.5"/></svg>';
+  var icLog='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>';
+  var icVer='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>';
+  var icTest='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>';
+  var icReboot='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>';
+
+  var rqN = reviewQueueCount();
+  v.innerHTML =
+    '<div class="card more-card"><h3 class="more-sec-title">'+lb('Staff & Operations','কর্মী ও প্রশাসন')+'</h3><div class="more-grid">' +
+    B('staff', lb('Staff and roles','কর্মী ও ভূমিকা'), lb('Add staff, roles & PINs','কর্মী যোগ ও অনুমতি'), icStaff) +
+    B('reports', lb('Reports Hub','রিপোর্ট হাব'), lb('Statements, day/week/month & CSV','স্টেটমেন্ট ও রিপোর্ট'), icRep) +
+    B('reviewq', lb('Review Queue','রিভিউ কিউ') + (rqN ? ' ('+rqN+')' : ''), lb('Reconciliation, stock & voids','যাচাই ও অনুমোদন'), icRev) +
+    '</div></div>' +
+    '<div class="card more-card"><h3 class="more-sec-title">'+lb('System, Audit & Security','সিস্টেম, অডিট ও লগ')+'</h3><div class="more-grid">' +
+    B('wlt', lb('Wallet Openings History','ওয়ালেট শুরুর ইতিহাস'), lb('Date-anchored openings','তারিখভিত্তিক ওপেনিং'), icWlt) +
+    B('log', lb('Change Log','পরিবর্তন লগ'), lb('Audit trail of changes','কে কী কখন বদলেছে'), icLog) +
+    B('ver', lb('Version History','সংস্করণ ইতিহাস'), 'v' + APP_VERSION, icVer) +
+    B('selftest', lb('Run Self-Test','সেলফ টেস্ট'), lb('Check arithmetic & storage','হিসাব ও স্টোরেজ পরীক্ষা'), icTest) +
+    B('reboot', lb('Force Logout All','সবাইকে লগআউট'), lb('Invalidate active sessions','সেশন বাতিল করুন'), icReboot) +
+    '</div>' +
+    '<div class="mut" style="margin-top:12px;font-size:12.5px;display:flex;align-items:center;gap:8px"><i class="sdot '+sc+'" aria-hidden="true"></i>' +
+    (SY()?lb('Synced','সিঙ্ক হয়েছে'):lb('Off','বন্ধ'))+' · '+lb('Staff','কর্মী')+': '+(S.users&&S.users.staff?S.users.staff.length:0)+' · '+lb('Products','পণ্য')+': '+S.products.filter(function(p){return!p.del}).length+' · '+lb('Parties','পক্ষ')+': '+S.cust.filter(function(c){return!c.del}).length +
+    '</div></div>';
+}
 function reviewQueueCount(){
   var p=(S.pending||[]).filter(function(x){return x.state==='pending'}).length;
   var s=S.moves.filter(function(x){return x.adminCheck&&!x.adminChecked&&!x.adminRejected}).length;
@@ -137,7 +167,7 @@ function renderWalletCards(){
   var b=calcWallets(),mk=function(k){return'<div class="wlt-item'+(b[k]<0?' neg':'')+'" data-w="'+k+'"><div class="wname">'+esc(wN(k))+'</div><div class="wbal">'+tk(b[k])+'</div></div>'},
   sum=function(a){return a.reduce(function(s,k){return s+b[k]},0)},
   h='<div class="wlt-card"><div class="wlt-title"><span>'+lb('Mobile financial services','মোবাইল ফিন্যান্সিয়াল সার্ভিস')+(isA()?' <button type="button" class="lnk adj" style="font-size:12px;font-weight:600;padding:0 4px" data-wadj="mfs">'+lb('Adjust','সমন্বয়')+'</button>':'')+'</span><b>'+tk(sum(WLT_MFS))+'</b></div><div class="wlt-grid">'+WLT_MFS.map(mk).join('')+'</div></div><div class="wlt-card"><div class="wlt-title"><span>'+lb('Recharge balances','রিচার্জ ব্যালেন্স')+(isA()?' <button type="button" class="lnk adj" style="font-size:12px;font-weight:600;padding:0 4px" data-wadj="rcr">'+lb('Adjust','সমন্বয়')+'</button>':'')+'</span><b>'+tk(sum(WLT_RCR))+'</b></div><div class="wlt-grid wlt-grid-3">'+WLT_RCR.map(mk).join('')+'</div></div>';
-  ['wltWrap','wltWrapH','wltWrapM'].forEach(function(id){var el=$(id);if(el)el.innerHTML=h})}
+  ['wltWrap','wltWrapH'].forEach(function(id){var el=$(id);if(el)el.innerHTML=h})}
 function wltRows(key,lim){
   var L=sorted().filter(function(e){var f=wltEff(e);return f&&f.w===key}).reverse();if(lim)L=L.slice(0,lim);
   return L.map(function(e){var f=wltEff(e),sg=f.d>0?'+':'−';return{d:sd(e.d)+' '+(e.t?t12(e.t):''),c:(e.cat==='POS'||e.type==='Ledger')?(e.desc||'POS').slice(0,40):e.cat,a:sg+n(e.amt),p:f.d>0}})}

@@ -37,7 +37,9 @@ function renderCart(){if(role()==='keeper')C.mode='purchase';const pm=C.mode==='
   $('ct').textContent=pm?'Purchase cart':'Sale cart';$('mS').classList.toggle('on',!pm);$('mP').classList.toggle('on',pm);$('bHeld').textContent='Held'+(D.held.length?' ('+D.held.length+')':'');
   $('lines').innerHTML=C.lines.length?C.lines.map((l,i)=>{const s=l.pid?(sm[l.pid]||0):null;return `<div class="line"><div>${esc(l.name)}${s!==null?`<small class="${!pm&&l.qty>s?'bad':''}">Stock ${s}</small>`:''}</div><input type="number" inputmode="decimal" min="0" data-pr="${i}" value="${l.price}"><div class="qty"><button data-a="m" data-i="${i}">−</button><b>${l.qty}</b><button data-a="p" data-i="${i}">+</button></div><div class="lt">${n(l.price*l.qty)}</div><button class="x" data-a="x" data-i="${i}">×</button></div>`}).join(''):'<div class="empty">Cart is empty</div>';
   discFix();$('st').textContent=n(sub());$('tt').textContent=tk(total());discShow();
-  const t=pm?'Pay ':'Charge ',c=C.lines.reduce((s,l)=>s+l.qty,0);$('bPay').textContent=t+tk(total());$('bPay').disabled=!c;$('fab').textContent=c?t+tk(total())+' · '+c+' item'+(c>1?'s':''):'Cart is empty';$('fab').disabled=!c}
+  const t=pm?'Pay ':'Charge ',c=C.lines.reduce((s,l)=>s+l.qty,0);$('bPay').textContent=t+tk(total());$('bPay').disabled=!c;$('fab').textContent=c?t+tk(total())+' · '+c+' item'+(c>1?'s':''):'Cart is empty';$('fab').disabled=!c;
+  const bClr=$('bClearCart');if(bClr){bClr.style.display=c?'':'none';bClr.onclick=()=>{if(confirm(lb('Clear cart?','কার্ট খালি করবেন?'))){C.lines=[];renderCart();}};}
+  const badge=$('cartCountBadge');if(badge){badge.style.display=c?'':'none';badge.textContent=c+(S.lang==='bn'?' টি পণ্য':(' item'+(c>1?'s':'')))}}
 const byId=id=>S.products.find(p=>p.id==id);
 $('grid').addEventListener('click',e=>{const b=e.target.closest('[data-p]');if(b)addLine(byId(b.dataset.p))});
 $('top7').addEventListener('click',e=>{const b=e.target.closest('[data-p]');if(b)addLine(byId(b.dataset.p))});
