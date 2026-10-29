@@ -139,7 +139,16 @@ bugBtn.onclick = function() {
   }
 };
 
-$('topR').append($('sync'));$('moreList').append($('lang'),sndBtn,secCardBtn,bugBtn,$('set'),$('lockb'));
+var prsSettingBtn = document.createElement('button');
+prsSettingBtn.className = 'ghost';
+prsSettingBtn.id = 'prsSettingBtn';
+prsSettingBtn.style.height = '48px';
+prsSettingBtn.style.textAlign = 'left';
+prsSettingBtn.style.fontSize = '15px';
+prsSettingBtn.style.borderRadius = '14px';
+prsSettingBtn.onclick = function() { if (isA()) openPresetSettings(); };
+
+$('topR').append($('sync'));$('moreList').append($('lang'),sndBtn,secCardBtn,prsSettingBtn,bugBtn,$('set'),$('lockb'));
 function updateSndBtn(){var b=$('sndBtn');if(b)b.textContent='Sound effects: '+(S.sound?'ON':'OFF');}
 sndBtn.onclick=function(){S.sound=!S.sound;save();updateSndBtn();if(S.sound){try{Sound.test()}catch(e){}}};
 secCardBtn.onclick=function(){if(isA())openCardSectionSettings()};
@@ -149,6 +158,115 @@ function updateMoreTab(){
     secCardBtn.style.display=isA()?'':'none';
     secCardBtn.innerHTML='<span style="display:flex;align-items:center;gap:10px"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg><b>'+lb('Section & card settings','সেকশন ও কার্ড সমন্বয় সেটিংস')+'</b></span>';
   }
+  if(prsSettingBtn){
+    prsSettingBtn.style.display=isA()?'':'none';
+    prsSettingBtn.innerHTML='<span style="display:flex;align-items:center;gap:10px"><span style="font-size:20px">⚡</span><b>'+lb('Counter service presets','কাউন্টার সার্ভিস প্রিসেট সেটিংস')+'</b></span>';
+  }
+}
+
+function openPresetSettings() {
+  const getPrsList = () => (S.presets && Array.isArray(S.presets) && S.presets.length) ? S.presets : JSON.parse(JSON.stringify(DEFAULT_PRESETS));
+  
+  const showMain = () => {
+    const list = getPrsList();
+    const html = '<div style="max-height:55vh;overflow-y:auto;padding-right:4px">' +
+      list.map((p, idx) => `
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid var(--line)">
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="font-size:22px">${p.icon || '⚡'}</span>
+            <div>
+              <b style="font-size:14px">${esc(p.name)}</b> <small style="color:var(--mut)">(${esc(p.bn || p.name)})</small>
+              <div style="font-size:12px;color:var(--acc);font-weight:700">${tk(p.price)} <span style="color:var(--mut);font-weight:normal">· ${esc(p.cat || 'Service')}</span></div>
+            </div>
+          </div>
+          <div style="display:flex;gap:6px">
+            <button type="button" class="ghost" data-ep="${idx}" style="height:32px;padding:0 10px;font-size:12px">${lb('Edit', 'এডিট')}</button>
+            <button type="button" class="ghost" data-dp="${idx}" style="height:32px;padding:0 8px;font-size:12px;color:var(--neg)">×</button>
+          </div>
+        </div>
+      `).join('') +
+      '</div>' +
+      '<div class="oa" style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">' +
+        '<button type="button" class="go" id="addPrsBtn">+ ' + lb('New preset', 'নতুন প্রিসেট') + '</button>' +
+        '<button type="button" class="ghost" id="rstPrsBtn">' + lb('Reset defaults', 'ডিফল্ট রিসেট') + '</button>' +
+      '</div>';
+
+    ask(lb('Counter Service Presets', 'কাউন্টার সার্ভিস প্রিসেট সেটিংস'), html, () => {}, 'Close');
+
+    const dlgBody = $('ob');
+    dlgBody.onclick = (e) => {
+      const editBtn = e.target.closest('[data-ep]');
+      if (editBtn) {
+        const idx = +editBtn.dataset.ep;
+        showEdit(list[idx], idx);
+        return;
+      }
+      const delBtn = e.target.closest('[data-dp]');
+      if (delBtn) {
+        const idx = +delBtn.dataset.dp;
+        if (confirm(lb('Delete this preset?', 'এই প্রিসেটটি মুছে ফেলবেন?'))) {
+          list.splice(idx, 1);
+          S.presets = list;
+          save();
+          showMain();
+          if (typeof renderPosPresets === 'function') renderPosPresets();
+          if (typeof renderAccPresets === 'function') renderAccPresets();
+        }
+        return;
+      }
+      if (e.target.id === 'addPrsBtn') {
+        showEdit(null, -1);
+        return;
+      }
+      if (e.target.id === 'rstPrsBtn') {
+        if (confirm(lb('Reset presets to default list?', 'সব প্রিসেট ডিফল্ট অবস্থায় ফিরিয়ে নেবেন?'))) {
+          S.presets = JSON.parse(JSON.stringify(DEFAULT_PRESETS));
+          save();
+          showMain();
+          if (typeof renderPosPresets === 'function') renderPosPresets();
+          if (typeof renderAccPresets === 'function') renderAccPresets();
+        }
+        return;
+      }
+    };
+  };
+
+  const showEdit = (p, idx) => {
+    const isNew = idx === -1;
+    const body = `
+      <div class="f"><label>${lb('English Name', 'ইংরেজি নাম')}</label><input id="prsN" value="${esc(p ? p.name : '')}" required></div>
+      <div class="f"><label>${lb('Bengali Name', 'বাংলা নাম')}</label><input id="prsBn" value="${esc(p ? (p.bn || '') : '')}"></div>
+      <div class="f"><label>${lb('Price (৳)', 'দাম (৳)')}</label><input id="prsP" type="number" inputmode="decimal" min="0" value="${p ? p.price : 10}" required></div>
+      <div class="f"><label>${lb('Category', 'ক্যাটাগরি')}</label><input id="prsC" value="${esc(p ? (p.cat || '') : '')}"></div>
+      <div class="f"><label>${lb('Icon (Emoji)', 'আইকন (ইমোজি)')}</label><input id="prsI" value="${esc(p ? (p.icon || '⚡') : '⚡')}" maxlength="4"></div>
+    `;
+    ask(isNew ? lb('New Counter Service', 'নতুন কাউন্টার সার্ভিস') : lb('Edit Counter Service', 'কাউন্টার সার্ভিস এডিট'), body, () => {
+      const nm = $('prsN').value.trim();
+      const pr = +$('prsP').value || 0;
+      if (!nm) return false;
+      const list = getPrsList();
+      const item = {
+        id: p ? p.id : ('p_' + Date.now()),
+        name: nm,
+        bn: $('prsBn').value.trim() || nm,
+        price: pr,
+        cat: $('prsC').value.trim() || nm,
+        icon: $('prsI').value.trim() || '⚡'
+      };
+      if (isNew) {
+        list.push(item);
+      } else {
+        list[idx] = item;
+      }
+      S.presets = list;
+      save();
+      setTimeout(showMain, 50);
+      if (typeof renderPosPresets === 'function') renderPosPresets();
+      if (typeof renderAccPresets === 'function') renderAccPresets();
+    }, isNew ? lb('Add', 'যোগ করুন') : lb('Save', 'সংরক্ষণ'));
+  };
+
+  showMain();
 }
 function redrawActiveView(){if(CUR==='home'){homeUI();try{applyCardSettings()}catch(e){}}else if(CUR==='pos')POS.refresh();else if(CUR==='prod')POS.prodUI();else if(CUR==='acc'){render();try{applyCardSettings()}catch(e){}}else if(CUR==='led')ledUI();else if(CUR==='mgmt')mgmtUI()}
 function refreshCurrentView(){

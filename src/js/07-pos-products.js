@@ -20,7 +20,13 @@ function discNote(){const p=discPct(),el=$('dcn');if(p>5){el.hidden=false;el.tex
 function discShow(){if(document.activeElement!==$('dc'))$('dc').value=C.disc||'';if(document.activeElement!==$('dp'))$('dp').value=C.dm==='p'?(C.dpct||''):(discPct()||'');discNote()}
 function topSellers(){const from=iso(new Date(Date.now()-30*864e5)),c={};S.bills.filter(b=>!b.void&&!b.removed&&!b.test&&b.mode==='sale'&&b.d>=from).forEach(b=>b.lines.forEach(l=>{if(l.pid)c[l.pid]=(c[l.pid]||0)+l.qty}));
   return Object.entries(c).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([id])=>S.products.find(p=>p.id==id)).filter(p=>p&&!p.del)}
-function renderGrid(){const q=$('q').value.trim().toLowerCase(),sm=stockMap();
+function renderPosPresets(){
+  const el=$('posPresets');
+  if(!el)return;
+  const list=getPresets();
+  el.innerHTML=list.map(p=>`<button type="button" class="svc-chip" data-preset="${p.id}"><span>${p.icon||'⚡'}</span> <b>${S.lang==='bn'?(p.bn||p.name):p.name}</b> <small>${tk(p.price)}</small></button>`).join('');
+}
+function renderGrid(){renderPosPresets();const q=$('q').value.trim().toLowerCase(),sm=stockMap();
   const L=prods().filter(p=>!q||p.name.toLowerCase().includes(q)||String(p.id).toLowerCase().includes(q)||(p.barcode||'').toLowerCase().includes(q)).sort((a,b)=>a.name.localeCompare(b.name)).slice(0,80);
   $('grid').innerHTML=L.length?L.map(p=>{const s=sm[p.id]||0;return `<button class="tile" data-p="${p.id}">${imgH(p)}<div class="sb${s<=0?' low':''}">${s}</div><span>${esc(p.name)}</span><small>${tk(p.price)}</small></button>`}).join('')+(canCost()?'<div class="mut" style="grid-column:1/-1">Long-press or right-click a product to edit it.</div>':''):'<div class="empty" style="grid-column:1/-1">No products yet. Use Add Product, scan a barcode, or use Custom item.</div>';
   const T=C.mode==='sale'?topSellers():[];$('top7').style.display=T.length?'flex':'none';$('top7').innerHTML=T.map(p=>`<button data-p="${p.id}">${imgH(p)}${esc(p.name)}</button>`).join('')}
@@ -35,6 +41,7 @@ function renderCart(){if(role()==='keeper')C.mode='purchase';const pm=C.mode==='
 const byId=id=>S.products.find(p=>p.id==id);
 $('grid').addEventListener('click',e=>{const b=e.target.closest('[data-p]');if(b)addLine(byId(b.dataset.p))});
 $('top7').addEventListener('click',e=>{const b=e.target.closest('[data-p]');if(b)addLine(byId(b.dataset.p))});
+if($('posPresets')){$('posPresets').addEventListener('click',e=>{const b=e.target.closest('[data-preset]');if(!b)return;const p=getPresets().find(x=>x.id===b.dataset.preset);if(p){const title=S.lang==='bn'?(p.bn||p.name):p.name;addLine({name:title,price:p.price,buy:0});toast((S.lang==='bn'?'যোগ হয়েছে: ':'Added ')+title);try{Sound.tick()}catch(x){}}});}
 $('grid').addEventListener('contextmenu',e=>{const b=e.target.closest('[data-p]');if(b&&canCost()){e.preventDefault();pForm(byId(b.dataset.p))}});
 $('lines').addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b)return;const i=+b.dataset.i,l=C.lines[i];
   if(b.dataset.a==='p'){l.qty++;renderCart()}

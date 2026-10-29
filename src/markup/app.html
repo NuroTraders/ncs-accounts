@@ -20,7 +20,9 @@
   <div id="chkBar" class="card cbn" hidden></div>
   <section class="card daybar" id="daybar"></section>
   <div class="card empty" id="cn" hidden>This day is closed. An admin can reopen it to add or change entries.</div>
-  <section class="card" id="fsec"><form id="form" autocomplete="off"><div class="g">
+  <section class="card" id="fsec">
+    <div class="svc-bar-wrap acc-svc-wrap"><div class="svc-bar-label"><span>⚡ Quick Entry Presets</span></div><div class="svc-presets" id="accPresets"></div></div>
+    <form id="form" autocomplete="off"><div class="g">
     <div><label for="ft">Time</label><input id="ft" type="time" required></div>
     <div><label for="fy">Type</label><select id="fy"><option value="Sale">Sale</option><option value="Purchase">Purchase / Expense</option><option value="Deposit">Owner Deposit</option><option value="Withdrawal">Owner Withdrawal</option><option value="Adjustment">Cash Adjustment (±)</option></select></div>
     <div><label for="fd">Description</label><input id="fd" type="text" required maxlength="120" placeholder="Type product or cost name" autocomplete="off"><div class="sg" id="sg" hidden></div></div>
@@ -60,6 +62,7 @@
         <div class="pos-search"><label id="qLabel" for="q">Product Name/ID/Barcode</label><input id="q" placeholder="Search products" autocomplete="off"></div>
         <button class="ghost" id="bScan" type="button">Scan</button><button class="ghost" id="bNew" type="button">Add Product</button>
       </div>
+      <div class="svc-bar-wrap pos-svc-wrap"><div class="svc-bar-label"><span>⚡ 1-Tap Counter Services</span></div><div class="svc-presets" id="posPresets"></div></div>
       <details class="pos-products" id="productPanel" open><summary id="productSummary">Browse products / Add to bill</summary><div class="top7" id="top7"></div><div class="grid" id="grid"></div></details>
     </div>
     <aside class="pos-sidebar">

@@ -1,6 +1,6 @@
 # NCS Daily Accounts: Handover Note
 
-Shop: Nur Computer & Stationery. Current version: **v10.2.0** (service worker cache `ncs-v60`).
+Shop: Nur Computer & Stationery. Current version: **v10.3.0** (service worker cache `ncs-v61`).
 Two Claude profiles work on this app and do NOT share memory. This file is the shared memory.
 
 ## 🚨 IMMEDIATE ACTION REQUIRED FOR ANTIGRAVITY
@@ -167,16 +167,23 @@ Before starting the Beta Test, you must verify and fix three critical items:
 **v9.22: DONE.** Sound engine, count-up, save checkmark, tap feedback, POS cart slide in/out, wrapper download fallback.
 
 **v10.1.3: DONE.** Multi-Device Realtime Sync & Timezone UTC+6 Fix.
+**v10.3.0: DONE.** Counter Speed Presets (1-tap service chips in POS and Accounts form, Admin customizer).
+**v10.2.0: DONE.** Option 1 whole-state sync restoration (stateOut / mergeState), full balance integrity & fast 200ms backend.
+**v10.1.5: DONE.** Instant sync timing (3s poll, 400ms push debounce).
+**v10.1.4: DONE.** Delta sync schema v3 & cache busting.
+**v10.1.3: DONE.** Multi-device realtime sync & UTC+6 normalization.
 **v10.1.2: DONE.** Mobile Realtime Sync, Bidirectional Schema & Auto-Push Fix.
 **v10.1.1: DONE.** 1-Tap WhatsApp Bug Reporter (direct to +8801765420566) with pre-filled context & recent error capture, 1-click clipboard diagnostic copy, and formalized Version/Bug/Feature rules contract.
 **v10.1.0: DONE.** Sub-accounts (optional parent link, combined family/group balance, parent breakdown, group statement), IndexedDB dual-storage engine, AES-GCM-256 encrypted backups, ESC/POS direct thermal printing, and modular source build engine.
 **v10.0.0-beta: DONE.** Model B Delta Sync Engine, 12 Structured Sheets & Diagnostics Logger.
 **v9.29: DONE.** Admin Prime Wallet Adjustments & Section Settings.
 
-**Agreed next order (Post Beta):**
-- **v10.2.0:** Loans tab (needs owner decisions: direction, flat vs reducing interest, installment rules, late fees, collateral notes, conversion of old Borrow/Lend, one worked example).
-- **v10.3.0:** Apps Script items (key rotation, changed-only sync, Ledger sheet; needs the script with secrets removed).
-- **Effectiveness pass** needs the owner's top daily tasks per role.
+**Agreed next order:**
+- **v10.3.0: Counter Speed Presets (1-Tap Services):** Quick 1-tap buttons on POS / Accounts for high-frequency shop services (Photocopy, Computer Print, Photo Print, Lamination, Online Form/Job Application).
+- **v10.4.0: Today's Estimated Gross Profit Card (Home Tab):** Live profit calculation based on (Selling Price - Cost Price) for items sold today.
+- **v10.5.0: Low-Stock & Out-of-Stock Alert Chip (Home Tab):** 1-tap notification chip for items at or below minimum threshold.
+- **v10.6.0: Thermal Due Payment Receipt (ESC/POS):** 1-tap print slip for ledger due collections.
+- **v10.7.0: Security & Ledger Sheet:** Sync key rotation with encrypted config & dedicated Ledger sheet in Google Sheets.
 
 **v9.21: DONE.** Clock, phone top-bar tidy, Accounts Void data section with Admin restore.
 **v9.20: DONE.** Owner feedback round 2: POS search, Test/Remove, refresh fix, keeper tabs, party kinds, date-anchored wallet openings, past-date PIN.
@@ -219,6 +226,7 @@ Before starting the Beta Test, you must verify and fix three critical items:
 - Currency via `tk()`.
 
 ## 7. Session log (append newest on top)
+- **v10.3.0, 2026-10-29 14:25 (UTC+6) (Antigravity):** Counter Speed Presets (1-Tap Services for POS & Accounts). (1) **Core Data Model:** Added `DEFAULT_PRESETS` and `getPresets()` in `src/js/01-core.js` covering high-frequency shop services: Photocopy (৳5), Computer Print (৳10), Color Print (৳20), Photo Print (৳30), Lamination (৳30), Online Application (৳50), and Document Scan (৳10). Saved customizations persist across devices in `S.presets`. (2) **1-Tap POS Counter Chips:** Injected `.svc-presets` chip bar directly above the POS catalog grid in `src/markup/app.html` and `src/js/07-pos-products.js`. Tapping any chip immediately adds the service line-item to the current POS sale cart with pre-filled default price and triggers a light toast. (3) **1-Tap Accounts Form Quick Fill:** Injected `#accPresets` quick entry chip container in `#fsec` in `src/markup/app.html` and `src/js/03-accounts.js`. Tapping pre-fills Description, Category, Amount, Payment (Cash), and Type (Sale), immediately focusing the Amount input for instant adjustment or submission. (4) **Admin Preset Customizer:** Added '⚡ Counter service presets' button under the More tab (`src/js/05-shell.js`) allowing Admin to edit names, default prices, and categories, add new custom service chips, delete chips, or reset to factory defaults. (5) **Cache & Native Bump:** Bumped `APP_VERSION` to 10.3.0 (`versionCode 100300`), unshifted to `VERS` and `UPC`, bumped Service Worker cache to `ncs-v61`, updated `template.html` asset tags `?v=10.3.0`, and built clean distribution bundles with `npm run prepare-www`.
 - **v10.2.0, 2026-10-29 13:55 (UTC+6) (Antigravity & Claude Sonnet):** Option 1: Whole-State Sync Restoration & Absolute Balance Integrity. (1) **Restored Whole-State Sync Architecture:** Switched sync engine from Model B delta mirror to Option 1 whole-state sync architecture (`stateOut()` and `mergeState()`), guaranteeing that 100% of the app's state (`entries`, `bills`, `products`, `moves`, `cust`, `ltx`, `atts`, `wManual`, `start`, `days`, `users`, `walletDates`, `counts`, `names`, `parties`, `pending`, `history`, `epoch`, `rebootN`, `drawerBase`) travels together as one atomic payload. (2) **Field-Loss Elimination:** Completely removed the lossy column-mapping layer; fields critical for financial balance calculation (`ld`, `act`, `cat`, `pay`, `w`, `cu`, `adj`, `void`, `vr`, `vb`) are preserved verbatim in JSON. (3) **Echo Storm Fix:** Ensured `primeLH()` is called after every remote state merge (`applyRemote` and `mergeRemoteFrom`), eliminating the distributed echo ping-pong loop. Removed the toxic `if (!r.u || r.v === 1 || r.removed === 1) r.u = now;` loop in `save()`. (4) **High-Speed Backend (`Code.gs`):** Updated Google Apps Script to store the entire state in the `State` sheet in 40,000 character chunks (~200ms round trip) while simultaneously generating formatted human-readable transaction rows in the `Entries` sheet and daily snapshots in `Backup <date>` sheets. (5) **Dynamic S Binding & Polling:** Bound `window.S = S;` dynamically on remote state update and IndexedDB resolve; tuned active tab poll to 15s with automatic sleep on hidden tab. Bumped version to 10.2.0 (`versionCode 100200`) and SW cache to `ncs-v60`.
 - **v10.1.5, 2026-10-29 12:45 (UTC+6) (Antigravity):** Instant Sync Acceleration: 3s Poll Interval, 400ms Push Debounce & Post-Push Auto-Pull. (1) **Sub-Second Push Debounce:** Reduced push debounce from 1500ms to 400ms in `sync.js`, pushing saves to Google Apps Script almost instantaneously after transaction entry or cash adjustment. (2) **Fast Delta Polling:** Reduced background pull interval from 10s to 3s (`setInterval(() => pull(), 3000)`), making remote device changes visible within 3-4 seconds. (3) **Post-Push Immediate Pull:** Added a 200ms delayed `pull()` trigger immediately after a successful push acknowledgement (`res.ok`) to confirm server timestamps and catch any concurrent changes from other devices without waiting for the next timer tick. (4) **Cache & Version Bump:** Bumped app version to 10.1.5 (`versionCode 100105`), bumped Service Worker cache to `ncs-v59`, updated asset version tags `?v=10.1.5` in `src/template.html`, compiled `prepare-www`.
 - **v10.1.4, 2026-10-29 12:15 (UTC+6) (Antigravity):** Delta Sync Schema v3, Monotonic nextU Hardening, PWA Cache Busting & Full Historical Re-sync. (1) **Sync State Schema v3:** Upgraded sync state schema from v2 to v3; detects existing clients and automatically resets `lastPullU=0` on boot to trigger a complete re-pull of all historical records with Bangladesh UTC+6 timezone normalization. (2) **Monotonic nextU Clock Hardening:** Enforced `nextU()` strictly exceeding local monotonic timestamps and all Google server-acknowledged timestamps (`res.serverU`), guaranteeing that newly added and edited rows are never filtered out during delta push due to device clock drift. (3) **Edit Stamping Safeguard:** Wired `stampChanged()` and `save()` directly to `nextU()`, ensuring modified rows receive bumped timestamps and push automatically. (4) **Mobile PWA Cache Busting:** Added `?v=10.1.4` query parameters to `diag.js` and `sync.js` in `template.html`, added `_t` timestamp to pull GET requests, bumped Service Worker cache to `ncs-v58`, and added visual sync completion toast on forced refresh. Bumped native version to 10.1.4 (`versionCode 100104`).

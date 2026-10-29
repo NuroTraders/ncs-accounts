@@ -1,4 +1,10 @@
-function render(){try{renderWalletCards()}catch(e){}try{applyCardSettings()}catch(e){}
+function renderAccPresets(){
+  const el=$('accPresets');
+  if(!el)return;
+  const list=getPresets();
+  el.innerHTML=list.map(p=>`<button type="button" class="svc-chip" data-acc-preset="${p.id}"><span>${p.icon||'⚡'}</span> <b>${S.lang==='bn'?(p.bn||p.name):p.name}</b> <small>${tk(p.price)}</small></button>`).join('');
+}
+function render(){try{renderWalletCards()}catch(e){}try{applyCardSettings()}catch(e){}try{renderAccPresets()}catch(e){}
   $('title').textContent=label(cur);$('pick').value=cur;
   const m=calc(),all=sorted(),day=all.filter(e=>e.d===cur),act=day.filter(e=>!e.void),f=flt(),tv0=f?all.filter(e=>match(e,f)):day,tv=tv0.filter(e=>!e.void),vd=lEd()?tv0.filter(e=>e.void):[];
   if(ACC_D!==cur+'|'+(f?JSON.stringify(f):'')){ACC_D=cur+'|'+(f?JSON.stringify(f):'');ACC_N=150}
@@ -76,6 +82,7 @@ $('fd').addEventListener('keydown',ev=>{if($('sg').hidden)return;const k=ev.key,
 $('sg').addEventListener('mousedown',ev=>ev.preventDefault());
 $('sg').addEventListener('click',ev=>{const x=ev.target.closest('.x'),it=ev.target.closest('.si');if(x){const k=sgl[+x.dataset.x];delete S.names[$('fy').value][k];save();sug()}else if(it)pickName(+it.dataset.i)});
 $('fd').addEventListener('blur',()=>setTimeout(()=>$('sg').hidden=true,120));
+if($('accPresets')){$('accPresets').addEventListener('click',e=>{const b=e.target.closest('[data-acc-preset]');if(!b)return;const p=getPresets().find(x=>x.id===b.dataset.accPreset);if(p){$('fy').value='Sale';cats();const title=S.lang==='bn'?(p.bn||p.name):p.name;$('fd').value=title;if(p.cat&&Array.from($('fc').options).some(o=>o.value===p.cat))$('fc').value=p.cat;$('fp').value='Cash';$('fa').value=p.price;preview();$('fa').focus();$('fa').select();toast((S.lang==='bn'?'নির্বাচিত: ':'Selected ')+title);try{Sound.tick()}catch(x){}}});}
 function ask(title,body,onOk,okText,wide){try{Sound.tick()}catch(e){}$('ov').firstElementChild.classList.toggle('w',!!wide);$('ok').style.display='';$('ob').onclick=null;$('ob').oninput=null;$('ob').onchange=null;$('ot').textContent=title;$('ob').innerHTML=body;$('ok').textContent=okText||'Confirm';$('ov').hidden=false;
   $('ok').onclick=async()=>{if(await onOk()!==false)$('ov').hidden=true};const f=$('ob').querySelector('input,select');if(f)f.focus()}
 $('oc').onclick=()=>$('ov').hidden=true;

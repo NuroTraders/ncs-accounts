@@ -243,3 +243,17 @@ async function decryptBackup(encObj, password) {
   const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: iv }, key, data);
   return new TextDecoder().decode(decrypted);
 }
+
+const DEFAULT_PRESETS = [
+  { id: 'copy', name: 'Photocopy', bn: 'ফটোকপি', price: 5, icon: '📄', cat: 'Photocopy' },
+  { id: 'print', name: 'Computer Print', bn: 'কম্পিউটার প্রিন্ট', price: 10, icon: '🖨️', cat: 'Computer Print' },
+  { id: 'color', name: 'Color Print', bn: 'কালার প্রিন্ট', price: 20, icon: '🎨', cat: 'Color Print' },
+  { id: 'photo', name: 'Photo Print', bn: 'ছবি প্রিন্ট', price: 30, icon: '🖼️', cat: 'Photo' },
+  { id: 'lam', name: 'Lamination', bn: 'লেমিনেটিং', price: 30, icon: '📑', cat: 'Lamination' },
+  { id: 'online', name: 'Online Application', bn: 'অনলাইন আবেদন', price: 50, icon: '🌐', cat: 'Online Service' },
+  { id: 'scan', name: 'Document Scan', bn: 'স্ক্যানিং', price: 10, icon: '🔍', cat: 'Scan' }
+];
+
+function getPresets() {
+  return (S.presets && Array.isArray(S.presets) && S.presets.length) ? S.presets : DEFAULT_PRESETS;
+}

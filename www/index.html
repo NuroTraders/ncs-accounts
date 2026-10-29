@@ -470,6 +470,18 @@ button:active{transform:scale(.97)}
 :root[data-rm] .savechk{display:none!important}
 :root[data-rm] #lines .line.slidein,:root[data-rm] #lines .line.slideout{animation:none!important}
 
+/* v10.3.0 Counter Speed Presets */
+.svc-bar-wrap{margin-bottom:10px;background:var(--soft);border:1px solid var(--line);border-radius:14px;padding:8px 10px}
+.acc-svc-wrap{margin-bottom:14px}
+.svc-bar-label{display:flex;align-items:center;justify-content:space-between;font-size:11.5px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.03em;margin-bottom:6px}
+.svc-presets{display:flex;gap:7px;overflow-x:auto;padding-bottom:2px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.svc-presets::-webkit-scrollbar{display:none}
+.svc-chip{flex:none;display:inline-flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:6px 12px;font-size:13px;font-weight:600;color:var(--ink);cursor:pointer;transition:border-color .15s,transform .1s,box-shadow .15s;touch-action:manipulation;white-space:nowrap}
+.svc-chip:hover{border-color:var(--acc);box-shadow:0 2px 6px rgba(0,0,0,.06)}
+.svc-chip:active{transform:scale(.96)}
+.svc-chip small{background:var(--soft);color:var(--acc);border-radius:10px;padding:1px 6px;font-size:11.5px;font-weight:700}
+
+
 </style>
 <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#2F5D3A"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes">
 <script src="native-bridge.js"></script><script src="config.js"></script>
@@ -497,7 +509,9 @@ button:active{transform:scale(.97)}
   <div id="chkBar" class="card cbn" hidden></div>
   <section class="card daybar" id="daybar"></section>
   <div class="card empty" id="cn" hidden>This day is closed. An admin can reopen it to add or change entries.</div>
-  <section class="card" id="fsec"><form id="form" autocomplete="off"><div class="g">
+  <section class="card" id="fsec">
+    <div class="svc-bar-wrap acc-svc-wrap"><div class="svc-bar-label"><span>⚡ Quick Entry Presets</span></div><div class="svc-presets" id="accPresets"></div></div>
+    <form id="form" autocomplete="off"><div class="g">
     <div><label for="ft">Time</label><input id="ft" type="time" required></div>
     <div><label for="fy">Type</label><select id="fy"><option value="Sale">Sale</option><option value="Purchase">Purchase / Expense</option><option value="Deposit">Owner Deposit</option><option value="Withdrawal">Owner Withdrawal</option><option value="Adjustment">Cash Adjustment (±)</option></select></div>
     <div><label for="fd">Description</label><input id="fd" type="text" required maxlength="120" placeholder="Type product or cost name" autocomplete="off"><div class="sg" id="sg" hidden></div></div>
@@ -537,6 +551,7 @@ button:active{transform:scale(.97)}
         <div class="pos-search"><label id="qLabel" for="q">Product Name/ID/Barcode</label><input id="q" placeholder="Search products" autocomplete="off"></div>
         <button class="ghost" id="bScan" type="button">Scan</button><button class="ghost" id="bNew" type="button">Add Product</button>
       </div>
+      <div class="svc-bar-wrap pos-svc-wrap"><div class="svc-bar-label"><span>⚡ 1-Tap Counter Services</span></div><div class="svc-presets" id="posPresets"></div></div>
       <details class="pos-products" id="productPanel" open><summary id="productSummary">Browse products / Add to bill</summary><div class="top7" id="top7"></div><div class="grid" id="grid"></div></details>
     </div>
     <aside class="pos-sidebar">
@@ -814,6 +829,20 @@ async function decryptBackup(encObj, password) {
   return new TextDecoder().decode(decrypted);
 }
 
+const DEFAULT_PRESETS = [
+  { id: 'copy', name: 'Photocopy', bn: 'ফটোকপি', price: 5, icon: '📄', cat: 'Photocopy' },
+  { id: 'print', name: 'Computer Print', bn: 'কম্পিউটার প্রিন্ট', price: 10, icon: '🖨️', cat: 'Computer Print' },
+  { id: 'color', name: 'Color Print', bn: 'কালার প্রিন্ট', price: 20, icon: '🎨', cat: 'Color Print' },
+  { id: 'photo', name: 'Photo Print', bn: 'ছবি প্রিন্ট', price: 30, icon: '🖼️', cat: 'Photo' },
+  { id: 'lam', name: 'Lamination', bn: 'লেমিনেটিং', price: 30, icon: '📑', cat: 'Lamination' },
+  { id: 'online', name: 'Online Application', bn: 'অনলাইন আবেদন', price: 50, icon: '🌐', cat: 'Online Service' },
+  { id: 'scan', name: 'Document Scan', bn: 'স্ক্যানিং', price: 10, icon: '🔍', cat: 'Scan' }
+];
+
+function getPresets() {
+  return (S.presets && Array.isArray(S.presets) && S.presets.length) ? S.presets : DEFAULT_PRESETS;
+}
+
 
 /* --- Module: 02-calc.js --- */
 function calc(){let p=+S.start||0;const m={};sorted().forEach(e=>{if(e.void)return;const bal=r2(p+cash(e));m[e.id]={p,bal,df:e.act==null?null:r2(e.act-bal)};p=bal});return m}
@@ -829,7 +858,13 @@ const CATS={Sale:['Printing','Stationery','Computer Service','Other'].concat(Obj
 
 
 /* --- Module: 03-accounts.js --- */
-function render(){try{renderWalletCards()}catch(e){}try{applyCardSettings()}catch(e){}
+function renderAccPresets(){
+  const el=$('accPresets');
+  if(!el)return;
+  const list=getPresets();
+  el.innerHTML=list.map(p=>`<button type="button" class="svc-chip" data-acc-preset="${p.id}"><span>${p.icon||'⚡'}</span> <b>${S.lang==='bn'?(p.bn||p.name):p.name}</b> <small>${tk(p.price)}</small></button>`).join('');
+}
+function render(){try{renderWalletCards()}catch(e){}try{applyCardSettings()}catch(e){}try{renderAccPresets()}catch(e){}
   $('title').textContent=label(cur);$('pick').value=cur;
   const m=calc(),all=sorted(),day=all.filter(e=>e.d===cur),act=day.filter(e=>!e.void),f=flt(),tv0=f?all.filter(e=>match(e,f)):day,tv=tv0.filter(e=>!e.void),vd=lEd()?tv0.filter(e=>e.void):[];
   if(ACC_D!==cur+'|'+(f?JSON.stringify(f):'')){ACC_D=cur+'|'+(f?JSON.stringify(f):'');ACC_N=150}
@@ -907,6 +942,7 @@ $('fd').addEventListener('keydown',ev=>{if($('sg').hidden)return;const k=ev.key,
 $('sg').addEventListener('mousedown',ev=>ev.preventDefault());
 $('sg').addEventListener('click',ev=>{const x=ev.target.closest('.x'),it=ev.target.closest('.si');if(x){const k=sgl[+x.dataset.x];delete S.names[$('fy').value][k];save();sug()}else if(it)pickName(+it.dataset.i)});
 $('fd').addEventListener('blur',()=>setTimeout(()=>$('sg').hidden=true,120));
+if($('accPresets')){$('accPresets').addEventListener('click',e=>{const b=e.target.closest('[data-acc-preset]');if(!b)return;const p=getPresets().find(x=>x.id===b.dataset.accPreset);if(p){$('fy').value='Sale';cats();const title=S.lang==='bn'?(p.bn||p.name):p.name;$('fd').value=title;if(p.cat&&Array.from($('fc').options).some(o=>o.value===p.cat))$('fc').value=p.cat;$('fp').value='Cash';$('fa').value=p.price;preview();$('fa').focus();$('fa').select();toast((S.lang==='bn'?'নির্বাচিত: ':'Selected ')+title);try{Sound.tick()}catch(x){}}});}
 function ask(title,body,onOk,okText,wide){try{Sound.tick()}catch(e){}$('ov').firstElementChild.classList.toggle('w',!!wide);$('ok').style.display='';$('ob').onclick=null;$('ob').oninput=null;$('ob').onchange=null;$('ot').textContent=title;$('ob').innerHTML=body;$('ok').textContent=okText||'Confirm';$('ov').hidden=false;
   $('ok').onclick=async()=>{if(await onOk()!==false)$('ov').hidden=true};const f=$('ob').querySelector('input,select');if(f)f.focus()}
 $('oc').onclick=()=>$('ov').hidden=true;
@@ -1427,7 +1463,16 @@ bugBtn.onclick = function() {
   }
 };
 
-$('topR').append($('sync'));$('moreList').append($('lang'),sndBtn,secCardBtn,bugBtn,$('set'),$('lockb'));
+var prsSettingBtn = document.createElement('button');
+prsSettingBtn.className = 'ghost';
+prsSettingBtn.id = 'prsSettingBtn';
+prsSettingBtn.style.height = '48px';
+prsSettingBtn.style.textAlign = 'left';
+prsSettingBtn.style.fontSize = '15px';
+prsSettingBtn.style.borderRadius = '14px';
+prsSettingBtn.onclick = function() { if (isA()) openPresetSettings(); };
+
+$('topR').append($('sync'));$('moreList').append($('lang'),sndBtn,secCardBtn,prsSettingBtn,bugBtn,$('set'),$('lockb'));
 function updateSndBtn(){var b=$('sndBtn');if(b)b.textContent='Sound effects: '+(S.sound?'ON':'OFF');}
 sndBtn.onclick=function(){S.sound=!S.sound;save();updateSndBtn();if(S.sound){try{Sound.test()}catch(e){}}};
 secCardBtn.onclick=function(){if(isA())openCardSectionSettings()};
@@ -1437,6 +1482,115 @@ function updateMoreTab(){
     secCardBtn.style.display=isA()?'':'none';
     secCardBtn.innerHTML='<span style="display:flex;align-items:center;gap:10px"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg><b>'+lb('Section & card settings','সেকশন ও কার্ড সমন্বয় সেটিংস')+'</b></span>';
   }
+  if(prsSettingBtn){
+    prsSettingBtn.style.display=isA()?'':'none';
+    prsSettingBtn.innerHTML='<span style="display:flex;align-items:center;gap:10px"><span style="font-size:20px">⚡</span><b>'+lb('Counter service presets','কাউন্টার সার্ভিস প্রিসেট সেটিংস')+'</b></span>';
+  }
+}
+
+function openPresetSettings() {
+  const getPrsList = () => (S.presets && Array.isArray(S.presets) && S.presets.length) ? S.presets : JSON.parse(JSON.stringify(DEFAULT_PRESETS));
+  
+  const showMain = () => {
+    const list = getPrsList();
+    const html = '<div style="max-height:55vh;overflow-y:auto;padding-right:4px">' +
+      list.map((p, idx) => `
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid var(--line)">
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="font-size:22px">${p.icon || '⚡'}</span>
+            <div>
+              <b style="font-size:14px">${esc(p.name)}</b> <small style="color:var(--mut)">(${esc(p.bn || p.name)})</small>
+              <div style="font-size:12px;color:var(--acc);font-weight:700">${tk(p.price)} <span style="color:var(--mut);font-weight:normal">· ${esc(p.cat || 'Service')}</span></div>
+            </div>
+          </div>
+          <div style="display:flex;gap:6px">
+            <button type="button" class="ghost" data-ep="${idx}" style="height:32px;padding:0 10px;font-size:12px">${lb('Edit', 'এডিট')}</button>
+            <button type="button" class="ghost" data-dp="${idx}" style="height:32px;padding:0 8px;font-size:12px;color:var(--neg)">×</button>
+          </div>
+        </div>
+      `).join('') +
+      '</div>' +
+      '<div class="oa" style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">' +
+        '<button type="button" class="go" id="addPrsBtn">+ ' + lb('New preset', 'নতুন প্রিসেট') + '</button>' +
+        '<button type="button" class="ghost" id="rstPrsBtn">' + lb('Reset defaults', 'ডিফল্ট রিসেট') + '</button>' +
+      '</div>';
+
+    ask(lb('Counter Service Presets', 'কাউন্টার সার্ভিস প্রিসেট সেটিংস'), html, () => {}, 'Close');
+
+    const dlgBody = $('ob');
+    dlgBody.onclick = (e) => {
+      const editBtn = e.target.closest('[data-ep]');
+      if (editBtn) {
+        const idx = +editBtn.dataset.ep;
+        showEdit(list[idx], idx);
+        return;
+      }
+      const delBtn = e.target.closest('[data-dp]');
+      if (delBtn) {
+        const idx = +delBtn.dataset.dp;
+        if (confirm(lb('Delete this preset?', 'এই প্রিসেটটি মুছে ফেলবেন?'))) {
+          list.splice(idx, 1);
+          S.presets = list;
+          save();
+          showMain();
+          if (typeof renderPosPresets === 'function') renderPosPresets();
+          if (typeof renderAccPresets === 'function') renderAccPresets();
+        }
+        return;
+      }
+      if (e.target.id === 'addPrsBtn') {
+        showEdit(null, -1);
+        return;
+      }
+      if (e.target.id === 'rstPrsBtn') {
+        if (confirm(lb('Reset presets to default list?', 'সব প্রিসেট ডিফল্ট অবস্থায় ফিরিয়ে নেবেন?'))) {
+          S.presets = JSON.parse(JSON.stringify(DEFAULT_PRESETS));
+          save();
+          showMain();
+          if (typeof renderPosPresets === 'function') renderPosPresets();
+          if (typeof renderAccPresets === 'function') renderAccPresets();
+        }
+        return;
+      }
+    };
+  };
+
+  const showEdit = (p, idx) => {
+    const isNew = idx === -1;
+    const body = `
+      <div class="f"><label>${lb('English Name', 'ইংরেজি নাম')}</label><input id="prsN" value="${esc(p ? p.name : '')}" required></div>
+      <div class="f"><label>${lb('Bengali Name', 'বাংলা নাম')}</label><input id="prsBn" value="${esc(p ? (p.bn || '') : '')}"></div>
+      <div class="f"><label>${lb('Price (৳)', 'দাম (৳)')}</label><input id="prsP" type="number" inputmode="decimal" min="0" value="${p ? p.price : 10}" required></div>
+      <div class="f"><label>${lb('Category', 'ক্যাটাগরি')}</label><input id="prsC" value="${esc(p ? (p.cat || '') : '')}"></div>
+      <div class="f"><label>${lb('Icon (Emoji)', 'আইকন (ইমোজি)')}</label><input id="prsI" value="${esc(p ? (p.icon || '⚡') : '⚡')}" maxlength="4"></div>
+    `;
+    ask(isNew ? lb('New Counter Service', 'নতুন কাউন্টার সার্ভিস') : lb('Edit Counter Service', 'কাউন্টার সার্ভিস এডিট'), body, () => {
+      const nm = $('prsN').value.trim();
+      const pr = +$('prsP').value || 0;
+      if (!nm) return false;
+      const list = getPrsList();
+      const item = {
+        id: p ? p.id : ('p_' + Date.now()),
+        name: nm,
+        bn: $('prsBn').value.trim() || nm,
+        price: pr,
+        cat: $('prsC').value.trim() || nm,
+        icon: $('prsI').value.trim() || '⚡'
+      };
+      if (isNew) {
+        list.push(item);
+      } else {
+        list[idx] = item;
+      }
+      S.presets = list;
+      save();
+      setTimeout(showMain, 50);
+      if (typeof renderPosPresets === 'function') renderPosPresets();
+      if (typeof renderAccPresets === 'function') renderAccPresets();
+    }, isNew ? lb('Add', 'যোগ করুন') : lb('Save', 'সংরক্ষণ'));
+  };
+
+  showMain();
 }
 function redrawActiveView(){if(CUR==='home'){homeUI();try{applyCardSettings()}catch(e){}}else if(CUR==='pos')POS.refresh();else if(CUR==='prod')POS.prodUI();else if(CUR==='acc'){render();try{applyCardSettings()}catch(e){}}else if(CUR==='led')ledUI();else if(CUR==='mgmt')mgmtUI()}
 function refreshCurrentView(){
@@ -1529,7 +1683,13 @@ function discNote(){const p=discPct(),el=$('dcn');if(p>5){el.hidden=false;el.tex
 function discShow(){if(document.activeElement!==$('dc'))$('dc').value=C.disc||'';if(document.activeElement!==$('dp'))$('dp').value=C.dm==='p'?(C.dpct||''):(discPct()||'');discNote()}
 function topSellers(){const from=iso(new Date(Date.now()-30*864e5)),c={};S.bills.filter(b=>!b.void&&!b.removed&&!b.test&&b.mode==='sale'&&b.d>=from).forEach(b=>b.lines.forEach(l=>{if(l.pid)c[l.pid]=(c[l.pid]||0)+l.qty}));
   return Object.entries(c).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([id])=>S.products.find(p=>p.id==id)).filter(p=>p&&!p.del)}
-function renderGrid(){const q=$('q').value.trim().toLowerCase(),sm=stockMap();
+function renderPosPresets(){
+  const el=$('posPresets');
+  if(!el)return;
+  const list=getPresets();
+  el.innerHTML=list.map(p=>`<button type="button" class="svc-chip" data-preset="${p.id}"><span>${p.icon||'⚡'}</span> <b>${S.lang==='bn'?(p.bn||p.name):p.name}</b> <small>${tk(p.price)}</small></button>`).join('');
+}
+function renderGrid(){renderPosPresets();const q=$('q').value.trim().toLowerCase(),sm=stockMap();
   const L=prods().filter(p=>!q||p.name.toLowerCase().includes(q)||String(p.id).toLowerCase().includes(q)||(p.barcode||'').toLowerCase().includes(q)).sort((a,b)=>a.name.localeCompare(b.name)).slice(0,80);
   $('grid').innerHTML=L.length?L.map(p=>{const s=sm[p.id]||0;return `<button class="tile" data-p="${p.id}">${imgH(p)}<div class="sb${s<=0?' low':''}">${s}</div><span>${esc(p.name)}</span><small>${tk(p.price)}</small></button>`}).join('')+(canCost()?'<div class="mut" style="grid-column:1/-1">Long-press or right-click a product to edit it.</div>':''):'<div class="empty" style="grid-column:1/-1">No products yet. Use Add Product, scan a barcode, or use Custom item.</div>';
   const T=C.mode==='sale'?topSellers():[];$('top7').style.display=T.length?'flex':'none';$('top7').innerHTML=T.map(p=>`<button data-p="${p.id}">${imgH(p)}${esc(p.name)}</button>`).join('')}
@@ -1544,6 +1704,7 @@ function renderCart(){if(role()==='keeper')C.mode='purchase';const pm=C.mode==='
 const byId=id=>S.products.find(p=>p.id==id);
 $('grid').addEventListener('click',e=>{const b=e.target.closest('[data-p]');if(b)addLine(byId(b.dataset.p))});
 $('top7').addEventListener('click',e=>{const b=e.target.closest('[data-p]');if(b)addLine(byId(b.dataset.p))});
+if($('posPresets')){$('posPresets').addEventListener('click',e=>{const b=e.target.closest('[data-preset]');if(!b)return;const p=getPresets().find(x=>x.id===b.dataset.preset);if(p){const title=S.lang==='bn'?(p.bn||p.name):p.name;addLine({name:title,price:p.price,buy:0});toast((S.lang==='bn'?'যোগ হয়েছে: ':'Added ')+title);try{Sound.tick()}catch(x){}}});}
 $('grid').addEventListener('contextmenu',e=>{const b=e.target.closest('[data-p]');if(b&&canCost()){e.preventDefault();pForm(byId(b.dataset.p))}});
 $('lines').addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b)return;const i=+b.dataset.i,l=C.lines[i];
   if(b.dataset.a==='p'){l.qty++;renderCart()}
@@ -2906,7 +3067,7 @@ function animateCounts(){
 function saveCheck(){if(document.documentElement.dataset.rm)return;var d=document.createElement('div');d.className='savechk';d.innerHTML='<svg viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="22" fill="none" stroke="var(--acc)" stroke-width="3"/><path d="M14 27l8 8 16-16" fill="none" stroke="var(--acc)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>';document.body.appendChild(d);setTimeout(function(){d.classList.add('out')},700);setTimeout(function(){d.remove()},1250)}
 (function(){
   var M="Claude Sonnet 5.5 · owner's Claude account";
-  APP_VERSION='10.2.0';
+  APP_VERSION='10.3.0';
   VERS.unshift({v:'9.22',d:'2026-10-19',t:'Sound effects, motion polish and wrapper download safety',by:M,n:['Web Audio sound engine: soft tick on tabs/dialogs, cha-ching on sale/entry save, low buzz on errors, sync chime on background sync','Sound toggle in Settings, default off; AudioContext created on first tap','All sound and motion automatically off when the OS asks for reduced motion','Number count-up on Home (Cash Balance, Total Sell, Total Buy) over 0.4s on load and period change','Save checkmark pop on POS sale and Accounts/Ledger entry save','Tap feedback: buttons scale to 0.97 on press','POS cart rows slide in when added and slide out when removed','dlFile falls back to a data URL window if the wrapper blocks the <a download> tag']});
   VERS.unshift({v:'9.22.1',d:'2026-10-19',t:'Sound resume fix + Test button',by:M,n:['AudioContext resume() race fixed: tones now play after the context is running (fixes silent playback on Android WebView, iOS Safari and after idle tabs)','▶ Test sound button inside Settings for instant verification','Louder gains for tick and cha-ching so phone speakers are audible']});
   VERS.unshift({v:'9.22.2',d:'2026-10-19',t:'Sound toggle visible in More, Settings unhidden',by:M,n:['Sound effects ON/OFF button now appears directly in the More tab (no need to open Settings)','Removed the CSS rule that was hiding the Settings button in the More tab','Settings still shows the Sound effects checkbox and the ▶ Test sound button']});
@@ -2926,6 +3087,7 @@ function saveCheck(){if(document.documentElement.dataset.rm)return;var d=documen
   VERS.unshift({v:'10.1.4',d:'2026-10-29',t:'Delta Sync Schema v3, Cache-Buster & Auto-Refresh Force',by:'Antigravity',n:['Upgraded sync engine state schema to v3: triggers automatic full sync (since=0) across all devices on upgrade to re-normalize all dates and times','Hardened nextU monotonic clock to strictly exceed all local and server-acknowledged timestamps regardless of device clock skew','Fixed save() and stampChanged() to stamp modified and newly created entries with nextU so delta push never ignores edits','Added cache-busting asset query parameters and bumped service worker to ncs-v58 to bust aggressive mobile browser PWA caching','Added visual sync toast notification and forced pull on manual refresh button click']});
   VERS.unshift({v:'10.1.5',d:'2026-10-29',t:'Instant Sync: 3s poll, 400ms push debounce & post-push pull',by:'Antigravity',n:['Reduced background pull interval from 10s to 3s so remote changes appear in under 4s','Reduced push debounce from 1.5s to 400ms so saves are sent to the server almost immediately','Added automatic pull 200ms after every successful push to confirm server state and reflect any concurrent device changes','Combined: save-to-visible latency on the other device is now ~2–4s (GAS round-trip limited) instead of up to 17s']});
   VERS.unshift({v:'10.2.0',d:'2026-10-29',t:'Option 1: Whole-State Sync Restoration & Balance Integrity',by:'Antigravity & Claude Sonnet',n:['Restored v9.29 whole-state sync architecture (stateOut / mergeState): guarantees 100% balance consistency across devices','Eliminated field-loss bug: all metadata (ld, act, cat, pay, w, cu, adj, void) safely preserved in JSON state payload','Synced all critical state: S.wManual, S.start, S.days, S.users, S.counts, and S.walletDates now synchronize across all devices','Fixed echo storm: primeLH() called on state application and removed toxic removed===1 re-stamping from save()','Fast backend: Google Apps Script Code.gs updated to store full State sheet in ~200ms while generating formatted human-readable Entries sheet']});
+  VERS.unshift({v:'10.3.0',d:'2026-10-29',t:'Counter Speed Presets: 1-Tap Counter Services & Quick Entry',by:'Antigravity',n:['1-Tap Counter Service bar in POS: instant 1-tap cart addition for Photocopy, Print, Photo, Lamination, Online applications, and Scan','Quick Entry chip bar in Accounts form: 1-tap prefill of Description, Category, Payment, and Amount for counter services','Admin Preset Customizer in More tab: add new presets, edit Bengali/English names, prices, categories, and icons','Persistent synchronization: S.presets automatically syncs across all devices via whole-state sync']});
   
   UPC.unshift({v:'9.22',s:'Done',t:['Web Audio sound engine (tick, cha-ching, buzz, sync chime), default off','Count-up numbers on Home','Save checkmark','Tap feedback','POS cart slide in/out','All respect OS reduced-motion','Download fallback']});
   UPC.unshift({v:'9.22.1',s:'Done',t:['AudioContext resume race fixed','Test sound button in Settings','Louder gains']});
@@ -2946,6 +3108,7 @@ function saveCheck(){if(document.documentElement.dataset.rm)return;var d=documen
   UPC.unshift({v:'10.1.4',s:'Done',t:['Delta sync schema v3, monotonic nextU clock hardening, PWA cache busting & sync notification toast']});
   UPC.unshift({v:'10.1.5',s:'Done',t:['Instant sync: 3s poll interval, 400ms push debounce, post-push immediate pull confirmation']});
   UPC.unshift({v:'10.2.0',s:'Done',t:['Option 1: Whole-state sync restoration (stateOut / mergeState), full balance integrity & fast 200ms backend']});
+  UPC.unshift({v:'10.3.0',s:'Done',t:['Counter Speed Presets (1-tap service chips in POS & Accounts, Admin customizer in More tab)']});
   
   var sl=UPC.find(function(x){return x.v==='9.23'&&x.s==='Planned'});if(sl)sl.v='9.24';
   var sp=UPC.find(function(x){return x.v==='9.22'&&x.s==='Planned'});if(sp)sp.v='9.23';
@@ -2997,7 +3160,7 @@ if ('serviceWorker' in navigator) addEventListener('load', () => navigator.servi
 
 </script>
 <!-- NCS v10 Sync Engine -->
-<script src="diag.js?v=10.2.0"></script>
-<script src="sync.js?v=10.2.0"></script>
+<script src="diag.js?v=10.3.0"></script>
+<script src="sync.js?v=10.3.0"></script>
 </body>
 </html>

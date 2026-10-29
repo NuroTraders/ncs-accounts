@@ -5,7 +5,7 @@
 (function () {
   'use strict';
   var REPO = 'NuroTraders/ncs-accounts';
-  var NATIVE_VERSION = '10.1.4';
+  var NATIVE_VERSION = '10.3.0';
 
   var cap = window.Capacitor;
   var isAndroid = !!(cap && cap.isNativePlatform && cap.isNativePlatform());
