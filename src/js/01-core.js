@@ -17,7 +17,7 @@ if(!Array.isArray(S.walletDates))S.walletDates=[];
 if(!Array.isArray(S.counts))S.counts=[];
 const ENC=(window.NCS_CONFIG||{}).enc;
 if(!S.sync&&window.NCS_CONFIG&&/^https:\/\//.test(NCS_CONFIG.url||'')&&NCS_CONFIG.key)S.sync={url:NCS_CONFIG.url,key:NCS_CONFIG.key};
-const LH=new Map(),sig=x=>JSON.stringify(x,(k,v)=>k==='u'?undefined:v),COLS=['entries','products','bills','moves','cust','ltx','atts'];
+const LH=new Map(),sig=x=>JSON.stringify(x,(k,v)=>k==='u'?undefined:v),COLS=['entries','products','bills','moves','cust','ltx','atts','tasks'];
 function ensureCols(){COLS.forEach(c=>{S[c]=S[c]||[]});S.days=S.days||{};S.log=S.log||[]}
 function primeLH(){LH.clear();COLS.forEach(c=>S[c].forEach(x=>LH.set(c+x.id,sig(x))));if(S.users)LH.set('users',sig(S.users))}
 function stampChanged(){
@@ -191,13 +191,93 @@ const save=()=>{
     return ok;
 };
 
+const NCS_MIN_DATE='2020-11-01';
 const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-let cur=iso(new Date()),editing=null;
+const todayIso=()=>iso(new Date());
+let cur=todayIso(),editing=null;
 const n=v=>Number(v).toLocaleString('en-US'),tk=v=>'৳'+n(v);
 const money=v=>v?n(v):'–',dif=v=>v===0?'0':(v>0?'+':'−')+n(Math.abs(v)),dc=v=>v>0?'pos':v<0?'neg':'zero';
 const t12=t=>{const h=+t.slice(0,2);return ((h+11)%12+1)+':'+t.slice(3,5)+' '+(h<12?'AM':'PM')};
 const r2=x=>Math.round((+x||0)*100)/100;
-const label=d=>{const x=new Date(d+'T00:00:00');return x.getDate()+'.'+String(x.getMonth()+1).padStart(2,'0')+'.'+x.getFullYear()+' – '+x.toLocaleDateString(S.lang==='bn'?'bn-BD':'en-US',{weekday:'long'})};
+
+/* 7 days, 7 distinct colors */
+const DAY_COLORS=['#EF4444','#F59E0B','#10B981','#0EA5E9','#8B5CF6','#16A34A','#6366F1'];
+const DAY_NAMES_EN=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const DAY_NAMES_BN=['রবিবার','সোমবার','মঙ্গলবার','বুধবার','বৃহস্পতিবার','শুক্রবার','শনিবার'];
+
+function toBnNum(num){
+  var bn=['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
+  return String(num!=null?num:'').replace(/[0-9]/g,function(d){return bn[+d]||d});
+}
+
+function getBengaliDate(d){
+  var date=d?(typeof d==='string'?new Date(d+'T00:00:00'):d):new Date();
+  var year=date.getFullYear(),month=date.getMonth(),day=date.getDate();
+  var isLeap=(year%4===0&&year%100!==0)||(year%400===0);
+  var bnMonths=['বৈশাখ','জ্যৈষ্ঠ','আষাঢ়','শ্রাবণ','ভাদ্র','আশ্বিন','কার্তিক','অগ্রহায়ণ','পৌষ','মাঘ','ফাল্গুন','চৈত্র'];
+  var bnYear=(month>3||(month===3&&day>=14))?year-593:year-594;
+  var bDay=1,bMonthName='';
+  if(month===0&&day<15){bDay=day+16;bMonthName=bnMonths[8]}
+  else if(month===0||(month===1&&day<14)){bDay=month===0?day-14:day+17;bMonthName=bnMonths[9]}
+  else if(month===1||(month===2&&day<15)){bDay=month===1?day-13:day+(isLeap?16:15);bMonthName=bnMonths[10]}
+  else if(month===2||(month===3&&day<14)){bDay=month===2?day-14:day+17;bMonthName=bnMonths[11]}
+  else if(month===3||(month===4&&day<15)){bDay=month===3?day-13:day+17;bMonthName=bnMonths[0]}
+  else if(month===4||(month===5&&day<15)){bDay=month===4?day-14:day+17;bMonthName=bnMonths[1]}
+  else if(month===5||(month===6&&day<16)){bDay=month===5?day-14:day+16;bMonthName=bnMonths[2]}
+  else if(month===6||(month===7&&day<16)){bDay=month===6?day-15:day+16;bMonthName=bnMonths[3]}
+  else if(month===7||(month===8&&day<16)){bDay=month===7?day-15:day+16;bMonthName=bnMonths[4]}
+  else if(month===8||(month===9&&day<17)){bDay=month===8?day-15:day+15;bMonthName=bnMonths[5]}
+  else if(month===9||(month===10&&day<16)){bDay=month===9?day-16:day+15;bMonthName=bnMonths[6]}
+  else if(month===10||(month===11&&day<16)){bDay=month===10?day-15:day+15;bMonthName=bnMonths[7]}
+  else{bDay=day-15;bMonthName=bnMonths[8]}
+  return{day:bDay,month:bMonthName,year:bnYear,text:toBnNum(bDay)+' '+bMonthName+' '+toBnNum(bnYear)+' বঙ্গাব্দ'};
+}
+
+function dayColor(d){
+  var x=typeof d==='number'?d:(new Date((typeof d==='string'?d:iso(d))+'T00:00:00')).getDay();
+  return DAY_COLORS[x]||DAY_COLORS[0];
+}
+
+const label=d=>{
+  const x=new Date(d+'T00:00:00');
+  const dow=x.getDay();
+  const c=dayColor(dow);
+  const wName=S.lang==='bn'?DAY_NAMES_BN[dow]:DAY_NAMES_EN[dow];
+  const dateStr=S.lang==='bn'?(toBnNum(x.getDate())+'.'+toBnNum(String(x.getMonth()+1).padStart(2,'0'))+'.'+toBnNum(x.getFullYear())):(x.getDate()+'.'+String(x.getMonth()+1).padStart(2,'0')+'.'+x.getFullYear());
+  return dateStr+' · <span class="day-chip" style="color:'+c+';background:'+c+'18;border:1px solid '+c+'44">'+wName+'</span>';
+};
+
+/* Strict calendar rules: Min Nov 2020 & ban future dates */
+function enforceDateInput(el){
+  if(!el||el.type!=='date')return;
+  if(!el.dataset.allowPastMin&&(!el.min||el.min<NCS_MIN_DATE)){
+    el.min=NCS_MIN_DATE;
+  }
+  if(!el.dataset.allowFuture&&(!el.max||el.max>todayIso())){
+    el.max=todayIso();
+  }
+}
+
+function applyDateInputRules(root){
+  var scope=root||document;
+  if(!scope.querySelectorAll)return;
+  scope.querySelectorAll('input[type="date"]').forEach(enforceDateInput);
+}
+
+if(typeof MutationObserver!=='undefined'&&typeof document!=='undefined'){
+  new MutationObserver(function(mutations){
+    mutations.forEach(function(m){
+      if(m.type==='childList'){
+        m.addedNodes.forEach(function(node){
+          if(node.nodeType===1){
+            if(node.tagName==='INPUT'&&node.type==='date')enforceDateInput(node);
+            else if(node.querySelectorAll)node.querySelectorAll('input[type="date"]').forEach(enforceDateInput);
+          }
+        });
+      }
+    });
+  }).observe(document.documentElement,{childList:true,subtree:true});
+}
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const csvCell=s=>{const v=String(s??''),safe=/^[\s\u0000-\u001f]*[=+\-@]/.test(v)?"'"+v:v;return'"'+safe.replace(/"/g,'""')+'"'}
 const sorted=()=>[...S.entries].filter(e=>!e.removed).sort((a,b)=>{const x=a.d+a.t,y=b.d+b.t;return x<y?-1:x>y?1:a.id-b.id});

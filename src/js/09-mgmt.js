@@ -801,11 +801,125 @@ function selfTest(){
 })();
 
 /* ---------- v9.21: clock, Accounts void section ---------- */
-function clkTick(){var x=new Date(),T=t12(String(x.getHours()).padStart(2,'0')+':'+String(x.getMinutes()).padStart(2,'0')),D='';
-  try{D=x.toLocaleDateString(S.lang==='bn'?'bn-BD':'en-GB',{weekday:'short',day:'2-digit',month:'short'})}catch(e){D=sd(iso(x))}
-  [['hClkT',T],['hClkD',D],['tclkT',T],['tclkD',D]].forEach(function(p){var el=$(p[0]);if(el&&el.textContent!==p[1])el.textContent=p[1]})}
+/* ---------- v11.0: Desktop Watch, Weather, Bengali Calendar & Clock ---------- */
+function getWeatherIcon(code){
+  if(code===0)return'☀️';
+  if(code===1||code===2)return'🌤️';
+  if(code===3)return'☁️';
+  if(code>=45&&code<=48)return'🌫️';
+  if(code>=51&&code<=67)return'🌧️';
+  if(code>=71&&code<=77)return'❄️';
+  if(code>=80&&code<=82)return'🌦️';
+  if(code>=95)return'⛈️';
+  return'☀️';
+}
+
+function renderWeather(cur){
+  var iconEl=$('hwIcon'),tempEl=$('hwTemp');
+  if(!iconEl||!tempEl||!cur)return;
+  var temp=Math.round(cur.temperature_2m);
+  iconEl.textContent=getWeatherIcon(cur.weather_code);
+  tempEl.textContent=S.lang==='bn'?(toBnNum(temp)+'°সে'):(temp+'°C');
+}
+
+function fetchDhakaWeather(){
+  try{
+    var cached=sessionStorage.getItem('ncs_weather_v1');
+    if(cached){
+      var parsed=JSON.parse(cached);
+      if(Date.now()-parsed.ts<1800000){
+        renderWeather(parsed.data);
+        return;
+      }
+    }
+  }catch(e){}
+  if(typeof navigator!=='undefined'&&navigator.onLine===false)return;
+  try{
+    fetch('https://api.open-meteo.com/v1/forecast?latitude=23.8103&longitude=90.4125&current=temperature_2m,weather_code&timezone=Asia%2FDhaka')
+      .then(function(r){return r.json()})
+      .then(function(data){
+        if(data&&data.current){
+          try{sessionStorage.setItem('ncs_weather_v1',JSON.stringify({ts:Date.now(),data:data.current}))}catch(e){}
+          renderWeather(data.current);
+        }
+      })
+      .catch(function(){});
+  }catch(e){}
+}
+
+function updateLiveWatch(now){
+  var h=now.getHours(),m=now.getMinutes(),s=now.getSeconds();
+  var h12=((h+11)%12+1);
+  var ampmEn=h<12?'AM':'PM';
+  var ampmBn=h<6?'রাত':h<12?'সকাল':h<15?'দুপুর':h<18?'বিকাল':'রাত';
+  var isBn=S.lang==='bn';
+  
+  var timeStr=isBn
+    ?(toBnNum(h12)+':'+toBnNum(String(m).padStart(2,'0'))+':'+toBnNum(String(s).padStart(2,'0'))+' '+ampmBn)
+    :(String(h12)+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')+' '+ampmEn);
+    
+  var timeEl=$('hwTime');
+  if(timeEl&&timeEl.textContent!==timeStr)timeEl.textContent=timeStr;
+  
+  var dow=now.getDay();
+  var dColor=DAY_COLORS[dow];
+  var dayName=isBn?DAY_NAMES_BN[dow]:DAY_NAMES_EN[dow];
+  
+  var dayEl=$('hwDay');
+  if(dayEl){
+    if(dayEl.textContent!==dayName)dayEl.textContent=dayName;
+    dayEl.style.color=dColor;
+    dayEl.style.backgroundColor=dColor+'18';
+    dayEl.style.borderColor=dColor+'44';
+  }
+  
+  var dateEl=$('hwDate');
+  if(dateEl){
+    var gDate=isBn
+      ?(toBnNum(now.getDate())+' '+(['জানু','ফেব্রু','মার্চ','এপ্রিল','মে','জুন','জুলাই','আগস্ট','সেপ্টে','অক্টো','নভে','ডিসে'][now.getMonth()])+' '+toBnNum(now.getFullYear()))
+      :(now.getDate()+' '+(['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][now.getMonth()])+' '+now.getFullYear());
+    if(dateEl.textContent!==gDate)dateEl.textContent=gDate;
+  }
+  
+  var bngEl=$('hwBng');
+  if(bngEl){
+    var bnDate=getBengaliDate(now);
+    if(bngEl.textContent!==bnDate.text)bngEl.textContent=bnDate.text;
+  }
+
+  /* Bismillah banner & Shop name text */
+  var bisEl=$('bismillahText');
+  if(bisEl){
+    var bisStr=isBn?'বিসমিল্লাহির রাহমানির রাহীম':'بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ';
+    if(bisEl.textContent!==bisStr)bisEl.textContent=bisStr;
+  }
+  var snEl=$('shopNameTitle');
+  if(snEl){
+    var snStr=isBn?SHOP_BN:SHOP_EN;
+    if(snEl.textContent!==snStr)snEl.textContent=snStr;
+  }
+}
+
+function clkTick(){
+  var x=new Date();
+  updateLiveWatch(x);
+  var isBn=S.lang==='bn';
+  var h=x.getHours(),m=x.getMinutes();
+  var h12=((h+11)%12+1);
+  var ampmEn=h<12?'AM':'PM';
+  var ampmBn=h<6?'রাত':h<12?'সকাল':h<15?'দুপুর':h<18?'বিকাল':'রাত';
+  var T=isBn?(toBnNum(h12)+':'+toBnNum(String(m).padStart(2,'0'))+' '+ampmBn):t12(String(h).padStart(2,'0')+':'+String(m).padStart(2,'0'));
+  var D='';
+  try{D=x.toLocaleDateString(isBn?'bn-BD':'en-GB',{weekday:'short',day:'2-digit',month:'short'})}catch(e){D=sd(iso(x))}
+  [['hClkT',T],['hClkD',D],['tclkT',T],['tclkD',D]].forEach(function(p){var el=$(p[0]);if(el&&el.textContent!==p[1])el.textContent=p[1]});
+}
 function clkVis(){var el=$('tclk');if(!el)return;var on=!!U&&CUR!=='home'&&(isA()||CUR===TABS[role()][0]);el.hidden=!on;if(on)clkTick()}
-setInterval(clkTick,15000);
+setInterval(function(){
+  if(typeof document!=='undefined'&&document.hidden)return;
+  clkTick();
+},1000);
+setTimeout(fetchDhakaWeather,600);
+setInterval(fetchDhakaWeather,1800000);
 function avBar(vd){var el=$('avBar');if(!el)return;if(!lEd()){el.innerHTML='';return}
   if(!vd.length&&!AV){el.innerHTML='';return}
   el.innerHTML='<div class="avbar"><span class="mut">'+(AV?lb('Showing voided entries only','শুধু বাতিল এন্ট্রি দেখানো হচ্ছে'):'')+'</span><button type="button" class="ghost'+(AV?' on':'')+'" data-av="1">'+(AV?'‹ '+lb('Back to entries','এন্ট্রিতে ফিরুন'):lb('Void data','বাতিল তথ্য')+' ('+vd.length+')')+'</button></div>'}

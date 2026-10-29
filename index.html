@@ -40,6 +40,13 @@
   --ch5:#E11D48;
   --table-alt:#F8FAFC;
   --table-hover:#F1F5F9;
+  --day-sun:#EF4444;
+  --day-mon:#F59E0B;
+  --day-tue:#10B981;
+  --day-wed:#0EA5E9;
+  --day-thu:#8B5CF6;
+  --day-fri:#16A34A;
+  --day-sat:#6366F1;
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px);
   padding-bottom:env(safe-area-inset-bottom,0px);
@@ -294,9 +301,30 @@ h1{font-size:24px;font-weight:600}
 th{color:var(--ink);font-weight:500}
 .tabs{background:var(--card);border:0;box-shadow:0 8px 28px rgba(0,0,0,.14)}
 .tabs button{font-weight:500;color:var(--mut)}.tabs button.on{background:var(--soft);color:var(--acc)}
-@media (max-width:899px){.tabs{left:10px;right:10px;bottom:calc(8px + env(safe-area-inset-bottom,0px));padding:6px;border-radius:20px}.tabs button .t-lbl{display:block;font-size:11px}.wrap{padding-bottom:104px}.lst{grid-template-columns:1fr 1fr}.lst .stat.main{grid-column:1/-1}.top{padding:12px 16px}}
+@media (max-width:899px){.bismillah-bar,.hdr-center{display:none!important}.tabs{left:10px;right:10px;bottom:calc(8px + env(safe-area-inset-bottom,0px));padding:6px;border-radius:20px}.tabs button .t-lbl{display:block;font-size:11px}.wrap{padding-bottom:104px}.lst{grid-template-columns:1fr 1fr}.lst .stat.main{grid-column:1/-1}.top{padding:12px 16px}}
 @media (min-width:900px){
  body:has(.tabs:not([hidden])){padding-left:84px}
+ .bismillah-bar{display:flex;align-items:center;justify-content:center;height:26px;background:var(--card);border-bottom:1px solid var(--line);font-size:13px;font-weight:600;color:var(--mut);letter-spacing:.04em;user-select:none;transition:background .2s,border-color .2s}
+ html[lang="bn"] .bismillah-bar{font-size:13.5px;font-family:SolaimanLipi,Inter,sans-serif;font-weight:700;color:var(--ink)}
+ .top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 28px}
+ .top-brand{display:flex;align-items:center;gap:14px;min-width:240px}
+ .top-brand img{height:42px;width:auto;border-radius:10px}
+ .shop-name-title{display:block;font-size:22px;font-weight:700;letter-spacing:-.02em;color:var(--ink);line-height:1.2}
+ html[lang="bn"] .shop-name-title{font-size:23px;font-family:SolaimanLipi,Inter,sans-serif}
+ .top .tt small{display:inline-block;font-size:12px;font-weight:500;color:var(--mut);margin-top:2px}
+ 
+ /* Header Center: Weather + Large Minimal Watch */
+ .hdr-center{display:flex;align-items:center;gap:16px;margin:0 auto}
+ .hdr-weather{display:flex;align-items:center;gap:6px;padding:6px 12px;background:var(--bg);border:1px solid var(--line);border-radius:12px;font-size:13.5px;font-weight:600;color:var(--ink);cursor:default;user-select:none;transition:border-color .15s ease}
+ .hdr-weather:hover{border-color:var(--acc)}
+ .hw-icon{font-size:17px;line-height:1}
+ .hdr-watch{display:flex;flex-direction:column;align-items:center;text-align:center;user-select:none}
+ .hw-time{font-size:24px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em;color:var(--ink);line-height:1.1;font-family:Inter,SolaimanLipi,system-ui,monospace}
+ .hw-meta{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--mut);margin-top:3px}
+ .hw-day{display:inline-block;padding:1px 8px;border-radius:6px;font-weight:700;font-size:11px;border:1px solid;transition:background .2s,color .2s}
+ .hw-date{font-weight:600;color:var(--ink)}
+ .hw-bng{color:var(--mut);font-family:SolaimanLipi,Inter,sans-serif;font-size:11.5px}
+ .day-chip{display:inline-block;padding:2px 8px;border-radius:6px;font-size:13.5px;font-weight:600;vertical-align:middle}
  .tabs{
    top: 50%;
    bottom: auto;
@@ -784,6 +812,116 @@ button:active{transform:scale(.97)}
 .svc-chip:active{transform:scale(.96)}
 .svc-chip small{background:var(--soft);color:var(--acc);border-radius:10px;padding:1px 6px;font-size:11.5px;font-weight:700}
 
+/* ===== v11.0: Task Schedule Module Styles ===== */
+.task-hdr{margin-bottom:14px}
+.task-stats-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px}
+@media(max-width:899px){.task-stats-strip{grid-template-columns:1fr 1fr}}
+.task-filter-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:10px 14px;margin-bottom:14px}
+.tf-search{display:flex;align-items:center;gap:8px;flex:1;min-width:200px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:0 10px}
+.tf-search input{border:0;background:transparent;height:36px;padding:0;outline:none}
+.tf-controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.tf-controls select{height:36px;width:auto;min-width:110px;font-size:13px;padding:0 8px;background:var(--bg)}
+
+/* Kanban Board */
+.task-kanban-board{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;align-items:start}
+@media(max-width:899px){.task-kanban-board{display:flex;overflow-x:auto;padding-bottom:10px;scroll-snap-type:x mandatory}}
+.task-column{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 10px 14px;min-height:360px;display:flex;flex-direction:column;box-shadow:var(--sh)}
+@media(max-width:899px){.task-column{min-width:280px;flex:none;scroll-snap-align:start}}
+.task-col-head{display:flex;justify-content:space-between;align-items:center;padding:4px 6px 10px;border-bottom:1px solid var(--line)}
+.tch-title{display:flex;align-items:center;gap:6px;font-size:13.5px}
+.tch-count{background:var(--soft);color:var(--acc);font-weight:700;font-size:11px;padding:2px 8px;border-radius:10px}
+.task-col-body{display:flex;flex-direction:column;gap:10px;padding-top:10px;flex:1}
+.task-card-empty{padding:24px 10px;text-align:center;color:var(--mut);font-size:12.5px}
+
+/* Task Card */
+.task-card{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px;box-shadow:var(--sh);transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease;display:flex;flex-direction:column;position:relative}
+.task-card:hover{transform:translateY(-2px);border-color:var(--acc);box-shadow:0 6px 16px rgba(0,0,0,.08)}
+.task-card-overdue{border-left:3px solid var(--neg)!important}
+.tc-top{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-bottom:6px}
+.tc-priority-chip{font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:6px;text-transform:uppercase;letter-spacing:.02em}
+.t-badge{font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:6px;white-space:nowrap}
+.t-badge-done{background:rgba(21,128,61,0.12);color:var(--pos)}
+.t-badge-overdue{background:rgba(239,68,68,0.16);color:var(--neg)}
+.t-badge-today{background:rgba(245,158,11,0.16);color:var(--warn)}
+.t-badge-left{background:var(--soft);color:var(--acc)}
+.tc-title{font-size:14px;font-weight:700;color:var(--ink);line-height:1.3;margin-bottom:4px}
+.tc-desc{font-size:12px;color:var(--mut);line-height:1.4;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+/* Progress Bar */
+.tc-progress-wrap{margin:6px 0 8px}
+.tc-progress-info{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--mut);margin-bottom:3px}
+.tc-progress-info b{color:var(--ink);font-weight:700}
+.task-progress-bar{height:6px;border-radius:4px;background:var(--line);overflow:hidden}
+.task-progress-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--g1),var(--g2));transition:width .3s ease}
+
+/* Meta & Actions */
+.tc-meta-row{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--mut);padding:6px 0 8px;border-bottom:1px solid var(--line);margin-bottom:8px}
+.tc-dates{display:flex;gap:8px}
+.tc-assignee{font-weight:600;color:var(--ink)}
+.tc-actions-bar{display:flex;justify-content:space-between;align-items:center}
+.tc-btn-open{background:none;border:0;color:var(--acc);font-size:12px;font-weight:600;padding:4px 6px;cursor:pointer;border-radius:6px}
+.tc-btn-open:hover{background:var(--soft)}
+.tc-advance-btns{display:flex;gap:4px}
+.tc-btn-nav{height:26px;width:26px;border-radius:6px;border:1px solid var(--line);background:var(--card);color:var(--ink);display:grid;place-items:center;cursor:pointer;font-weight:700;font-size:14px;padding:0;transition:all .12s ease}
+.tc-btn-nav:hover{border-color:var(--mut)}
+.tc-btn-nav.primary{background:var(--acc);color:#fff;border-color:transparent}
+.tc-btn-nav.primary:hover{opacity:.9}
+
+/* List View Table */
+.task-list-card{padding:0}
+.task-table th{font-size:11px}
+.task-table td{vertical-align:middle;padding:10px 12px}
+.t-stage-chip{font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.task-table-title{cursor:pointer;font-size:13.5px}
+.task-table-title:hover{color:var(--acc)}
+.task-tags-row{display:flex;gap:4px;margin-top:3px;flex-wrap:wrap}
+.task-tag-chip{font-size:10px;font-weight:600;color:var(--mut);background:var(--soft);border-radius:4px;padding:1px 5px}
+.task-row-done{opacity:.65}
+.task-row-overdue{background:rgba(239,68,68,0.04)}
+
+/* ===== v11.0: Icon-based Filters, Custom Date Range & Salat Times ===== */
+.icon-ptabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.icon-ptabs::-webkit-scrollbar{display:none}
+.icon-ptabs button{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;font-size:13px;font-weight:600;white-space:nowrap;transition:all .15s ease}
+.ptab-ic{font-size:14px;line-height:1}
+
+.h-custom-bar{margin-bottom:12px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;box-shadow:var(--sh);animation:slideIn .2s ease}
+.hcr-wrap{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.hcr-inputs{display:flex;gap:12px;flex-wrap:wrap;flex:1}
+.hcr-item{display:flex;flex-direction:column;gap:4px;flex:1;min-width:140px}
+.hcr-item label{font-size:12px;font-weight:600;color:var(--mut)}
+.hcr-item input{height:36px;font-size:13px;background:var(--bg)}
+
+.salat-card{padding:16px 18px;margin-bottom:14px;border-left:4px solid var(--pos)}
+.salat-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+.salat-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+@media(max-width:899px){.salat-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:480px){.salat-grid{grid-template-columns:repeat(2,1fr)}}
+.salat-box{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px 8px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:4px;position:relative;transition:all .2s ease}
+.salat-box:hover{transform:translateY(-2px);border-color:var(--mut)}
+.salat-box-active{border-color:var(--pos)!important;background:var(--soft)!important;box-shadow:0 0 0 1px var(--pos),0 4px 12px rgba(21,128,61,0.14)}
+.salat-box-sun{opacity:.75}
+.sb-icon{font-size:18px;line-height:1}
+.sb-name{font-size:12px;font-weight:600;color:var(--mut)}
+.salat-box-active .sb-name{color:var(--pos);font-weight:700}
+.sb-time{font-size:14px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+.sb-badge{position:absolute;top:-8px;background:var(--pos);color:#fff;font-size:9.5px;font-weight:700;padding:1px 6px;border-radius:8px;letter-spacing:.03em;text-transform:uppercase}
+
+/* Salat Alarm Notification Toast */
+.salat-alarm-wrap{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:999;display:flex;flex-direction:column;gap:8px;pointer-events:none;width:90%;max-width:460px}
+.salat-alert-toast{pointer-events:auto;background:var(--card);color:var(--ink);border:2px solid var(--pos);border-radius:16px;box-shadow:0 12px 32px rgba(0,0,0,0.24);padding:14px 16px;display:flex;align-items:center;gap:12px;animation:salatIn .3s cubic-bezier(.16,1,.3,1)}
+.salat-alert-toast.fade-out{animation:salatOut .35s ease forwards}
+.sat-icon{font-size:28px;line-height:1;flex:none}
+.sat-content{flex:1;display:flex;flex-direction:column;gap:2px}
+.sat-content b{font-size:14.5px;color:var(--pos)}
+.sat-content small{font-size:12px;color:var(--mut)}
+.sat-x{background:none;border:0;color:var(--mut);font-size:16px;padding:4px;cursor:pointer;border-radius:6px;line-height:1}
+.sat-x:hover{color:var(--ink)}
+@keyframes salatIn{from{opacity:0;transform:translateY(-20px) scale(.95)}to{opacity:1;transform:none}}
+@keyframes salatOut{to{opacity:0;transform:translateY(-16px) scale(.95)}}
+
+
+
 
 </style>
 <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0F766E"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes">
@@ -791,15 +929,16 @@ button:active{transform:scale(.97)}
 </head>
 <body>
 
+<div class="bismillah-bar" id="bismillahBar"><span class="bismillah-txt" id="bismillahText">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ</span></div>
 <aside class="tabs" id="tabs" hidden></aside>
-<div class="top" id="top"><img class="lg-b" src="logo-icon-black.png" alt=""><img class="lg-w" src="logo-icon-white.png" alt=""><div class="tt">Nur Computer &amp; Stationery<small id="tsub"></small></div><div class="sp" id="topR"><div class="tclk" id="tclk" hidden aria-label="Current time"><b id="tclkT"></b><small id="tclkD"></small></div><button type="button" class="ic" id="themeBtn" aria-label="Theme" title="Theme" data-mode="auto"><svg class="th-auto" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor"/></svg><svg class="th-light" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg><svg class="th-dark" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button><button type="button" class="ic" id="refresh" aria-label="Refresh current view" title="Refresh current view"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 0 1 13.66-5.66L20 8"/><path d="M20 3v5h-5"/><path d="M20 12a8 8 0 0 1-13.66 5.66L4 16"/><path d="M4 21v-5h5"/></svg></button></div></div>
+<div class="top" id="top"><div class="top-brand"><img class="lg-b" src="logo-icon-black.png" alt=""><img class="lg-w" src="logo-icon-white.png" alt=""><div class="tt"><span class="shop-name-title" id="shopNameTitle">Nur Computer &amp; Stationery</span><small id="tsub"></small></div></div><div class="hdr-center" id="hdrCenter"><div class="hdr-weather" id="hdrWeather" title="Dhaka Weather"><span class="hw-icon" id="hwIcon">🌤️</span><span class="hw-temp" id="hwTemp">--°C</span></div><div class="hdr-watch" id="hdrWatch" aria-label="Live Clock"><div class="hw-time" id="hwTime">--:--:--</div><div class="hw-meta"><span class="hw-day" id="hwDay"></span><span class="hw-date" id="hwDate"></span><span class="hw-bng" id="hwBng"></span></div></div></div><div class="sp" id="topR"><div class="tclk" id="tclk" hidden aria-label="Current time"><b id="tclkT"></b><small id="tclkD"></small></div><button type="button" class="ic" id="themeBtn" aria-label="Theme" title="Theme" data-mode="auto"><svg class="th-auto" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor"/></svg><svg class="th-light" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg><svg class="th-dark" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button><button type="button" class="ic" id="refresh" aria-label="Refresh current view" title="Refresh current view"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 0 1 13.66-5.66L20 8"/><path d="M20 3v5h-5"/><path d="M20 12a8 8 0 0 1-13.66 5.66L4 16"/><path d="M4 21v-5h5"/></svg></button></div></div>
 <div class="wrap view" id="vAcc">
   <div class="pt"><h2>Nur Computer &amp; Stationery</h2><div>DAILY ACCOUNTS</div></div>
   <header>
     <div><div class="shop">Nur Computer &amp; Stationery · Daily Accounts</div><h1 id="title"></h1></div>
     <div class="nav">
       <button class="ic" id="pd" aria-label="Previous day">‹</button>
-      <input type="date" id="pick" aria-label="Choose date">
+      <input type="date" id="pick" min="2020-11-01" aria-label="Choose date">
       <button class="ic" id="nd" aria-label="Next day">›</button>
       <button class="ghost" id="today">Today</button>
       <button class="ghost" id="set">Settings</button><button class="ghost" id="lockb">Lock</button><button class="ghost" id="lang">বাংলা</button><button class="ghost" id="sync">Sync: Off</button>
@@ -826,7 +965,7 @@ button:active{transform:scale(.97)}
     <div class="act"><div class="prev" id="prev"></div><div><button type="button" class="ghost" id="cancel" style="display:none">Cancel edit</button> <button class="go" id="go" type="submit">Add entry</button></div></div>
   </div></form></section>
 
-  <section class="card fb" id="fb"><input id="sq" placeholder="Search description or category" autocomplete="off"><select id="sty"><option value="">All types</option><option value="Sale">Sale</option><option value="Purchase">Purchase / Expense</option><option value="Deposit">Owner Deposit</option><option value="Withdrawal">Owner Withdrawal</option><option value="Adjustment">Cash Adjustment (±)</option><option value="Ledger">Ledger cash / wallet</option><option value="Check">Needs check</option></select><select id="spy"><option value="">All payments</option><option>Cash</option><option>Mobile Banking</option><option>Bank</option><option>Due</option></select><input id="sfa" type="date" title="From"><input id="sfb" type="date" title="To"><button class="ghost" id="sclr">Clear</button></section>
+  <section class="card fb" id="fb"><input id="sq" placeholder="Search description or category" autocomplete="off"><select id="sty"><option value="">All types</option><option value="Sale">Sale</option><option value="Purchase">Purchase / Expense</option><option value="Deposit">Owner Deposit</option><option value="Withdrawal">Owner Withdrawal</option><option value="Adjustment">Cash Adjustment (±)</option><option value="Ledger">Ledger cash / wallet</option><option value="Check">Needs check</option></select><select id="spy"><option value="">All payments</option><option>Cash</option><option>Mobile Banking</option><option>Bank</option><option>Due</option></select><input id="sfa" type="date" min="2020-11-01" title="From"><input id="sfb" type="date" min="2020-11-01" title="To"><button class="ghost" id="sclr">Clear</button></section>
   <div id="avBar"></div>
   <section class="card scroll"><div id="tbl"></div></section>
   <div class="pf" id="pf"></div>
@@ -835,14 +974,18 @@ button:active{transform:scale(.97)}
 </div>
 
 <div class="wrap view" id="vHome"><header><div><div class="shop">Overview</div><h1 id="hTitle">Home</h1></div></header>
-  <div class="ptabs" id="hTabs"></div><section class="dhero" id="hHero"></section>
+  <div class="ptabs icon-ptabs" id="hTabs"></div>
+  <div id="hCustomBar" class="h-custom-bar" hidden></div>
+  <section class="dhero" id="hHero"></section>
   <section class="hs" id="hStats"></section>
   <section class="htoday" id="hToday"></section>
   <section class="card howe" id="hOwe"></section>
   <div id="wltWrapH" class="wlt-wrap"></div>
   <div class="qa" id="hQa"><button type="button" data-q="sale"><span class="qai" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></span><span class="qal">New sale</span></button><button type="button" data-q="purchase"><span class="qai" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></span><span class="qal">New purchase</span></button><button type="button" data-q="acc"><span class="qai" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18M9 21V9"/></svg></span><span class="qal">Accounts</span></button><button type="button" data-q="bills"><span class="qai" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span><span class="qal">Today's bills</span></button></div>
   <div class="dgrid"><section class="card dchc"><h3 class="dchh">Sell &amp; Buy · Last 7 days</h3><div class="dchart" id="hChart"></div></section><section class="card dchc"><h3 class="dchh">Sales by payment</h3><div class="dpc" id="hPay"></div><div id="hCatBar" class="dcat-wrap"></div></section></div>
-  <h3 style="margin:6px 2px 8px;font-size:15px">Recent bills</h3><section class="card" id="hRecent"></section></div>
+  <section class="card salat-card" id="hSalat"></section>
+</div>
+<div id="salatAlarmWrap" class="salat-alarm-wrap" hidden></div>
 <div class="wrap view" id="vPos">
   <header class="counter-header">
     <div class="counter-title-group">
@@ -912,6 +1055,7 @@ button:active{transform:scale(.97)}
   </div>
 </div>
 <div class="wrap view" id="vLed"></div>
+<div class="wrap view" id="vTask"></div>
 <div id="rcp"></div>
 <div class="ov" id="sc" hidden><div class="dlg"><h3>Scan barcode</h3><video id="vid" playsinline muted></video><div class="oa"><button class="ghost" id="scx">Close</button></div></div></div>
 <div class="ov" id="ov" hidden><div class="dlg"><h3 id="ot"></h3><div id="ob"></div><div class="oa"><button class="ghost" id="oc">Cancel</button><button class="go" id="ok">Confirm</button></div></div></div>
@@ -940,7 +1084,7 @@ if(!Array.isArray(S.walletDates))S.walletDates=[];
 if(!Array.isArray(S.counts))S.counts=[];
 const ENC=(window.NCS_CONFIG||{}).enc;
 if(!S.sync&&window.NCS_CONFIG&&/^https:\/\//.test(NCS_CONFIG.url||'')&&NCS_CONFIG.key)S.sync={url:NCS_CONFIG.url,key:NCS_CONFIG.key};
-const LH=new Map(),sig=x=>JSON.stringify(x,(k,v)=>k==='u'?undefined:v),COLS=['entries','products','bills','moves','cust','ltx','atts'];
+const LH=new Map(),sig=x=>JSON.stringify(x,(k,v)=>k==='u'?undefined:v),COLS=['entries','products','bills','moves','cust','ltx','atts','tasks'];
 function ensureCols(){COLS.forEach(c=>{S[c]=S[c]||[]});S.days=S.days||{};S.log=S.log||[]}
 function primeLH(){LH.clear();COLS.forEach(c=>S[c].forEach(x=>LH.set(c+x.id,sig(x))));if(S.users)LH.set('users',sig(S.users))}
 function stampChanged(){
@@ -1114,13 +1258,93 @@ const save=()=>{
     return ok;
 };
 
+const NCS_MIN_DATE='2020-11-01';
 const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-let cur=iso(new Date()),editing=null;
+const todayIso=()=>iso(new Date());
+let cur=todayIso(),editing=null;
 const n=v=>Number(v).toLocaleString('en-US'),tk=v=>'৳'+n(v);
 const money=v=>v?n(v):'–',dif=v=>v===0?'0':(v>0?'+':'−')+n(Math.abs(v)),dc=v=>v>0?'pos':v<0?'neg':'zero';
 const t12=t=>{const h=+t.slice(0,2);return ((h+11)%12+1)+':'+t.slice(3,5)+' '+(h<12?'AM':'PM')};
 const r2=x=>Math.round((+x||0)*100)/100;
-const label=d=>{const x=new Date(d+'T00:00:00');return x.getDate()+'.'+String(x.getMonth()+1).padStart(2,'0')+'.'+x.getFullYear()+' – '+x.toLocaleDateString(S.lang==='bn'?'bn-BD':'en-US',{weekday:'long'})};
+
+/* 7 days, 7 distinct colors */
+const DAY_COLORS=['#EF4444','#F59E0B','#10B981','#0EA5E9','#8B5CF6','#16A34A','#6366F1'];
+const DAY_NAMES_EN=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const DAY_NAMES_BN=['রবিবার','সোমবার','মঙ্গলবার','বুধবার','বৃহস্পতিবার','শুক্রবার','শনিবার'];
+
+function toBnNum(num){
+  var bn=['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
+  return String(num!=null?num:'').replace(/[0-9]/g,function(d){return bn[+d]||d});
+}
+
+function getBengaliDate(d){
+  var date=d?(typeof d==='string'?new Date(d+'T00:00:00'):d):new Date();
+  var year=date.getFullYear(),month=date.getMonth(),day=date.getDate();
+  var isLeap=(year%4===0&&year%100!==0)||(year%400===0);
+  var bnMonths=['বৈশাখ','জ্যৈষ্ঠ','আষাঢ়','শ্রাবণ','ভাদ্র','আশ্বিন','কার্তিক','অগ্রহায়ণ','পৌষ','মাঘ','ফাল্গুন','চৈত্র'];
+  var bnYear=(month>3||(month===3&&day>=14))?year-593:year-594;
+  var bDay=1,bMonthName='';
+  if(month===0&&day<15){bDay=day+16;bMonthName=bnMonths[8]}
+  else if(month===0||(month===1&&day<14)){bDay=month===0?day-14:day+17;bMonthName=bnMonths[9]}
+  else if(month===1||(month===2&&day<15)){bDay=month===1?day-13:day+(isLeap?16:15);bMonthName=bnMonths[10]}
+  else if(month===2||(month===3&&day<14)){bDay=month===2?day-14:day+17;bMonthName=bnMonths[11]}
+  else if(month===3||(month===4&&day<15)){bDay=month===3?day-13:day+17;bMonthName=bnMonths[0]}
+  else if(month===4||(month===5&&day<15)){bDay=month===4?day-14:day+17;bMonthName=bnMonths[1]}
+  else if(month===5||(month===6&&day<16)){bDay=month===5?day-14:day+16;bMonthName=bnMonths[2]}
+  else if(month===6||(month===7&&day<16)){bDay=month===6?day-15:day+16;bMonthName=bnMonths[3]}
+  else if(month===7||(month===8&&day<16)){bDay=month===7?day-15:day+16;bMonthName=bnMonths[4]}
+  else if(month===8||(month===9&&day<17)){bDay=month===8?day-15:day+15;bMonthName=bnMonths[5]}
+  else if(month===9||(month===10&&day<16)){bDay=month===9?day-16:day+15;bMonthName=bnMonths[6]}
+  else if(month===10||(month===11&&day<16)){bDay=month===10?day-15:day+15;bMonthName=bnMonths[7]}
+  else{bDay=day-15;bMonthName=bnMonths[8]}
+  return{day:bDay,month:bMonthName,year:bnYear,text:toBnNum(bDay)+' '+bMonthName+' '+toBnNum(bnYear)+' বঙ্গাব্দ'};
+}
+
+function dayColor(d){
+  var x=typeof d==='number'?d:(new Date((typeof d==='string'?d:iso(d))+'T00:00:00')).getDay();
+  return DAY_COLORS[x]||DAY_COLORS[0];
+}
+
+const label=d=>{
+  const x=new Date(d+'T00:00:00');
+  const dow=x.getDay();
+  const c=dayColor(dow);
+  const wName=S.lang==='bn'?DAY_NAMES_BN[dow]:DAY_NAMES_EN[dow];
+  const dateStr=S.lang==='bn'?(toBnNum(x.getDate())+'.'+toBnNum(String(x.getMonth()+1).padStart(2,'0'))+'.'+toBnNum(x.getFullYear())):(x.getDate()+'.'+String(x.getMonth()+1).padStart(2,'0')+'.'+x.getFullYear());
+  return dateStr+' · <span class="day-chip" style="color:'+c+';background:'+c+'18;border:1px solid '+c+'44">'+wName+'</span>';
+};
+
+/* Strict calendar rules: Min Nov 2020 & ban future dates */
+function enforceDateInput(el){
+  if(!el||el.type!=='date')return;
+  if(!el.dataset.allowPastMin&&(!el.min||el.min<NCS_MIN_DATE)){
+    el.min=NCS_MIN_DATE;
+  }
+  if(!el.dataset.allowFuture&&(!el.max||el.max>todayIso())){
+    el.max=todayIso();
+  }
+}
+
+function applyDateInputRules(root){
+  var scope=root||document;
+  if(!scope.querySelectorAll)return;
+  scope.querySelectorAll('input[type="date"]').forEach(enforceDateInput);
+}
+
+if(typeof MutationObserver!=='undefined'&&typeof document!=='undefined'){
+  new MutationObserver(function(mutations){
+    mutations.forEach(function(m){
+      if(m.type==='childList'){
+        m.addedNodes.forEach(function(node){
+          if(node.nodeType===1){
+            if(node.tagName==='INPUT'&&node.type==='date')enforceDateInput(node);
+            else if(node.querySelectorAll)node.querySelectorAll('input[type="date"]').forEach(enforceDateInput);
+          }
+        });
+      }
+    });
+  }).observe(document.documentElement,{childList:true,subtree:true});
+}
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const csvCell=s=>{const v=String(s??''),safe=/^[\s\u0000-\u001f]*[=+\-@]/.test(v)?"'"+v:v;return'"'+safe.replace(/"/g,'""')+'"'}
 const sorted=()=>[...S.entries].filter(e=>!e.removed).sort((a,b)=>{const x=a.d+a.t,y=b.d+b.t;return x<y?-1:x>y?1:a.id-b.id});
@@ -1203,7 +1427,13 @@ function renderAccPresets(){
   el.innerHTML=list.map(p=>`<button type="button" class="svc-chip" data-acc-preset="${p.id}"><span>${p.icon||'⚡'}</span> <b>${S.lang==='bn'?(p.bn||p.name):p.name}</b> <small>${tk(p.price)}</small></button>`).join('');
 }
 function render(){try{renderWalletCards()}catch(e){}try{applyCardSettings()}catch(e){}try{renderAccPresets()}catch(e){}
-  $('title').textContent=label(cur);$('pick').value=cur;
+  if(cur>todayIso())cur=todayIso();
+  if(cur<NCS_MIN_DATE)cur=NCS_MIN_DATE;
+  $('title').innerHTML=label(cur);
+  var pEl=$('pick');if(pEl){pEl.value=cur;pEl.min=NCS_MIN_DATE;pEl.max=todayIso();}
+  var pdBtn=$('pd'),ndBtn=$('nd');
+  if(pdBtn){var atMin=cur<=NCS_MIN_DATE;pdBtn.disabled=atMin;pdBtn.style.opacity=atMin?'0.35':'';pdBtn.style.pointerEvents=atMin?'none':'';}
+  if(ndBtn){var atMax=cur>=todayIso();ndBtn.disabled=atMax;ndBtn.style.opacity=atMax?'0.35':'';ndBtn.style.pointerEvents=atMax?'none':'';}
   const m=calc(),all=sorted(),day=all.filter(e=>e.d===cur),act=day.filter(e=>!e.void),f=flt(),tv0=f?all.filter(e=>match(e,f)):day,tv=tv0.filter(e=>!e.void),vd=lEd()?tv0.filter(e=>e.void):[];
   if(ACC_D!==cur+'|'+(f?JSON.stringify(f):'')){ACC_D=cur+'|'+(f?JSON.stringify(f):'');ACC_N=150}
   const sum=(ty)=>act.filter(e=>e.type===ty&&!isWalletTransfer(e)),tot=a=>a.reduce((s,e)=>s+e.amt,0);
@@ -1251,6 +1481,8 @@ function preview(){
 function reset(){editing=null;$('form').reset();$('fy').value='Sale';cats();const x=new Date();$('ft').value=String(x.getHours()).padStart(2,'0')+':'+String(x.getMinutes()).padStart(2,'0');$('go').textContent='Add entry';$('cancel').style.display='none';$('sg').hidden=true}
 
 $('form').addEventListener('submit',ev=>{ev.preventDefault();
+  if(cur>todayIso()){Sound.buzz();ltoast(lb('Cannot add entry to a future date','ভবিষ্যতের তারিখে এন্ট্রি দেওয়া যাবে না'));return}
+  if(cur<NCS_MIN_DATE){Sound.buzz();ltoast(lb('Cannot add entry before November 2020','নভেম্বর ২০২০ এর পূর্বে এন্ট্রি দেওয়া যাবে না'));return}
   const o={d:cur,t:$('ft').value,type:$('fy').value,desc:$('fd').value.trim(),cat:$('fc').value,pay:$('fp').value,amt:+$('fa').value,act:editing?(S.entries.find(x=>x.id===editing)||{}).act||null:null,party:$('fpn').value.trim(),phone:$('fph').value.trim()};
   if(!o.t||!o.desc||isNaN(o.amt)){Sound.buzz();return}
   if(WLTC[o.type]&&WLTC[o.type][o.cat]){o.pay='Cash';o.w=''}else o.w=(o.type==='Sale'&&o.pay==='Mobile Banking')?$('fw').value:'';
@@ -1289,9 +1521,32 @@ $('tbl').addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b
   if(b.dataset.a==='v')ask('Void entry',`<div class="f"><label>Reason (required)</label><input id="vr" maxlength="100"></div>`,()=>{const r=$('vr').value.trim();if(!r)return false;if(wltVoidBlocked(e))return false;snap();e.void=1;e.vr=r;e.vb=U.name;lg('Void entry',`${e.type} ${e.amt} "${e.desc}" — ${r}`);save();render()},'Void');
   if(b.dataset.a==='a'){const df=calc()[e.id].df;ask('Adjust cash',`<div class="f"><label>Account will change by <b>${dif(df)}</b> to match counted cash</label><select id="ar"><option>${df>0?'Extra cash':'Cash short'}</option><option>Other</option></select></div>`,()=>{snap();S.entries.push({id:Date.now(),d:e.d,t:e.t,type:'Adjustment',desc:'Cash adjustment · '+$('ar').value,cat:'',pay:'Cash',amt:df});e.adj=1;lg('Cash adjust',`${dif(df)} on "${e.desc}"`);save();render()},'Adjust')}});
 
-$('pick').onchange=e=>{if(e.target.value){cur=e.target.value;reset();render()}};
- const shift=k=>{const x=new Date(cur+'T00:00:00');x.setDate(x.getDate()+k);cur=iso(x);reset();render()};
-$('pd').onclick=()=>shift(-1);$('nd').onclick=()=>shift(1);$('today').onclick=()=>{cur=iso(new Date());reset();render()};
+$('pick').onchange=e=>{
+  if(e.target.value){
+    var v=e.target.value;
+    if(v>todayIso()){
+      ltoast(lb('Future dates are not allowed','ভবিষ্যতের তারিখ নির্বাচন করা যাবে না'));
+      cur=todayIso();
+    }else if(v<NCS_MIN_DATE){
+      ltoast(lb('Date cannot be before November 2020','নভেম্বর ২০২০ এর আগের তারিখ গ্রহণযোগ্য নয়'));
+      cur=NCS_MIN_DATE;
+    }else{
+      cur=v;
+    }
+    reset();render();
+  }
+};
+ const shift=k=>{
+   if(k>0&&cur>=todayIso()){ltoast(lb('Cannot advance to future date','ভবিষ্যতের তারিখে যাওয়া যাবে না'));return}
+   if(k<0&&cur<=NCS_MIN_DATE){ltoast(lb('Cannot go before November 2020','নভেম্বর ২০২০ এর পূর্বে যাওয়া যাবে না'));return}
+   const x=new Date(cur+'T00:00:00');x.setDate(x.getDate()+k);
+   const tg=iso(x);
+   if(tg>todayIso())cur=todayIso();
+   else if(tg<NCS_MIN_DATE)cur=NCS_MIN_DATE;
+   else cur=tg;
+   reset();render();
+ };
+$('pd').onclick=()=>shift(-1);$('nd').onclick=()=>shift(1);$('today').onclick=()=>{cur=todayIso();reset();render()};
 
 function applyTheme(){
   var m=S.theme||'auto';
@@ -1509,11 +1764,20 @@ var SHOP_EN='Nur Computer & Stationery',SHOP_BN='নুর কম্পিউট
 const orig=new WeakMap();
 function trp(q){var t=q.trim();if(BN[t])return q.replace(t,BN[t]);var m=t.match(/^([A-Za-z][A-Za-z\/ ]*?)(\s+[0-9৳#−+(\-].*)$/);return m&&BN[m[1]]?q.replace(m[1],BN[m[1]]):q}
 BN['Admin PIN (6+ digits)']='অ্যাডমিন পিন (৬+ সংখ্যা)';BN['New PIN (6+ digits)']='নতুন পিন (৬+ সংখ্যা)';BN['PIN (6+ digits)']='পিন (৬+ সংখ্যা)';BN['Confirm PIN']='পিন নিশ্চিত করুন';BN['PINs must match and be 6+ digits']='পিন মিলতে হবে এবং কমপক্ষে ৬ সংখ্যা হতে হবে';
+Object.assign(BN,{
+  'Task Schedule':'কাজের সময়সূচী','Tasks':'কাজের তালিকা','New Task':'নতুন কাজ','Workflow & Task Management':'কাজের অগ্রগতি ও সময়সূচী',
+  'Board':'বোর্ড','List':'তালিকা','Total Tasks':'মোট কাজ','Active Tasks (excluding Done)':'চলমান কাজসমূহ',
+  'All Stages':'সব ধাপ','All Priorities':'সব অগ্রাধিকার','All Staff':'সকল কর্মী','Under Review':'পর্যালোচনায়',
+  'In Progress':'চলমান','Pending':'অমীমাংসিত','Completed':'সম্পন্ন','Cancelled':'বাতিল',
+  'Deadline':'শেষ সময়সীমা','Taking Date':'গ্রহণের তারিখ','Progress':'অগ্রগতি','Priority':'অগ্রাধিকার',
+  'Assign To':'দায়িত্বপ্রাপ্ত কর্মী','Task Title *':'কাজের শিরোনাম *','Create New Task':'নতুন কাজ তৈরি',
+  'Edit Task':'কাজ সম্পাদনা','Task Details':'কাজের বিস্তারিত','Overdue':'সময় পার'
+});
 function tx(root){const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let x;while(x=w.nextNode()){if(!orig.has(x))orig.set(x,x.nodeValue);const o=orig.get(x);
   x.nodeValue=S.lang==='bn'?o.split(' · ').map(trp).join(' · '):o}
   document.querySelectorAll('[placeholder]').forEach(e=>{if(e.id==='fd'||e.id==='sq')return;if(e.dataset.ph===undefined)e.dataset.ph=e.getAttribute('placeholder');const v=e.dataset.ph;e.setAttribute('placeholder',S.lang==='bn'&&BN[v]?BN[v]:v)})}
 new MutationObserver(()=>tx(document.body)).observe(document.body,{childList:true,subtree:true});
-function applyLang(){const b=S.lang==='bn';document.documentElement.lang=b?'bn':'en';$('lang').textContent=b?'English':'বাংলা';setRefreshLabel();$('fd').placeholder=b?'পণ্য বা খরচের নাম লিখুন':'Type product or cost name';$('sq').placeholder=b?'বিবরণ বা ক্যাটাগরি খুঁজুন':'Search description or category';tx(document.body);if(U)render();try{updateMoreTab()}catch(e){}}
+function applyLang(){const b=S.lang==='bn';document.documentElement.lang=b?'bn':'en';$('lang').textContent=b?'English':'বাংলা';setRefreshLabel();$('fd').placeholder=b?'পণ্য বা খরচের নাম লিখুন':'Type product or cost name';$('sq').placeholder=b?'বিবরণ বা ক্যাটাগরি খুঁজুন':'Search description or category';tx(document.body);if(typeof clkTick==='function')clkTick();if(U)render();try{updateMoreTab()}catch(e){}}
 $('lang').onclick=()=>{S.lang=S.lang==='bn'?'en':'bn';save();applyLang()};
 
 async function dlFile(name,data){try{if(typeof claude!=='undefined'){const dl=await claude.use('downloads');if(dl)return dl.save({filename:name,data})}const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type:'text/csv'}));a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){a.remove()},1000)}catch(e){try{window.open('data:text/plain;charset=utf-8,'+encodeURIComponent(data),'_blank')}catch(x){}}}
@@ -1666,19 +1930,20 @@ const ICO={
   mgmt:'<path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/>',
   led:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
   home:'<path d="M3 9.5L12 3l9 6.5V20a1.5 1.5 0 0 1-1.5 1.5H4.5A1.5 1.5 0 0 1 3 20V9.5z"/><path d="M9 21.5V12h6v9.5"/>',
+  task:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="m9 10 2 2 4-4"/><path d="M7 16h10"/>',
   pos:'<circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>',
   acc:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18"/><path d="M8 2v4M16 2v4"/>',
   prod:'<path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/>',
   more:'<circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/><circle cx="5" cy="12" r="1.5"/>'
 };
 const TABS={
-  admin:['home','led','pos','acc','more'],
-  keeper:['pos','more'],
-  accountant:['acc','led','pos','more'],
-  cashier:['pos','led','more']
+  admin:['home','task','led','pos','acc','more'],
+  keeper:['pos','task','more'],
+  accountant:['acc','led','task','pos','more'],
+  cashier:['pos','led','task','more']
 };
-const TL={home:'Overview',led:'Ledger',pos:'Counter',acc:'Accounts',more:'More'};
-const TL_BN={home:'ওভারভিউ',led:'খতিয়ান',pos:'কাউন্টার',acc:'হিসাব',more:'আরও'};
+const TL={home:'Overview',task:'Task Schedule',led:'Ledger',pos:'Counter',acc:'Accounts',more:'More'};
+const TL_BN={home:'ওভারভিউ',task:'কাজের তালিকা',led:'খতিয়ান',pos:'কাউন্টার',acc:'হিসাব',more:'আরও'};
 let CUR=null;
 const role=()=>!U?'':U.role==='admin'?'admin':U.role==='accountant'?'accountant':U.role==='keeper'?'keeper':'cashier',canCost=()=>isA()||role()==='keeper'||role()==='accountant';
 
@@ -1728,6 +1993,7 @@ function go(v){
   }
   if(v==='acc'){AV=false;cur=iso(new Date());reset();render();try{applyCardSettings()}catch(e){}}
   if(v==='led')ledUI();
+  if(v==='task'){if(typeof taskUI==='function')taskUI();}
   if(v==='more')updateMoreTab();
   document.body.classList.toggle('kp',role()==='keeper');
   document.body.classList.toggle('ro',role()==='accountant');
@@ -2006,7 +2272,7 @@ function openPresetSettings() {
 
   showMain();
 }
-function redrawActiveView(){if(CUR==='home'){homeUI();try{applyCardSettings()}catch(e){}}else if(CUR==='pos'){POS.refresh();if(isCounterStock())POS.prodUI();}else if(CUR==='acc'){render();try{applyCardSettings()}catch(e){}}else if(CUR==='led')ledUI();else if(CUR==='more')updateMoreTab()}
+function redrawActiveView(){if(CUR==='home'){homeUI();try{applyCardSettings()}catch(e){}}else if(CUR==='pos'){POS.refresh();if(isCounterStock())POS.prodUI();}else if(CUR==='acc'){render();try{applyCardSettings()}catch(e){}}else if(CUR==='led')ledUI();else if(CUR==='task'){if(typeof taskUI==='function')taskUI();}else if(CUR==='more')updateMoreTab()}
 function refreshCurrentView(){
   if(!U||!CUR)return;
   var svg=$('refresh').querySelector('svg');
@@ -2020,68 +2286,1130 @@ function setRefreshLabel(){var t=lb('Refresh current view','বর্তমা�
 
 
 /* --- Module: 06-home.js --- */
-/* ---------- home ---------- */
-const PER=[['today','Today'],['yest','Yesterday'],['7','7 days'],['30','1 month'],['90','3 months'],['180','6 months'],['all','Overall']];let HP='today';
-function prange(p){const t=new Date(),a=new Date();if(p==='today')return[iso(t),iso(t)];if(p==='yest'){a.setDate(a.getDate()-1);return[iso(a),iso(a)]}if(p==='all')return['0000','9999'];a.setDate(a.getDate()-(+p-1));return[iso(a),iso(t)]}
-function homeUI(){try{renderWalletCards()}catch(e){}try{applyCardSettings()}catch(e){}
-  $('hTitle').textContent=lb('Hello, ','হ্যালো, ')+(U?U.name:'');
-  $('hQa').querySelectorAll('[data-q]').forEach(function(b){var k=b.dataset.q,l=k==='sale'?lb('New sale','নতুন বিক্রয়'):k==='purchase'?lb('New purchase','নতুন ক্রয়'):k==='acc'?lb('Accounts','হিসাব'):lb("Today's bills",'আজকের বিল');b.querySelector('.qal').textContent=l});
-  $('hTabs').innerHTML=PER.map(([k,l])=>`<button data-p="${k}" class="${HP===k?'on':''}">${l}</button>`).join('');
-  const[a,b]=prange(HP),E=S.entries.filter(e=>!e.void&&!e.removed&&e.d>=a&&e.d<=b),B=S.bills.filter(x=>!x.void&&!x.removed&&!x.test&&x.d>=a&&x.d<=b);
-  const sm=(t,f)=>E.filter(e=>e.type===t&&!isWalletTransfer(e)&&(!f||f(e))).reduce((s,e)=>s+e.amt,0),m=calc(),act=sorted().filter(e=>!e.void),cb=act.length?m[act[act.length-1].id].bal:(+S.start||0);
-  const C=(l,v,c,num)=>`<div class="stat ${c||''}"><small>${l}</small><b${num!=null?' class="cnt" data-to="'+num+'"':''}>${v}</b></div>`;
-  $('hHero').innerHTML=`<div class="dclk" id="hClk" aria-label="${lb('Current time','বর্তমান সময়')}"><b id="hClkT"></b><small id="hClkD"></small></div><small>Cash Balance</small><b class="cnt" data-to="${cb}">${tk(cb)}</b><i>${sd(iso(new Date()))} · ${esc(U?U.name:'')}</i>`;clkTick();
-  var sellT=sm('Sale'),buyT=sm('Purchase');$('hStats').innerHTML=C('Total Sell',tk(sellT),'t3',sellT)+C('Total Buy',tk(buyT),'t2',buyT)+C('Bills',B.length,'t4')+C('To receive (Due)',tk(sm('Sale',e=>e.pay==='Due')),'t1')+C('To give (Due)',tk(sm('Purchase',e=>e.pay==='Due')),'sf');
-  if(canCost()){try{var smap=(POS&&typeof POS.stockMap==='function')?POS.stockMap():{},sv=S.products.filter(function(p){return!p.del}).reduce(function(s,p){return s+Math.max(0,smap[p.id]||0)*(+p.buy||0)},0);$('hStats').insertAdjacentHTML('beforeend',C('Stock value (cost)',tk(sv),'sf'))}catch(e){}}
-  var todayE=S.entries.filter(function(e){return!e.void&&!e.removed&&e.d===iso(new Date())}),inT=0,outT=0;
-  todayE.forEach(function(e){var c=cash(e);if(c>0)inT+=c;else if(c<0)outT+=-c});
-  var netT=inT-outT;
-  $('hToday').innerHTML=(todayE.length
-    ?'<span class="tpill pos"><small>'+lb('Cash in','নগদ এসেছে')+'</small><b>'+tk(inT)+'</b></span>'
-     +'<span class="tpill neg"><small>'+lb('Cash out','নগদ গেছে')+'</small><b>'+tk(outT)+'</b></span>'
-     +'<span class="tpill net"><small>'+lb('Net','নিট')+'</small><b>'+(netT>0?'+':netT<0?'−':'')+tk(Math.abs(netT))+'</b></span>'
-     +'<span class="tpill"><small>'+lb('Entries','এন্ট্রি')+'</small><b>'+todayE.length+'</b></span>'
-    :'<span class="tpill mut">'+lb('No cash movements today','আজ কোনো নগদ লেনদেন নেই')+'</span>');
-  (function(){
-    var canOpen=isA()||role()==='accountant'||role()==='cashier';
-    var custAll=S.cust.filter(function(c){return!c.del});
-    if(!custAll.length||!canOpen){$('hOwe').hidden=true;$('hOwe').innerHTML='';return}
-    var recv=0,pay=0,recvN=0,payN=0;
-    custAll.forEach(function(c){var s=lStat(c);if(s.b<0){recv+=-s.b;recvN++}else if(s.b>0){pay+=s.b;payN++}});
-    var net=recv-pay,netLabel=recv>=pay?lb('Net receivable','নিট পাওনা'):lb('Net payable','নিট দেনা');
-    $('hOwe').hidden=false;
-    $('hOwe').innerHTML='<div class="howe-head"><h3 class="dchh" style="padding:0;margin:0;font-size:15px">'+lb('Who owes whom','কার কাছে পাওনা / দেনা')+'</h3><button class="ghost" data-q="owe-led">'+lb('Open Ledger','খাতা খুলুন')+' →</button></div>'
-      +'<div class="howe-body">'
-      +'<div class="howe-box recv"><small>'+lb('They owe us','আমরা পাব')+'</small><b>'+tk(recv)+'</b><i>'+recvN+' '+lb('parties','পক্ষ')+'</i></div>'
-      +'<div class="howe-box pay"><small>'+lb('We owe','আমরা দেব')+'</small><b>'+tk(pay)+'</b><i>'+payN+' '+lb('parties','পক্ষ')+'</i></div>'
-      +'</div>'
-      +'<div class="howe-foot"><span>'+netLabel+': <b>'+tk(Math.abs(net))+'</b></span><span>'+(recvN+payN)+' '+lb('parties','পক্ষ')+'</span></div>';
-  })();
-  const ds=[...Array(7)].map((_,i)=>{const x=new Date();x.setDate(x.getDate()-6+i);return iso(x)});
-  const dv=d=>S.entries.reduce((o,e)=>{if(!e.void&&!e.removed&&!isWalletTransfer(e)&&e.d===d){if(e.type==='Sale')o.s+=e.amt;else if(e.type==='Purchase')o.b+=e.amt}return o},{s:0,b:0});
-  const rows=ds.map(d=>({d:d,...dv(d)})),mx=Math.max(1,...rows.map(r=>Math.max(r.s,r.b)));
-  $('hChart').innerHTML=rows.map(r=>`<div class="dcol" title="${r.d} · Sell ${n(r.s)} · Buy ${n(r.b)}"><div class="dbars"><div class="dbs" style="height:${Math.ceil(r.s/mx*100)}%"></div><div class="dbb" style="height:${Math.ceil(r.b/mx*100)}%"></div></div><small>${r.d.slice(8)}</small></div>`).join('');
-  const sE=E.filter(e=>e.type==='Sale'&&!isWalletTransfer(e)),pt=sE.reduce((s,e)=>s+e.amt,0),pay={Cash:0,'Mobile Banking':0,Bank:0,Due:0,Other:0};
-  sE.forEach(e=>{var p=e.pay;if(p==='Cash')pay.Cash+=e.amt;else if(p==='Mobile Banking')pay['Mobile Banking']+=e.amt;else if(p==='Bank')pay.Bank+=e.amt;else if(p==='Due')pay.Due+=e.amt;else pay.Other+=e.amt});
-  const segs=[['Cash',pay.Cash,'--ch1'],['Mobile',pay['Mobile Banking'],'--ch2'],['Bank',pay.Bank,'--ch3'],['Due',pay.Due,'--ch4'],['Other',pay.Other,'--ch5']].filter(x=>x[1]>0);
-  let stops='',acc=0;segs.forEach(([k,v,c])=>{if(v>0)stops+=`var(${c}) ${acc/pt*100}% ${(acc+v)/pt*100}%,`;acc+=v});
-  $('hPay').innerHTML=`<div class="dwrap${pt>0?'':' zero'}"${pt>0?` style="background:conic-gradient(${stops.slice(0,-1)})"`:''}><div class="dhole"><b>${tk(pt)}</b><small>Sales</small></div></div><div class="dleg">${segs.map(([k,v,c])=>`<div><i style="background:var(${c})"></i>${k}<b>${tk(v)}</b></div>`).join('')}</div>`;
-  /* category breakdown bar */
-  (function(){var CH=['--ch1','--ch2','--ch3','--ch4','--ch5'],catMap={},catEl=$('hCatBar');if(!catEl)return;
-    E.filter(e=>e.type==='Sale'&&!isWalletTransfer(e)).forEach(e=>{var c=e.cat||lb('Uncategorized','অশ্রেণিভুক্ত');catMap[c]=(catMap[c]||0)+e.amt});
-    var cats=Object.entries(catMap).sort((a,b)=>b[1]-a[1]),top=cats.slice(0,5),rest=cats.slice(5).reduce((s,x)=>s+x[1],0),total=cats.reduce((s,x)=>s+x[1],0);
-    if(rest>0)top.push([lb('Others','অন্যান্য'),rest]);
-    if(!total||!top.length){catEl.innerHTML='';return}
-    catEl.innerHTML='<div class="dcat-title">'+lb('Sales by category','বিভাগ অনুযায়ী বিক্রয়')+'</div>'
-      +'<div class="dcat-bar">'+top.map(function(x,i){return'<span style="width:'+Math.max(1,Math.round(x[1]/total*100))+'%;background:var('+CH[i%CH.length]+')"></span>'}).join('')+'</div>'
-      +'<div class="dcat-leg">'+top.map(function(x,i){return'<div><i style="background:var('+CH[i%CH.length]+')"></i>'+esc(x[0])+' <b>'+tk(x[1])+'</b></div>'}).join('')+'</div>'
-  })();
-  $('hRecent').innerHTML=S.bills.filter(b=>!b.removed&&!b.test).slice(0,6).map(x=>`<div class="hrow"><span>#${esc(x.no)} · ${sd(x.d)} ${t12(x.t)} · ${esc(x.pay)}${x.void?' · <b class="bad">VOID</b>':''}<br><small class="mut">${esc(x.user)}</small></span><b>${tk(x.total)}</b></div>`).join('')||'<div class="empty">No bills yet</div>';try{animateCounts()}catch(e){}}
-$('hTabs').addEventListener('click',e=>{const b=e.target.closest('[data-p]');if(b){HP=b.dataset.p;homeUI()}});
-$('hQa').addEventListener('click',e=>{const b=e.target.closest('[data-q]');if(!b)return;const q=b.dataset.q;
-  if(q==='sale'||q==='purchase'){POS.setMode(q);go('pos')}else if(q==='acc')go('acc');else{go('pos');POS.bills()}});
-$('hOwe').addEventListener('click',e=>{if(e.target.closest('[data-q="owe-led"]'))go('led')});
+/* ---------- 06-home: Dashboard Overview, Icon Filters & Salat Module ---------- */
 
+const PER = [
+  ['today', '📅', 'Today', 'আজ'],
+  ['yest', '⏪', 'Yesterday', 'গতকাল'],
+  ['7', '7️⃣', '7 Days', '৭ দিন'],
+  ['30', '🗓️', '1 Month', '১ মাস'],
+  ['90', '📊', '3 Months', '৩ মাস'],
+  ['180', '📈', '6 Months', '৬ মাস'],
+  ['all', '🌐', 'Overall', 'সর্বমোট'],
+  ['custom', '📆', 'Custom', 'কাস্টম']
+];
+let HP = 'today', HCA = '', HCB = '';
+
+function prange(p){
+  const t = new Date(), a = new Date();
+  if(p === 'today') return [iso(t), iso(t)];
+  if(p === 'yest'){ a.setDate(a.getDate() - 1); return [iso(a), iso(a)]; }
+  if(p === 'all') return [NCS_MIN_DATE, '9999'];
+  if(p === 'custom') return [HCA || NCS_MIN_DATE, HCB || todayIso()];
+  a.setDate(a.getDate() - (+p - 1));
+  return [iso(a), iso(t)];
+}
+
+/* ---------- Salat Times & Alarm Engine ---------- */
+let salatTimingsCache = null;
+const salatAlertedToday = {};
+
+function fetchDhakaSalat(callback){
+  const today = todayIso();
+  try{
+    const cached = sessionStorage.getItem('ncs_salat_v1');
+    if(cached){
+      const parsed = JSON.parse(cached);
+      if(parsed && parsed.date === today && parsed.timings){
+        salatTimingsCache = parsed.timings;
+        if(callback) callback(parsed.timings);
+        return;
+      }
+    }
+  }catch(e){}
+
+  if(typeof navigator !== 'undefined' && navigator.onLine === false){
+    if(callback) callback(null);
+    return;
+  }
+
+  fetch('https://api.aladhan.com/v1/timingsByCity?city=Dhaka&country=Bangladesh&method=1')
+    .then(r => r.json())
+    .then(data => {
+      if(data && data.data && data.data.timings){
+        salatTimingsCache = data.data.timings;
+        try{
+          sessionStorage.setItem('ncs_salat_v1', JSON.stringify({ date: today, timings: data.data.timings }));
+        }catch(e){}
+        if(callback) callback(data.data.timings);
+      }
+    })
+    .catch(() => {
+      if(callback) callback(null);
+    });
+}
+
+function showSalatAlarmToast(prayerName, timeFormatted){
+  try{ Sound.chime(); }catch(e){}
+  
+  let wrap = $('salatAlarmWrap');
+  if(!wrap){
+    wrap = document.createElement('div');
+    wrap.id = 'salatAlarmWrap';
+    wrap.className = 'salat-alarm-wrap';
+    document.body.appendChild(wrap);
+  }
+  wrap.hidden = false;
+
+  const isBn = S.lang === 'bn';
+  const toast = document.createElement('div');
+  toast.className = 'salat-alert-toast';
+  toast.innerHTML = '' +
+    '<div class="sat-icon">🕌</div>' +
+    '<div class="sat-content">' +
+      '<b>' + prayerName + ' · ' + (isBn ? 'নামাজের সময় হয়েছে' : 'Prayer Time') + '</b>' +
+      '<small>' + (timeFormatted || '') + ' — ' + (isBn ? 'হাইয়া আলাস সালাহ (নামাজের জন্য এসো)' : 'Hayya alas-Salah (Come to Prayer)') + '</small>' +
+    '</div>' +
+    '<button type="button" class="sat-x" aria-label="Dismiss">✕</button>';
+
+  toast.querySelector('.sat-x').onclick = function(){
+    toast.classList.add('fade-out');
+    setTimeout(() => toast.remove(), 350);
+  };
+
+  wrap.appendChild(toast);
+
+  /* Auto-dismiss after 6 seconds */
+  setTimeout(() => {
+    if(toast && toast.parentNode){
+      toast.classList.add('fade-out');
+      setTimeout(() => toast.remove(), 350);
+    }
+  }, 6000);
+}
+
+function checkSalatAlarm(){
+  if(!salatTimingsCache) return;
+  const now = new Date();
+  const nowH = String(now.getHours()).padStart(2, '0');
+  const nowM = String(now.getMinutes()).padStart(2, '0');
+  const curTime = nowH + ':' + nowM;
+  const today = todayIso();
+
+  const prayers = [
+    { id: 'Fajr', en: 'Fajr', bn: 'ফজর', t: salatTimingsCache.Fajr },
+    { id: 'Dhuhr', en: 'Dhuhr', bn: 'যোহর', t: salatTimingsCache.Dhuhr },
+    { id: 'Asr', en: 'Asr', bn: 'আসর', t: salatTimingsCache.Asr },
+    { id: 'Maghrib', en: 'Maghrib', bn: 'মাগরিব', t: salatTimingsCache.Maghrib },
+    { id: 'Isha', en: 'Isha', bn: 'ইশা', t: salatTimingsCache.Isha }
+  ];
+
+  prayers.forEach(p => {
+    if(!p.t) return;
+    const alertKey = today + '_' + p.id;
+    if(p.t === curTime && !salatAlertedToday[alertKey]){
+      salatAlertedToday[alertKey] = true;
+      const isBn = S.lang === 'bn';
+      showSalatAlarmToast(isBn ? p.bn : p.en, t12(p.t));
+    }
+  });
+}
+setInterval(checkSalatAlarm, 20000);
+
+function renderSalatCard(){
+  const el = $('hSalat');
+  if(!el) return;
+
+  fetchDhakaSalat(timings => {
+    if(!timings){
+      el.style.display = 'none';
+      return;
+    }
+    el.style.display = '';
+
+    const isBn = S.lang === 'bn';
+    const now = new Date();
+    const curMins = now.getHours() * 60 + now.getMinutes();
+
+    const prayerList = [
+      { id: 'Fajr', en: 'Fajr', bn: 'ফজর', t: timings.Fajr, icon: '🌅' },
+      { id: 'Sunrise', en: 'Sunrise', bn: 'সূর্যোদয়', t: timings.Sunrise, icon: '☀️', isSun: true },
+      { id: 'Dhuhr', en: 'Dhuhr', bn: 'যোহর', t: timings.Dhuhr, icon: '☀️' },
+      { id: 'Asr', en: 'Asr', bn: 'আসর', t: timings.Asr, icon: '🌤️' },
+      { id: 'Maghrib', en: 'Maghrib', bn: 'মাগরিব', t: timings.Maghrib, icon: '🌇' },
+      { id: 'Isha', en: 'Isha', bn: 'ইশা', t: timings.Isha, icon: '🌙' }
+    ];
+
+    /* Find next prayer */
+    let nextP = null;
+    let minDiff = Infinity;
+    prayerList.forEach(p => {
+      if(!p.t) return;
+      const [h, m] = p.t.split(':').map(Number);
+      const pMins = h * 60 + m;
+      let diff = pMins - curMins;
+      if(diff < 0) diff += 24 * 60;
+      if(diff < minDiff){
+        minDiff = diff;
+        nextP = { ...p, diffMins: diff };
+      }
+    });
+
+    const diffH = nextP ? Math.floor(nextP.diffMins / 60) : 0;
+    const diffM = nextP ? (nextP.diffMins % 60) : 0;
+    const diffStr = isBn
+      ? (diffH > 0 ? toBnNum(diffH) + ' ঘণ্টা ' : '') + toBnNum(diffM) + ' মিনিট বাকি'
+      : (diffH > 0 ? diffH + 'h ' : '') + diffM + 'm left';
+
+    el.innerHTML = '' +
+      '<div class="salat-head">' +
+        '<div>' +
+          '<div style="display:flex;align-items:center;gap:8px">' +
+            '<span style="font-size:18px">🕌</span>' +
+            '<h3 style="margin:0;font-size:16px;font-weight:700">' + (isBn ? 'নামাজের সময়সূচী' : 'Salat Times') + '</h3>' +
+            '<span class="t-badge t-badge-left" style="font-size:11px">Dhaka (UTC+6)</span>' +
+          '</div>' +
+          '<small class="mut" style="font-size:12px;margin-top:2px;display:block">' +
+            (nextP ? ('▸ ' + (isBn ? 'পরবর্তী নামাজ: ' : 'Next: ') + '<b>' + (isBn ? nextP.bn : nextP.en) + '</b> (' + diffStr + ')') : '') +
+          '</small>' +
+        '</div>' +
+        '<div style="display:flex;gap:6px;align-items:center">' +
+          '<button type="button" class="ghost" id="btnTestSalatAlarm" style="height:30px;padding:0 10px;font-size:12px;display:flex;align-items:center;gap:4px">' +
+            '<span>🔔</span> <span>' + (isBn ? 'অ্যালার্ম পরীক্ষা' : 'Test Alarm') + '</span>' +
+          '</button>' +
+        '</div>' +
+      '</div>' +
+
+      '<div class="salat-grid">' +
+        prayerList.map(p => {
+          const isNext = nextP && nextP.id === p.id;
+          const tFormatted = t12(p.t);
+          return '' +
+            '<div class="salat-box' + (isNext ? ' salat-box-active' : '') + (p.isSun ? ' salat-box-sun' : '') + '">' +
+              '<div class="sb-icon">' + p.icon + '</div>' +
+              '<div class="sb-name">' + (isBn ? p.bn : p.en) + '</div>' +
+              '<b class="sb-time">' + (isBn ? toBnNum(tFormatted) : tFormatted) + '</b>' +
+              (isNext ? '<span class="sb-badge">' + (isBn ? 'পরবর্তী' : 'NEXT') + '</span>' : '') +
+            '</div>';
+        }).join('') +
+      '</div>';
+
+    const testBtn = $('btnTestSalatAlarm');
+    if(testBtn){
+      testBtn.onclick = function(){
+        const pName = isBn ? (nextP ? nextP.bn : 'আসর') : (nextP ? nextP.en : 'Asr');
+        showSalatAlarmToast(pName, nextP ? t12(nextP.t) : '3:45 PM');
+      };
+    }
+  });
+}
+
+/* ---------- Main Dashboard Render ---------- */
+function homeUI(){
+  try{ renderWalletCards(); }catch(e){}
+  try{ applyCardSettings(); }catch(e){}
+
+  $('hTitle').textContent = lb('Hello, ', 'হ্যালো, ') + (U ? U.name : '');
+  $('hQa').querySelectorAll('[data-q]').forEach(function(b){
+    var k = b.dataset.q;
+    var l = k === 'sale' ? lb('New sale', 'নতুন বিক্রয়') : k === 'purchase' ? lb('New purchase', 'নতুন ক্রয়') : k === 'acc' ? lb('Accounts', 'হিসাব') : lb("Today's bills", 'আজকের বিল');
+    b.querySelector('.qal').textContent = l;
+  });
+
+  /* Icon-based Filter Tabs */
+  $('hTabs').innerHTML = PER.map(([k, ic, en, bn]) =>
+    `<button type="button" data-p="${k}" class="${HP===k?'on':''}" title="${S.lang==='bn'?bn:en}">
+      <span class="ptab-ic">${ic}</span>
+      <span class="ptab-txt">${S.lang==='bn'?bn:en}</span>
+    </button>`
+  ).join('');
+
+  /* Custom Date Range Picker Container */
+  var cBar = $('hCustomBar');
+  if(cBar){
+    if(HP === 'custom'){
+      cBar.hidden = false;
+      cBar.innerHTML = '' +
+        '<div class="hcr-wrap">' +
+          '<div class="hcr-inputs">' +
+            '<div class="hcr-item"><label>' + lb('From Date', 'শুরুর দিন') + '</label><input id="hcaInp" type="date" min="' + NCS_MIN_DATE + '" max="' + todayIso() + '" value="' + (HCA || NCS_MIN_DATE) + '"></div>' +
+            '<div class="hcr-item"><label>' + lb('To Date', 'শেষ দিন') + '</label><input id="hcbInp" type="date" min="' + NCS_MIN_DATE + '" max="' + todayIso() + '" value="' + (HCB || todayIso()) + '"></div>' +
+          '</div>' +
+          '<button type="button" class="go" id="hcrGo" style="height:36px;padding:0 16px;font-size:13px;align-self:flex-end">' + lb('Apply Filter', 'ফিল্টার করুন') + '</button>' +
+        '</div>';
+      var bGo = $('hcrGo');
+      if(bGo){
+        bGo.onclick = function(){
+          var aVal = $('hcaInp') ? $('hcaInp').value : '';
+          var bVal = $('hcbInp') ? $('hcbInp').value : '';
+          if(aVal && bVal && aVal > bVal){
+            Sound.buzz();
+            ltoast(lb('Start date cannot be after end date', 'শুরুর দিন শেষের দিনের পরে হতে পারে না'));
+            return;
+          }
+          HCA = aVal;
+          HCB = bVal;
+          homeUI();
+        };
+      }
+    } else {
+      cBar.hidden = true;
+      cBar.innerHTML = '';
+    }
+  }
+
+  const [a, b] = prange(HP);
+  const E = S.entries.filter(e => !e.void && !e.removed && e.d >= a && e.d <= b);
+  const B = S.bills.filter(x => !x.void && !x.removed && !x.test && x.d >= a && x.d <= b);
+  const sm = (t, f) => E.filter(e => e.type === t && !isWalletTransfer(e) && (!f || f(e))).reduce((s, e) => s + e.amt, 0);
+  const m = calc();
+  const act = sorted().filter(e => !e.void);
+  const cb = act.length ? m[act[act.length - 1].id].bal : (+S.start || 0);
+  const C = (l, v, c, num) => `<div class="stat ${c||''}"><small>${l}</small><b${num!=null?' class="cnt" data-to="'+num+'"':''}>${v}</b></div>`;
+
+  $('hHero').innerHTML = `<div class="dclk" id="hClk" aria-label="${lb('Current time','বর্তমান সময়')}"><b id="hClkT"></b><small id="hClkD"></small></div><small>Cash Balance</small><b class="cnt" data-to="${cb}">${tk(cb)}</b><i>${sd(todayIso())} · ${esc(U?U.name:'')}</i>`;
+  clkTick();
+
+  var sellT = sm('Sale'), buyT = sm('Purchase');
+  $('hStats').innerHTML = C('Total Sell', tk(sellT), 't3', sellT) + C('Total Buy', tk(buyT), 't2', buyT) + C('Bills', B.length, 't4') + C('To receive (Due)', tk(sm('Sale', e => e.pay === 'Due')), 't1') + C('To give (Due)', tk(sm('Purchase', e => e.pay === 'Due')), 'sf');
+
+  if(canCost()){
+    try{
+      var smap = (POS && typeof POS.stockMap === 'function') ? POS.stockMap() : {};
+      var sv = S.products.filter(p => !p.del).reduce((s, p) => s + Math.max(0, smap[p.id] || 0) * (+p.buy || 0), 0);
+      $('hStats').insertAdjacentHTML('beforeend', C('Stock value (cost)', tk(sv), 'sf'));
+    }catch(e){}
+  }
+
+  var todayE = S.entries.filter(e => !e.void && !e.removed && e.d === todayIso()), inT = 0, outT = 0;
+  todayE.forEach(e => {
+    var c = cash(e);
+    if(c > 0) inT += c;
+    else if(c < 0) outT += -c;
+  });
+  var netT = inT - outT;
+  $('hToday').innerHTML = (todayE.length
+    ? '<span class="tpill pos"><small>' + lb('Cash in', 'নগদ এসেছে') + '</small><b>' + tk(inT) + '</b></span>'
+      + '<span class="tpill neg"><small>' + lb('Cash out', 'নগদ গেছে') + '</small><b>' + tk(outT) + '</b></span>'
+      + '<span class="tpill net"><small>' + lb('Net', 'নিট') + '</small><b>' + (netT > 0 ? '+' : netT < 0 ? '−' : '') + tk(Math.abs(netT)) + '</b></span>'
+      + '<span class="tpill"><small>' + lb('Entries', 'এন্ট্রি') + '</small><b>' + todayE.length + '</b></span>'
+    : '<span class="tpill mut">' + lb('No cash movements today', 'আজ কোনো নগদ লেনদেন নেই') + '</span>');
+
+  (function(){
+    var canOpen = isA() || role() === 'accountant' || role() === 'cashier';
+    var custAll = S.cust.filter(c => !c.del);
+    if(!custAll.length || !canOpen){ $('hOwe').hidden = true; $('hOwe').innerHTML = ''; return; }
+    var recv = 0, pay = 0, recvN = 0, payN = 0;
+    custAll.forEach(c => {
+      var s = lStat(c);
+      if(s.b < 0){ recv += -s.b; recvN++; }
+      else if(s.b > 0){ pay += s.b; payN++; }
+    });
+    var net = recv - pay, netLabel = recv >= pay ? lb('Net receivable', 'নিট পাওনা') : lb('Net payable', 'নিট দেনা');
+    $('hOwe').hidden = false;
+    $('hOwe').innerHTML = '<div class="howe-head"><h3 class="dchh" style="padding:0;margin:0;font-size:15px">' + lb('Who owes whom', 'কার কাছে পাওনা / দেনা') + '</h3><button class="ghost" data-q="owe-led">' + lb('Open Ledger', 'খাতা খুলুন') + ' →</button></div>'
+      + '<div class="howe-body">'
+      + '<div class="howe-box recv"><small>' + lb('They owe us', 'আমরা পাব') + '</small><b>' + tk(recv) + '</b><i>' + recvN + ' ' + lb('parties', 'পক্ষ') + '</i></div>'
+      + '<div class="howe-box pay"><small>' + lb('We owe', 'আমরা দেব') + '</small><b>' + tk(pay) + '</b><i>' + payN + ' ' + lb('parties', 'পক্ষ') + '</i></div>'
+      + '</div>'
+      + '<div class="howe-foot"><span>' + netLabel + ': <b>' + tk(Math.abs(net)) + '</b></span><span>' + (recvN + payN) + ' ' + lb('parties', 'পক্ষ') + '</span></div>';
+  })();
+
+  /* 7-day Bar chart with 7 distinct day colors */
+  const ds = [...Array(7)].map((_, i) => {
+    const x = new Date();
+    x.setDate(x.getDate() - 6 + i);
+    return iso(x);
+  });
+  const dv = d => S.entries.reduce((o, e) => {
+    if(!e.void && !e.removed && !isWalletTransfer(e) && e.d === d){
+      if(e.type === 'Sale') o.s += e.amt;
+      else if(e.type === 'Purchase') o.b += e.amt;
+    }
+    return o;
+  }, { s: 0, b: 0 });
+  const rows = ds.map(d => ({ d: d, ...dv(d) }));
+  const mx = Math.max(1, ...rows.map(r => Math.max(r.s, r.b)));
+  $('hChart').innerHTML = rows.map(r =>
+    `<div class="dcol" title="${r.d} · Sell ${n(r.s)} · Buy ${n(r.b)}">
+      <div class="dbars">
+        <div class="dbs" style="height:${Math.ceil(r.s/mx*100)}%"></div>
+        <div class="dbb" style="height:${Math.ceil(r.b/mx*100)}%"></div>
+      </div>
+      <small style="color:${dayColor(r.d)};font-weight:700">${r.d.slice(8)}</small>
+    </div>`
+  ).join('');
+
+  /* Payment Donut Chart */
+  const sE = E.filter(e => e.type === 'Sale' && !isWalletTransfer(e));
+  const pt = sE.reduce((s, e) => s + e.amt, 0);
+  const pay = { Cash: 0, 'Mobile Banking': 0, Bank: 0, Due: 0, Other: 0 };
+  sE.forEach(e => {
+    var p = e.pay;
+    if(p === 'Cash') pay.Cash += e.amt;
+    else if(p === 'Mobile Banking') pay['Mobile Banking'] += e.amt;
+    else if(p === 'Bank') pay.Bank += e.amt;
+    else if(p === 'Due') pay.Due += e.amt;
+    else pay.Other += e.amt;
+  });
+  const segs = [['Cash', pay.Cash, '--ch1'], ['Mobile', pay['Mobile Banking'], '--ch2'], ['Bank', pay.Bank, '--ch3'], ['Due', pay.Due, '--ch4'], ['Other', pay.Other, '--ch5']].filter(x => x[1] > 0);
+  let stops = '', acc = 0;
+  segs.forEach(([k, v, c]) => {
+    if(v > 0) stops += `var(${c}) ${acc/pt*100}% ${(acc+v)/pt*100}%,`;
+    acc += v;
+  });
+  $('hPay').innerHTML = `<div class="dwrap${pt>0?'':' zero'}"${pt>0?` style="background:conic-gradient(${stops.slice(0,-1)})"`:''}><div class="dhole"><b>${tk(pt)}</b><small>Sales</small></div></div><div class="dleg">${segs.map(([k,v,c])=>`<div><i style="background:var(${c})"></i>${k}<b>${tk(v)}</b></div>`).join('')}</div>`;
+
+  /* Category breakdown bar */
+  (function(){
+    var CH = ['--ch1', '--ch2', '--ch3', '--ch4', '--ch5'], catMap = {}, catEl = $('hCatBar');
+    if(!catEl) return;
+    E.filter(e => e.type === 'Sale' && !isWalletTransfer(e)).forEach(e => {
+      var c = e.cat || lb('Uncategorized', 'অশ্রেণিভুক্ত');
+      catMap[c] = (catMap[c] || 0) + e.amt;
+    });
+    var cats = Object.entries(catMap).sort((a, b) => b[1] - a[1]);
+    var top = cats.slice(0, 5), rest = cats.slice(5).reduce((s, x) => s + x[1], 0), total = cats.reduce((s, x) => s + x[1], 0);
+    if(rest > 0) top.push([lb('Others', 'অন্যান্য'), rest]);
+    if(!total || !top.length){ catEl.innerHTML = ''; return; }
+    catEl.innerHTML = '<div class="dcat-title">' + lb('Sales by category', 'বিভাগ অনুযায়ী বিক্রয়') + '</div>'
+      + '<div class="dcat-bar">' + top.map(function(x, i){ return '<span style="width:' + Math.max(1, Math.round(x[1]/total*100)) + '%;background:var(' + CH[i%CH.length] + ')"></span>'; }).join('') + '</div>'
+      + '<div class="dcat-leg">' + top.map(function(x, i){ return '<div><i style="background:var(' + CH[i%CH.length] + ')"></i>' + esc(x[0]) + ' <b>' + tk(x[1]) + '</b></div>'; }).join('') + '</div>';
+  })();
+
+  /* Render Salat Times Card */
+  renderSalatCard();
+
+  try{ animateCounts(); }catch(e){}
+}
+
+/* Dashboard Event Listeners */
+$('hTabs').addEventListener('click', e => {
+  const b = e.target.closest('[data-p]');
+  if(b){
+    HP = b.dataset.p;
+    homeUI();
+  }
+});
+
+$('hQa').addEventListener('click', e => {
+  const b = e.target.closest('[data-q]');
+  if(!b) return;
+  const q = b.dataset.q;
+  if(q === 'sale' || q === 'purchase'){ POS.setMode(q); go('pos'); }
+  else if(q === 'acc') go('acc');
+  else{ go('pos'); POS.bills(); }
+});
+
+$('hOwe').addEventListener('click', e => {
+  if(e.target.closest('[data-q="owe-led"]')) go('led');
+});
+
+
+/* --- Module: 06b-tasks.js --- */
+/* ---------- 06b-tasks: Task Schedule & Project Tracking Module ---------- */
+
+const TASK_STAGES = [
+  { id: 'pending', en: 'Pending', bn: 'অমীমাংসিত', color: 'var(--warn)', bg: 'rgba(217,119,6,0.12)', icon: '⏳' },
+  { id: 'in-progress', en: 'In Progress', bn: 'চলমান', color: 'var(--acc)', bg: 'var(--soft)', icon: '⚡' },
+  { id: 'review', en: 'Under Review', bn: 'পর্যালোচনায়', color: '#8B5CF6', bg: 'rgba(139,92,246,0.12)', icon: '🔍' },
+  { id: 'complete', en: 'Completed', bn: 'সম্পন্ন', color: 'var(--pos)', bg: 'rgba(21,128,61,0.12)', icon: '✅' },
+  { id: 'cancelled', en: 'Cancelled', bn: 'বাতিল', color: 'var(--neg)', bg: 'rgba(220,38,38,0.12)', icon: '✕' }
+];
+
+const TASK_PRIORITIES = [
+  { id: 'low', en: 'Low', bn: 'কম', color: 'var(--mut)', bg: 'rgba(100,116,139,0.12)' },
+  { id: 'medium', en: 'Medium', bn: 'মাঝারি', color: '#0EA5E9', bg: 'rgba(14,165,233,0.12)' },
+  { id: 'high', en: 'High', bn: 'বেশি', color: 'var(--warn)', bg: 'rgba(245,158,11,0.12)' },
+  { id: 'urgent', en: 'Urgent', bn: 'জরুরি', color: 'var(--neg)', bg: 'rgba(239,68,68,0.16)' }
+];
+
+let TSK_VIEW = 'board'; // 'board' or 'list'
+let TSK_STAGE = 'active'; // 'active' (excludes complete & cancelled) or stage id or 'all'
+let TSK_PRIORITY = '';
+let TSK_ASSIGNEE = '';
+let TSK_Q = '';
+let TSK_SORT = 'deadline'; // 'deadline', 'priority', 'newest', 'progress'
+
+function stageInfo(id){
+  return TASK_STAGES.find(s=>s.id===id)||TASK_STAGES[0];
+}
+
+function priorityInfo(id){
+  return TASK_PRIORITIES.find(p=>p.id===id)||TASK_PRIORITIES[1];
+}
+
+function taskOverdue(t){
+  if(!t.deadline||t.stage==='complete'||t.stage==='cancelled') return false;
+  return t.deadline < todayIso();
+}
+
+function taskDeadlineBadge(t){
+  if(t.stage==='complete'){
+    return '<span class="t-badge t-badge-done">✓ '+(t.completed?sd(t.completed):lb('Done','সম্পন্ন'))+'</span>';
+  }
+  if(!t.deadline) return '';
+  const today = todayIso();
+  if(t.deadline < today){
+    const diff = Math.round((new Date(today+'T00:00:00') - new Date(t.deadline+'T00:00:00'))/(1000*60*60*24));
+    return '<span class="t-badge t-badge-overdue" title="'+lb('Deadline passed','সময় পার হয়েছে')+'">⚠️ '+diff+' '+lb('d overdue','দিন পার')+'</span>';
+  }
+  if(t.deadline === today){
+    return '<span class="t-badge t-badge-today">🔔 '+lb('Due Today','আজ শেষ দিন')+'</span>';
+  }
+  const daysLeft = Math.round((new Date(t.deadline+'T00:00:00') - new Date(today+'T00:00:00'))/(1000*60*60*24));
+  return '<span class="t-badge t-badge-left">⏳ '+daysLeft+' '+lb('d left','দিন বাকি')+'</span>';
+}
+
+function getAllAssignees(){
+  var list = ['Admin'];
+  if(S.users && Array.isArray(S.users)){
+    S.users.forEach(function(u){
+      if(u.name && !list.includes(u.name)) list.push(u.name);
+    });
+  }
+  if(U && U.name && !list.includes(U.name)) list.push(U.name);
+  return list;
+}
+
+function getFilteredTasks(){
+  if(!Array.isArray(S.tasks)) S.tasks = [];
+  var list = S.tasks.filter(t => !t.removed);
+  
+  if(TSK_STAGE === 'active'){
+    list = list.filter(t => t.stage !== 'complete' && t.stage !== 'cancelled');
+  } else if(TSK_STAGE && TSK_STAGE !== 'all'){
+    list = list.filter(t => t.stage === TSK_STAGE);
+  }
+  
+  if(TSK_PRIORITY){
+    list = list.filter(t => t.priority === TSK_PRIORITY);
+  }
+  
+  if(TSK_ASSIGNEE){
+    list = list.filter(t => t.assignee === TSK_ASSIGNEE);
+  }
+  
+  if(TSK_Q){
+    var q = TSK_Q.trim().toLowerCase();
+    list = list.filter(t => 
+      (t.title||'').toLowerCase().includes(q) ||
+      (t.desc||'').toLowerCase().includes(q) ||
+      (t.assignee||'').toLowerCase().includes(q) ||
+      (Array.isArray(t.tags) && t.tags.some(tag => tag.toLowerCase().includes(q)))
+    );
+  }
+  
+  list.sort((a,b)=>{
+    if(TSK_SORT === 'deadline'){
+      var da = a.deadline || '9999-99-99', db = b.deadline || '9999-99-99';
+      return da.localeCompare(db);
+    }
+    if(TSK_SORT === 'priority'){
+      var pOrder = { urgent: 4, high: 3, medium: 2, low: 1 };
+      return (pOrder[b.priority]||0) - (pOrder[a.priority]||0);
+    }
+    if(TSK_SORT === 'progress'){
+      return (b.progress||0) - (a.progress||0);
+    }
+    return (b.u||0) - (a.u||0); // newest
+  });
+  
+  return list;
+}
+
+function taskUI(){
+  if(!U) return;
+  var v = $('vTask');
+  if(!v) return;
+  
+  if(!Array.isArray(S.tasks)) S.tasks = [];
+  var all = S.tasks.filter(t => !t.removed);
+  var totalCount = all.length;
+  var pendingCount = all.filter(t => t.stage === 'pending').length;
+  var inProgCount = all.filter(t => t.stage === 'in-progress').length;
+  var reviewCount = all.filter(t => t.stage === 'review').length;
+  var doneCount = all.filter(t => t.stage === 'complete').length;
+  var overdueCount = all.filter(t => taskOverdue(t)).length;
+  
+  var filtered = getFilteredTasks();
+  var assignees = getAllAssignees();
+  
+  var html = '' +
+  '<header class="task-hdr">' +
+    '<div>' +
+      '<div class="shop">' + lb('Workflow & Task Management', 'কাজের অগ্রগতি ও সময়সূচী') + '</div>' +
+      '<h1 style="display:flex;align-items:center;gap:10px">' +
+        '<span>' + lb('Task Schedule', 'কাজের সময়সূচী') + '</span>' +
+        (overdueCount > 0 ? '<span class="t-badge t-badge-overdue" style="font-size:12px">⚠️ ' + overdueCount + ' ' + lb('Overdue', 'সময় পার') + '</span>' : '') +
+      '</h1>' +
+    '</div>' +
+    '<div class="nav" style="display:flex;gap:8px;align-items:center">' +
+      '<div class="seg" id="taskViewSeg">' +
+        '<button type="button" data-tv="board" class="' + (TSK_VIEW==='board'?'on':'') + '">🗂️ ' + lb('Board', 'বোর্ড') + '</button>' +
+        '<button type="button" data-tv="list" class="' + (TSK_VIEW==='list'?'on':'') + '">📋 ' + lb('List', 'তালিকা') + '</button>' +
+      '</div>' +
+      '<button type="button" class="go" id="btnNewTask" style="height:38px;padding:0 16px;display:flex;align-items:center;gap:6px">' +
+        '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>' +
+        '<span>' + lb('New Task', 'নতুন কাজ') + '</span>' +
+      '</button>' +
+    '</div>' +
+  '</header>' +
+  
+  /* Summary Metrics Strip */
+  '<section class="task-stats-strip">' +
+    '<div class="stat"><small>' + lb('Total Tasks', 'মোট কাজ') + '</small><b>' + totalCount + '</b><i>' + (totalCount - doneCount) + ' ' + lb('active', 'চলমান') + '</i></div>' +
+    '<div class="stat"><small style="color:var(--warn)">🟡 ' + lb('Pending', 'অমীমাংসিত') + '</small><b style="color:var(--warn)">' + pendingCount + '</b><i>' + lb('Not started', 'শুরু হয়নি') + '</i></div>' +
+    '<div class="stat"><small style="color:var(--acc)">🔵 ' + lb('In Progress', 'চলমান') + '</small><b style="color:var(--acc)">' + inProgCount + '</b><i>' + lb('Being worked on', 'কাজ চলছে') + '</i></div>' +
+    '<div class="stat"><small style="color:#8B5CF6">🟣 ' + lb('Under Review', 'পর্যালোচনায়') + '</small><b style="color:#8B5CF6">' + reviewCount + '</b><i>' + lb('Awaiting check', 'যাচাই বাকি') + '</i></div>' +
+    '<div class="stat"><small style="color:var(--pos)">🟢 ' + lb('Completed', 'সম্পন্ন') + '</small><b style="color:var(--pos)">' + doneCount + '</b><i>' + Math.round((doneCount/(totalCount||1))*100) + '% ' + lb('finished', 'সম্পন্ন') + '</i></div>' +
+  '</section>' +
+  
+  /* Filter & Control Bar */
+  '<section class="card task-filter-bar">' +
+    '<div class="tf-search">' +
+      '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>' +
+      '<input id="taskQ" placeholder="' + lb('Search title, tags, staff...', 'শিরোনাম, ট্যাগ বা কর্মী খুঁজুন...') + '" value="' + esc(TSK_Q) + '" autocomplete="off">' +
+    '</div>' +
+    '<div class="tf-controls">' +
+      '<select id="taskStageFilt">' +
+        '<option value="active"' + (TSK_STAGE==='active'?' selected':'') + '>' + lb('Active Tasks (excluding Done)', 'চলমান কাজসমূহ') + '</option>' +
+        '<option value="all"' + (TSK_STAGE==='all'?' selected':'') + '>' + lb('All Stages', 'সব ধাপ') + '</option>' +
+        TASK_STAGES.map(s => '<option value="' + s.id + '"' + (TSK_STAGE===s.id?' selected':'') + '>' + s.icon + ' ' + (S.lang==='bn'?s.bn:s.en) + '</option>').join('') +
+      '</select>' +
+      '<select id="taskPriorityFilt">' +
+        '<option value="">' + lb('All Priorities', 'সব অগ্রাধিকার') + '</option>' +
+        TASK_PRIORITIES.map(p => '<option value="' + p.id + '"' + (TSK_PRIORITY===p.id?' selected':'') + '>' + (S.lang==='bn'?p.bn:p.en) + '</option>').join('') +
+      '</select>' +
+      '<select id="taskAssigneeFilt">' +
+        '<option value="">' + lb('All Staff', 'সকল কর্মী') + '</option>' +
+        assignees.map(a => '<option value="' + esc(a) + '"' + (TSK_ASSIGNEE===a?' selected':'') + '>' + esc(a) + '</option>').join('') +
+      '</select>' +
+      '<select id="taskSortFilt">' +
+        '<option value="deadline"' + (TSK_SORT==='deadline'?' selected':'') + '>' + lb('Sort: Deadline soonest', 'সময়সীমা: শীঘ্রই') + '</option>' +
+        '<option value="priority"' + (TSK_SORT==='priority'?' selected':'') + '>' + lb('Sort: Priority highest', 'অগ্রাধিকার: বেশি') + '</option>' +
+        '<option value="progress"' + (TSK_SORT==='progress'?' selected':'') + '>' + lb('Sort: Progress %', 'অগ্রগতি হার') + '</option>' +
+        '<option value="newest"' + (TSK_SORT==='newest'?' selected':'') + '>' + lb('Sort: Newest first', 'নতুন আগে') + '</option>' +
+      '</select>' +
+      ((TSK_Q||TSK_PRIORITY||TSK_ASSIGNEE||TSK_STAGE!=='active') ? '<button type="button" class="ghost" id="taskClrFilt" style="height:36px;padding:0 10px;font-size:12.5px">' + lb('Clear', 'রিসেট') + '</button>' : '') +
+    '</div>' +
+  '</section>' +
+  
+  /* Main Content: Board View or List View */
+  '<div id="taskContent">' +
+    (TSK_VIEW === 'board' ? renderBoardView(all) : renderListView(filtered)) +
+  '</div>';
+
+  v.innerHTML = html;
+  bindTaskEvents();
+}
+
+/* ---------- Kanban Board View ---------- */
+function renderBoardView(allTasks){
+  var columns = [
+    { id: 'pending', title: lb('Pending', 'অমীমাংসিত'), icon: '🟡', border: 'var(--warn)' },
+    { id: 'in-progress', title: lb('In Progress', 'চলমান'), icon: '🔵', border: 'var(--acc)' },
+    { id: 'review', title: lb('Under Review', 'পর্যালোচনায়'), icon: '🟣', border: '#8B5CF6' },
+    { id: 'complete', title: lb('Completed', 'সম্পন্ন'), icon: '🟢', border: 'var(--pos)' }
+  ];
+
+  return '<div class="task-kanban-board">' +
+    columns.map(col => {
+      var colTasks = allTasks.filter(t => {
+        if(t.stage !== col.id) return false;
+        if(TSK_PRIORITY && t.priority !== TSK_PRIORITY) return false;
+        if(TSK_ASSIGNEE && t.assignee !== TSK_ASSIGNEE) return false;
+        if(TSK_Q){
+          var q = TSK_Q.trim().toLowerCase();
+          return (t.title||'').toLowerCase().includes(q) || (t.desc||'').toLowerCase().includes(q) || (t.assignee||'').toLowerCase().includes(q);
+        }
+        return true;
+      });
+
+      return '' +
+      '<div class="task-column" data-col-stage="' + col.id + '" style="border-top:3px solid ' + col.border + '">' +
+        '<div class="task-col-head">' +
+          '<div class="tch-title"><span>' + col.icon + '</span> <b>' + col.title + '</b></div>' +
+          '<span class="tch-count">' + colTasks.length + '</span>' +
+        '</div>' +
+        '<div class="task-col-body">' +
+          (colTasks.length ? colTasks.map(t => renderTaskCard(t)).join('') : '<div class="task-card-empty">' + lb('No tasks', 'কোনো কাজ নেই') + '</div>') +
+        '</div>' +
+      '</div>';
+    }).join('') +
+  '</div>';
+}
+
+function renderTaskCard(t){
+  var p = priorityInfo(t.priority);
+  var s = stageInfo(t.stage);
+  var isOver = taskOverdue(t);
+  var pct = Math.min(100, Math.max(0, +t.progress || 0));
+
+  return '' +
+  '<div class="task-card' + (isOver ? ' task-card-overdue' : '') + '" data-tid="' + t.id + '">' +
+    '<div class="tc-top">' +
+      '<span class="tc-priority-chip" style="color:' + p.color + ';background:' + p.bg + '">' + (S.lang==='bn'?p.bn:p.en) + '</span>' +
+      taskDeadlineBadge(t) +
+    '</div>' +
+    '<div class="tc-title">' + esc(t.title) + '</div>' +
+    (t.desc ? '<div class="tc-desc">' + esc(t.desc) + '</div>' : '') +
+    
+    /* Progress Bar */
+    '<div class="tc-progress-wrap">' +
+      '<div class="tc-progress-info"><span>' + lb('Progress', 'অগ্রগতি') + '</span><b>' + (S.lang==='bn'?toBnNum(pct):pct) + '%</b></div>' +
+      '<div class="task-progress-bar"><div class="task-progress-fill" style="width:' + pct + '%;' + (pct>=100?'background:var(--pos);':'') + '"></div></div>' +
+    '</div>' +
+    
+    /* Dates & Assignee Strip */
+    '<div class="tc-meta-row">' +
+      '<div class="tc-dates">' +
+        (t.taking ? '<span title="' + lb('Taking Date', 'গ্রহণের তারিখ') + '">📥 ' + sd(t.taking) + '</span>' : '') +
+        (t.deadline ? '<span title="' + lb('Deadline', 'নির্ধারিত শেষ তারিখ') + '" class="' + (isOver?'bad':'') + '">🎯 ' + sd(t.deadline) + '</span>' : '') +
+      '</div>' +
+      (t.assignee ? '<div class="tc-assignee" title="' + lb('Assigned to', 'দায়িত্বপ্রাপ্ত') + '">👤 ' + esc(t.assignee) + '</div>' : '') +
+    '</div>' +
+    
+    /* Quick Stage Advance Toolbar */
+    '<div class="tc-actions-bar">' +
+      '<button type="button" class="tc-btn-open" data-tact="open" data-tid="' + t.id + '">' + lb('Details & Notes', 'বিস্তারিত ও নোট') + ' (' + (t.notes?t.notes.length:0) + ')</button>' +
+      '<div class="tc-advance-btns">' +
+        (t.stage !== 'pending' ? '<button type="button" class="tc-btn-nav" data-tact="prev-stage" data-tid="' + t.id + '" title="' + lb('Previous Stage', 'পূর্ববর্তী ধাপ') + '">‹</button>' : '') +
+        (t.stage !== 'complete' ? '<button type="button" class="tc-btn-nav primary" data-tact="next-stage" data-tid="' + t.id + '" title="' + lb('Advance Stage', 'পরবর্তী ধাপ') + '">›</button>' : '') +
+      '</div>' +
+    '</div>' +
+  '</div>';
+}
+
+/* ---------- List View ---------- */
+function renderListView(tasks){
+  if(!tasks.length){
+    return '<div class="card empty">' + lb('No matching tasks found', 'কোনো কাজ পাওয়া যায়নি') + '</div>';
+  }
+
+  return '' +
+  '<div class="card scroll task-list-card">' +
+    '<table class="task-table">' +
+      '<thead>' +
+        '<tr>' +
+          '<th>' + lb('Status', 'অবস্থা') + '</th>' +
+          '<th>' + lb('Task Title & Details', 'কাজের বিবরণ') + '</th>' +
+          '<th>' + lb('Priority', 'অগ্রাধিকার') + '</th>' +
+          '<th>' + lb('Progress', 'অগ্রগতি') + '</th>' +
+          '<th>' + lb('Taking Date', 'গ্রহণের তারিখ') + '</th>' +
+          '<th>' + lb('Deadline', 'শেষ সময়সীমা') + '</th>' +
+          '<th>' + lb('Assignee', 'দায়িত্ব') + '</th>' +
+          '<th></th>' +
+        '</tr>' +
+      '</thead>' +
+      '<tbody>' +
+        tasks.map(t => {
+          var p = priorityInfo(t.priority);
+          var s = stageInfo(t.stage);
+          var pct = Math.min(100, Math.max(0, +t.progress || 0));
+          var isOver = taskOverdue(t);
+
+          return '' +
+          '<tr class="' + (t.stage==='complete'?'task-row-done':'') + (isOver?' task-row-overdue':'') + '">' +
+            '<td><span class="t-stage-chip" style="color:' + s.color + ';background:' + s.bg + '">' + s.icon + ' ' + (S.lang==='bn'?s.bn:s.en) + '</span></td>' +
+            '<td class="d">' +
+              '<b class="task-table-title" data-tact="open" data-tid="' + t.id + '">' + esc(t.title) + '</b>' +
+              (t.desc ? '<small class="mut">' + esc(t.desc) + '</small>' : '') +
+              (t.tags && t.tags.length ? '<div class="task-tags-row">' + t.tags.map(tag=>'<span class="task-tag-chip">#'+esc(tag)+'</span>').join('') + '</div>' : '') +
+            '</td>' +
+            '<td><span class="tc-priority-chip" style="color:' + p.color + ';background:' + p.bg + '">' + (S.lang==='bn'?p.bn:p.en) + '</span></td>' +
+            '<td style="min-width:130px">' +
+              '<div class="tc-progress-info"><small>' + (S.lang==='bn'?toBnNum(pct):pct) + '%</small></div>' +
+              '<div class="task-progress-bar"><div class="task-progress-fill" style="width:' + pct + '%;' + (pct>=100?'background:var(--pos);':'') + '"></div></div>' +
+            '</td>' +
+            '<td>' + (t.taking ? sd(t.taking) : '—') + '</td>' +
+            '<td>' + taskDeadlineBadge(t) + '<br><small class="' + (isOver?'bad':'mut') + '">' + (t.deadline ? sd(t.deadline) : '—') + '</small></td>' +
+            '<td><b>' + esc(t.assignee || '—') + '</b></td>' +
+            '<td style="text-align:right;white-space:nowrap">' +
+              '<button type="button" class="lnk" data-tact="open" data-tid="' + t.id + '">' + lb('Details', 'বিস্তারিত') + '</button>' +
+              '<button type="button" class="lnk" data-tact="edit" data-tid="' + t.id + '">' + lb('Edit', 'এডিট') + '</button>' +
+              (isA() ? '<button type="button" class="lnk" data-tact="del" data-tid="' + t.id + '" style="color:var(--neg)">×</button>' : '') +
+            '</td>' +
+          '</tr>';
+        }).join('') +
+      '</tbody>' +
+    '</table>' +
+  '</div>';
+}
+
+/* ---------- Event Binding ---------- */
+function bindTaskEvents(){
+  var seg = $('taskViewSeg');
+  if(seg){
+    seg.onclick = function(e){
+      var btn = e.target.closest('[data-tv]');
+      if(!btn) return;
+      TSK_VIEW = btn.dataset.tv;
+      try{localStorage.setItem('ncs_task_view', TSK_VIEW)}catch(x){}
+      taskUI();
+    };
+  }
+
+  var btnNew = $('btnNewTask');
+  if(btnNew) btnNew.onclick = function(){ openTaskForm(null); };
+
+  var qInp = $('taskQ');
+  if(qInp){
+    qInp.oninput = function(){
+      TSK_Q = qInp.value;
+      renderContentOnly();
+    };
+  }
+
+  var sFilt = $('taskStageFilt');
+  if(sFilt){
+    sFilt.onchange = function(){
+      TSK_STAGE = sFilt.value;
+      taskUI();
+    };
+  }
+
+  var pFilt = $('taskPriorityFilt');
+  if(pFilt){
+    pFilt.onchange = function(){
+      TSK_PRIORITY = pFilt.value;
+      taskUI();
+    };
+  }
+
+  var aFilt = $('taskAssigneeFilt');
+  if(aFilt){
+    aFilt.onchange = function(){
+      TSK_ASSIGNEE = aFilt.value;
+      taskUI();
+    };
+  }
+
+  var sortFilt = $('taskSortFilt');
+  if(sortFilt){
+    sortFilt.onchange = function(){
+      TSK_SORT = sortFilt.value;
+      taskUI();
+    };
+  }
+
+  var clrBtn = $('taskClrFilt');
+  if(clrBtn){
+    clrBtn.onclick = function(){
+      TSK_Q = ''; TSK_STAGE = 'active'; TSK_PRIORITY = ''; TSK_ASSIGNEE = ''; TSK_SORT = 'deadline';
+      taskUI();
+    };
+  }
+
+  var container = $('taskContent');
+  if(container){
+    container.onclick = function(e){
+      var actionBtn = e.target.closest('[data-tact]');
+      if(!actionBtn) return;
+      var act = actionBtn.dataset.tact;
+      var tid = actionBtn.dataset.tid;
+      var task = S.tasks.find(x => x.id === tid);
+      if(!task) return;
+
+      if(act === 'open') openTaskDetail(task);
+      else if(act === 'edit') openTaskForm(task);
+      else if(act === 'del') deleteTask(task);
+      else if(act === 'next-stage') advanceTaskStage(task, 1);
+      else if(act === 'prev-stage') advanceTaskStage(task, -1);
+    };
+  }
+}
+
+function renderContentOnly(){
+  var container = $('taskContent');
+  if(!container) return;
+  var all = S.tasks.filter(t => !t.removed);
+  var filtered = getFilteredTasks();
+  container.innerHTML = TSK_VIEW === 'board' ? renderBoardView(all) : renderListView(filtered);
+}
+
+/* ---------- Task Stage Advance / Step ---------- */
+function advanceTaskStage(task, step){
+  var order = ['pending', 'in-progress', 'review', 'complete'];
+  var curIdx = order.indexOf(task.stage);
+  if(curIdx === -1) curIdx = 0;
+  var nextIdx = Math.max(0, Math.min(order.length - 1, curIdx + step));
+  if(curIdx === nextIdx) return;
+
+  var nextStage = order[nextIdx];
+  task.stage = nextStage;
+  if(nextStage === 'complete'){
+    task.completed = todayIso();
+    task.progress = 100;
+  } else if(curIdx === order.indexOf('complete')){
+    task.completed = null;
+  }
+  task.u = Date.now();
+  save();
+  Sound.tick();
+  taskUI();
+  ltoast(lb('Task stage: ', 'ধাপ পরিবর্তিত: ') + (S.lang==='bn'?stageInfo(nextStage).bn:stageInfo(nextStage).en));
+}
+
+/* ---------- Delete Task ---------- */
+function deleteTask(task){
+  if(!isA()){
+    ltoast(lb('Only Admin can delete tasks', 'শুধু অ্যাডমিন কাজ মুছতে পারেন'));
+    return;
+  }
+  if(confirm(lb('Delete this task: "', 'এই কাজটি মুছে ফেলবেন: "') + task.title + '"?')){
+    task.removed = 1;
+    task.u = Date.now();
+    save();
+    taskUI();
+    ltoast(lb('Task deleted', 'কাজ মুছে ফেলা হয়েছে'));
+  }
+}
+
+/* ---------- New / Edit Task Form Modal ---------- */
+function openTaskForm(task){
+  var isNew = !task;
+  var t = task || {
+    id: 'tsk_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+    title: '',
+    desc: '',
+    stage: 'pending',
+    progress: 0,
+    priority: 'medium',
+    taking: todayIso(),
+    deadline: '',
+    completed: null,
+    assignee: U ? U.name : 'Admin',
+    tags: [],
+    notes: []
+  };
+
+  var assignees = getAllAssignees();
+
+  var body = '' +
+  '<div class="f"><label>' + lb('Task Title *', 'কাজের শিরোনাম *') + '</label><input id="tfTitle" value="' + esc(t.title) + '" required maxlength="120" placeholder="' + lb('e.g. Restock printer paper, Fix machine...', 'যেমন: ফটোকপি কাগজ অর্ডার, মেশিন মেরামত...') + '"></div>' +
+  '<div class="f"><label>' + lb('Description', 'বিবরণ') + '</label><textarea id="tfDesc" rows="3" style="width:100%;border:1px solid var(--line);border-radius:10px;padding:8px;background:var(--bg);color:var(--ink);box-sizing:border-box" placeholder="' + lb('Additional details or instructions...', 'প্রয়োজনীয় তথ্য বা নির্দেশাবলী...') + '">' + esc(t.desc) + '</textarea></div>' +
+  '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">' +
+    '<div class="f"><label>' + lb('Priority', 'অগ্রাধিকার') + '</label><select id="tfPriority">' +
+      TASK_PRIORITIES.map(p => '<option value="' + p.id + '"' + (t.priority===p.id?' selected':'') + '>' + (S.lang==='bn'?p.bn:p.en) + '</option>').join('') +
+    '</select></div>' +
+    '<div class="f"><label>' + lb('Assign To', 'দায়িত্বপ্রাপ্ত কর্মী') + '</label><select id="tfAssignee">' +
+      assignees.map(a => '<option value="' + esc(a) + '"' + (t.assignee===a?' selected':'') + '>' + esc(a) + '</option>').join('') +
+    '</select></div>' +
+  '</div>' +
+  '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">' +
+    '<div class="f"><label>' + lb('Taking Date', 'গ্রহণের তারিখ') + '</label><input id="tfTaking" type="date" min="' + NCS_MIN_DATE + '" max="' + todayIso() + '" value="' + (t.taking || todayIso()) + '"></div>' +
+    '<div class="f"><label>' + lb('Deadline', 'শেষ সময়সীমা') + '</label><input id="tfDeadline" type="date" min="' + NCS_MIN_DATE + '" data-allow-future="1" value="' + (t.deadline || '') + '"></div>' +
+  '</div>' +
+  '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">' +
+    '<div class="f"><label>' + lb('Stage', 'কাজের ধাপ') + '</label><select id="tfStage">' +
+      TASK_STAGES.map(s => '<option value="' + s.id + '"' + (t.stage===s.id?' selected':'') + '>' + s.icon + ' ' + (S.lang==='bn'?s.bn:s.en) + '</option>').join('') +
+    '</select></div>' +
+    '<div class="f"><label>' + lb('Progress', 'অগ্রগতি') + ': <b id="tfProgNum">' + (t.progress||0) + '%</b></label><input id="tfProg" type="range" min="0" max="100" step="5" value="' + (t.progress||0) + '" style="width:100%;accent-color:var(--acc)"></div>' +
+  '</div>' +
+  '<div class="f"><label>' + lb('Tags (comma separated)', 'ট্যাগ (কমা দিয়ে লিখুন)') + '</label><input id="tfTags" value="' + esc((t.tags||[]).join(', ')) + '" placeholder="stock, urgent, stationery"></div>';
+
+  ask(isNew ? lb('Create New Task', 'নতুন কাজ তৈরি') : lb('Edit Task', 'কাজ সম্পাদনা'), body, function(){
+    var title = $('tfTitle') ? $('tfTitle').value.trim() : '';
+    if(!title){
+      Sound.buzz();
+      if($('tfTitle')) $('tfTitle').style.borderColor = 'var(--neg)';
+      return false;
+    }
+
+    var taking = $('tfTaking') ? $('tfTaking').value : todayIso();
+    var deadline = $('tfDeadline') ? $('tfDeadline').value : '';
+    if(deadline && taking && deadline < taking){
+      Sound.buzz();
+      ltoast(lb('Deadline cannot be before Taking Date', 'সময়সীমা গ্রহণের তারিখের পূর্বে হতে পারবে না'));
+      return false;
+    }
+
+    var stage = $('tfStage') ? $('tfStage').value : 'pending';
+    var progress = $('tfProg') ? +$('tfProg').value : 0;
+    var tagsRaw = $('tfTags') ? $('tfTags').value.trim() : '';
+    var tags = tagsRaw ? tagsRaw.split(',').map(s=>s.trim()).filter(Boolean) : [];
+
+    t.title = title;
+    t.desc = $('tfDesc') ? $('tfDesc').value.trim() : '';
+    t.priority = $('tfPriority') ? $('tfPriority').value : 'medium';
+    t.assignee = $('tfAssignee') ? $('tfAssignee').value : (U ? U.name : 'Admin');
+    t.taking = taking;
+    t.deadline = deadline;
+    t.stage = stage;
+    t.progress = progress;
+    t.tags = tags;
+    t.u = Date.now();
+
+    if(stage === 'complete' && !t.completed){
+      t.completed = todayIso();
+      t.progress = 100;
+    } else if(stage !== 'complete'){
+      t.completed = null;
+    }
+
+    if(isNew){
+      t.created = todayIso();
+      t.createdBy = U ? U.name : 'Admin';
+      S.tasks.push(t);
+      lg('Task created', t.title + ' [' + t.priority + ']');
+    } else {
+      lg('Task edited', t.title + ' [' + t.stage + ']');
+    }
+
+    save();
+    Sound.chaChing();
+    taskUI();
+    ltoast(isNew ? lb('Task created!', 'নতুন কাজ তৈরি হয়েছে!') : lb('Task updated!', 'কাজ হালনাগাদ হয়েছে!'));
+    return true;
+  }, isNew ? lb('Create', 'তৈরি করুন') : lb('Save Changes', 'সংরক্ষণ'));
+
+  var progInp = $('tfProg');
+  if(progInp){
+    progInp.oninput = function(){
+      if($('tfProgNum')) $('tfProgNum').textContent = progInp.value + '%';
+      if(+progInp.value === 100 && $('tfStage')){
+        $('tfStage').value = 'complete';
+      }
+    };
+  }
+
+  var stgSel = $('tfStage');
+  if(stgSel){
+    stgSel.onchange = function(){
+      if(stgSel.value === 'complete' && $('tfProg')){
+        $('tfProg').value = 100;
+        if($('tfProgNum')) $('tfProgNum').textContent = '100%';
+      }
+    };
+  }
+}
+
+/* ---------- Task Details & Notes Thread Modal ---------- */
+function openTaskDetail(t){
+  var p = priorityInfo(t.priority);
+  var s = stageInfo(t.stage);
+  var pct = Math.min(100, Math.max(0, +t.progress || 0));
+  var isOver = taskOverdue(t);
+
+  var notes = Array.isArray(t.notes) ? t.notes : [];
+
+  var html = '' +
+  '<div class="task-detail-card">' +
+    '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:10px">' +
+      '<div>' +
+        '<span class="t-stage-chip" style="color:' + s.color + ';background:' + s.bg + '">' + s.icon + ' ' + (S.lang==='bn'?s.bn:s.en) + '</span> ' +
+        '<span class="tc-priority-chip" style="color:' + p.color + ';background:' + p.bg + '">' + (S.lang==='bn'?p.bn:p.en) + '</span>' +
+      '</div>' +
+      taskDeadlineBadge(t) +
+    '</div>' +
+
+    '<h3 style="margin:0 0 8px;font-size:17px">' + esc(t.title) + '</h3>' +
+    (t.desc ? '<p style="margin:0 0 12px;font-size:13.5px;color:var(--mut);line-height:1.5">' + esc(t.desc) + '</p>' : '') +
+
+    /* Progress interactive slider */
+    '<div class="card" style="padding:10px 14px;margin-bottom:12px;background:var(--bg)">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">' +
+        '<span style="font-size:12.5px;font-weight:600">' + lb('Progress Slider', 'অগ্রগতি স্লাইডার') + '</span>' +
+        '<b id="tdProgNum" style="color:var(--acc);font-size:15px">' + (S.lang==='bn'?toBnNum(pct):pct) + '%</b>' +
+      '</div>' +
+      '<input id="tdProg" type="range" min="0" max="100" step="5" value="' + pct + '" style="width:100%;accent-color:var(--acc)">' +
+      '<div style="display:flex;gap:6px;margin-top:8px">' +
+        '<button type="button" class="ghost" data-prog-step="25" style="height:26px;font-size:11px;padding:0 8px">25%</button>' +
+        '<button type="button" class="ghost" data-prog-step="50" style="height:26px;font-size:11px;padding:0 8px">50%</button>' +
+        '<button type="button" class="ghost" data-prog-step="75" style="height:26px;font-size:11px;padding:0 8px">75%</button>' +
+        '<button type="button" class="ghost" data-prog-step="100" style="height:26px;font-size:11px;padding:0 8px;color:var(--pos);font-weight:700">100% ✔</button>' +
+      '</div>' +
+    '</div>' +
+
+    /* Meta table */
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12.5px;margin-bottom:14px">' +
+      '<div class="card" style="padding:8px 10px;margin:0"><b>' + lb('Assignee', 'দায়িত্বপ্রাপ্ত') + ':</b> ' + esc(t.assignee || '—') + '</div>' +
+      '<div class="card" style="padding:8px 10px;margin:0"><b>' + lb('Taking Date', 'গ্রহণের তারিখ') + ':</b> ' + (t.taking ? sd(t.taking) : '—') + '</div>' +
+      '<div class="card" style="padding:8px 10px;margin:0"><b>' + lb('Deadline', 'সময়সীমা') + ':</b> <span class="' + (isOver?'bad':'') + '">' + (t.deadline ? sd(t.deadline) : '—') + '</span></div>' +
+      '<div class="card" style="padding:8px 10px;margin:0"><b>' + lb('Completed', 'সমাপ্তির তারিখ') + ':</b> ' + (t.completed ? sd(t.completed) : '—') + '</div>' +
+    '</div>' +
+
+    /* Collaborative Notes Thread */
+    '<div class="task-notes-section">' +
+      '<h4 style="margin:0 0 8px;font-size:13.5px;display:flex;justify-content:space-between">' +
+        '<span>💬 ' + lb('Activity & Notes Thread', 'মন্তব্য ও নোটের বিবরণ') + ' (' + notes.length + ')</span>' +
+      '</h4>' +
+      '<div id="tdNotesList" style="max-height:160px;overflow-y:auto;margin-bottom:10px;display:flex;flex-direction:column;gap:6px">' +
+        (notes.length ? notes.map(n => '' +
+          '<div class="card" style="padding:7px 10px;margin:0;font-size:12.5px;background:var(--bg)">' +
+            '<div style="display:flex;justify-content:space-between;color:var(--mut);font-size:11px;margin-bottom:2px">' +
+              '<b>' + esc(n.by) + '</b><span>' + esc(n.t) + '</span>' +
+            '</div>' +
+            '<div>' + esc(n.text) + '</div>' +
+          '</div>'
+        ).join('') : '<div class="mut" style="font-size:12px;padding:6px 0">' + lb('No notes yet. Add progress update below.', 'কোনো মন্তব্য নেই। নিচে নোট যোগ করুন।') + '</div>') +
+      '</div>' +
+      '<div style="display:flex;gap:6px">' +
+        '<input id="tdNewNote" placeholder="' + lb('Add a progress note...', 'কাজের অগ্রগতির নোট লিখুন...') + '" style="height:36px;font-size:13px">' +
+        '<button type="button" class="go" id="tdBtnAddNote" style="height:36px;padding:0 14px;font-size:13px">' + lb('Add', 'যোগ') + '</button>' +
+      '</div>' +
+    '</div>' +
+  '</div>';
+
+  ask(lb('Task Details', 'কাজের বিস্তারিত'), html, function(){
+    /* Save progress changes made directly in detail view */
+    var pVal = $('tdProg') ? +$('tdProg').value : pct;
+    if(pVal !== pct){
+      t.progress = pVal;
+      if(pVal === 100){
+        t.stage = 'complete';
+        t.completed = todayIso();
+      }
+      t.u = Date.now();
+      save();
+      taskUI();
+    }
+    return true;
+  }, lb('Close', 'বন্ধ করুন'), 1);
+
+  /* Bind slider & quick steps inside detail dialog */
+  var pSlider = $('tdProg');
+  if(pSlider){
+    pSlider.oninput = function(){
+      if($('tdProgNum')) $('tdProgNum').textContent = pSlider.value + '%';
+    };
+  }
+
+  $('ob').onclick = function(e){
+    var stepBtn = e.target.closest('[data-prog-step]');
+    if(stepBtn){
+      var v = +stepBtn.dataset.progStep;
+      if(pSlider) pSlider.value = v;
+      if($('tdProgNum')) $('tdProgNum').textContent = v + '%';
+      return;
+    }
+
+    if(e.target.id === 'tdBtnAddNote'){
+      var noteInp = $('tdNewNote');
+      if(!noteInp) return;
+      var txt = noteInp.value.trim();
+      if(!txt){
+        Sound.buzz();
+        noteInp.style.borderColor = 'var(--neg)';
+        return;
+      }
+      if(!Array.isArray(t.notes)) t.notes = [];
+      var now = new Date();
+      var timeStr = sd(todayIso()) + ' ' + t12(String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0'));
+      t.notes.push({
+        id: 'n_' + Date.now(),
+        text: txt,
+        by: U ? U.name : 'Staff',
+        t: timeStr
+      });
+      t.u = Date.now();
+      save();
+      Sound.tick();
+      openTaskDetail(t); // re-render with updated notes
+    }
+  };
+}
 
 
 /* --- Module: 07-pos-products.js --- */
@@ -2300,9 +3628,12 @@ function prodUI(){const sm=stockMap(),q=($('pdq').value||'').trim().toLowerCase(
   $('pdF').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.f===PF));
   const L=st.filter(x=>(!q||x.p.name.toLowerCase().includes(q)||(x.p.barcode||'').includes(q))&&(PF==='all'||(PF==='out'?x.s<=0:x.s<=LOW))).sort((a,b)=>a.p.name.localeCompare(b.p.name));
   $('pdL').innerHTML=L.length?L.slice(0,PLN).map(({p,s})=>`<div class="prd"><div>${imgH(p)}</div><div><b>${esc(p.name)}</b><div class="mut">${p.barcode?esc(p.barcode)+' · ':''}Stock <b class="${s<=0?'bad':''}">${s}</b></div><div class="mut">${cost?(p.buy?'Buy '+tk(p.buy):'<b style="color:var(--warn)">Cost not set</b>')+' · ':''}Sell ${tk(p.price)}</div></div><div class="pa"><button class="ghost pbtn" data-ad="${p.id}">Add stock</button>${(isA()||role()==='keeper')?'<button class="ghost pbtn" data-fq="'+p.id+'">Set stock</button>':''}<button class="ghost pbtn" data-ed="${p.id}">Edit</button></div></div>`).join('')+(L.length>PLN?'<div class="pgmore" data-pmore="1" role="button" tabindex="0">'+lb('Show more','আরও দেখুন')+' ('+(L.length-PLN)+')</div>':''):'<div class="empty">No products found</div>'}
-function addStock(p){dlg('Add stock · '+p.name,`<div class="f"><label>Quantity</label><input id="as1" type="number" inputmode="decimal" min="0"></div>${canCost()?`<div class="f"><label>Buying cost</label><input id="as2" type="number" inputmode="decimal" min="0" value="${p.buy||''}"></div>`:''}<div class="f"><label>Selling price</label><input id="as3" type="number" inputmode="decimal" min="0" value="${p.price}"></div><div class="f"><label>How did it come?</label><select id="as4"><option value="bought">Bought</option><option value="brought">Brought in</option></select></div><div class="f"><label>Date</label><input id="as5" type="date" value="${iso(new Date())}"></div><p class="mut">This records stock only. To record paying a supplier, use POS and Purchase, which adds stock too.</p>`,()=>{
+function addStock(p){dlg('Add stock · '+p.name,`<div class="f"><label>Quantity</label><input id="as1" type="number" inputmode="decimal" min="0"></div>${canCost()?`<div class="f"><label>Buying cost</label><input id="as2" type="number" inputmode="decimal" min="0" value="${p.buy||''}"></div>`:''}<div class="f"><label>Selling price</label><input id="as3" type="number" inputmode="decimal" min="0" value="${p.price}"></div><div class="f"><label>How did it come?</label><select id="as4"><option value="bought">Bought</option><option value="brought">Brought in</option></select></div><div class="f"><label>Date</label><input id="as5" type="date" min="${NCS_MIN_DATE}" max="${todayIso()}" value="${todayIso()}"></div><p class="mut">This records stock only. To record paying a supplier, use POS and Purchase, which adds stock too.</p>`,()=>{
   const q=+$('as1').value;if(!(q>0))return false;if(canCost()&&$('as2').value!=='')p.buy=+$('as2').value||0;p.price=+$('as3').value||p.price;
-  S.moves.push({id:'s'+Date.now()+'-'+p.id,pid:p.id,q,ref:'',t:'in',how:$('as4').value,d:$('as5').value||iso(new Date())});lg('Add stock',p.name+' +'+q+' ('+$('as4').value+')');save();toast('Stock added');prodUI()},'Add stock')}
+  const sDate=$('as5').value||todayIso();
+  if(sDate>todayIso()){ltoast(lb('Cannot add stock for a future date','ভবিষ্যতের তারিখে স্টক যোগ করা যাবে না'));return false}
+  if(sDate<NCS_MIN_DATE){ltoast(lb('Cannot add stock before November 2020','নভেম্বর ২০২০ এর পূর্বে স্টক যোগ করা যাবে না'));return false}
+  S.moves.push({id:'s'+Date.now()+'-'+p.id,pid:p.id,q,ref:'',t:'in',how:$('as4').value,d:sDate});lg('Add stock',p.name+' +'+q+' ('+$('as4').value+')');save();toast('Stock added');prodUI()},'Add stock')}
 function forceStock(p){if(!(isA()||role()==='keeper')||!p)return;if(S.moves.some(v=>v.pid===p.id&&v.adminCheck&&!v.adminChecked&&!v.adminRejected)){toast('This product already has a stock change awaiting review');return}var old=stockMap()[p.id]||0;dlg('Set stock quantity · '+p.name,'<div class="f"><label>New quantity</label><input id="fq" type="number" min="0" step="any" value="'+old+'"></div><div class="f"><label>Reason (required)</label><input id="fqr" maxlength="160"></div><p class="mut">This is recorded and sent to Admin for review.</p>',()=>{var q=+$('fq').value,why=$('fqr').value.trim();if(!isFinite(q)||q<0||!why)return false;if(q===old)return false;S.moves.push({id:'force-'+Date.now()+'-'+p.id,pid:p.id,q:q-old,old:old,target:q,ref:'',t:'force',d:iso(new Date()),reason:why,by:U.name,adminCheck:1});lg('Force stock quantity',p.name+' '+old+' → '+q+' — '+why);save();prodUI();toast('Submitted for Admin review')},'Set quantity')}
 $('pdL').addEventListener('click',e=>{const a=e.target.closest('[data-ad]'),b=e.target.closest('[data-ed]'),f=e.target.closest('[data-fq]');if(a)addStock(byId(a.dataset.ad));if(b)pForm(byId(b.dataset.ed));if(f)forceStock(byId(f.dataset.fq))});
 $('pdNew').onclick=()=>pForm(null,'');$('pdq').addEventListener('input',()=>{PLN=60;prodUI()});$('pdL').addEventListener('click',e=>{if(e.target.closest('[data-pmore]')){PLN+=60;prodUI()}});
@@ -2468,9 +3799,18 @@ function ledForm(dir,eid,fix){
   po=[...new Set(S.ltx.filter(function(t){return t.c===LC&&t.who}).map(function(t){return t.who}))],am=x.amt?(x.parts?x.parts.join('+'):x.amt):'';
   if(ed&&ed.src){ltoast(lb('This due sale was posted from Accounts or POS. Change it there.','এটি অ্যাকাউন্টস বা POS থেকে এসেছে।'));return}
   var lkSh=lEd()&&(!ed||ed.l9),lkOn=ed?!!ed.lnk:true;
-  ask(lb('Entry','এন্ট্রি'),'<div class="f"><label>'+lb('Type','ধরন')+'</label><select id="lfd"><option value="in">পেলাম · Received</option><option value="out">দিলাম · Given</option><option value="borrow">Borrow · received, we owe</option><option value="lend">Lend · given, they owe</option></select></div><div class="f"><label>'+lb('Amount (e.g. 3060+5000+500)','টাকা (যেমন ৩০৬০+৫০০০+৫০০)')+'</label><input id="lfa" inputmode="tel" autocomplete="off" value="'+esc(am)+'"><small id="lfp" class="mut"></small></div><div class="f"><div class="mut">'+lb('Date and time recorded automatically: ','তারিখ ও সময় স্বয়ংক্রিয়: ')+'<b>'+sd(iso(new Date()))+' '+t12(nowT())+'</b></div><label style="margin-top:8px"><input id="lfx" type="checkbox" style="width:auto;height:auto" '+(ed?'checked':'')+'> '+lb('Use a different (previous) date','আগের তারিখ দিন')+'</label></div><div id="lfb" '+(ed?'':'hidden')+'><div class="f"><label>'+lb('Date','তারিখ')+'</label><input id="lfs" type="date" value="'+(x.d||'')+'"></div><div class="f"><label>'+lb('To date (optional)','শেষ তারিখ (ঐচ্ছিক)')+'</label><input id="lfe" type="date" value="'+(x.d2||'')+'"></div><div class="f"><label><input id="lfu" type="checkbox" style="width:auto;height:auto" '+(ed&&!ed.d?'checked':'')+'> '+lb('Date unknown','তারিখ জানা নেই')+'</label></div></div><div class="f"><label>'+lb('Method','মাধ্যম')+'</label><select id="lfm">'+['Cash','Bkash Personal','Bkash Agent','Nagad','Rocket','Bank','Other'].map(function(m){return '<option'+(mN(x.m)===m?' selected':'')+'>'+m+'</option>'}).join('')+'</select></div>'+(lkSh?'<div class="f"><label><input id="lfk2" type="checkbox" style="width:auto;height:auto" '+(lkOn?'checked':'')+'> '+lb('Also record in cash / wallet','ক্যাশ / ওয়ালেটেও লিখুন')+'</label></div>':'')+'<div class="f"><small id="lfk" class="mut"></small></div><div class="f"><label>'+lb('Paid to / received from','কাকে / কার কাছ থেকে')+'</label><input id="lfw" list="lfl" maxlength="60" value="'+esc(x.who||'')+'"><datalist id="lfl">'+po.map(function(p){return '<option value="'+esc(p)+'">'}).join('')+'</datalist></div><div class="f"><label>'+lb('Note','নোট')+'</label><input id="lfn" maxlength="200" value="'+esc(x.note||'')+'"></div>'+(ed&&role()==='accountant'&&!fix?'<div class="f"><label>'+lb('Reason for edit (sent to Admin)','সম্পাদনার কারণ')+'</label><input id="lfr" maxlength="160"></div>':''),function(){
+  ask(lb('Entry','এন্ট্রি'),'<div class="f"><label>'+lb('Type','ধরন')+'</label><select id="lfd"><option value="in">পেলাম · Received</option><option value="out">দিলাম · Given</option><option value="borrow">Borrow · received, we owe</option><option value="lend">Lend · given, they owe</option></select></div><div class="f"><label>'+lb('Amount (e.g. 3060+5000+500)','টাকা (যেমন ৩০৬০+৫০০০+৫০০)')+'</label><input id="lfa" inputmode="tel" autocomplete="off" value="'+esc(am)+'"><small id="lfp" class="mut"></small></div><div class="f"><div class="mut">'+lb('Date and time recorded automatically: ','তারিখ ও সময় স্বয়ংক্রিয়: ')+'<b>'+sd(todayIso())+' '+t12(nowT())+'</b></div><label style="margin-top:8px"><input id="lfx" type="checkbox" style="width:auto;height:auto" '+(ed?'checked':'')+'> '+lb('Use a different (previous) date','আগের তারিখ দিন')+'</label></div><div id="lfb" '+(ed?'':'hidden')+'><div class="f"><label>'+lb('Date','তারিখ')+'</label><input id="lfs" type="date" min="'+NCS_MIN_DATE+'" max="'+todayIso()+'" value="'+(x.d||'')+'"></div><div class="f"><label>'+lb('To date (optional)','শেষ তারিখ (ঐচ্ছিক)')+'</label><input id="lfe" type="date" min="'+NCS_MIN_DATE+'" max="'+todayIso()+'" value="'+(x.d2||'')+'"></div><div class="f"><label><input id="lfu" type="checkbox" style="width:auto;height:auto" '+(ed&&!ed.d?'checked':'')+'> '+lb('Date unknown','তারিখ জানা নেই')+'</label></div></div><div class="f"><label>'+lb('Method','মাধ্যম')+'</label><select id="lfm">'+['Cash','Bkash Personal','Bkash Agent','Nagad','Rocket','Bank','Other'].map(function(m){return '<option'+(mN(x.m)===m?' selected':'')+'>'+m+'</option>'}).join('')+'</select></div>'+(lkSh?'<div class="f"><label><input id="lfk2" type="checkbox" style="width:auto;height:auto" '+(lkOn?'checked':'')+'> '+lb('Also record in cash / wallet','ক্যাশ / ওয়ালেটেও লিখুন')+'</label></div>':'')+'<div class="f"><small id="lfk" class="mut"></small></div><div class="f"><label>'+lb('Paid to / received from','কাকে / কার কাছ থেকে')+'</label><input id="lfw" list="lfl" maxlength="60" value="'+esc(x.who||'')+'"><datalist id="lfl">'+po.map(function(p){return '<option value="'+esc(p)+'">'}).join('')+'</datalist></div><div class="f"><label>'+lb('Note','নোট')+'</label><input id="lfn" maxlength="200" value="'+esc(x.note||'')+'"></div>'+(ed&&role()==='accountant'&&!fix?'<div class="f"><label>'+lb('Reason for edit (sent to Admin)','সম্পাদনার কারণ')+'</label><input id="lfr" maxlength="160"></div>':''),function(){
     var p=parseAmt($('lfa').value);if(!p){Sound.buzz();$('lfa').style.borderColor='var(--neg)';return false}
-    var mn=$('lfx').checked,d=mn?($('lfu').checked?'':$('lfs').value):(ed?ed.d:iso(new Date())),e2=mn?$('lfe').value:(ed?ed.d2||'':''),o={t:(ed&&!fix)?ed.t:nowT(),dir:($('lfd').value==='borrow'?'in':$('lfd').value==='lend'?'out':$('lfd').value),btype:($('lfd').value==='borrow'?'Borrow':$('lfd').value==='lend'?'Lend':''),amt:p.reduce(function(a,b){return a+b},0),parts:p.length>1?p:null,d:d,d2:d&&e2>d?e2:'',m:$('lfm').value,who:$('lfw').value.trim(),note:$('lfn').value.trim()},cn=cname();
+    var mn=$('lfx').checked,d=mn?($('lfu').checked?'':$('lfs').value):(ed?ed.d:todayIso()),e2=mn?$('lfe').value:(ed?ed.d2||'':'');
+    if(d){
+      if(d>todayIso()){Sound.buzz();ltoast(lb('Cannot add entry to a future date','ভবিষ্যতের তারিখে এন্ট্রি দেওয়া যাবে না'));return false}
+      if(d<NCS_MIN_DATE){Sound.buzz();ltoast(lb('Cannot add entry before November 2020','নভেম্বর ২০২০ এর পূর্বে এন্ট্রি দেওয়া যাবে না'));return false}
+    }
+    if(e2){
+      if(e2>todayIso()){Sound.buzz();ltoast(lb('Future dates are not allowed','ভবিষ্যতের তারিখ গ্রহণযোগ্য নয়'));return false}
+      if(e2<NCS_MIN_DATE){Sound.buzz();ltoast(lb('Date cannot be before November 2020','নভেম্বর ২০২০ এর আগের তারিখ গ্রহণযোগ্য নয়'));return false}
+    }
+    var o={t:(ed&&!fix)?ed.t:nowT(),dir:($('lfd').value==='borrow'?'in':$('lfd').value==='lend'?'out':$('lfd').value),btype:($('lfd').value==='borrow'?'Borrow':$('lfd').value==='lend'?'Lend':''),amt:p.reduce(function(a,b){return a+b},0),parts:p.length>1?p:null,d:d,d2:d&&e2>d?e2:'',m:$('lfm').value,who:$('lfw').value.trim(),note:$('lfn').value.trim()},cn=cname();
     var cb=$('lfk2'),mv=ledMove(o),want=cb?cb.checked:(ed?!!ed.lnk:true),legacy=!!ed&&!ed.l9,ofl={},eligible=!!mv&&!!o.d&&want;
     if(!ed)ofl={l9:1,lnk:eligible?1:0,le:S.epoch||0};
     else if(fix||!lEd()){if(!legacy)ofl={l9:1,lnk:(mv&&o.d)?1:0,le:S.epoch||0}}
@@ -3412,11 +4752,125 @@ function selfTest(){
 })();
 
 /* ---------- v9.21: clock, Accounts void section ---------- */
-function clkTick(){var x=new Date(),T=t12(String(x.getHours()).padStart(2,'0')+':'+String(x.getMinutes()).padStart(2,'0')),D='';
-  try{D=x.toLocaleDateString(S.lang==='bn'?'bn-BD':'en-GB',{weekday:'short',day:'2-digit',month:'short'})}catch(e){D=sd(iso(x))}
-  [['hClkT',T],['hClkD',D],['tclkT',T],['tclkD',D]].forEach(function(p){var el=$(p[0]);if(el&&el.textContent!==p[1])el.textContent=p[1]})}
+/* ---------- v11.0: Desktop Watch, Weather, Bengali Calendar & Clock ---------- */
+function getWeatherIcon(code){
+  if(code===0)return'☀️';
+  if(code===1||code===2)return'🌤️';
+  if(code===3)return'☁️';
+  if(code>=45&&code<=48)return'🌫️';
+  if(code>=51&&code<=67)return'🌧️';
+  if(code>=71&&code<=77)return'❄️';
+  if(code>=80&&code<=82)return'🌦️';
+  if(code>=95)return'⛈️';
+  return'☀️';
+}
+
+function renderWeather(cur){
+  var iconEl=$('hwIcon'),tempEl=$('hwTemp');
+  if(!iconEl||!tempEl||!cur)return;
+  var temp=Math.round(cur.temperature_2m);
+  iconEl.textContent=getWeatherIcon(cur.weather_code);
+  tempEl.textContent=S.lang==='bn'?(toBnNum(temp)+'°সে'):(temp+'°C');
+}
+
+function fetchDhakaWeather(){
+  try{
+    var cached=sessionStorage.getItem('ncs_weather_v1');
+    if(cached){
+      var parsed=JSON.parse(cached);
+      if(Date.now()-parsed.ts<1800000){
+        renderWeather(parsed.data);
+        return;
+      }
+    }
+  }catch(e){}
+  if(typeof navigator!=='undefined'&&navigator.onLine===false)return;
+  try{
+    fetch('https://api.open-meteo.com/v1/forecast?latitude=23.8103&longitude=90.4125&current=temperature_2m,weather_code&timezone=Asia%2FDhaka')
+      .then(function(r){return r.json()})
+      .then(function(data){
+        if(data&&data.current){
+          try{sessionStorage.setItem('ncs_weather_v1',JSON.stringify({ts:Date.now(),data:data.current}))}catch(e){}
+          renderWeather(data.current);
+        }
+      })
+      .catch(function(){});
+  }catch(e){}
+}
+
+function updateLiveWatch(now){
+  var h=now.getHours(),m=now.getMinutes(),s=now.getSeconds();
+  var h12=((h+11)%12+1);
+  var ampmEn=h<12?'AM':'PM';
+  var ampmBn=h<6?'রাত':h<12?'সকাল':h<15?'দুপুর':h<18?'বিকাল':'রাত';
+  var isBn=S.lang==='bn';
+  
+  var timeStr=isBn
+    ?(toBnNum(h12)+':'+toBnNum(String(m).padStart(2,'0'))+':'+toBnNum(String(s).padStart(2,'0'))+' '+ampmBn)
+    :(String(h12)+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')+' '+ampmEn);
+    
+  var timeEl=$('hwTime');
+  if(timeEl&&timeEl.textContent!==timeStr)timeEl.textContent=timeStr;
+  
+  var dow=now.getDay();
+  var dColor=DAY_COLORS[dow];
+  var dayName=isBn?DAY_NAMES_BN[dow]:DAY_NAMES_EN[dow];
+  
+  var dayEl=$('hwDay');
+  if(dayEl){
+    if(dayEl.textContent!==dayName)dayEl.textContent=dayName;
+    dayEl.style.color=dColor;
+    dayEl.style.backgroundColor=dColor+'18';
+    dayEl.style.borderColor=dColor+'44';
+  }
+  
+  var dateEl=$('hwDate');
+  if(dateEl){
+    var gDate=isBn
+      ?(toBnNum(now.getDate())+' '+(['জানু','ফেব্রু','মার্চ','এপ্রিল','মে','জুন','জুলাই','আগস্ট','সেপ্টে','অক্টো','নভে','ডিসে'][now.getMonth()])+' '+toBnNum(now.getFullYear()))
+      :(now.getDate()+' '+(['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][now.getMonth()])+' '+now.getFullYear());
+    if(dateEl.textContent!==gDate)dateEl.textContent=gDate;
+  }
+  
+  var bngEl=$('hwBng');
+  if(bngEl){
+    var bnDate=getBengaliDate(now);
+    if(bngEl.textContent!==bnDate.text)bngEl.textContent=bnDate.text;
+  }
+
+  /* Bismillah banner & Shop name text */
+  var bisEl=$('bismillahText');
+  if(bisEl){
+    var bisStr=isBn?'বিসমিল্লাহির রাহমানির রাহীম':'بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ';
+    if(bisEl.textContent!==bisStr)bisEl.textContent=bisStr;
+  }
+  var snEl=$('shopNameTitle');
+  if(snEl){
+    var snStr=isBn?SHOP_BN:SHOP_EN;
+    if(snEl.textContent!==snStr)snEl.textContent=snStr;
+  }
+}
+
+function clkTick(){
+  var x=new Date();
+  updateLiveWatch(x);
+  var isBn=S.lang==='bn';
+  var h=x.getHours(),m=x.getMinutes();
+  var h12=((h+11)%12+1);
+  var ampmEn=h<12?'AM':'PM';
+  var ampmBn=h<6?'রাত':h<12?'সকাল':h<15?'দুপুর':h<18?'বিকাল':'রাত';
+  var T=isBn?(toBnNum(h12)+':'+toBnNum(String(m).padStart(2,'0'))+' '+ampmBn):t12(String(h).padStart(2,'0')+':'+String(m).padStart(2,'0'));
+  var D='';
+  try{D=x.toLocaleDateString(isBn?'bn-BD':'en-GB',{weekday:'short',day:'2-digit',month:'short'})}catch(e){D=sd(iso(x))}
+  [['hClkT',T],['hClkD',D],['tclkT',T],['tclkD',D]].forEach(function(p){var el=$(p[0]);if(el&&el.textContent!==p[1])el.textContent=p[1]});
+}
 function clkVis(){var el=$('tclk');if(!el)return;var on=!!U&&CUR!=='home'&&(isA()||CUR===TABS[role()][0]);el.hidden=!on;if(on)clkTick()}
-setInterval(clkTick,15000);
+setInterval(function(){
+  if(typeof document!=='undefined'&&document.hidden)return;
+  clkTick();
+},1000);
+setTimeout(fetchDhakaWeather,600);
+setInterval(fetchDhakaWeather,1800000);
 function avBar(vd){var el=$('avBar');if(!el)return;if(!lEd()){el.innerHTML='';return}
   if(!vd.length&&!AV){el.innerHTML='';return}
   el.innerHTML='<div class="avbar"><span class="mut">'+(AV?lb('Showing voided entries only','শুধু বাতিল এন্ট্রি দেখানো হচ্ছে'):'')+'</span><button type="button" class="ghost'+(AV?' on':'')+'" data-av="1">'+(AV?'‹ '+lb('Back to entries','এন্ট্রিতে ফিরুন'):lb('Void data','বাতিল তথ্য')+' ('+vd.length+')')+'</button></div>'}
@@ -3520,7 +4974,10 @@ function animateCounts(){
 function saveCheck(){if(document.documentElement.dataset.rm)return;var d=document.createElement('div');d.className='savechk';d.innerHTML='<svg viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="22" fill="none" stroke="var(--acc)" stroke-width="3"/><path d="M14 27l8 8 16-16" fill="none" stroke="var(--acc)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>';document.body.appendChild(d);setTimeout(function(){d.classList.add('out')},700);setTimeout(function(){d.remove()},1250)}
 (function(){
   var M="Claude Sonnet 5.5 · owner's Claude account";
-  APP_VERSION='10.4.4';
+  APP_VERSION='11.0.0-beta';
+  VERS.unshift({v:'11.0.0-beta',d:'2026-10-29',t:'Phase 3: Overview Dashboard Redesign, Icon Filters & Salat Times',by:'Antigravity',n:['Icon-based period filters across Home/Overview: Today, Yesterday, 7 Days, 1 Month, 3 Months, 6 Months, Overall, Custom','Custom day range selector with Nov 2020 clamp and future date ban','Aladhan Salat API integration for Dhaka with daily session caching and offline resilience','Salat Times Card with 6 prayer slots, highlighting active/next prayer with real-time countdown','Short pop-up Salat alarm toast with soft audio chime on prayer arrival','Removed obsolete Recent Bills section from Overview dashboard for clean aesthetics']});
+  VERS.unshift({v:'11.0.0-alpha.2',d:'2026-10-29',t:'Phase 2: Task Schedule & Project Tracking Module',by:'Antigravity',n:['New 6th navigation tab: Task Schedule (কাজের সময়সূচী) accessible to all roles','Kanban Board view with 4 interactive drag-and-advance columns: Pending, In Progress, Under Review, Completed','List view with responsive tabular progress bars, priority badges, tags, and date countdowns','Progress bar per task (0-100%) with dynamic gradient fill and 100% completion detection','5-stage lifecycle: Pending, In Progress, Review, Completed, and Cancelled','Smart date tracking: Taking Date (min Nov 2020, max today), Deadline, and auto-recorded Completion Date','Overdue alert detection with red badges and countdown timers','Collaborative notes thread: timestamped updates by author for every task','Task search, stage filter, priority filter, assignee filter, and multi-criteria sorting','S.tasks added to monotonic whole-state cloud sync engine']});
+  VERS.unshift({v:'11.0.0-alpha.1',d:'2026-10-29',t:'Phase 4 & 1: Strict Calendar Rules & Desktop Header Redesign',by:'Antigravity',n:['Calendar min date (November 2020) enforced across all date selectors, forms, and filters','Strict ban on future date entries with clamp protection and notifications','Top Bismillah banner in Arabic calligraphy / Bengali transliteration','Upscaled desktop branding & typography with SolaimanLipi support','Desktop Live Watch with 1-second precision, Bengali numerals, and localized periods','Dhaka Live Weather widget via Open-Meteo with caching & offline resilience','Bengali Calendar conversion (Bongabdo date) displayed in Header Watch','7 Days 7 Colors: distinct semantic accent color assigned to each day of the week']});
   VERS.unshift({v:'9.22',d:'2026-10-19',t:'Sound effects, motion polish and wrapper download safety',by:M,n:['Web Audio sound engine: soft tick on tabs/dialogs, cha-ching on sale/entry save, low buzz on errors, sync chime on background sync','Sound toggle in Settings, default off; AudioContext created on first tap','All sound and motion automatically off when the OS asks for reduced motion','Number count-up on Home (Cash Balance, Total Sell, Total Buy) over 0.4s on load and period change','Save checkmark pop on POS sale and Accounts/Ledger entry save','Tap feedback: buttons scale to 0.97 on press','POS cart rows slide in when added and slide out when removed','dlFile falls back to a data URL window if the wrapper blocks the <a download> tag']});
   VERS.unshift({v:'9.22.1',d:'2026-10-19',t:'Sound resume fix + Test button',by:M,n:['AudioContext resume() race fixed: tones now play after the context is running (fixes silent playback on Android WebView, iOS Safari and after idle tabs)','▶ Test sound button inside Settings for instant verification','Louder gains for tick and cha-ching so phone speakers are audible']});
   VERS.unshift({v:'9.22.2',d:'2026-10-19',t:'Sound toggle visible in More, Settings unhidden',by:M,n:['Sound effects ON/OFF button now appears directly in the More tab (no need to open Settings)','Removed the CSS rule that was hiding the Settings button in the More tab','Settings still shows the Sound effects checkbox and the ▶ Test sound button']});

@@ -5,7 +5,13 @@ function renderAccPresets(){
   el.innerHTML=list.map(p=>`<button type="button" class="svc-chip" data-acc-preset="${p.id}"><span>${p.icon||'⚡'}</span> <b>${S.lang==='bn'?(p.bn||p.name):p.name}</b> <small>${tk(p.price)}</small></button>`).join('');
 }
 function render(){try{renderWalletCards()}catch(e){}try{applyCardSettings()}catch(e){}try{renderAccPresets()}catch(e){}
-  $('title').textContent=label(cur);$('pick').value=cur;
+  if(cur>todayIso())cur=todayIso();
+  if(cur<NCS_MIN_DATE)cur=NCS_MIN_DATE;
+  $('title').innerHTML=label(cur);
+  var pEl=$('pick');if(pEl){pEl.value=cur;pEl.min=NCS_MIN_DATE;pEl.max=todayIso();}
+  var pdBtn=$('pd'),ndBtn=$('nd');
+  if(pdBtn){var atMin=cur<=NCS_MIN_DATE;pdBtn.disabled=atMin;pdBtn.style.opacity=atMin?'0.35':'';pdBtn.style.pointerEvents=atMin?'none':'';}
+  if(ndBtn){var atMax=cur>=todayIso();ndBtn.disabled=atMax;ndBtn.style.opacity=atMax?'0.35':'';ndBtn.style.pointerEvents=atMax?'none':'';}
   const m=calc(),all=sorted(),day=all.filter(e=>e.d===cur),act=day.filter(e=>!e.void),f=flt(),tv0=f?all.filter(e=>match(e,f)):day,tv=tv0.filter(e=>!e.void),vd=lEd()?tv0.filter(e=>e.void):[];
   if(ACC_D!==cur+'|'+(f?JSON.stringify(f):'')){ACC_D=cur+'|'+(f?JSON.stringify(f):'');ACC_N=150}
   const sum=(ty)=>act.filter(e=>e.type===ty&&!isWalletTransfer(e)),tot=a=>a.reduce((s,e)=>s+e.amt,0);
@@ -53,6 +59,8 @@ function preview(){
 function reset(){editing=null;$('form').reset();$('fy').value='Sale';cats();const x=new Date();$('ft').value=String(x.getHours()).padStart(2,'0')+':'+String(x.getMinutes()).padStart(2,'0');$('go').textContent='Add entry';$('cancel').style.display='none';$('sg').hidden=true}
 
 $('form').addEventListener('submit',ev=>{ev.preventDefault();
+  if(cur>todayIso()){Sound.buzz();ltoast(lb('Cannot add entry to a future date','ভবিষ্যতের তারিখে এন্ট্রি দেওয়া যাবে না'));return}
+  if(cur<NCS_MIN_DATE){Sound.buzz();ltoast(lb('Cannot add entry before November 2020','নভেম্বর ২০২০ এর পূর্বে এন্ট্রি দেওয়া যাবে না'));return}
   const o={d:cur,t:$('ft').value,type:$('fy').value,desc:$('fd').value.trim(),cat:$('fc').value,pay:$('fp').value,amt:+$('fa').value,act:editing?(S.entries.find(x=>x.id===editing)||{}).act||null:null,party:$('fpn').value.trim(),phone:$('fph').value.trim()};
   if(!o.t||!o.desc||isNaN(o.amt)){Sound.buzz();return}
   if(WLTC[o.type]&&WLTC[o.type][o.cat]){o.pay='Cash';o.w=''}else o.w=(o.type==='Sale'&&o.pay==='Mobile Banking')?$('fw').value:'';
@@ -91,9 +99,32 @@ $('tbl').addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b
   if(b.dataset.a==='v')ask('Void entry',`<div class="f"><label>Reason (required)</label><input id="vr" maxlength="100"></div>`,()=>{const r=$('vr').value.trim();if(!r)return false;if(wltVoidBlocked(e))return false;snap();e.void=1;e.vr=r;e.vb=U.name;lg('Void entry',`${e.type} ${e.amt} "${e.desc}" — ${r}`);save();render()},'Void');
   if(b.dataset.a==='a'){const df=calc()[e.id].df;ask('Adjust cash',`<div class="f"><label>Account will change by <b>${dif(df)}</b> to match counted cash</label><select id="ar"><option>${df>0?'Extra cash':'Cash short'}</option><option>Other</option></select></div>`,()=>{snap();S.entries.push({id:Date.now(),d:e.d,t:e.t,type:'Adjustment',desc:'Cash adjustment · '+$('ar').value,cat:'',pay:'Cash',amt:df});e.adj=1;lg('Cash adjust',`${dif(df)} on "${e.desc}"`);save();render()},'Adjust')}});
 
-$('pick').onchange=e=>{if(e.target.value){cur=e.target.value;reset();render()}};
- const shift=k=>{const x=new Date(cur+'T00:00:00');x.setDate(x.getDate()+k);cur=iso(x);reset();render()};
-$('pd').onclick=()=>shift(-1);$('nd').onclick=()=>shift(1);$('today').onclick=()=>{cur=iso(new Date());reset();render()};
+$('pick').onchange=e=>{
+  if(e.target.value){
+    var v=e.target.value;
+    if(v>todayIso()){
+      ltoast(lb('Future dates are not allowed','ভবিষ্যতের তারিখ নির্বাচন করা যাবে না'));
+      cur=todayIso();
+    }else if(v<NCS_MIN_DATE){
+      ltoast(lb('Date cannot be before November 2020','নভেম্বর ২০২০ এর আগের তারিখ গ্রহণযোগ্য নয়'));
+      cur=NCS_MIN_DATE;
+    }else{
+      cur=v;
+    }
+    reset();render();
+  }
+};
+ const shift=k=>{
+   if(k>0&&cur>=todayIso()){ltoast(lb('Cannot advance to future date','ভবিষ্যতের তারিখে যাওয়া যাবে না'));return}
+   if(k<0&&cur<=NCS_MIN_DATE){ltoast(lb('Cannot go before November 2020','নভেম্বর ২০২০ এর পূর্বে যাওয়া যাবে না'));return}
+   const x=new Date(cur+'T00:00:00');x.setDate(x.getDate()+k);
+   const tg=iso(x);
+   if(tg>todayIso())cur=todayIso();
+   else if(tg<NCS_MIN_DATE)cur=NCS_MIN_DATE;
+   else cur=tg;
+   reset();render();
+ };
+$('pd').onclick=()=>shift(-1);$('nd').onclick=()=>shift(1);$('today').onclick=()=>{cur=todayIso();reset();render()};
 
 function applyTheme(){
   var m=S.theme||'auto';
@@ -311,11 +342,20 @@ var SHOP_EN='Nur Computer & Stationery',SHOP_BN='নুর কম্পিউট
 const orig=new WeakMap();
 function trp(q){var t=q.trim();if(BN[t])return q.replace(t,BN[t]);var m=t.match(/^([A-Za-z][A-Za-z\/ ]*?)(\s+[0-9৳#−+(\-].*)$/);return m&&BN[m[1]]?q.replace(m[1],BN[m[1]]):q}
 BN['Admin PIN (6+ digits)']='অ্যাডমিন পিন (৬+ সংখ্যা)';BN['New PIN (6+ digits)']='নতুন পিন (৬+ সংখ্যা)';BN['PIN (6+ digits)']='পিন (৬+ সংখ্যা)';BN['Confirm PIN']='পিন নিশ্চিত করুন';BN['PINs must match and be 6+ digits']='পিন মিলতে হবে এবং কমপক্ষে ৬ সংখ্যা হতে হবে';
+Object.assign(BN,{
+  'Task Schedule':'কাজের সময়সূচী','Tasks':'কাজের তালিকা','New Task':'নতুন কাজ','Workflow & Task Management':'কাজের অগ্রগতি ও সময়সূচী',
+  'Board':'বোর্ড','List':'তালিকা','Total Tasks':'মোট কাজ','Active Tasks (excluding Done)':'চলমান কাজসমূহ',
+  'All Stages':'সব ধাপ','All Priorities':'সব অগ্রাধিকার','All Staff':'সকল কর্মী','Under Review':'পর্যালোচনায়',
+  'In Progress':'চলমান','Pending':'অমীমাংসিত','Completed':'সম্পন্ন','Cancelled':'বাতিল',
+  'Deadline':'শেষ সময়সীমা','Taking Date':'গ্রহণের তারিখ','Progress':'অগ্রগতি','Priority':'অগ্রাধিকার',
+  'Assign To':'দায়িত্বপ্রাপ্ত কর্মী','Task Title *':'কাজের শিরোনাম *','Create New Task':'নতুন কাজ তৈরি',
+  'Edit Task':'কাজ সম্পাদনা','Task Details':'কাজের বিস্তারিত','Overdue':'সময় পার'
+});
 function tx(root){const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let x;while(x=w.nextNode()){if(!orig.has(x))orig.set(x,x.nodeValue);const o=orig.get(x);
   x.nodeValue=S.lang==='bn'?o.split(' · ').map(trp).join(' · '):o}
   document.querySelectorAll('[placeholder]').forEach(e=>{if(e.id==='fd'||e.id==='sq')return;if(e.dataset.ph===undefined)e.dataset.ph=e.getAttribute('placeholder');const v=e.dataset.ph;e.setAttribute('placeholder',S.lang==='bn'&&BN[v]?BN[v]:v)})}
 new MutationObserver(()=>tx(document.body)).observe(document.body,{childList:true,subtree:true});
-function applyLang(){const b=S.lang==='bn';document.documentElement.lang=b?'bn':'en';$('lang').textContent=b?'English':'বাংলা';setRefreshLabel();$('fd').placeholder=b?'পণ্য বা খরচের নাম লিখুন':'Type product or cost name';$('sq').placeholder=b?'বিবরণ বা ক্যাটাগরি খুঁজুন':'Search description or category';tx(document.body);if(U)render();try{updateMoreTab()}catch(e){}}
+function applyLang(){const b=S.lang==='bn';document.documentElement.lang=b?'bn':'en';$('lang').textContent=b?'English':'বাংলা';setRefreshLabel();$('fd').placeholder=b?'পণ্য বা খরচের নাম লিখুন':'Type product or cost name';$('sq').placeholder=b?'বিবরণ বা ক্যাটাগরি খুঁজুন':'Search description or category';tx(document.body);if(typeof clkTick==='function')clkTick();if(U)render();try{updateMoreTab()}catch(e){}}
 $('lang').onclick=()=>{S.lang=S.lang==='bn'?'en':'bn';save();applyLang()};
 
 async function dlFile(name,data){try{if(typeof claude!=='undefined'){const dl=await claude.use('downloads');if(dl)return dl.save({filename:name,data})}const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type:'text/csv'}));a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){a.remove()},1000)}catch(e){try{window.open('data:text/plain;charset=utf-8,'+encodeURIComponent(data),'_blank')}catch(x){}}}

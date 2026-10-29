@@ -3,19 +3,20 @@ const ICO={
   mgmt:'<path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/>',
   led:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
   home:'<path d="M3 9.5L12 3l9 6.5V20a1.5 1.5 0 0 1-1.5 1.5H4.5A1.5 1.5 0 0 1 3 20V9.5z"/><path d="M9 21.5V12h6v9.5"/>',
+  task:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="m9 10 2 2 4-4"/><path d="M7 16h10"/>',
   pos:'<circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>',
   acc:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18"/><path d="M8 2v4M16 2v4"/>',
   prod:'<path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/>',
   more:'<circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/><circle cx="5" cy="12" r="1.5"/>'
 };
 const TABS={
-  admin:['home','led','pos','acc','more'],
-  keeper:['pos','more'],
-  accountant:['acc','led','pos','more'],
-  cashier:['pos','led','more']
+  admin:['home','task','led','pos','acc','more'],
+  keeper:['pos','task','more'],
+  accountant:['acc','led','task','pos','more'],
+  cashier:['pos','led','task','more']
 };
-const TL={home:'Overview',led:'Ledger',pos:'Counter',acc:'Accounts',more:'More'};
-const TL_BN={home:'ওভারভিউ',led:'খতিয়ান',pos:'কাউন্টার',acc:'হিসাব',more:'আরও'};
+const TL={home:'Overview',task:'Task Schedule',led:'Ledger',pos:'Counter',acc:'Accounts',more:'More'};
+const TL_BN={home:'ওভারভিউ',task:'কাজের তালিকা',led:'খতিয়ান',pos:'কাউন্টার',acc:'হিসাব',more:'আরও'};
 let CUR=null;
 const role=()=>!U?'':U.role==='admin'?'admin':U.role==='accountant'?'accountant':U.role==='keeper'?'keeper':'cashier',canCost=()=>isA()||role()==='keeper'||role()==='accountant';
 
@@ -65,6 +66,7 @@ function go(v){
   }
   if(v==='acc'){AV=false;cur=iso(new Date());reset();render();try{applyCardSettings()}catch(e){}}
   if(v==='led')ledUI();
+  if(v==='task'){if(typeof taskUI==='function')taskUI();}
   if(v==='more')updateMoreTab();
   document.body.classList.toggle('kp',role()==='keeper');
   document.body.classList.toggle('ro',role()==='accountant');
@@ -343,7 +345,7 @@ function openPresetSettings() {
 
   showMain();
 }
-function redrawActiveView(){if(CUR==='home'){homeUI();try{applyCardSettings()}catch(e){}}else if(CUR==='pos'){POS.refresh();if(isCounterStock())POS.prodUI();}else if(CUR==='acc'){render();try{applyCardSettings()}catch(e){}}else if(CUR==='led')ledUI();else if(CUR==='more')updateMoreTab()}
+function redrawActiveView(){if(CUR==='home'){homeUI();try{applyCardSettings()}catch(e){}}else if(CUR==='pos'){POS.refresh();if(isCounterStock())POS.prodUI();}else if(CUR==='acc'){render();try{applyCardSettings()}catch(e){}}else if(CUR==='led')ledUI();else if(CUR==='task'){if(typeof taskUI==='function')taskUI();}else if(CUR==='more')updateMoreTab()}
 function refreshCurrentView(){
   if(!U||!CUR)return;
   var svg=$('refresh').querySelector('svg');
