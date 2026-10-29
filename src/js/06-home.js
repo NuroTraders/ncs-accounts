@@ -5,8 +5,8 @@ function homeUI(){try{renderWalletCards()}catch(e){}try{applyCardSettings()}catc
   $('hTitle').textContent=lb('Hello, ','হ্যালো, ')+(U?U.name:'');
   $('hQa').querySelectorAll('[data-q]').forEach(function(b){var k=b.dataset.q,l=k==='sale'?lb('New sale','নতুন বিক্রয়'):k==='purchase'?lb('New purchase','নতুন ক্রয়'):k==='acc'?lb('Accounts','হিসাব'):lb("Today's bills",'আজকের বিল');b.querySelector('.qal').textContent=l});
   $('hTabs').innerHTML=PER.map(([k,l])=>`<button data-p="${k}" class="${HP===k?'on':''}">${l}</button>`).join('');
-  const[a,b]=prange(HP),E=S.entries.filter(e=>!e.void&&!e.removed&&e.d>a&&e.d<b),B=S.bills.filter(x=>!x.void&&!x.removed&&!x.test&&x.d>a&&x.d<b);
-  const sm=(t,f)=>E.filter(e=>e.type===t&&!isWalletTransfer(e)&&( !f||f(e) )).reduce((s,e)=>s+e.amt,0),m=calc(),act=sorted().filter(e=>!e.void),cb=act.length?m[act[act.length-1].id].bal:(+S.start||0);
+  const[a,b]=prange(HP),E=S.entries.filter(e=>!e.void&&!e.removed&&e.d>=a&&e.d<=b),B=S.bills.filter(x=>!x.void&&!x.removed&&!x.test&&x.d>=a&&x.d<=b);
+  const sm=(t,f)=>E.filter(e=>e.type===t&&!isWalletTransfer(e)&&(!f||f(e))).reduce((s,e)=>s+e.amt,0),m=calc(),act=sorted().filter(e=>!e.void),cb=act.length?m[act[act.length-1].id].bal:(+S.start||0);
   const C=(l,v,c,num)=>`<div class="stat ${c||''}"><small>${l}</small><b${num!=null?' class="cnt" data-to="'+num+'"':''}>${v}</b></div>`;
   $('hHero').innerHTML=`<div class="dclk" id="hClk" aria-label="${lb('Current time','বর্তমান সময়')}"><b id="hClkT"></b><small id="hClkD"></small></div><small>Cash Balance</small><b class="cnt" data-to="${cb}">${tk(cb)}</b><i>${sd(iso(new Date()))} · ${esc(U?U.name:'')}</i>`;clkTick();
   var sellT=sm('Sale'),buyT=sm('Purchase');$('hStats').innerHTML=C('Total Sell',tk(sellT),'t3',sellT)+C('Total Buy',tk(buyT),'t2',buyT)+C('Bills',B.length,'t4')+C('To receive (Due)',tk(sm('Sale',e=>e.pay==='Due')),'t1')+C('To give (Due)',tk(sm('Purchase',e=>e.pay==='Due')),'sf');
@@ -17,11 +17,11 @@ function homeUI(){try{renderWalletCards()}catch(e){}try{applyCardSettings()}catc
   $('hToday').innerHTML=(todayE.length
     ?'<span class="tpill pos"><small>'+lb('Cash in','নগদ এসেছে')+'</small><b>'+tk(inT)+'</b></span>'
      +'<span class="tpill neg"><small>'+lb('Cash out','নগদ গেছে')+'</small><b>'+tk(outT)+'</b></span>'
-     +'<span class="tpill net"><small>'+lb('Net','নিট')+'</small><b>'+ (netT>0?'+':netT<0?'−':'')+tk(Math.abs(netT))+'</b></span>'
+     +'<span class="tpill net"><small>'+lb('Net','নিট')+'</small><b>'+(netT>0?'+':netT<0?'−':'')+tk(Math.abs(netT))+'</b></span>'
      +'<span class="tpill"><small>'+lb('Entries','এন্ট্রি')+'</small><b>'+todayE.length+'</b></span>'
     :'<span class="tpill mut">'+lb('No cash movements today','আজ কোনো নগদ লেনদেন নেই')+'</span>');
   (function(){
-    var canOpen=isA()||role()==='accountor'||role()==='cashier';
+    var canOpen=isA()||role()==='accountant'||role()==='cashier';
     var custAll=S.cust.filter(function(c){return!c.del});
     if(!custAll.length||!canOpen){$('hOwe').hidden=true;$('hOwe').innerHTML='';return}
     var recv=0,pay=0,recvN=0,payN=0;
@@ -52,10 +52,11 @@ function homeUI(){try{renderWalletCards()}catch(e){}try{applyCardSettings()}catc
     if(!total||!top.length){catEl.innerHTML='';return}
     catEl.innerHTML='<div class="dcat-title">'+lb('Sales by category','বিভাগ অনুযায়ী বিক্রয়')+'</div>'
       +'<div class="dcat-bar">'+top.map(function(x,i){return'<span style="width:'+Math.max(1,Math.round(x[1]/total*100))+'%;background:var('+CH[i%CH.length]+')"></span>'}).join('')+'</div>'
-      +'<div class="dcat-leg">'+top.map(function(x,i){return'<div><i style="background:var('+CH[i%CH.length]+')"></i>'+esc(x[0])+' <b>'+tk(x[1])+'</b></div>'}).join('')+'</div>';
+      +'<div class="dcat-leg">'+top.map(function(x,i){return'<div><i style="background:var('+CH[i%CH.length]+')"></i>'+esc(x[0])+' <b>'+tk(x[1])+'</b></div>'}).join('')+'</div>'
   })();
-  $('hRecent').innerHTML=S.bills.filter(b=>!b.removed&&!b.test).slice(0,6).map(x=>`<div class="hrow"><span>#${esc(x.no)} · ${sd(x.d)} ${t12(x.t)} · ${esc(x.pay)}${x.void?' · <b class="bad">VOID</b>':''}<br><small class="mut">${esc(x.user)}</small></span><b>${tk(x.total)}</b></div>`).join('')||'<div class="empty">No bills yet</div>';try{animateCounts()}catch(e){}
-  $('hTabs').addEventListener('click',e=>{const b=e.target.closest('[data-p]');if(b){HP=b.dataset.p;homeUI()}});
-  $('hQa').addEventListener('click',e=>{const b=e.target.closest('[data-q]');if(!b)return;const q=b.dataset.q;
-    if(q==='sale'||q==='purchase'){POS.setMode(q);go('pos')}else if(q==='acc')go('acc');else{go('pos');POS.bills()}});
-  $('hOwe').addEventListener('click',e=>{if(e.target.closest('[data-q="owe-led"]'))go('led')});
+  $('hRecent').innerHTML=S.bills.filter(b=>!b.removed&&!b.test).slice(0,6).map(x=>`<div class="hrow"><span>#${esc(x.no)} · ${sd(x.d)} ${t12(x.t)} · ${esc(x.pay)}${x.void?' · <b class="bad">VOID</b>':''}<br><small class="mut">${esc(x.user)}</small></span><b>${tk(x.total)}</b></div>`).join('')||'<div class="empty">No bills yet</div>';try{animateCounts()}catch(e){}}
+$('hTabs').addEventListener('click',e=>{const b=e.target.closest('[data-p]');if(b){HP=b.dataset.p;homeUI()}});
+$('hQa').addEventListener('click',e=>{const b=e.target.closest('[data-q]');if(!b)return;const q=b.dataset.q;
+  if(q==='sale'||q==='purchase'){POS.setMode(q);go('pos')}else if(q==='acc')go('acc');else{go('pos');POS.bills()}});
+$('hOwe').addEventListener('click',e=>{if(e.target.closest('[data-q="owe-led"]'))go('led')});
+
