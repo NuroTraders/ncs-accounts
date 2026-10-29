@@ -12,6 +12,17 @@
 (function() {
   'use strict';
 
+  if (window.NCS_CONFIG && window.NCS_CONFIG.SYNC_MODE !== 'v2') {
+    console.log('[Sync] Option 1 (Whole State sync) active. Delta sync engine idle.');
+    window.NcsSync = {
+      isIdle: true,
+      push: function(force) { if (typeof window.push === 'function') return window.push(force); },
+      pull: function(force) { if (typeof window.pull === 'function') return window.pull(force); },
+      schedulePush: function() { if (typeof window.schedule === 'function') return window.schedule(); }
+    };
+    return;
+  }
+
   const SYNC_KEY = 'ncs_sync_v10';
   const API_URL = (window.NCS_CONFIG && (window.NCS_CONFIG.API_URL || window.NCS_CONFIG.url)) || '';
   const API_TOKEN = (window.NCS_CONFIG && (window.NCS_CONFIG.API_TOKEN || window.NCS_CONFIG.key)) || '';

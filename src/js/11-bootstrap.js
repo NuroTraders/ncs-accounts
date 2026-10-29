@@ -9,6 +9,8 @@ window.animateCounts = typeof animateCounts === 'function' ? animateCounts : nul
 window.POS = POS;
 window.ledUI = ledUI;
 window.setSt = setSt;
+window.push = push;
+window.pull = pull;
 window.S = S;
 window.NcsDB = NcsDB;
 

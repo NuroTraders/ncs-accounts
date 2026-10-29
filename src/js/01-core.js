@@ -118,6 +118,7 @@ if (typeof window !== 'undefined' && NcsDB.isSupported()) {
     if (idbState && idbState.rev && (!S || !S.rev || idbState.rev > S.rev)) {
       console.log('IndexedDB has newer state (rev ' + idbState.rev + ' > ' + (S ? S.rev : 0) + '), updating active state...');
       S = idbState;
+      window.S = S;
       ensureCols();
       primeLH();
       if (typeof redrawActiveView === 'function') redrawActiveView();
@@ -181,26 +182,14 @@ const persist=()=>{
   }
 };
  
-// --- NCS V10 PATCH START ---
 const save=()=>{
-    if (window.NCS_CONFIG && window.NCS_CONFIG.SYNC_MODE === 'v2') {
-        const now = (window.NcsSync && typeof window.NcsSync.nextU === 'function') ? window.NcsSync.nextU() : Math.max(Date.now(), (S._lastU||0)+1);
-        if (S._lastU === undefined || S._lastU < now) S._lastU = now;
-        ['entries', 'bills', 'products', 'moves', 'cust', 'ltx', 'walletDates', 'counts', 'pending'].forEach(k => {
-            if (S[k] && Array.isArray(S[k])) {
-                S[k].forEach(r => { 
-                    if (!r.u || r.v === 1 || r.removed === 1) r.u = now; 
-                });
-            }
-        });
-    }
-    S.rev=(S.rev||0)+1;try{ledReconcile()}catch(e){console.error('Ledger link failed',e)}stampChanged();const ok=persist();if(ok)schedule();
-    if(window.NcsSync && typeof window.NcsSync.schedulePush === 'function'){
-        window.NcsSync.schedulePush();
-    }
-    return ok
+    S.rev=(S.rev||0)+1;
+    try{ledReconcile()}catch(e){console.error('Ledger link failed',e)}
+    stampChanged();
+    const ok=persist();
+    if(ok)schedule();
+    return ok;
 };
-// --- NCS V10 PATCH END ---
 
 const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 let cur=iso(new Date()),editing=null;

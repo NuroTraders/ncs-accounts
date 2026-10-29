@@ -312,49 +312,65 @@ $('lang').onclick=()=>{S.lang=S.lang==='bn'?'en':'bn';save();applyLang()};
 
 async function dlFile(name,data){try{if(typeof claude!=='undefined'){const dl=await claude.use('downloads');if(dl)return dl.save({filename:name,data})}const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type:'text/csv'}));a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){a.remove()},1000)}catch(e){try{window.open('data:text/plain;charset=utf-8,'+encodeURIComponent(data),'_blank')}catch(x){}}}
 const LOCAL=['theme','dayStart','dayEnd','lang','lockout','sync','snaps','logSent','synced','posSince','motion','sound','lastBackup','cardSettings'];
-const SY=()=>(window.NCS_CONFIG && window.NCS_CONFIG.SYNC_MODE === 'v2') ? !!(window.NCS_CONFIG.API_URL) : !!(S.sync&&S.sync.url&&S.sync.key),isDirty=()=>(window.NCS_CONFIG && window.NCS_CONFIG.SYNC_MODE === 'v2') ? false : (S.rev||0)!==(S.synced||0);
+const syncUrl=()=>(window.NCS_CONFIG&&(window.NCS_CONFIG.API_URL||window.NCS_CONFIG.url))||(S.sync&&S.sync.url)||'';
+const syncKey=()=>(window.NCS_CONFIG&&(window.NCS_CONFIG.API_TOKEN||window.NCS_CONFIG.key))||(S.sync&&S.sync.key)||'';
+const SY=()=>!!(syncUrl()&&syncKey());
+const isDirty=()=>(S.rev||0)!==(S.synced||0);
 let st='off',tm,busy=false;
 function setSt(x){st=x;var c=x==='ok'?'ok':x==='pend'?'pend':(x==='offl'||x==='conf')?'bad':'off',lab={off:'Off',ok:'Synced',pend:'Pending',offl:'Offline',conf:'Conflict'}[x];
   $('sync').innerHTML='<i class="sdot '+c+'" aria-hidden="true"></i>'+lab;
   var labBn={off:'বন্ধ',ok:'সিঙ্ক সম্পন্ন',pend:'অপেক্ষমাণ',offl:'অফলাইন',conf:'দ্বন্দ্ব'}[x]||lab;$('sync').setAttribute('aria-label',lb('Sync status: ','সিঙ্ক অবস্থা: ')+(S.lang==='bn'?labBn:lab));
   $('sync').title=c==='ok'?'All changes are synced':c==='pend'?'Saving changes…':x==='conf'?'Sync conflict — tap to resolve':c==='bad'?'Offline — will sync when back online':'Sync is not set up on this device'}
 
-// --- NCS V10 PATCH START ---
 function schedule(){
-  if (window.NCS_CONFIG && window.NCS_CONFIG.SYNC_MODE === 'v2') {
-    if (window.NcsSync) window.NcsSync.schedulePush();
-    return;
-  }
-  if(!SY())return;setSt('pend');clearTimeout(tm);tm=setTimeout(()=>push(),2000)
+  if(!SY())return;setSt('pend');clearTimeout(tm);tm=setTimeout(()=>push(),600);
 }
-// --- NCS V10 PATCH END ---
 
 const HEAD=['Date','Time','Type','Description','Category','Payment','Amount','Previous Cash','Cash Balance','Actual Cash','Difference','Status','Entered by','Party','Phone'];
 function rowsOut(){const m=calc();return sorted().map(e=>{const r=m[e.id]||{};return[e.d,e.t,e.type,e.desc,e.cat||'',e.pay,e.amt,r.p??'',r.bal??'',e.act??'',r.df??'',e.void?'Void: '+e.vr:'Active',e.by||'',e.party||'',e.phone||'']})}
 function stateOut(){const o={};for(const k in S)if(!LOCAL.includes(k))o[k]=S[k];return o}
-const getRemote=async()=>(await fetch(S.sync.url+(S.sync.url.includes('?')?'&':'?')+'action=pull&key='+encodeURIComponent(S.sync.key))).json();
+const getRemote=async()=>{
+  const u=syncUrl(),k=syncKey();
+  const sep=u.includes('?')?'&':'?';
+  return (await fetch(`${u}${sep}action=pull&key=${encodeURIComponent(k)}&token=${encodeURIComponent(k)}&_t=${Date.now()}`)).json();
+};
 
-// --- NCS V10 PATCH START ---
 async function push(force,tries){
-  if (window.NCS_CONFIG && window.NCS_CONFIG.SYNC_MODE === 'v2') {
-    if (window.NcsSync) window.NcsSync.push(force);
-    return;
-  }
   tries=tries||0;
   if(!SY()||!U||busy)return;busy=true;
-// --- NCS V10 PATCH END ---
   try{
-    const sn=Object.keys(S.days).filter(d=>S.days[d].closed&&!(S.snaps||[]).includes(d)),nl=S.log.filter(l=>l.i>(S.logSent||0)).reverse(),rev=S.rev;
-    const r=await(await fetch(S.sync.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({key:S.sync.key,base:S.synced||0,force:!!force,rev,state:JSON.stringify(stateOut()),head:HEAD,rows:rowsOut(),log:nl.map(l=>[l.ts,l.u,l.a,l.d]),snaps:sn})})).json();
+    const sn=Object.keys(S.days||{}).filter(d=>S.days[d]&&S.days[d].closed&&!(S.snaps||[]).includes(d));
+    const nl=(S.log||[]).filter(l=>l.i>(S.logSent||0)).reverse();
+    const rev=S.rev||1;
+    const u=syncUrl(),k=syncKey();
+    const r=await(await fetch(u,{
+      method:'POST',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify({
+        key:k,
+        token:k,
+        base:S.synced||0,
+        force:!!force,
+        rev:rev,
+        state:JSON.stringify(stateOut()),
+        head:HEAD,
+        rows:rowsOut(),
+        log:nl.map(l=>[l.ts,l.u,l.a,l.d]),
+        snaps:sn
+      })
+    })).json();
     if(r.conflict){busy=false;if(tries<4&&await mergeRemote())return push(force,tries+1);setSt('conf');return}
     if(r.ok===false){busy=false;return badKey()}if(!r.ok)throw 0;
-    S.synced=rev;S.snaps=[...(S.snaps||[]),...sn];if(S.log.length)S.logSent=Math.max(...S.log.map(l=>l.i));persist();setSt(isDirty()?'pend':'ok');if(!isDirty()){try{Sound.chime()}catch(e){}}if(isDirty())schedule()
+    S.synced=rev;S.snaps=[...(S.snaps||[]),...sn];if(S.log&&S.log.length)S.logSent=Math.max(...S.log.map(l=>l.i));persist();setSt(isDirty()?'pend':'ok');if(!isDirty()){try{Sound.chime()}catch(e){}}if(isDirty())schedule()
   }catch(e){setSt('offl')}
   busy=false}
-function applyRemote(r){const k={};LOCAL.forEach(x=>{if(x in S)k[x]=S[x]});S=Object.assign({},JSON.parse(r.state),k,{rev:r.rev,synced:r.rev});ensureCols();primeLH();persist();if(U){if(CUR==='acc')reset();redrawActiveView()}setSt('ok');try{Sound.chime()}catch(e){}}
+function applyRemote(r){const k={};LOCAL.forEach(x=>{if(x in S)k[x]=S[x]});S=Object.assign({},JSON.parse(r.state),k,{rev:r.rev,synced:r.rev});window.S=S;ensureCols();primeLH();persist();if(U){if(CUR==='acc')reset();redrawActiveView()}setSt('ok');try{Sound.chime()}catch(e){}}
 async function importPos(){
   if(!SY())return;
-  try{const r=await(await fetch(S.sync.url+(S.sync.url.includes('?')?'&':'?')+'action=inbox&key='+encodeURIComponent(S.sync.key)+'&since='+(S.posSince||0))).json();
+  try{
+    const u=syncUrl(),k=syncKey();
+    const sep=u.includes('?')?'&':'?';
+    const r=await(await fetch(`${u}${sep}action=inbox&key=${encodeURIComponent(k)}&token=${encodeURIComponent(k)}&since=${S.posSince||0}`)).json();
     if(!r.ok||!r.rows||!r.rows.length)return;
     let c=0,mx=S.posSince||0;
     r.rows.forEach(x=>{mx=Math.max(mx,x.seq);const b=x.bill;if(b.voidOf){const w=S.entries.find(e=>e.id===b.voidOf);if(w&&!w.void){w.void=1;w.vr='POS void: '+b.reason;c++}return}if(S.entries.some(e=>e.id===b.id))return;
@@ -363,28 +379,14 @@ async function importPos(){
     S.posSince=mx;if(c){lg('POS import',c+' bill(s)');save()}else persist();if(U)render()
   }catch(e){}}
 
-// --- NCS V10 PATCH START ---
 async function pull(force){
-  if (window.NCS_CONFIG && window.NCS_CONFIG.SYNC_MODE === 'v2') {
-    if (window.NcsSync) window.NcsSync.pull(force);
-    return;
-  }
   if(!SY()||busy)return;
   try{const r=await getRemote();if(r.ok===false)return badKey();if(!r.ok)throw 0;
-// --- NCS V10 PATCH END ---
     if(r.rev>(S.synced||0)){if(isDirty()){if(mergeRemoteFrom(r))push();else setSt('conf');return}applyRemote(r)}
     else if(isDirty()||(!r.rev&&S.entries.length))push();else setSt('ok');importPos();importCatalog()
   }catch(e){setSt('offl')}}
 $('sync').onclick=()=>{
-  if (window.NCS_CONFIG && window.NCS_CONFIG.SYNC_MODE === 'v2') {
-    if (window.NcsSync) {
-      setSt('pend');
-      window.NcsSync.push(true);
-      window.NcsSync.pull(true);
-    }
-    return;
-  }
-  if(st==='conf')ask('Sync conflict','<p>This device and the Google Sheet both have new changes. Choose which to keep.</p><div class="oa" style="justify-content:flex-start"><button class="ghost" id="scp">Use Sheet data</button><button class="ghost" id="scf">Keep this device</button></div>',()=>{},'Close');else if(SY())pull();else setSt('off')};
+  if(st==='conf')ask('Sync conflict','<p>This device and the Google Sheet both have new changes. Choose which to keep.</p><div class="oa" style="justify-content:flex-start"><button class="ghost" id="scp">Use Sheet data</button><button class="ghost" id="scf">Keep this device</button></div>',()=>{},'Close');else if(SY()){setSt('pend');push(true).then(()=>pull());}else setSt('off')};
 $('ob').addEventListener('click',e=>{if(e.target.id!=='sfr')return;
   ask('Start fresh','<p>Daily entries and bills are cleared from the active day view. Cash and wallets carry forward, ledger history and stock are retained, and an Admin reconciliation item is created.</p><div class="f"><label>Admin PIN</label><input id="sfp" type="password" inputmode="numeric" autocomplete="off"></div>',async()=>{
     if(!(await ck(S.users.admin,$('sfp').value))){$('sfp').value='';$('sfp').placeholder='Wrong PIN';return false}
@@ -392,7 +394,7 @@ $('ob').addEventListener('click',e=>{if(e.target.id!=='sfr')return;
 $('ob').addEventListener('click',async e=>{
   if(e.target.id==='scp'){try{const r=await getRemote();if(r.ok&&r.rev)applyRemote(r)}catch(x){setSt('offl')}$('ov').hidden=true}
   if(e.target.id==='scf'){$('ov').hidden=true;await push(true)}});
-setInterval(()=>{if(U)pull()},30000);
+setInterval(()=>{if(U&&!document.hidden)pull()},15000);
 addEventListener('online',()=>{if(U)pull()});
 document.addEventListener('visibilitychange',()=>{if(U&&!document.hidden)pull()});
 setSt(SY()?(isDirty()?'pend':'ok'):'off');
