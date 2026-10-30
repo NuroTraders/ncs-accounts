@@ -16,13 +16,16 @@ function mgmtUI(){
   var icVer='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>';
   var icTest='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>';
   var icReboot='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>';
+  var icBug='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><rect width="8" height="14" x="8" y="6" rx="4"/><path d="m19 7-3 2"/><path d="m5 7 3 2"/><path d="m19 19-3-2"/><path d="m5 19 3-2"/><path d="M20 13h-4"/><path d="M4 13h4"/><path d="m10 4 1 2"/><path d="m14 4-1 2"/></svg>';
 
   var rqN = reviewQueueCount();
+  var bugN = (S.bugReportsV12 && Array.isArray(S.bugReportsV12)) ? S.bugReportsV12.length : 0;
   v.innerHTML =
     '<div class="card more-card"><h3 class="more-sec-title">'+lb('Staff & Operations','কর্মী ও প্রশাসন')+'</h3><div class="more-grid">' +
     B('staff', lb('Staff and roles','কর্মী ও ভূমিকা'), lb('Add staff, roles & PINs','কর্মী যোগ ও অনুমতি'), icStaff) +
     B('reports', lb('Reports Hub','রিপোর্ট হাব'), lb('Statements, day/week/month & CSV','স্টেটমেন্ট ও রিপোর্ট'), icRep) +
     B('reviewq', lb('Review Queue','রিভিউ কিউ') + (rqN ? ' ('+rqN+')' : ''), lb('Reconciliation, stock & voids','যাচাই ও অনুমোদন'), icRev) +
+    B('bugsv12', lb('Tab Bug Reports (v12)','ট্যাব বাগ ও চাহিদা রিপোর্ট') + (bugN ? ' ('+bugN+')' : ''), lb('Review markdown & status by tab','ট্যাবভিত্তিক রিপোর্ট ও মার্কডাউন'), icBug) +
     '</div></div>' +
     '<div class="card more-card"><h3 class="more-sec-title">'+lb('System, Audit & Security','সিস্টেম, অডিট ও লগ')+'</h3><div class="more-grid">' +
     B('wlt', lb('Wallet Openings History','ওয়ালেট শুরুর ইতিহাস'), lb('Date-anchored openings','তারিখভিত্তিক ওপেনিং'), icWlt) +
@@ -87,7 +90,7 @@ function reviewQueue(){
 function rebootAsk(){ask(lb('Force logout all?','সবাইকে লগআউট করবেন?'),'<p>'+lb('Everyone, including you, will have to log in again.','সবাইকে লগইন করতে হবে।')+'</p>',async function(){S.rebootN=(S.rebootN||0)+1;S.rebootAt=Date.now();lg('Force logout all','By '+U.name);save();try{await push()}catch(e){}lock()},lb('Force logout','লগআউট করুন'))}
 (function(){
   document.addEventListener('click',function(e){var b=e.target.closest('[data-m]');if(!b)return;var k=b.dataset.m;
-    if(k==='staff')staffUI();else if(k==='set')$('set').onclick();else if(k==='reports')$('rpb').onclick();else if(k==='log')showChangeLog();else if(k==='ver')verUI();else if(k==='reboot')rebootAsk();else if(k==='wlt')openWltSettings();else if(k==='reviewq')reviewQueue();else if(k==='selftest')selfTest();});
+    if(k==='staff')staffUI();else if(k==='set')$('set').onclick();else if(k==='reports')$('rpb').onclick();else if(k==='log')showChangeLog();else if(k==='ver')verUI();else if(k==='reboot')rebootAsk();else if(k==='wlt')openWltSettings();else if(k==='reviewq')reviewQueue();else if(k==='selftest')selfTest();else if(k==='bugsv12')openBugReportsV12Admin();});
   document.addEventListener('click',function(e){if(e.target.closest('[data-m]'))return;var h=e.target.closest('[data-bt]');if(!h)return;var c=h.closest('.bcd'),o=c.classList.toggle('on');h.setAttribute('aria-expanded',o)});
   if(window.matchMedia&&matchMedia('(hover:hover)').matches){document.addEventListener('mouseover',function(e){var c=e.target.closest('.bcd');if(c)c.classList.add('pv')});document.addEventListener('mouseout',function(e){var c=e.target.closest('.bcd');if(c&&!c.contains(e.relatedTarget))c.classList.remove('pv')})}
   setInterval(function(){if(U&&(S.rebootN||0)>(LRN||0))lock()},4000);
