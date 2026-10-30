@@ -2,8 +2,10 @@
 <aside class="tabs" id="tabs" hidden></aside>
 <div class="top" id="top">
   <div class="top-brand">
-    <img class="lg-b" src="logo-icon-black.png" alt="NCS Logo">
-    <img class="lg-w" src="logo-icon-white.png" alt="NCS Logo">
+    <span class="top-brand-mark" aria-hidden="true">
+      <img class="lg-b" src="logo-icon-black.png" alt="">
+      <img class="lg-w" src="logo-icon-white.png" alt="">
+    </span>
     <div class="tt">
       <span class="shop-name-title" id="shopNameTitle">Nur Computer &amp; Stationery</span>
       <div class="top-brand-sub"><span class="tsub-pill" id="tsub">admin</span></div>
@@ -18,21 +20,18 @@
         <span class="hw-date" id="hwDate"></span>
         <span class="hw-sep">·</span>
         <span class="hw-bng" id="hwBng"></span>
+        <span class="hw-sep hw-weather-sep" aria-hidden="true">·</span>
+        <span class="hdr-weather" id="hdrWeather" title="Dhaka Weather">
+          <span class="hw-icon" id="hwIcon">🌤️</span>
+          <span class="hw-temp" id="hwTemp">--°C</span>
+        </span>
       </div>
     </div>
   </div>
   <div class="sp" id="topR">
-    <div class="hdr-weather" id="hdrWeather" title="Dhaka Weather">
-      <span class="hw-icon" id="hwIcon">🌤️</span>
-      <span class="hw-temp" id="hwTemp">--°C</span>
-    </div>
     <div class="hdr-prayer-wrap" id="hdrPrayerWrap">
       <button type="button" class="hdr-prayer-btn" id="hdrPrayerBtn" aria-label="Prayer Times" title="Click to view full prayer times">
         <span class="hp-icon">🕌</span>
-        <span class="hp-info">
-          <b class="hp-name" id="hpName">Salat</b>
-          <small class="hp-time" id="hpTime">--:--</small>
-        </span>
       </button>
       <div class="hdr-prayer-popover" id="hdrPrayerPopover"></div>
     </div>

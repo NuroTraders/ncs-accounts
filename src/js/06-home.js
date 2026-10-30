@@ -96,6 +96,13 @@ function updateHeaderSalat(timings){
   const hpName = $('hpName'), hpTime = $('hpTime');
   if(hpName && nextP) hpName.textContent = isBn ? nextP.bn : nextP.en;
   if(hpTime && nextP) hpTime.textContent = t12(nextP.t);
+  const prayerBtn = $('hdrPrayerBtn');
+  if(prayerBtn){
+    const nextLabel = nextP ? (isBn ? nextP.bn : nextP.en) + ' ' + t12(nextP.t) : '';
+    const prayerLabel = isBn ? 'নামাজের সময়সূচী' : 'Prayer times';
+    prayerBtn.setAttribute('aria-label', prayerLabel + (nextLabel ? ' · ' + nextLabel : ''));
+    prayerBtn.title = prayerLabel + (nextLabel ? ' — ' + nextLabel : '');
+  }
 
   const popover = $('hdrPrayerPopover');
   if(popover){

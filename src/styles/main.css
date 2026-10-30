@@ -282,7 +282,7 @@ body{padding-bottom:78px}
 /* ===== THEME: Enterprise Surface & Elevation ===== */
 body{background:var(--bg)}
 h1{font-size:24px;font-weight:600}
-.top{max-width:none;margin:0;padding:14px 24px;background:var(--card);box-shadow:0 1px 0 var(--line)}
+.top{max-width:none;margin:0;padding:12px 24px;background:transparent;box-shadow:none}
 .card,.stat{background:var(--card);border-radius:14px;box-shadow:var(--sh)}
 .stats .stat:nth-child(1){background:var(--t3)}.stats .stat:nth-child(2){background:var(--t2)}.stats .stat:nth-child(3){background:var(--t1)}
 .stats .stat{border-color:transparent}
@@ -296,41 +296,41 @@ th{color:var(--ink);font-weight:500}
 @media (max-width:899px){.hdr-center,.hdr-weather,.hdr-prayer-wrap{display:none!important}.tabs{left:10px;right:10px;bottom:calc(8px + env(safe-area-inset-bottom,0px));padding:6px;border-radius:20px}.tabs button .t-lbl{display:block;font-size:11px}.wrap{padding-bottom:104px}.lst{grid-template-columns:1fr 1fr}.lst .stat.main{grid-column:1/-1}.top{padding:10px 14px;display:flex;justify-content:space-between;align-items:center}}
 @media (min-width:900px){
  body:has(.tabs:not([hidden])){padding-left:84px}
- .top{display:grid;grid-template-columns:minmax(260px,1fr) auto minmax(280px,1fr);align-items:center;gap:24px;padding:14px 28px;background:var(--card);border-bottom:1px solid var(--line);box-shadow:0 2px 12px rgba(15,23,42,0.04);position:relative;z-index:40}
- .top-brand{display:flex;align-items:center;gap:14px;min-width:240px}
- .top-brand img{height:48px;width:auto;border-radius:0!important;object-fit:contain;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.08));transition:transform .2s cubic-bezier(.16,1,.3,1)}
- .top-brand:hover img{transform:scale(1.04)}
- .shop-name-title{display:block;font-size:24px;font-weight:800;letter-spacing:-.025em;color:var(--ink);line-height:1.15}
+ .top{display:grid;grid-template-columns:minmax(220px,1fr) auto minmax(220px,1fr);align-items:center;gap:12px;padding:10px 18px;background:transparent;border-bottom:1px solid var(--line);box-shadow:0 3px 14px rgba(15,23,42,0.045);position:relative;z-index:40}
+ .top-brand{display:flex;align-items:center;gap:12px;min-width:240px}
+ .top-brand-mark{width:52px;height:52px;flex:none;display:grid;place-items:center;background:var(--soft);border:1px solid var(--line);border-radius:12px}
+ .top-brand img{height:42px;width:46px;border-radius:0!important;object-fit:contain;filter:none;transition:transform .2s cubic-bezier(.16,1,.3,1)}
+ .top-brand:hover img{transform:scale(1.035)}
+ .shop-name-title{display:block;font-size:24px;font-weight:800;letter-spacing:-.025em;color:var(--acc);line-height:1.15}
  html[lang="bn"] .shop-name-title{font-size:25px;font-family:SolaimanLipi,Inter,sans-serif}
  .top-brand-sub{margin-top:3px}
  .tsub-pill{display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border-radius:6px;background:var(--soft);color:var(--pos);font-size:11.5px;font-weight:700;text-transform:capitalize;border:1px solid rgba(21,128,61,0.25)}
  
  /* Header Center: Bismillah + Large Minimal Watch + Calendar */
- .hdr-center{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:2px}
+ .hdr-center{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:3px;min-width:0}
  .bismillah-txt{font-size:13px;font-weight:600;color:var(--mut);letter-spacing:.06em;user-select:none;line-height:1.2;transition:color .2s ease}
  html[lang="bn"] .bismillah-txt{font-size:14px;font-family:SolaimanLipi,Inter,sans-serif;font-weight:700;color:var(--ink)}
  .hdr-watch{display:flex;flex-direction:column;align-items:center;text-align:center;user-select:none}
  .hw-time{font-size:24px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.02em;color:var(--ink);line-height:1.15;font-family:Inter,SolaimanLipi,system-ui,monospace}
- .hw-meta{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--mut);margin-top:2px}
+ .hw-meta{display:flex;align-items:center;justify-content:center;gap:6px;font-size:13px;color:var(--mut);margin-top:3px;white-space:nowrap}
  .hw-day{display:inline-block;padding:1px 7px;border-radius:5px;font-weight:700;font-size:11px;border:1px solid;transition:background .2s,color .2s}
  .hw-date{font-weight:600;color:var(--ink)}
  .hw-sep{color:var(--line);font-weight:bold}
- .hw-bng{color:var(--mut);font-family:SolaimanLipi,Inter,sans-serif;font-size:11.5px}
+ .hw-bng{color:var(--mut);font-family:SolaimanLipi,Inter,sans-serif;font-size:12.5px}
  
- /* Header Right: Weather + Prayer Pill + Actions + Sync */
- .top #topR{display:flex;align-items:center;justify-content:flex-end;gap:10px;justify-self:end}
- .hdr-weather{display:flex;align-items:center;gap:6px;padding:6px 12px;background:var(--bg);border:1px solid var(--line);border-radius:10px;font-size:13.5px;font-weight:700;color:var(--ink);cursor:default;user-select:none;transition:all .15s ease}
- .hdr-weather:hover{border-color:var(--acc);transform:translateY(-1px)}
- .hw-icon{font-size:18px;line-height:1}
+ /* Header Right: Prayer Shortcut + Actions + Sync */
+ .top #topR{display:flex;align-items:center;justify-content:flex-end;gap:9px;justify-self:end}
+ .hdr-weather{display:inline-flex;align-items:center;gap:5px;padding:0 0 0 7px;background:transparent;border:0;border-left:1px solid var(--line);border-radius:0;font-size:14px;font-weight:700;color:var(--ink);cursor:default;user-select:none}
+ .hw-weather-sep{display:none}
+ .hw-icon{font-size:19px;line-height:1}
  .hdr-prayer-wrap{position:relative}
- .hdr-prayer-btn{display:flex;align-items:center;gap:8px;padding:5px 12px;background:var(--bg);border:1px solid var(--line);border-radius:10px;cursor:pointer;transition:all .18s ease;user-select:none}
- .hdr-prayer-btn:hover{border-color:var(--acc);background:var(--soft);transform:translateY(-1px)}
- .hp-icon{font-size:17px;line-height:1}
- .hp-info{display:flex;flex-direction:column;text-align:left;line-height:1.15}
- .hp-name{font-size:11px;color:var(--acc);font-weight:700;text-transform:uppercase;letter-spacing:.03em}
- .hp-time{font-size:12.5px;font-weight:700;color:var(--ink)}
+ .hdr-prayer-btn{display:grid;place-items:center;width:44px;height:44px;padding:0;background:var(--soft);border:1px solid var(--line);border-radius:12px;cursor:pointer;transition:all .18s ease;user-select:none}
+ .hdr-prayer-btn:hover,.hdr-prayer-btn:focus-visible{border-color:var(--acc);background:var(--card);outline:2px solid var(--acc);outline-offset:2px}
+ .hp-icon{font-size:21px;line-height:1}
+ .hp-info{display:none}
  .hdr-prayer-popover{position:absolute;top:calc(100% + 8px);right:0;z-index:105;width:280px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;box-shadow:0 10px 30px rgba(0,0,0,0.14),0 2px 6px rgba(0,0,0,0.06);opacity:0;visibility:hidden;transform:translateY(-6px);transition:all .2s cubic-bezier(.16,1,.3,1);pointer-events:none}
  .hdr-prayer-wrap:hover .hdr-prayer-popover{opacity:1;visibility:visible;transform:translateY(0);pointer-events:auto}
+ .hdr-prayer-wrap:focus-within .hdr-prayer-popover{opacity:1;visibility:visible;transform:translateY(0);pointer-events:auto}
  .hp-pop-head{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:6px;margin-bottom:8px}
  .hp-pop-head b{font-size:13px;color:var(--ink)}
  .hp-pop-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
@@ -347,7 +347,21 @@ th{color:var(--ink);font-weight:500}
  .top-sync-bad{border-color:rgba(220,38,38,0.25);background:#FEF2F2;color:var(--neg)}
  .top-sync-pend{border-color:rgba(217,119,6,0.25);background:#FFFBEB;color:var(--warn)}
  .day-chip{display:inline-block;padding:2px 8px;border-radius:6px;font-size:13.5px;font-weight:600;vertical-align:middle}
- .tabs{
+@media (min-width:900px) and (max-width:1120px){
+ .top{grid-template-columns:minmax(190px,1fr) auto minmax(210px,1fr);gap:8px;padding:9px 12px}
+ .top-brand{min-width:0;gap:8px}
+ .top-brand-mark{width:44px;height:44px}
+ .top-brand img{width:38px;height:34px}
+ .shop-name-title{font-size:20px}
+ html[lang="bn"] .shop-name-title{font-size:21px}
+ .hw-meta{gap:4px;font-size:11.5px}
+ .hw-day{padding:1px 5px;font-size:10px}
+ .hw-bng{font-size:11px}
+ .top #topR{gap:6px}
+ .top-actions{gap:4px}
+ .top-sync-pill{padding:0 8px}
+}
+  .tabs{
    top: 50%;
    bottom: auto;
    left: 14px;
@@ -969,5 +983,18 @@ body.locked .tab-bug-fab,#lk:not([hidden]) ~ .tab-bug-fab{display:none !importan
 .v12-status-resolved{background:#F0FDF4;color:#15803D;border:1px solid rgba(21,128,61,0.25);font-size:11px;font-weight:700;padding:2px 7px;border-radius:6px}
 
 
-
-
+@media (min-width:900px) and (max-width:1120px){
+ .top{grid-template-columns:minmax(190px,1fr) auto minmax(210px,1fr);gap:8px;padding:9px 12px}
+ .top-brand{min-width:0;gap:8px}
+ .top-brand-mark{width:44px;height:44px}
+ .top-brand img{width:38px;height:34px}
+ .shop-name-title{font-size:20px}
+ html[lang="bn"] .shop-name-title{font-size:21px}
+ .hw-meta{gap:4px;font-size:11.5px}
+ .hw-day{padding:1px 5px;font-size:10px}
+ .hw-bng{font-size:11px}
+ .top #topR{gap:6px}
+ .top-actions{gap:4px}
+ .top-sync-pill{padding:0 8px}
+}
+ .day-chip{display:inline-block;padding:2px 8px;border-radius:6px;font-size:13.5px;font-weight:600;vertical-align:middle}
