@@ -34,6 +34,7 @@ function fetchDhakaSalat(callback){
       const parsed = JSON.parse(cached);
       if(parsed && parsed.date === today && parsed.timings){
         salatTimingsCache = parsed.timings;
+        updateHeaderSalat(parsed.timings);
         if(callback) callback(parsed.timings);
         return;
       }
@@ -53,6 +54,7 @@ function fetchDhakaSalat(callback){
         try{
           sessionStorage.setItem('ncs_salat_v1', JSON.stringify({ date: today, timings: data.data.timings }));
         }catch(e){}
+        updateHeaderSalat(data.data.timings);
         if(callback) callback(data.data.timings);
       }
     })
@@ -60,6 +62,153 @@ function fetchDhakaSalat(callback){
       if(callback) callback(null);
     });
 }
+
+function updateHeaderSalat(timings){
+  if(!timings) return;
+  const isBn = S.lang === 'bn';
+  const now = new Date();
+  const curMins = now.getHours() * 60 + now.getMinutes();
+
+  const prayerList = [
+    { id: 'Fajr', en: 'Fajr', bn: 'ফজর', t: timings.Fajr, icon: '🌅' },
+    { id: 'Sunrise', en: 'Sunrise', bn: 'সূর্যোদয়', t: timings.Sunrise, icon: '☀️', isSun: true },
+    { id: 'Dhuhr', en: 'Dhuhr', bn: 'যোহর', t: timings.Dhuhr, icon: '☀️' },
+    { id: 'Asr', en: 'Asr', bn: 'আসর', t: timings.Asr, icon: '🌤️' },
+    { id: 'Maghrib', en: 'Maghrib', bn: 'মাগরিব', t: timings.Maghrib, icon: '🌇' },
+    { id: 'Isha', en: 'Isha', bn: 'ইশা', t: timings.Isha, icon: '🌙' }
+  ];
+
+  /* Find next prayer */
+  let nextP = null;
+  let minDiff = Infinity;
+  prayerList.forEach(p => {
+    if(!p.t) return;
+    const [h, m] = p.t.split(':').map(Number);
+    const pMins = h * 60 + m;
+    let diff = pMins - curMins;
+    if(diff < 0) diff += 24 * 60;
+    if(diff < minDiff){
+      minDiff = diff;
+      nextP = { ...p, diffMins: diff };
+    }
+  });
+
+  const hpName = $('hpName'), hpTime = $('hpTime');
+  if(hpName && nextP) hpName.textContent = isBn ? nextP.bn : nextP.en;
+  if(hpTime && nextP) hpTime.textContent = t12(nextP.t);
+
+  const popover = $('hdrPrayerPopover');
+  if(popover){
+    const diffH = nextP ? Math.floor(nextP.diffMins / 60) : 0;
+    const diffM = nextP ? (nextP.diffMins % 60) : 0;
+    const diffStr = isBn
+      ? (diffH > 0 ? toBnNum(diffH) + ' ঘণ্টা ' : '') + toBnNum(diffM) + ' মিনিট বাকি'
+      : (diffH > 0 ? diffH + 'h ' : '') + diffM + 'm left';
+
+    popover.innerHTML = '' +
+      '<div class="hp-pop-head">' +
+        '<b>' + (isBn ? 'নামাজের সময়সূচী' : 'Prayer Times') + '</b>' +
+        '<small class="mut">Dhaka · ' + (nextP ? (isBn ? nextP.bn : nextP.en) + ' (' + diffStr + ')' : '') + '</small>' +
+      '</div>' +
+      '<div class="hp-pop-grid">' +
+        prayerList.map(p => {
+          const isNext = nextP && nextP.id === p.id;
+          return '<div class="hp-pop-item' + (isNext ? ' on' : '') + '">' +
+            '<span>' + p.icon + ' ' + (isBn ? p.bn : p.en) + '</span>' +
+            '<b>' + t12(p.t) + '</b>' +
+          '</div>';
+        }).join('') +
+      '</div>' +
+      '<div class="hp-pop-foot">' +
+        '<small class="mut">' + (isBn ? 'সম্পূর্ণ সময়সূচী দেখতে ক্লিক করুন' : 'Click to view full prayer card & test alarm') + '</small>' +
+      '</div>';
+  }
+}
+
+function openFullSalatModal(){
+  fetchDhakaSalat(timings => {
+    if(!timings){
+      if(typeof ltoast === 'function') ltoast(lb('Prayer timings unavailable offline', 'নামাজের সময়সূচী অফলাইনে পাওয়া যায়নি'));
+      return;
+    }
+    const isBn = S.lang === 'bn';
+    const now = new Date();
+    const curMins = now.getHours() * 60 + now.getMinutes();
+
+    const prayerList = [
+      { id: 'Fajr', en: 'Fajr', bn: 'ফজর', t: timings.Fajr, icon: '🌅' },
+      { id: 'Sunrise', en: 'Sunrise', bn: 'সূর্যোদয়', t: timings.Sunrise, icon: '☀️', isSun: true },
+      { id: 'Dhuhr', en: 'Dhuhr', bn: 'যোহর', t: timings.Dhuhr, icon: '☀️' },
+      { id: 'Asr', en: 'Asr', bn: 'আসর', t: timings.Asr, icon: '🌤️' },
+      { id: 'Maghrib', en: 'Maghrib', bn: 'মাগরিব', t: timings.Maghrib, icon: '🌇' },
+      { id: 'Isha', en: 'Isha', bn: 'ইশা', t: timings.Isha, icon: '🌙' }
+    ];
+
+    let nextP = null;
+    let minDiff = Infinity;
+    prayerList.forEach(p => {
+      if(!p.t) return;
+      const [h, m] = p.t.split(':').map(Number);
+      const pMins = h * 60 + m;
+      let diff = pMins - curMins;
+      if(diff < 0) diff += 24 * 60;
+      if(diff < minDiff){
+        minDiff = diff;
+        nextP = { ...p, diffMins: diff };
+      }
+    });
+
+    const diffH = nextP ? Math.floor(nextP.diffMins / 60) : 0;
+    const diffM = nextP ? (nextP.diffMins % 60) : 0;
+    const diffStr = isBn
+      ? (diffH > 0 ? toBnNum(diffH) + ' ঘণ্টা ' : '') + toBnNum(diffM) + ' মিনিট বাকি'
+      : (diffH > 0 ? diffH + 'h ' : '') + diffM + 'm left';
+
+    const bodyHtml = '' +
+      '<div style="margin-bottom:12px">' +
+        '<div style="font-size:12.5px;color:var(--mut);margin-bottom:8px">' +
+          (nextP ? ('▸ ' + (isBn ? 'পরবর্তী নামাজ: ' : 'Next Prayer: ') + '<b style="color:var(--acc)">' + (isBn ? nextP.bn : nextP.en) + '</b> (' + diffStr + ')') : '') +
+        '</div>' +
+        '<div class="salat-grid">' +
+          prayerList.map(p => {
+            const isNext = nextP && nextP.id === p.id;
+            const tFormatted = t12(p.t);
+            return '' +
+              '<div class="salat-box' + (isNext ? ' salat-box-active' : '') + (p.isSun ? ' salat-box-sun' : '') + '">' +
+                '<div class="sb-icon">' + p.icon + '</div>' +
+                '<div class="sb-name">' + (isBn ? p.bn : p.en) + '</div>' +
+                '<b class="sb-time">' + (isBn ? toBnNum(tFormatted) : tFormatted) + '</b>' +
+                (isNext ? '<span class="sb-badge">' + (isBn ? 'পরবর্তী' : 'NEXT') + '</span>' : '') +
+              '</div>';
+          }).join('') +
+        '</div>' +
+      '</div>' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line);padding-top:10px;margin-top:10px">' +
+        '<small class="mut">' + (isBn ? 'প্রতি ওয়াক্তে স্বয়ংক্রিয় আযান/অ্যালার্ম বাজবে' : 'Automatic prayer chime plays on arrival') + '</small>' +
+        '<button type="button" class="ghost" id="btnTestSalatAlarmModal" style="height:30px;padding:0 10px;font-size:12px">🔔 ' + (isBn ? 'অ্যালার্ম পরীক্ষা' : 'Test Sound') + '</button>' +
+      '</div>';
+
+    ask(lb('🕌 Salat Times — Dhaka (UTC+6)', '🕌 নামাজের সময়সূচী — ঢাকা'), bodyHtml, function(){ return true; }, lb('Close', 'বন্ধ করুন'), true);
+
+    const testBtn = $('btnTestSalatAlarmModal');
+    if(testBtn){
+      testBtn.onclick = function(){
+        const pName = isBn ? (nextP ? nextP.bn : 'আসর') : (nextP ? nextP.en : 'Asr');
+        showSalatAlarmToast(pName, nextP ? t12(nextP.t) : '3:45 PM');
+      };
+    }
+  });
+}
+
+if(typeof document !== 'undefined'){
+  document.addEventListener('click', function(e){
+    var b = e.target.closest('#hdrPrayerBtn');
+    if(b) openFullSalatModal();
+  });
+}
+
+fetchDhakaSalat();
+setInterval(function(){ fetchDhakaSalat(); }, 60000);
 
 function showSalatAlarmToast(prayerName, timeFormatted){
   try{ Sound.chime(); }catch(e){}
@@ -130,90 +279,8 @@ setInterval(checkSalatAlarm, 20000);
 
 function renderSalatCard(){
   const el = $('hSalat');
-  if(!el) return;
-
-  fetchDhakaSalat(timings => {
-    if(!timings){
-      el.style.display = 'none';
-      return;
-    }
-    el.style.display = '';
-
-    const isBn = S.lang === 'bn';
-    const now = new Date();
-    const curMins = now.getHours() * 60 + now.getMinutes();
-
-    const prayerList = [
-      { id: 'Fajr', en: 'Fajr', bn: 'ফজর', t: timings.Fajr, icon: '🌅' },
-      { id: 'Sunrise', en: 'Sunrise', bn: 'সূর্যোদয়', t: timings.Sunrise, icon: '☀️', isSun: true },
-      { id: 'Dhuhr', en: 'Dhuhr', bn: 'যোহর', t: timings.Dhuhr, icon: '☀️' },
-      { id: 'Asr', en: 'Asr', bn: 'আসর', t: timings.Asr, icon: '🌤️' },
-      { id: 'Maghrib', en: 'Maghrib', bn: 'মাগরিব', t: timings.Maghrib, icon: '🌇' },
-      { id: 'Isha', en: 'Isha', bn: 'ইশা', t: timings.Isha, icon: '🌙' }
-    ];
-
-    /* Find next prayer */
-    let nextP = null;
-    let minDiff = Infinity;
-    prayerList.forEach(p => {
-      if(!p.t) return;
-      const [h, m] = p.t.split(':').map(Number);
-      const pMins = h * 60 + m;
-      let diff = pMins - curMins;
-      if(diff < 0) diff += 24 * 60;
-      if(diff < minDiff){
-        minDiff = diff;
-        nextP = { ...p, diffMins: diff };
-      }
-    });
-
-    const diffH = nextP ? Math.floor(nextP.diffMins / 60) : 0;
-    const diffM = nextP ? (nextP.diffMins % 60) : 0;
-    const diffStr = isBn
-      ? (diffH > 0 ? toBnNum(diffH) + ' ঘণ্টা ' : '') + toBnNum(diffM) + ' মিনিট বাকি'
-      : (diffH > 0 ? diffH + 'h ' : '') + diffM + 'm left';
-
-    el.innerHTML = '' +
-      '<div class="salat-head">' +
-        '<div>' +
-          '<div style="display:flex;align-items:center;gap:8px">' +
-            '<span style="font-size:18px">🕌</span>' +
-            '<h3 style="margin:0;font-size:16px;font-weight:700">' + (isBn ? 'নামাজের সময়সূচী' : 'Salat Times') + '</h3>' +
-            '<span class="t-badge t-badge-left" style="font-size:11px">Dhaka (UTC+6)</span>' +
-          '</div>' +
-          '<small class="mut" style="font-size:12px;margin-top:2px;display:block">' +
-            (nextP ? ('▸ ' + (isBn ? 'পরবর্তী নামাজ: ' : 'Next: ') + '<b>' + (isBn ? nextP.bn : nextP.en) + '</b> (' + diffStr + ')') : '') +
-          '</small>' +
-        '</div>' +
-        '<div style="display:flex;gap:6px;align-items:center">' +
-          '<button type="button" class="ghost" id="btnTestSalatAlarm" style="height:30px;padding:0 10px;font-size:12px;display:flex;align-items:center;gap:4px">' +
-            '<span>🔔</span> <span>' + (isBn ? 'অ্যালার্ম পরীক্ষা' : 'Test Alarm') + '</span>' +
-          '</button>' +
-        '</div>' +
-      '</div>' +
-
-      '<div class="salat-grid">' +
-        prayerList.map(p => {
-          const isNext = nextP && nextP.id === p.id;
-          const tFormatted = t12(p.t);
-          return '' +
-            '<div class="salat-box' + (isNext ? ' salat-box-active' : '') + (p.isSun ? ' salat-box-sun' : '') + '">' +
-              '<div class="sb-icon">' + p.icon + '</div>' +
-              '<div class="sb-name">' + (isBn ? p.bn : p.en) + '</div>' +
-              '<b class="sb-time">' + (isBn ? toBnNum(tFormatted) : tFormatted) + '</b>' +
-              (isNext ? '<span class="sb-badge">' + (isBn ? 'পরবর্তী' : 'NEXT') + '</span>' : '') +
-            '</div>';
-        }).join('') +
-      '</div>';
-
-    const testBtn = $('btnTestSalatAlarm');
-    if(testBtn){
-      testBtn.onclick = function(){
-        const pName = isBn ? (nextP ? nextP.bn : 'আসর') : (nextP ? nextP.en : 'Asr');
-        showSalatAlarmToast(pName, nextP ? t12(nextP.t) : '3:45 PM');
-      };
-    }
-  });
+  if(el) el.style.display = 'none';
+  fetchDhakaSalat();
 }
 
 /* ---------- Main Dashboard Render ---------- */

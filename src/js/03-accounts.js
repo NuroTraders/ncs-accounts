@@ -366,9 +366,32 @@ const SY=()=>!!(syncUrl()&&syncKey());
 const isDirty=()=>(S.rev||0)!==(S.synced||0);
 let st='off',tm,busy=false;
 function setSt(x){st=x;var c=x==='ok'?'ok':x==='pend'?'pend':(x==='offl'||x==='conf')?'bad':'off',lab={off:'Off',ok:'Synced',pend:'Pending',offl:'Offline',conf:'Conflict'}[x];
-  $('sync').innerHTML='<i class="sdot '+c+'" aria-hidden="true"></i>'+lab;
-  var labBn={off:'বন্ধ',ok:'সিঙ্ক সম্পন্ন',pend:'অপেক্ষমাণ',offl:'অফলাইন',conf:'দ্বন্দ্ব'}[x]||lab;$('sync').setAttribute('aria-label',lb('Sync status: ','সিঙ্ক অবস্থা: ')+(S.lang==='bn'?labBn:lab));
-  $('sync').title=c==='ok'?'All changes are synced':c==='pend'?'Saving changes…':x==='conf'?'Sync conflict — tap to resolve':c==='bad'?'Offline — will sync when back online':'Sync is not set up on this device'}
+  var labBn={off:'বন্ধ',ok:'সিঙ্ক সম্পন্ন',pend:'অপেক্ষমাণ',offl:'অফলাইন',conf:'দ্বন্দ্ব'}[x]||lab;
+  var txt=S.lang==='bn'?labBn:lab;
+  var syncEl=$('sync'), topSync=$('topSync');
+  if(syncEl){
+    syncEl.innerHTML='<i class="sdot '+c+'" aria-hidden="true"></i>'+txt;
+    syncEl.setAttribute('aria-label',lb('Sync status: ','সিঙ্ক অবস্থা: ')+txt);
+    syncEl.title=c==='ok'?'All changes are synced':c==='pend'?'Saving changes…':x==='conf'?'Sync conflict — tap to resolve':c==='bad'?'Offline — will sync when back online':'Sync is not set up on this device';
+  }
+  if(topSync){
+    topSync.innerHTML='<i class="sdot '+c+'" aria-hidden="true"></i><span>'+txt+'</span>';
+    topSync.className='top-sync-pill top-sync-'+c;
+    topSync.title=syncEl?syncEl.title:'';
+  }
+}
+if(typeof document!=='undefined'){
+  document.addEventListener('click',function(e){
+    var b=e.target.closest('#topSync');
+    if(!b)return;
+    if(SY()){
+      try{pull(true)}catch(err){}
+      if(typeof ltoast==='function')ltoast(lb('Checking Google sync…','গুগল সিঙ্ক পরীক্ষা হচ্ছে…'));
+    }else{
+      if($('set'))$('set').onclick();
+    }
+  });
+}
 
 function schedule(){
   if(!SY())return;setSt('pend');clearTimeout(tm);tm=setTimeout(()=>push(),600);

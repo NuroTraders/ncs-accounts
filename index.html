@@ -301,29 +301,59 @@ h1{font-size:24px;font-weight:600}
 th{color:var(--ink);font-weight:500}
 .tabs{background:var(--card);border:0;box-shadow:0 8px 28px rgba(0,0,0,.14)}
 .tabs button{font-weight:500;color:var(--mut)}.tabs button.on{background:var(--soft);color:var(--acc)}
-@media (max-width:899px){.bismillah-bar,.hdr-center{display:none!important}.tabs{left:10px;right:10px;bottom:calc(8px + env(safe-area-inset-bottom,0px));padding:6px;border-radius:20px}.tabs button .t-lbl{display:block;font-size:11px}.wrap{padding-bottom:104px}.lst{grid-template-columns:1fr 1fr}.lst .stat.main{grid-column:1/-1}.top{padding:12px 16px}}
+@media (max-width:899px){.hdr-center,.hdr-weather,.hdr-prayer-wrap{display:none!important}.tabs{left:10px;right:10px;bottom:calc(8px + env(safe-area-inset-bottom,0px));padding:6px;border-radius:20px}.tabs button .t-lbl{display:block;font-size:11px}.wrap{padding-bottom:104px}.lst{grid-template-columns:1fr 1fr}.lst .stat.main{grid-column:1/-1}.top{padding:10px 14px;display:flex;justify-content:space-between;align-items:center}}
 @media (min-width:900px){
  body:has(.tabs:not([hidden])){padding-left:84px}
- .bismillah-bar{display:flex;align-items:center;justify-content:center;height:26px;background:var(--card);border-bottom:1px solid var(--line);font-size:13px;font-weight:600;color:var(--mut);letter-spacing:.04em;user-select:none;transition:background .2s,border-color .2s}
- html[lang="bn"] .bismillah-bar{font-size:13.5px;font-family:SolaimanLipi,Inter,sans-serif;font-weight:700;color:var(--ink)}
- .top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 28px}
+ .top{display:grid;grid-template-columns:minmax(260px,1fr) auto minmax(280px,1fr);align-items:center;gap:24px;padding:14px 28px;background:var(--card);border-bottom:1px solid var(--line);box-shadow:0 2px 12px rgba(15,23,42,0.04);position:relative;z-index:40}
  .top-brand{display:flex;align-items:center;gap:14px;min-width:240px}
- .top-brand img{height:42px;width:auto;border-radius:10px}
- .shop-name-title{display:block;font-size:22px;font-weight:700;letter-spacing:-.02em;color:var(--ink);line-height:1.2}
- html[lang="bn"] .shop-name-title{font-size:23px;font-family:SolaimanLipi,Inter,sans-serif}
- .top .tt small{display:inline-block;font-size:12px;font-weight:500;color:var(--mut);margin-top:2px}
+ .top-brand img{height:48px;width:auto;border-radius:0!important;object-fit:contain;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.08));transition:transform .2s cubic-bezier(.16,1,.3,1)}
+ .top-brand:hover img{transform:scale(1.04)}
+ .shop-name-title{display:block;font-size:24px;font-weight:800;letter-spacing:-.025em;color:var(--ink);line-height:1.15}
+ html[lang="bn"] .shop-name-title{font-size:25px;font-family:SolaimanLipi,Inter,sans-serif}
+ .top-brand-sub{margin-top:3px}
+ .tsub-pill{display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border-radius:6px;background:var(--soft);color:var(--pos);font-size:11.5px;font-weight:700;text-transform:capitalize;border:1px solid rgba(21,128,61,0.25)}
  
- /* Header Center: Weather + Large Minimal Watch */
- .hdr-center{display:flex;align-items:center;gap:16px;margin:0 auto}
- .hdr-weather{display:flex;align-items:center;gap:6px;padding:6px 12px;background:var(--bg);border:1px solid var(--line);border-radius:12px;font-size:13.5px;font-weight:600;color:var(--ink);cursor:default;user-select:none;transition:border-color .15s ease}
- .hdr-weather:hover{border-color:var(--acc)}
- .hw-icon{font-size:17px;line-height:1}
+ /* Header Center: Bismillah + Large Minimal Watch + Calendar */
+ .hdr-center{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:2px}
+ .bismillah-txt{font-size:13px;font-weight:600;color:var(--mut);letter-spacing:.06em;user-select:none;line-height:1.2;transition:color .2s ease}
+ html[lang="bn"] .bismillah-txt{font-size:14px;font-family:SolaimanLipi,Inter,sans-serif;font-weight:700;color:var(--ink)}
  .hdr-watch{display:flex;flex-direction:column;align-items:center;text-align:center;user-select:none}
- .hw-time{font-size:24px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em;color:var(--ink);line-height:1.1;font-family:Inter,SolaimanLipi,system-ui,monospace}
- .hw-meta{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--mut);margin-top:3px}
- .hw-day{display:inline-block;padding:1px 8px;border-radius:6px;font-weight:700;font-size:11px;border:1px solid;transition:background .2s,color .2s}
+ .hw-time{font-size:24px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.02em;color:var(--ink);line-height:1.15;font-family:Inter,SolaimanLipi,system-ui,monospace}
+ .hw-meta{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--mut);margin-top:2px}
+ .hw-day{display:inline-block;padding:1px 7px;border-radius:5px;font-weight:700;font-size:11px;border:1px solid;transition:background .2s,color .2s}
  .hw-date{font-weight:600;color:var(--ink)}
+ .hw-sep{color:var(--line);font-weight:bold}
  .hw-bng{color:var(--mut);font-family:SolaimanLipi,Inter,sans-serif;font-size:11.5px}
+ 
+ /* Header Right: Weather + Prayer Pill + Actions + Sync */
+ .top #topR{display:flex;align-items:center;justify-content:flex-end;gap:10px;justify-self:end}
+ .hdr-weather{display:flex;align-items:center;gap:6px;padding:6px 12px;background:var(--bg);border:1px solid var(--line);border-radius:10px;font-size:13.5px;font-weight:700;color:var(--ink);cursor:default;user-select:none;transition:all .15s ease}
+ .hdr-weather:hover{border-color:var(--acc);transform:translateY(-1px)}
+ .hw-icon{font-size:18px;line-height:1}
+ .hdr-prayer-wrap{position:relative}
+ .hdr-prayer-btn{display:flex;align-items:center;gap:8px;padding:5px 12px;background:var(--bg);border:1px solid var(--line);border-radius:10px;cursor:pointer;transition:all .18s ease;user-select:none}
+ .hdr-prayer-btn:hover{border-color:var(--acc);background:var(--soft);transform:translateY(-1px)}
+ .hp-icon{font-size:17px;line-height:1}
+ .hp-info{display:flex;flex-direction:column;text-align:left;line-height:1.15}
+ .hp-name{font-size:11px;color:var(--acc);font-weight:700;text-transform:uppercase;letter-spacing:.03em}
+ .hp-time{font-size:12.5px;font-weight:700;color:var(--ink)}
+ .hdr-prayer-popover{position:absolute;top:calc(100% + 8px);right:0;z-index:105;width:280px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;box-shadow:0 10px 30px rgba(0,0,0,0.14),0 2px 6px rgba(0,0,0,0.06);opacity:0;visibility:hidden;transform:translateY(-6px);transition:all .2s cubic-bezier(.16,1,.3,1);pointer-events:none}
+ .hdr-prayer-wrap:hover .hdr-prayer-popover{opacity:1;visibility:visible;transform:translateY(0);pointer-events:auto}
+ .hp-pop-head{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:6px;margin-bottom:8px}
+ .hp-pop-head b{font-size:13px;color:var(--ink)}
+ .hp-pop-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+ .hp-pop-item{display:flex;justify-content:space-between;align-items:center;padding:5px 8px;background:var(--bg);border:1px solid var(--line);border-radius:8px;font-size:12px}
+ .hp-pop-item.on{background:var(--soft);border-color:var(--acc);color:var(--acc);font-weight:700}
+ .hp-pop-foot{margin-top:8px;border-top:1px dashed var(--line);padding-top:6px;text-align:center}
+ .top-actions{display:flex;align-items:center;gap:6px}
+ .top .ic{height:34px;width:36px;display:grid;place-items:center;padding:0;border-radius:9px;border:1px solid var(--line);background:var(--bg);color:var(--ink);transition:all .15s ease}
+ .top .ic:hover{border-color:var(--acc);color:var(--acc)}
+ .top-sync-pill{display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 12px;border-radius:9px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-size:12.5px;font-weight:700;cursor:pointer;user-select:none;transition:all .15s ease}
+ .top-sync-pill:hover{border-color:var(--acc);transform:translateY(-1px)}
+ .top-sync-pill .sdot{margin:0}
+ .top-sync-ok{border-color:rgba(21,128,61,0.25);background:var(--soft);color:var(--pos)}
+ .top-sync-bad{border-color:rgba(220,38,38,0.25);background:#FEF2F2;color:var(--neg)}
+ .top-sync-pend{border-color:rgba(217,119,6,0.25);background:#FFFBEB;color:var(--warn)}
  .day-chip{display:inline-block;padding:2px 8px;border-radius:6px;font-size:13.5px;font-weight:600;vertical-align:middle}
  .tabs{
    top: 50%;
@@ -956,9 +986,50 @@ body.locked .tab-bug-fab,#lk:not([hidden]) ~ .tab-bug-fab{display:none !importan
 </head>
 <body>
 
-<div class="bismillah-bar" id="bismillahBar"><span class="bismillah-txt" id="bismillahText">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ</span></div>
 <aside class="tabs" id="tabs" hidden></aside>
-<div class="top" id="top"><div class="top-brand"><img class="lg-b" src="logo-icon-black.png" alt=""><img class="lg-w" src="logo-icon-white.png" alt=""><div class="tt"><span class="shop-name-title" id="shopNameTitle">Nur Computer &amp; Stationery</span><small id="tsub"></small></div></div><div class="hdr-center" id="hdrCenter"><div class="hdr-weather" id="hdrWeather" title="Dhaka Weather"><span class="hw-icon" id="hwIcon">🌤️</span><span class="hw-temp" id="hwTemp">--°C</span></div><div class="hdr-watch" id="hdrWatch" aria-label="Live Clock"><div class="hw-time" id="hwTime">--:--:--</div><div class="hw-meta"><span class="hw-day" id="hwDay"></span><span class="hw-date" id="hwDate"></span><span class="hw-bng" id="hwBng"></span></div></div></div><div class="sp" id="topR"><div class="tclk" id="tclk" hidden aria-label="Current time"><b id="tclkT"></b><small id="tclkD"></small></div><button type="button" class="ic" id="themeBtn" aria-label="Theme" title="Theme" data-mode="auto"><svg class="th-auto" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor"/></svg><svg class="th-light" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg><svg class="th-dark" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button><button type="button" class="ic" id="refresh" aria-label="Refresh current view" title="Refresh current view"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 0 1 13.66-5.66L20 8"/><path d="M20 3v5h-5"/><path d="M20 12a8 8 0 0 1-13.66 5.66L4 16"/><path d="M4 21v-5h5"/></svg></button></div></div>
+<div class="top" id="top">
+  <div class="top-brand">
+    <img class="lg-b" src="logo-icon-black.png" alt="NCS Logo">
+    <img class="lg-w" src="logo-icon-white.png" alt="NCS Logo">
+    <div class="tt">
+      <span class="shop-name-title" id="shopNameTitle">Nur Computer &amp; Stationery</span>
+      <div class="top-brand-sub"><span class="tsub-pill" id="tsub">admin</span></div>
+    </div>
+  </div>
+  <div class="hdr-center" id="hdrCenter">
+    <div class="bismillah-txt" id="bismillahText">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ</div>
+    <div class="hdr-watch" id="hdrWatch" aria-label="Live Clock">
+      <div class="hw-time" id="hwTime">--:--:--</div>
+      <div class="hw-meta">
+        <span class="hw-day" id="hwDay"></span>
+        <span class="hw-date" id="hwDate"></span>
+        <span class="hw-sep">·</span>
+        <span class="hw-bng" id="hwBng"></span>
+      </div>
+    </div>
+  </div>
+  <div class="sp" id="topR">
+    <div class="hdr-weather" id="hdrWeather" title="Dhaka Weather">
+      <span class="hw-icon" id="hwIcon">🌤️</span>
+      <span class="hw-temp" id="hwTemp">--°C</span>
+    </div>
+    <div class="hdr-prayer-wrap" id="hdrPrayerWrap">
+      <button type="button" class="hdr-prayer-btn" id="hdrPrayerBtn" aria-label="Prayer Times" title="Click to view full prayer times">
+        <span class="hp-icon">🕌</span>
+        <span class="hp-info">
+          <b class="hp-name" id="hpName">Salat</b>
+          <small class="hp-time" id="hpTime">--:--</small>
+        </span>
+      </button>
+      <div class="hdr-prayer-popover" id="hdrPrayerPopover"></div>
+    </div>
+    <div class="top-actions">
+      <button type="button" class="ic" id="themeBtn" aria-label="Theme" title="Theme" data-mode="auto"><svg class="th-auto" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor"/></svg><svg class="th-light" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg><svg class="th-dark" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button>
+      <button type="button" class="ic" id="refresh" aria-label="Refresh current view" title="Refresh current view"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 0 1 13.66-5.66L20 8"/><path d="M20 3v5h-5"/><path d="M20 12a8 8 0 0 1-13.66 5.66L4 16"/><path d="M4 21v-5h5"/></svg></button>
+    </div>
+    <button type="button" class="top-sync-pill" id="topSync" title="Sync Status"><i class="sdot off" aria-hidden="true"></i><span>Sync</span></button>
+  </div>
+</div>
 <div class="wrap view" id="vAcc">
   <div class="pt"><h2>Nur Computer &amp; Stationery</h2><div>DAILY ACCOUNTS</div></div>
   <header>
@@ -1819,9 +1890,32 @@ const SY=()=>!!(syncUrl()&&syncKey());
 const isDirty=()=>(S.rev||0)!==(S.synced||0);
 let st='off',tm,busy=false;
 function setSt(x){st=x;var c=x==='ok'?'ok':x==='pend'?'pend':(x==='offl'||x==='conf')?'bad':'off',lab={off:'Off',ok:'Synced',pend:'Pending',offl:'Offline',conf:'Conflict'}[x];
-  $('sync').innerHTML='<i class="sdot '+c+'" aria-hidden="true"></i>'+lab;
-  var labBn={off:'বন্ধ',ok:'সিঙ্ক সম্পন্ন',pend:'অপেক্ষমাণ',offl:'অফলাইন',conf:'দ্বন্দ্ব'}[x]||lab;$('sync').setAttribute('aria-label',lb('Sync status: ','সিঙ্ক অবস্থা: ')+(S.lang==='bn'?labBn:lab));
-  $('sync').title=c==='ok'?'All changes are synced':c==='pend'?'Saving changes…':x==='conf'?'Sync conflict — tap to resolve':c==='bad'?'Offline — will sync when back online':'Sync is not set up on this device'}
+  var labBn={off:'বন্ধ',ok:'সিঙ্ক সম্পন্ন',pend:'অপেক্ষমাণ',offl:'অফলাইন',conf:'দ্বন্দ্ব'}[x]||lab;
+  var txt=S.lang==='bn'?labBn:lab;
+  var syncEl=$('sync'), topSync=$('topSync');
+  if(syncEl){
+    syncEl.innerHTML='<i class="sdot '+c+'" aria-hidden="true"></i>'+txt;
+    syncEl.setAttribute('aria-label',lb('Sync status: ','সিঙ্ক অবস্থা: ')+txt);
+    syncEl.title=c==='ok'?'All changes are synced':c==='pend'?'Saving changes…':x==='conf'?'Sync conflict — tap to resolve':c==='bad'?'Offline — will sync when back online':'Sync is not set up on this device';
+  }
+  if(topSync){
+    topSync.innerHTML='<i class="sdot '+c+'" aria-hidden="true"></i><span>'+txt+'</span>';
+    topSync.className='top-sync-pill top-sync-'+c;
+    topSync.title=syncEl?syncEl.title:'';
+  }
+}
+if(typeof document!=='undefined'){
+  document.addEventListener('click',function(e){
+    var b=e.target.closest('#topSync');
+    if(!b)return;
+    if(SY()){
+      try{pull(true)}catch(err){}
+      if(typeof ltoast==='function')ltoast(lb('Checking Google sync…','গুগল সিঙ্ক পরীক্ষা হচ্ছে…'));
+    }else{
+      if($('set'))$('set').onclick();
+    }
+  });
+}
 
 function schedule(){
   if(!SY())return;setSt('pend');clearTimeout(tm);tm=setTimeout(()=>push(),600);
@@ -2692,6 +2786,7 @@ function fetchDhakaSalat(callback){
       const parsed = JSON.parse(cached);
       if(parsed && parsed.date === today && parsed.timings){
         salatTimingsCache = parsed.timings;
+        updateHeaderSalat(parsed.timings);
         if(callback) callback(parsed.timings);
         return;
       }
@@ -2711,6 +2806,7 @@ function fetchDhakaSalat(callback){
         try{
           sessionStorage.setItem('ncs_salat_v1', JSON.stringify({ date: today, timings: data.data.timings }));
         }catch(e){}
+        updateHeaderSalat(data.data.timings);
         if(callback) callback(data.data.timings);
       }
     })
@@ -2718,6 +2814,153 @@ function fetchDhakaSalat(callback){
       if(callback) callback(null);
     });
 }
+
+function updateHeaderSalat(timings){
+  if(!timings) return;
+  const isBn = S.lang === 'bn';
+  const now = new Date();
+  const curMins = now.getHours() * 60 + now.getMinutes();
+
+  const prayerList = [
+    { id: 'Fajr', en: 'Fajr', bn: 'ফজর', t: timings.Fajr, icon: '🌅' },
+    { id: 'Sunrise', en: 'Sunrise', bn: 'সূর্যোদয়', t: timings.Sunrise, icon: '☀️', isSun: true },
+    { id: 'Dhuhr', en: 'Dhuhr', bn: 'যোহর', t: timings.Dhuhr, icon: '☀️' },
+    { id: 'Asr', en: 'Asr', bn: 'আসর', t: timings.Asr, icon: '🌤️' },
+    { id: 'Maghrib', en: 'Maghrib', bn: 'মাগরিব', t: timings.Maghrib, icon: '🌇' },
+    { id: 'Isha', en: 'Isha', bn: 'ইশা', t: timings.Isha, icon: '🌙' }
+  ];
+
+  /* Find next prayer */
+  let nextP = null;
+  let minDiff = Infinity;
+  prayerList.forEach(p => {
+    if(!p.t) return;
+    const [h, m] = p.t.split(':').map(Number);
+    const pMins = h * 60 + m;
+    let diff = pMins - curMins;
+    if(diff < 0) diff += 24 * 60;
+    if(diff < minDiff){
+      minDiff = diff;
+      nextP = { ...p, diffMins: diff };
+    }
+  });
+
+  const hpName = $('hpName'), hpTime = $('hpTime');
+  if(hpName && nextP) hpName.textContent = isBn ? nextP.bn : nextP.en;
+  if(hpTime && nextP) hpTime.textContent = t12(nextP.t);
+
+  const popover = $('hdrPrayerPopover');
+  if(popover){
+    const diffH = nextP ? Math.floor(nextP.diffMins / 60) : 0;
+    const diffM = nextP ? (nextP.diffMins % 60) : 0;
+    const diffStr = isBn
+      ? (diffH > 0 ? toBnNum(diffH) + ' ঘণ্টা ' : '') + toBnNum(diffM) + ' মিনিট বাকি'
+      : (diffH > 0 ? diffH + 'h ' : '') + diffM + 'm left';
+
+    popover.innerHTML = '' +
+      '<div class="hp-pop-head">' +
+        '<b>' + (isBn ? 'নামাজের সময়সূচী' : 'Prayer Times') + '</b>' +
+        '<small class="mut">Dhaka · ' + (nextP ? (isBn ? nextP.bn : nextP.en) + ' (' + diffStr + ')' : '') + '</small>' +
+      '</div>' +
+      '<div class="hp-pop-grid">' +
+        prayerList.map(p => {
+          const isNext = nextP && nextP.id === p.id;
+          return '<div class="hp-pop-item' + (isNext ? ' on' : '') + '">' +
+            '<span>' + p.icon + ' ' + (isBn ? p.bn : p.en) + '</span>' +
+            '<b>' + t12(p.t) + '</b>' +
+          '</div>';
+        }).join('') +
+      '</div>' +
+      '<div class="hp-pop-foot">' +
+        '<small class="mut">' + (isBn ? 'সম্পূর্ণ সময়সূচী দেখতে ক্লিক করুন' : 'Click to view full prayer card & test alarm') + '</small>' +
+      '</div>';
+  }
+}
+
+function openFullSalatModal(){
+  fetchDhakaSalat(timings => {
+    if(!timings){
+      if(typeof ltoast === 'function') ltoast(lb('Prayer timings unavailable offline', 'নামাজের সময়সূচী অফলাইনে পাওয়া যায়নি'));
+      return;
+    }
+    const isBn = S.lang === 'bn';
+    const now = new Date();
+    const curMins = now.getHours() * 60 + now.getMinutes();
+
+    const prayerList = [
+      { id: 'Fajr', en: 'Fajr', bn: 'ফজর', t: timings.Fajr, icon: '🌅' },
+      { id: 'Sunrise', en: 'Sunrise', bn: 'সূর্যোদয়', t: timings.Sunrise, icon: '☀️', isSun: true },
+      { id: 'Dhuhr', en: 'Dhuhr', bn: 'যোহর', t: timings.Dhuhr, icon: '☀️' },
+      { id: 'Asr', en: 'Asr', bn: 'আসর', t: timings.Asr, icon: '🌤️' },
+      { id: 'Maghrib', en: 'Maghrib', bn: 'মাগরিব', t: timings.Maghrib, icon: '🌇' },
+      { id: 'Isha', en: 'Isha', bn: 'ইশা', t: timings.Isha, icon: '🌙' }
+    ];
+
+    let nextP = null;
+    let minDiff = Infinity;
+    prayerList.forEach(p => {
+      if(!p.t) return;
+      const [h, m] = p.t.split(':').map(Number);
+      const pMins = h * 60 + m;
+      let diff = pMins - curMins;
+      if(diff < 0) diff += 24 * 60;
+      if(diff < minDiff){
+        minDiff = diff;
+        nextP = { ...p, diffMins: diff };
+      }
+    });
+
+    const diffH = nextP ? Math.floor(nextP.diffMins / 60) : 0;
+    const diffM = nextP ? (nextP.diffMins % 60) : 0;
+    const diffStr = isBn
+      ? (diffH > 0 ? toBnNum(diffH) + ' ঘণ্টা ' : '') + toBnNum(diffM) + ' মিনিট বাকি'
+      : (diffH > 0 ? diffH + 'h ' : '') + diffM + 'm left';
+
+    const bodyHtml = '' +
+      '<div style="margin-bottom:12px">' +
+        '<div style="font-size:12.5px;color:var(--mut);margin-bottom:8px">' +
+          (nextP ? ('▸ ' + (isBn ? 'পরবর্তী নামাজ: ' : 'Next Prayer: ') + '<b style="color:var(--acc)">' + (isBn ? nextP.bn : nextP.en) + '</b> (' + diffStr + ')') : '') +
+        '</div>' +
+        '<div class="salat-grid">' +
+          prayerList.map(p => {
+            const isNext = nextP && nextP.id === p.id;
+            const tFormatted = t12(p.t);
+            return '' +
+              '<div class="salat-box' + (isNext ? ' salat-box-active' : '') + (p.isSun ? ' salat-box-sun' : '') + '">' +
+                '<div class="sb-icon">' + p.icon + '</div>' +
+                '<div class="sb-name">' + (isBn ? p.bn : p.en) + '</div>' +
+                '<b class="sb-time">' + (isBn ? toBnNum(tFormatted) : tFormatted) + '</b>' +
+                (isNext ? '<span class="sb-badge">' + (isBn ? 'পরবর্তী' : 'NEXT') + '</span>' : '') +
+              '</div>';
+          }).join('') +
+        '</div>' +
+      '</div>' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line);padding-top:10px;margin-top:10px">' +
+        '<small class="mut">' + (isBn ? 'প্রতি ওয়াক্তে স্বয়ংক্রিয় আযান/অ্যালার্ম বাজবে' : 'Automatic prayer chime plays on arrival') + '</small>' +
+        '<button type="button" class="ghost" id="btnTestSalatAlarmModal" style="height:30px;padding:0 10px;font-size:12px">🔔 ' + (isBn ? 'অ্যালার্ম পরীক্ষা' : 'Test Sound') + '</button>' +
+      '</div>';
+
+    ask(lb('🕌 Salat Times — Dhaka (UTC+6)', '🕌 নামাজের সময়সূচী — ঢাকা'), bodyHtml, function(){ return true; }, lb('Close', 'বন্ধ করুন'), true);
+
+    const testBtn = $('btnTestSalatAlarmModal');
+    if(testBtn){
+      testBtn.onclick = function(){
+        const pName = isBn ? (nextP ? nextP.bn : 'আসর') : (nextP ? nextP.en : 'Asr');
+        showSalatAlarmToast(pName, nextP ? t12(nextP.t) : '3:45 PM');
+      };
+    }
+  });
+}
+
+if(typeof document !== 'undefined'){
+  document.addEventListener('click', function(e){
+    var b = e.target.closest('#hdrPrayerBtn');
+    if(b) openFullSalatModal();
+  });
+}
+
+fetchDhakaSalat();
+setInterval(function(){ fetchDhakaSalat(); }, 60000);
 
 function showSalatAlarmToast(prayerName, timeFormatted){
   try{ Sound.chime(); }catch(e){}
@@ -2788,90 +3031,8 @@ setInterval(checkSalatAlarm, 20000);
 
 function renderSalatCard(){
   const el = $('hSalat');
-  if(!el) return;
-
-  fetchDhakaSalat(timings => {
-    if(!timings){
-      el.style.display = 'none';
-      return;
-    }
-    el.style.display = '';
-
-    const isBn = S.lang === 'bn';
-    const now = new Date();
-    const curMins = now.getHours() * 60 + now.getMinutes();
-
-    const prayerList = [
-      { id: 'Fajr', en: 'Fajr', bn: 'ফজর', t: timings.Fajr, icon: '🌅' },
-      { id: 'Sunrise', en: 'Sunrise', bn: 'সূর্যোদয়', t: timings.Sunrise, icon: '☀️', isSun: true },
-      { id: 'Dhuhr', en: 'Dhuhr', bn: 'যোহর', t: timings.Dhuhr, icon: '☀️' },
-      { id: 'Asr', en: 'Asr', bn: 'আসর', t: timings.Asr, icon: '🌤️' },
-      { id: 'Maghrib', en: 'Maghrib', bn: 'মাগরিব', t: timings.Maghrib, icon: '🌇' },
-      { id: 'Isha', en: 'Isha', bn: 'ইশা', t: timings.Isha, icon: '🌙' }
-    ];
-
-    /* Find next prayer */
-    let nextP = null;
-    let minDiff = Infinity;
-    prayerList.forEach(p => {
-      if(!p.t) return;
-      const [h, m] = p.t.split(':').map(Number);
-      const pMins = h * 60 + m;
-      let diff = pMins - curMins;
-      if(diff < 0) diff += 24 * 60;
-      if(diff < minDiff){
-        minDiff = diff;
-        nextP = { ...p, diffMins: diff };
-      }
-    });
-
-    const diffH = nextP ? Math.floor(nextP.diffMins / 60) : 0;
-    const diffM = nextP ? (nextP.diffMins % 60) : 0;
-    const diffStr = isBn
-      ? (diffH > 0 ? toBnNum(diffH) + ' ঘণ্টা ' : '') + toBnNum(diffM) + ' মিনিট বাকি'
-      : (diffH > 0 ? diffH + 'h ' : '') + diffM + 'm left';
-
-    el.innerHTML = '' +
-      '<div class="salat-head">' +
-        '<div>' +
-          '<div style="display:flex;align-items:center;gap:8px">' +
-            '<span style="font-size:18px">🕌</span>' +
-            '<h3 style="margin:0;font-size:16px;font-weight:700">' + (isBn ? 'নামাজের সময়সূচী' : 'Salat Times') + '</h3>' +
-            '<span class="t-badge t-badge-left" style="font-size:11px">Dhaka (UTC+6)</span>' +
-          '</div>' +
-          '<small class="mut" style="font-size:12px;margin-top:2px;display:block">' +
-            (nextP ? ('▸ ' + (isBn ? 'পরবর্তী নামাজ: ' : 'Next: ') + '<b>' + (isBn ? nextP.bn : nextP.en) + '</b> (' + diffStr + ')') : '') +
-          '</small>' +
-        '</div>' +
-        '<div style="display:flex;gap:6px;align-items:center">' +
-          '<button type="button" class="ghost" id="btnTestSalatAlarm" style="height:30px;padding:0 10px;font-size:12px;display:flex;align-items:center;gap:4px">' +
-            '<span>🔔</span> <span>' + (isBn ? 'অ্যালার্ম পরীক্ষা' : 'Test Alarm') + '</span>' +
-          '</button>' +
-        '</div>' +
-      '</div>' +
-
-      '<div class="salat-grid">' +
-        prayerList.map(p => {
-          const isNext = nextP && nextP.id === p.id;
-          const tFormatted = t12(p.t);
-          return '' +
-            '<div class="salat-box' + (isNext ? ' salat-box-active' : '') + (p.isSun ? ' salat-box-sun' : '') + '">' +
-              '<div class="sb-icon">' + p.icon + '</div>' +
-              '<div class="sb-name">' + (isBn ? p.bn : p.en) + '</div>' +
-              '<b class="sb-time">' + (isBn ? toBnNum(tFormatted) : tFormatted) + '</b>' +
-              (isNext ? '<span class="sb-badge">' + (isBn ? 'পরবর্তী' : 'NEXT') + '</span>' : '') +
-            '</div>';
-        }).join('') +
-      '</div>';
-
-    const testBtn = $('btnTestSalatAlarm');
-    if(testBtn){
-      testBtn.onclick = function(){
-        const pName = isBn ? (nextP ? nextP.bn : 'আসর') : (nextP ? nextP.en : 'Asr');
-        showSalatAlarmToast(pName, nextP ? t12(nextP.t) : '3:45 PM');
-      };
-    }
-  });
+  if(el) el.style.display = 'none';
+  fetchDhakaSalat();
 }
 
 /* ---------- Main Dashboard Render ---------- */
@@ -5347,7 +5508,8 @@ function animateCounts(){
 function saveCheck(){if(document.documentElement.dataset.rm)return;var d=document.createElement('div');d.className='savechk';d.innerHTML='<svg viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="22" fill="none" stroke="var(--acc)" stroke-width="3"/><path d="M14 27l8 8 16-16" fill="none" stroke="var(--acc)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>';document.body.appendChild(d);setTimeout(function(){d.classList.add('out')},700);setTimeout(function(){d.remove()},1250)}
 (function(){
   var M="Claude Sonnet 5.5 · owner's Claude account";
-  APP_VERSION='11.1.0';
+  APP_VERSION='11.2.0';
+  VERS.unshift({v:'11.2.0',d:'2026-10-30',t:'Executive Header Bar Redesign, Islamic Prayer Integration & Corner Clipping Fix',by:'Antigravity',n:['Fixed shop computer icon upper corner clipping by eliminating border-radius and setting object-fit contain','Executive 3-column header layout: Left (Brand), Center (Bismillah, Live Watch, Calendar), Right (Weather, Prayer, Tools, Sync)','Integrated Bismillah calligraphy, large 24px live clock, and Gregorian + Bengali calendar into unified center command cluster','Balanced typography: Shop Title and Live Clock scaled to matching 24px bold visual weight with brand role badge','Moved Prayer Schedule into Header: Interactive quick pill showing next prayer and live countdown','Prayer hover popover: hovering reveals a glimpse of all 6 prayer slots for Dhaka (UTC+6)','Prayer interactive modal: clicking opens the full prayer schedule card with audio alarm test','Live Sync status pill placed on the rightmost header edge for persistent cross-tab visibility','Overview dashboard streamlined: freed vertical space by relocating the static prayer card to the top bar']});
   VERS.unshift({v:'11.1.0',d:'2026-10-30',t:'Bug Report System v12: Contextual In-Tab Bug & Requirement Reporting',by:'Antigravity',n:['Floating [ 🪲 Bug ] action pill at the bottom of every tab for instant issue reporting','Contextual auto-detection: automatically binds report to the active tab (Overview, Task Schedule, Ledger, Counter, Accounts, More)','Two structured input fields: 1. Bugs & Errors and 2. Requirements & Solutions','Automatic capture of metadata: reporter role, staff name, date, time, and app version','Standalone Markdown (.md) document generation with 1-tap download and clipboard export','Admin Bug Inspection Hub in More tab: filter by tab, review status (Open/Resolved), copy markdown, and bulk download all reports as a combined .md file','Storage in app state (localStorage + IndexedDB) with automatic cloud sync via whole-state sync engine','Previous diagnostics & WhatsApp bug reporter retained intact in More tab']});
   VERS.unshift({v:'11.0.0-beta',d:'2026-10-29',t:'Phase 3: Overview Dashboard Redesign, Icon Filters & Salat Times',by:'Antigravity',n:['Icon-based period filters across Home/Overview: Today, Yesterday, 7 Days, 1 Month, 3 Months, 6 Months, Overall, Custom','Custom day range selector with Nov 2020 clamp and future date ban','Aladhan Salat API integration for Dhaka with daily session caching and offline resilience','Salat Times Card with 6 prayer slots, highlighting active/next prayer with real-time countdown','Short pop-up Salat alarm toast with soft audio chime on prayer arrival','Removed obsolete Recent Bills section from Overview dashboard for clean aesthetics']});
   VERS.unshift({v:'11.0.0-alpha.2',d:'2026-10-29',t:'Phase 2: Task Schedule & Project Tracking Module',by:'Antigravity',n:['New 6th navigation tab: Task Schedule (কাজের সময়সূচী) accessible to all roles','Kanban Board view with 4 interactive drag-and-advance columns: Pending, In Progress, Under Review, Completed','List view with responsive tabular progress bars, priority badges, tags, and date countdowns','Progress bar per task (0-100%) with dynamic gradient fill and 100% completion detection','5-stage lifecycle: Pending, In Progress, Review, Completed, and Cancelled','Smart date tracking: Taking Date (min Nov 2020, max today), Deadline, and auto-recorded Completion Date','Overdue alert detection with red badges and countdown timers','Collaborative notes thread: timestamped updates by author for every task','Task search, stage filter, priority filter, assignee filter, and multi-criteria sorting','S.tasks added to monotonic whole-state cloud sync engine']});
@@ -5410,6 +5572,7 @@ function saveCheck(){if(document.documentElement.dataset.rm)return;var d=documen
   var sp=UPC.find(function(x){return x.v==='9.22'&&x.s==='Planned'});if(sp)sp.v='9.23';
 })();
 BUGS.unshift(
+  {d:'2026-10-30 19:10 (UTC+6)',v:'11.2.0',w:'Antigravity',a:'Shop monitor icon top corners clipped; prayer times dominated Overview tab; header lacked unified center alignment',b:'border-radius:10px clipped rect monitor casing; prayer times rendered as large static 6-box card in vHome; Bismillah was in separate detached top strip',c:'Removed border-radius from top-brand img; transformed prayer times into interactive header widget with hover preview and modal; rebuilt top header as 3-column grid with centered Bismillah/Clock/Date and rightmost live sync pill'},
   {d:'2026-10-29 17:20 (UTC+6)',v:'10.4.0',w:'Antigravity',a:'Home dashboard metrics, sales, and bills showed 0 for today and click handlers duplicated',b:'GPT-OSS 120B commit ed82eee changed e.d>=a&&e.d<=b to strict e.d>a&&e.d<b which made single-day range impossible, changed role accountant to accountor, and moved click event listeners inside homeUI()',c:'Restored inclusive date inequalities e.d>=a&&e.d<=b, restored accountant role, moved event listeners outside homeUI(), and synchronized verified build to GitHub'},
   {d:'2026-10-29 13:55 (UTC+6)',v:'10.2.0',w:'Antigravity & Claude Sonnet',a:'Sync was slow and balances shifted between desktop and mobile devices',b:'1) Model B delta sync dropped non-array state (S.wManual, S.start, S.days, S.users); 2) Fixed Google Sheet columns stripped dynamic properties (ld, act, w, cu, adj, void), flipping cash arithmetic; 3) Empty string from sheet broke act===null check; 4) Absence of primeLH() on pull caused distributed echo storm where every save re-pushed all rows; 5) save() re-stamped removed===1 rows forever; 6) 12-sheet read/writes took 3-5 seconds per GAS execution',c:'Restored Option 1 whole-state sync architecture with stateOut() and mergeState(); updated Code.gs to store full state JSON in State sheet and human-readable rows in Entries sheet (~200ms round trip); removed removed===1 re-stamping; bound window.S dynamically; set active tab poll to 15s'},
   {d:'2026-10-29 12:15 (UTC+6)',v:'10.1.4',w:'Antigravity',a:'Mobile PWA still displayed "No entries for this date" and failed to sync newly entered transactions after app update',b:'1) syncState.lastPullU on existing devices was already ahead of server entry timestamps, causing background pull to skip entries without force; 2) save() did not stamp edited rows with nextU(), causing modified entries to be filtered out during push; 3) PWA Service Worker served stale sync.js from browser HTTP disk cache; 4) nextU did not consider server ack timestamps, risking rows being ignored under device clock drift',c:'1) Upgraded sync engine schema to v3 which forces a one-time full sync (since=0) and date re-normalization on upgrade; 2) Hardened nextU to strictly exceed all local and server acknowledged timestamps; 3) Bound stampChanged() and save() to monotonic nextU(); 4) Added ?v=10.1.4 cache-busting query strings, bumped SW cache to ncs-v58, and added visual sync completion toast'},
