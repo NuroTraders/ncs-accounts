@@ -3,9 +3,9 @@
 | | |
 |---|---|
 | **Shop** | Nur Computer & Stationery |
-| **Current version** | **v11.3.0** (`versionCode 110300`) |
-| **Service worker cache** | `ncs-v69` |
-| **Last entry** | 2026-10-30 20:00 (UTC+6) |
+| **Current version** | **v11.4.0** (`versionCode 110400`) |
+| **Service worker cache** | `ncs-v70` |
+| **Last entry** | 2026-10-31 12:28 (UTC+6) |
 | **Contributors** | Claude profiles, Antigravity, Manus |
 
 Two Claude profiles work on this app and **do not share memory**. This file is their shared memory.
@@ -118,7 +118,7 @@ Click "Commit to main" and then "Push origin".
 
 ### 2.4 Interface and interaction
 - **Theme (v9.20):** three modes, `auto` (OS), `light`, `dark`. `#themeBtn` cycles Auto, Light, Dark. Day/Night is removed. Light and dark use design tokens (v10.4.0): slate `#F8FAFC` / obsidian `#0B0F19` surfaces, emerald brand, forest cash-in, crimson cash-out, amber warnings, and a five-colour chart palette (`--ch1` to `--ch5`).
-- **Header (v11.2 to v11.3):** three-column grid. Left, shop mark and role pill. Centre, Bismillah, live clock, weekday, Gregorian and Bengali date, plus Dhaka weather. Right, a 44 px prayer icon (hover preview, click opens the schedule dialog), theme, refresh and the sync pill (`#topSync`). Transparent theme-aware surface with a subtle divider.
+- **Header (v11.2 to v11.4):** three-column desktop grid with a compact two-row tablet/phone layout. Left, unchanged shop logo artwork shown smaller and without a heavy frame, shop name in a moderate weight, and role pill. Centre, Bismillah, live clock, weekday, Gregorian and Bengali date, plus Dhaka weather. Right, an accessible outline prayer shortcut (hover/focus preview, click opens the schedule dialog), theme, refresh and the sync pill (`#topSync`). Theme-aware translucent surface with a subtle divider; the phone sync label is visually hidden but remains available to screen readers.
 - **Navigation (v10.4.2 to v10.4.4):** five tabs, `Overview`, `Ledger`, `Counter`, `Accounts`, `More`, with bilingual labels. Desktop (≥900 px) uses a vertically centred floating dock that expands on hover from 54 px to 190 px. Products and Stock live inside Counter; Management is merged into More.
 - **Transitions and motion (v9.20 to v9.22):** `.view.on` fades in (220 ms). `animateCounts()` counts `.cnt` elements from 0 to `data-to` over 400 ms. `saveCheck()` shows a green SVG tick. `button:active` scales to 0.97. POS cart rows use `.slidein` / `.slideout`. Everything is a no-op under `data-rm` (reduced motion, taken from the OS; no manual toggle).
 - **Refresh:** the two-arrow SVG spins once on tap.
@@ -286,6 +286,7 @@ The five-colour chart palette (formerly Phase 1b) was delivered in v10.4.0.
 
 | Version | Delivered |
 |---|---|
+| **v11.4.0** | Executive header polish, smaller unchanged logo, responsive date/weather/prayer layout |
 | **v11.3.0** | Refined header: weather in the centre cluster, 44 px prayer icon, framed shop mark |
 | v11.2.0 | Executive 3-column header, prayer widget, unclipped shop icon |
 | v11.1.0 | Contextual in-tab Bug and Requirement reporting (v12) |
@@ -348,6 +349,14 @@ The five-colour chart palette (formerly Phase 1b) was delivered in v10.4.0.
 
 ## 7. Session Log
 *Newest first. Each entry is a version, a timestamp (UTC+6) and an author.*
+
+### v11.4.0 · 2026-10-31 12:28 · Manus
+**Executive header polish and responsive layout.**
+- Adapted the supplied executive-header reference to the existing app, preserving the original logo assets and the clock, bilingual dates, Dhaka weather, prayer preview/modal, theme, refresh and sync behavior.
+- Reduced the logo’s rendered size and removed the prominent frame; softened shop-name size and weight while keeping its original artwork and brand identity intact.
+- Added a two-row tablet/mobile arrangement that keeps weather, date and prayer access visible; uses theme tokens and a restrained translucent sticky header.
+- Updated the outline prayer icon and made the compact phone sync status visually minimal while retaining its screen-reader text.
+- Version 11.4.0 (`versionCode 110400`), cache `ncs-v70`. Compiled with `npm run prepare-www` and verified source syntax.
 
 ### v11.3.0 · 2026-10-30 20:00 · Manus
 **Refined Overview header redesign.**

@@ -1,6 +1,6 @@
 
 <aside class="tabs" id="tabs" hidden></aside>
-<div class="top" id="top">
+<header class="top" id="top">
   <div class="top-brand">
     <span class="top-brand-mark" aria-hidden="true">
       <img class="lg-b" src="logo-icon-black.png" alt="">
@@ -30,8 +30,8 @@
   </div>
   <div class="sp" id="topR">
     <div class="hdr-prayer-wrap" id="hdrPrayerWrap">
-      <button type="button" class="hdr-prayer-btn" id="hdrPrayerBtn" aria-label="Prayer Times" title="Click to view full prayer times">
-        <span class="hp-icon">🕌</span>
+      <button type="button" class="hdr-prayer-btn" id="hdrPrayerBtn" aria-label="Prayer Times" aria-haspopup="dialog" title="Click to view full prayer times">
+        <svg class="hp-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h18M5 21v-9l7-5 7 5v9M8 12h.01M16 12h.01M10 21v-4a2 2 0 0 1 4 0v4M12 7V3m-2 2 2-2 2 2"/></svg>
       </button>
       <div class="hdr-prayer-popover" id="hdrPrayerPopover"></div>
     </div>
@@ -39,9 +39,9 @@
       <button type="button" class="ic" id="themeBtn" aria-label="Theme" title="Theme" data-mode="auto"><svg class="th-auto" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor"/></svg><svg class="th-light" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg><svg class="th-dark" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button>
       <button type="button" class="ic" id="refresh" aria-label="Refresh current view" title="Refresh current view"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 0 1 13.66-5.66L20 8"/><path d="M20 3v5h-5"/><path d="M20 12a8 8 0 0 1-13.66 5.66L4 16"/><path d="M4 21v-5h5"/></svg></button>
     </div>
-    <button type="button" class="top-sync-pill" id="topSync" title="Sync Status"><i class="sdot off" aria-hidden="true"></i><span>Sync</span></button>
+    <button type="button" class="top-sync-pill" id="topSync" title="Sync Status" aria-live="polite"><i class="sdot off" aria-hidden="true"></i><span>Sync</span></button>
   </div>
-</div>
+</header>
 <div class="wrap view" id="vAcc">
   <div class="pt"><h2>Nur Computer &amp; Stationery</h2><div>DAILY ACCOUNTS</div></div>
   <header>

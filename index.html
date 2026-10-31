@@ -290,7 +290,7 @@ body{padding-bottom:78px}
 /* ===== THEME: Enterprise Surface & Elevation ===== */
 body{background:var(--bg)}
 h1{font-size:24px;font-weight:600}
-.top{max-width:none;margin:0;padding:12px 24px;background:transparent;box-shadow:none}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;max-width:none;margin:0;padding:10px 22px;min-height:78px;background:color-mix(in srgb,var(--card) 82%,transparent);-webkit-backdrop-filter:saturate(1.25) blur(14px);backdrop-filter:saturate(1.25) blur(14px);border-bottom:1px solid var(--line);box-shadow:0 1px 3px rgba(15,23,42,.05)}
 .card,.stat{background:var(--card);border-radius:14px;box-shadow:var(--sh)}
 .stats .stat:nth-child(1){background:var(--t3)}.stats .stat:nth-child(2){background:var(--t2)}.stats .stat:nth-child(3){background:var(--t1)}
 .stats .stat{border-color:transparent}
@@ -301,40 +301,40 @@ h1{font-size:24px;font-weight:600}
 th{color:var(--ink);font-weight:500}
 .tabs{background:var(--card);border:0;box-shadow:0 8px 28px rgba(0,0,0,.14)}
 .tabs button{font-weight:500;color:var(--mut)}.tabs button.on{background:var(--soft);color:var(--acc)}
-@media (max-width:899px){.hdr-center,.hdr-weather,.hdr-prayer-wrap{display:none!important}.tabs{left:10px;right:10px;bottom:calc(8px + env(safe-area-inset-bottom,0px));padding:6px;border-radius:20px}.tabs button .t-lbl{display:block;font-size:11px}.wrap{padding-bottom:104px}.lst{grid-template-columns:1fr 1fr}.lst .stat.main{grid-column:1/-1}.top{padding:10px 14px;display:flex;justify-content:space-between;align-items:center}}
+@media (max-width:899px){.tabs{left:10px;right:10px;bottom:calc(8px + env(safe-area-inset-bottom,0px));padding:6px;border-radius:20px}.tabs button .t-lbl{display:block;font-size:11px}.wrap{padding-bottom:104px}.lst{grid-template-columns:1fr 1fr}.lst .stat.main{grid-column:1/-1}.top{padding:10px 14px;display:flex;justify-content:space-between;align-items:center}}
 @media (min-width:900px){
  body:has(.tabs:not([hidden])){padding-left:84px}
- .top{display:grid;grid-template-columns:minmax(220px,1fr) auto minmax(220px,1fr);align-items:center;gap:12px;padding:10px 18px;background:transparent;border-bottom:1px solid var(--line);box-shadow:0 3px 14px rgba(15,23,42,0.045);position:relative;z-index:40}
- .top-brand{display:flex;align-items:center;gap:12px;min-width:240px}
- .top-brand-mark{width:52px;height:52px;flex:none;display:grid;place-items:center;background:var(--soft);border:1px solid var(--line);border-radius:12px}
- .top-brand img{height:42px;width:46px;border-radius:0!important;object-fit:contain;filter:none;transition:transform .2s cubic-bezier(.16,1,.3,1)}
- .top-brand:hover img{transform:scale(1.035)}
- .shop-name-title{display:block;font-size:24px;font-weight:800;letter-spacing:-.025em;color:var(--acc);line-height:1.15}
- html[lang="bn"] .shop-name-title{font-size:25px;font-family:SolaimanLipi,Inter,sans-serif}
+ .top{display:grid;grid-template-columns:minmax(220px,1fr) auto minmax(250px,1fr);align-items:center;gap:clamp(10px,1.8vw,24px);padding:10px 18px;position:sticky;top:env(safe-area-inset-top,0px);z-index:40}
+ .top-brand{display:flex;align-items:center;gap:10px;min-width:0}
+ .top-brand-mark{width:40px;height:40px;flex:none;display:grid;place-items:center;background:transparent;border:0;border-radius:8px}
+ .top-brand img{height:32px;width:34px;border-radius:0!important;object-fit:contain;filter:none;transition:transform .2s cubic-bezier(.16,1,.3,1)}
+ .top-brand:hover img{transform:scale(1.02)}
+ .shop-name-title{display:block;font-size:20px;font-weight:600;letter-spacing:-.015em;color:var(--ink);line-height:1.15}
+ html[lang="bn"] .shop-name-title{font-size:21px;font-family:SolaimanLipi,Inter,sans-serif;font-weight:500}
  .top-brand-sub{margin-top:3px}
- .tsub-pill{display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border-radius:6px;background:var(--soft);color:var(--pos);font-size:11.5px;font-weight:700;text-transform:capitalize;border:1px solid rgba(21,128,61,0.25)}
+ .tsub-pill{display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border-radius:999px;background:var(--soft);color:var(--acc);font-size:11px;font-weight:500;text-transform:capitalize;border:1px solid color-mix(in srgb,var(--acc) 22%,transparent)}
  
  /* Header Center: Bismillah + Large Minimal Watch + Calendar */
  .hdr-center{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:3px;min-width:0}
- .bismillah-txt{font-size:13px;font-weight:600;color:var(--mut);letter-spacing:.06em;user-select:none;line-height:1.2;transition:color .2s ease}
- html[lang="bn"] .bismillah-txt{font-size:14px;font-family:SolaimanLipi,Inter,sans-serif;font-weight:700;color:var(--ink)}
+ .bismillah-txt{font-size:12.5px;font-weight:500;color:var(--mut);letter-spacing:.035em;user-select:none;line-height:1.2;transition:color .2s ease}
+ html[lang="bn"] .bismillah-txt{font-size:13px;font-family:SolaimanLipi,Inter,sans-serif;font-weight:600;color:var(--mut)}
  .hdr-watch{display:flex;flex-direction:column;align-items:center;text-align:center;user-select:none}
- .hw-time{font-size:24px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.02em;color:var(--ink);line-height:1.15;font-family:Inter,SolaimanLipi,system-ui,monospace}
- .hw-meta{display:flex;align-items:center;justify-content:center;gap:6px;font-size:13px;color:var(--mut);margin-top:3px;white-space:nowrap}
- .hw-day{display:inline-block;padding:1px 7px;border-radius:5px;font-weight:700;font-size:11px;border:1px solid;transition:background .2s,color .2s}
- .hw-date{font-weight:600;color:var(--ink)}
+ .hw-time{font-size:22px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:.015em;color:var(--ink);line-height:1.15;font-family:Inter,SolaimanLipi,system-ui,monospace}
+ .hw-meta{display:flex;align-items:center;justify-content:center;gap:7px;font-size:12.5px;color:var(--mut);margin-top:3px;white-space:nowrap}
+ .hw-day{display:inline-block;padding:1px 7px;border-radius:999px;font-weight:600;font-size:11px;border:1px solid;transition:background .2s,color .2s}
+ .hw-date{font-weight:500;color:var(--ink)}
  .hw-sep{color:var(--line);font-weight:bold}
- .hw-bng{color:var(--mut);font-family:SolaimanLipi,Inter,sans-serif;font-size:12.5px}
+ .hw-bng{color:var(--mut);font-family:SolaimanLipi,Inter,sans-serif;font-size:12px}
  
  /* Header Right: Prayer Shortcut + Actions + Sync */
- .top #topR{display:flex;align-items:center;justify-content:flex-end;gap:9px;justify-self:end}
- .hdr-weather{display:inline-flex;align-items:center;gap:5px;padding:0 0 0 7px;background:transparent;border:0;border-left:1px solid var(--line);border-radius:0;font-size:14px;font-weight:700;color:var(--ink);cursor:default;user-select:none}
+ .top #topR{display:flex;align-items:center;justify-content:flex-end;gap:8px;justify-self:end}
+ .hdr-weather{display:inline-flex;align-items:center;gap:5px;padding:0 0 0 7px;background:transparent;border:0;border-left:1px solid var(--line);border-radius:0;font-size:13px;font-weight:500;color:var(--ink);cursor:default;user-select:none}
  .hw-weather-sep{display:none}
  .hw-icon{font-size:19px;line-height:1}
  .hdr-prayer-wrap{position:relative}
- .hdr-prayer-btn{display:grid;place-items:center;width:44px;height:44px;padding:0;background:var(--soft);border:1px solid var(--line);border-radius:12px;cursor:pointer;transition:all .18s ease;user-select:none}
- .hdr-prayer-btn:hover,.hdr-prayer-btn:focus-visible{border-color:var(--acc);background:var(--card);outline:2px solid var(--acc);outline-offset:2px}
- .hp-icon{font-size:21px;line-height:1}
+ .hdr-prayer-btn{display:grid;place-items:center;width:40px;height:40px;padding:0;background:var(--card);border:1px solid var(--line);border-radius:12px;cursor:pointer;transition:all .18s ease;user-select:none}
+ .hdr-prayer-btn:hover,.hdr-prayer-btn:focus-visible{border-color:var(--acc);background:var(--soft);outline:2px solid var(--acc);outline-offset:2px}
+ .hp-icon{width:20px;height:20px;display:block;stroke:var(--acc);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
  .hp-info{display:none}
  .hdr-prayer-popover{position:absolute;top:calc(100% + 8px);right:0;z-index:105;width:280px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;box-shadow:0 10px 30px rgba(0,0,0,0.14),0 2px 6px rgba(0,0,0,0.06);opacity:0;visibility:hidden;transform:translateY(-6px);transition:all .2s cubic-bezier(.16,1,.3,1);pointer-events:none}
  .hdr-prayer-wrap:hover .hdr-prayer-popover{opacity:1;visibility:visible;transform:translateY(0);pointer-events:auto}
@@ -346,16 +346,16 @@ th{color:var(--ink);font-weight:500}
  .hp-pop-item.on{background:var(--soft);border-color:var(--acc);color:var(--acc);font-weight:700}
  .hp-pop-foot{margin-top:8px;border-top:1px dashed var(--line);padding-top:6px;text-align:center}
  .top-actions{display:flex;align-items:center;gap:6px}
- .top .ic{height:34px;width:36px;display:grid;place-items:center;padding:0;border-radius:9px;border:1px solid var(--line);background:var(--bg);color:var(--ink);transition:all .15s ease}
- .top .ic:hover{border-color:var(--acc);color:var(--acc)}
- .top-sync-pill{display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 12px;border-radius:9px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-size:12.5px;font-weight:700;cursor:pointer;user-select:none;transition:all .15s ease}
+ .top .ic{height:40px;width:40px;display:grid;place-items:center;padding:0;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);transition:all .15s ease}
+ .top .ic:hover,.top .ic:focus-visible{border-color:var(--acc);color:var(--acc);background:var(--soft);outline:none}
+ .top-sync-pill{display:inline-flex;align-items:center;gap:7px;height:40px;padding:0 12px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:12px;font-weight:500;cursor:pointer;user-select:none;transition:all .15s ease}
  .top-sync-pill:hover{border-color:var(--acc);transform:translateY(-1px)}
  .top-sync-pill .sdot{margin:0}
- .top-sync-ok{border-color:rgba(21,128,61,0.25);background:var(--soft);color:var(--pos)}
- .top-sync-bad{border-color:rgba(220,38,38,0.25);background:#FEF2F2;color:var(--neg)}
- .top-sync-pend{border-color:rgba(217,119,6,0.25);background:#FFFBEB;color:var(--warn)}
+ .top-sync-ok{border-color:color-mix(in srgb,var(--pos) 28%,transparent);background:color-mix(in srgb,var(--pos) 8%,var(--card));color:var(--pos)}
+ .top-sync-bad{border-color:color-mix(in srgb,var(--neg) 30%,transparent);background:color-mix(in srgb,var(--neg) 8%,var(--card));color:var(--neg)}
+ .top-sync-pend{border-color:color-mix(in srgb,var(--warn) 30%,transparent);background:color-mix(in srgb,var(--warn) 8%,var(--card));color:var(--warn)}
  .day-chip{display:inline-block;padding:2px 8px;border-radius:6px;font-size:13.5px;font-weight:600;vertical-align:middle}
-@media (min-width:900px) and (max-width:1120px){
+@media (min-width:981px) and (max-width:1120px){
  .top{grid-template-columns:minmax(190px,1fr) auto minmax(210px,1fr);gap:8px;padding:9px 12px}
  .top-brand{min-width:0;gap:8px}
  .top-brand-mark{width:44px;height:44px}
@@ -398,6 +398,85 @@ th{color:var(--ink);font-weight:500}
  .tabs:hover{width:190px;box-shadow:0 8px 30px rgba(0,0,0,.14)}
  .tabs:hover button .t-lbl{display:inline;opacity:1}
  .wrap{max-width:1240px;padding-top:20px}}
+
+@media (max-width:980px){
+ .top{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"brand tools" "center center";align-items:center;gap:8px 12px;padding:10px 16px;min-height:0}
+ .top-brand{grid-area:brand;min-width:0;gap:8px}
+ .top-brand-mark{width:36px;height:36px;background:transparent;border:0}
+ .top-brand img{width:31px;height:29px}
+ .shop-name-title{font-size:18px;overflow-wrap:anywhere}
+ html[lang="bn"] .shop-name-title{font-size:19px}
+ .top-brand-sub{margin-top:3px}
+ .tsub-pill{display:inline-flex;align-items:center;padding:2px 8px;border-radius:999px;background:var(--soft);color:var(--acc);font-size:11px;font-weight:500;text-transform:capitalize;border:1px solid color-mix(in srgb,var(--acc) 22%,transparent)}
+ .hdr-center{grid-area:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;width:100%;min-width:0;text-align:center}
+ .bismillah-txt{font-size:12px;font-weight:500;color:var(--mut);letter-spacing:.035em;line-height:1.2}
+ html[lang="bn"] .bismillah-txt{font-family:SolaimanLipi,Inter,sans-serif}
+ .hdr-watch{display:flex;flex-direction:column;align-items:center;text-align:center;user-select:none}
+ .hw-time{font-size:21px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:.015em;color:var(--ink);line-height:1.15}
+ .hw-meta{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;white-space:normal;gap:3px 8px;margin-top:2px;font-size:12px;color:var(--mut)}
+ .hw-day{display:inline-block;padding:1px 7px;border-radius:999px;font-weight:600;font-size:11px;border:1px solid}
+ .hw-date{font-weight:500;color:var(--ink)}
+ .hw-sep{color:var(--line);font-weight:bold}
+ .hw-bng{color:var(--mut);font-family:SolaimanLipi,Inter,sans-serif;font-size:12px}
+ .hdr-weather{display:inline-flex;align-items:center;gap:5px;color:var(--ink);font-size:13px;font-weight:500;user-select:none}
+ .hw-icon{font-size:18px;line-height:1}
+ .hdr-prayer-wrap{position:relative}
+ .hdr-prayer-btn{display:grid;place-items:center;width:38px;height:38px;min-width:38px;padding:0;background:var(--card);border:1px solid var(--line);border-radius:12px;cursor:pointer;transition:all .18s ease}
+ .hdr-prayer-btn:hover,.hdr-prayer-btn:focus-visible{border-color:var(--acc);background:var(--soft);outline:2px solid var(--acc);outline-offset:2px}
+ .hp-icon{width:20px;height:20px;display:block;stroke:var(--acc);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+ .hdr-prayer-popover{position:absolute;top:calc(100% + 8px);right:0;z-index:105;width:min(280px,calc(100vw - 24px));background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;box-shadow:0 10px 30px rgba(0,0,0,.14);opacity:0;visibility:hidden;transform:translateY(-6px);transition:all .2s ease;pointer-events:none}
+ .hdr-prayer-wrap:hover .hdr-prayer-popover,.hdr-prayer-wrap:focus-within .hdr-prayer-popover{opacity:1;visibility:visible;transform:translateY(0);pointer-events:auto}
+ .hp-pop-head{display:flex;justify-content:space-between;align-items:center;gap:6px;border-bottom:1px solid var(--line);padding-bottom:6px;margin-bottom:8px}
+ .hp-pop-head b{font-size:13px;color:var(--ink)}
+ .hp-pop-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+ .hp-pop-item{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:5px 8px;background:var(--bg);border:1px solid var(--line);border-radius:8px;font-size:12px}
+ .hp-pop-item.on{background:var(--soft);border-color:var(--acc);color:var(--acc);font-weight:600}
+ .hp-pop-foot{margin-top:8px;border-top:1px dashed var(--line);padding-top:6px;text-align:center}
+ .top #topR{grid-area:tools;gap:5px}
+ .top-actions{gap:4px}
+ .top .ic{width:38px;height:38px;min-width:38px;padding:0;border-radius:12px;background:var(--card);color:var(--ink)}
+ .top-sync-pill{position:relative;display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 10px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:12px;font-weight:500;cursor:pointer;user-select:none}
+ .top-sync-ok{border-color:color-mix(in srgb,var(--pos) 28%,transparent);background:color-mix(in srgb,var(--pos) 8%,var(--card));color:var(--pos)}
+ .top-sync-bad{border-color:color-mix(in srgb,var(--neg) 30%,transparent);background:color-mix(in srgb,var(--neg) 8%,var(--card));color:var(--neg)}
+ .top-sync-pend{border-color:color-mix(in srgb,var(--warn) 30%,transparent);background:color-mix(in srgb,var(--warn) 8%,var(--card));color:var(--warn)}
+}
+@media (max-width:520px){
+ .top{padding:8px 12px;gap:7px 8px}
+ .top-brand{gap:6px}
+ .top-brand-mark{width:30px;height:30px}
+ .top-brand img{width:26px;height:25px}
+ .shop-name-title{font-size:15px;line-height:1.12}
+ html[lang="bn"] .shop-name-title{font-size:16px}
+ .top-brand-sub{margin-top:2px}
+ .tsub-pill{padding:1px 6px;font-size:10px}
+ .top #topR{gap:3px}
+ .top-actions{gap:3px}
+ .top .ic,.hdr-prayer-btn{width:34px;height:34px;min-width:34px;padding:0;border-radius:10px}
+ .top-sync-pill{width:34px;height:34px;padding:0;justify-content:center;border-radius:10px}
+ .top-sync-pill>span{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+ .top-sync-pill .sdot{margin:0}
+ .hw-time{font-size:19px}
+ .hw-meta{font-size:11.5px;gap:3px 6px}
+ .hw-bng{font-size:11px}
+ .hw-day{font-size:10px}
+ .hdr-weather{font-size:12px;padding-left:5px}
+ .hw-icon{font-size:16px}
+}
+@media (max-width:360px){
+ .top{padding-left:9px;padding-right:9px;gap:6px}
+ .top-brand{gap:4px}
+ .top-brand-mark{width:26px;height:26px}
+ .top-brand img{width:23px;height:22px}
+ .shop-name-title{font-size:13.5px}
+ html[lang="bn"] .shop-name-title{font-size:14px}
+ .tsub-pill{font-size:9px}
+ .top #topR{gap:2px}
+ .top-actions{gap:2px}
+ .top .ic,.hdr-prayer-btn{width:31px;height:31px;min-width:31px;padding:0}
+ .top-sync-pill{width:31px;height:31px}
+ .hw-meta{font-size:10.5px;gap:2px 5px}
+ .hw-time{font-size:18px}
+}
 @media print{body{background:#fff!important;padding-left:0!important}}
 #mb{display:none;padding:0 9px}
 .dr[hidden]{display:none}.dr{position:fixed;inset:0;z-index:30}.drb{position:absolute;inset:0;background:rgba(0,0,0,.36)}
@@ -991,20 +1070,7 @@ body.locked .tab-bug-fab,#lk:not([hidden]) ~ .tab-bug-fab{display:none !importan
 .v12-status-resolved{background:#F0FDF4;color:#15803D;border:1px solid rgba(21,128,61,0.25);font-size:11px;font-weight:700;padding:2px 7px;border-radius:6px}
 
 
-@media (min-width:900px) and (max-width:1120px){
- .top{grid-template-columns:minmax(190px,1fr) auto minmax(210px,1fr);gap:8px;padding:9px 12px}
- .top-brand{min-width:0;gap:8px}
- .top-brand-mark{width:44px;height:44px}
- .top-brand img{width:38px;height:34px}
- .shop-name-title{font-size:20px}
- html[lang="bn"] .shop-name-title{font-size:21px}
- .hw-meta{gap:4px;font-size:11.5px}
- .hw-day{padding:1px 5px;font-size:10px}
- .hw-bng{font-size:11px}
- .top #topR{gap:6px}
- .top-actions{gap:4px}
- .top-sync-pill{padding:0 8px}
-}
+
  .day-chip{display:inline-block;padding:2px 8px;border-radius:6px;font-size:13.5px;font-weight:600;vertical-align:middle}
 
 </style>
@@ -1014,7 +1080,7 @@ body.locked .tab-bug-fab,#lk:not([hidden]) ~ .tab-bug-fab{display:none !importan
 <body>
 
 <aside class="tabs" id="tabs" hidden></aside>
-<div class="top" id="top">
+<header class="top" id="top">
   <div class="top-brand">
     <span class="top-brand-mark" aria-hidden="true">
       <img class="lg-b" src="logo-icon-black.png" alt="">
@@ -1044,8 +1110,8 @@ body.locked .tab-bug-fab,#lk:not([hidden]) ~ .tab-bug-fab{display:none !importan
   </div>
   <div class="sp" id="topR">
     <div class="hdr-prayer-wrap" id="hdrPrayerWrap">
-      <button type="button" class="hdr-prayer-btn" id="hdrPrayerBtn" aria-label="Prayer Times" title="Click to view full prayer times">
-        <span class="hp-icon">🕌</span>
+      <button type="button" class="hdr-prayer-btn" id="hdrPrayerBtn" aria-label="Prayer Times" aria-haspopup="dialog" title="Click to view full prayer times">
+        <svg class="hp-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h18M5 21v-9l7-5 7 5v9M8 12h.01M16 12h.01M10 21v-4a2 2 0 0 1 4 0v4M12 7V3m-2 2 2-2 2 2"/></svg>
       </button>
       <div class="hdr-prayer-popover" id="hdrPrayerPopover"></div>
     </div>
@@ -1053,9 +1119,9 @@ body.locked .tab-bug-fab,#lk:not([hidden]) ~ .tab-bug-fab{display:none !importan
       <button type="button" class="ic" id="themeBtn" aria-label="Theme" title="Theme" data-mode="auto"><svg class="th-auto" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor"/></svg><svg class="th-light" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg><svg class="th-dark" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button>
       <button type="button" class="ic" id="refresh" aria-label="Refresh current view" title="Refresh current view"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 0 1 13.66-5.66L20 8"/><path d="M20 3v5h-5"/><path d="M20 12a8 8 0 0 1-13.66 5.66L4 16"/><path d="M4 21v-5h5"/></svg></button>
     </div>
-    <button type="button" class="top-sync-pill" id="topSync" title="Sync Status"><i class="sdot off" aria-hidden="true"></i><span>Sync</span></button>
+    <button type="button" class="top-sync-pill" id="topSync" title="Sync Status" aria-live="polite"><i class="sdot off" aria-hidden="true"></i><span>Sync</span></button>
   </div>
-</div>
+</header>
 <div class="wrap view" id="vAcc">
   <div class="pt"><h2>Nur Computer &amp; Stationery</h2><div>DAILY ACCOUNTS</div></div>
   <header>
@@ -5541,7 +5607,7 @@ function animateCounts(){
 function saveCheck(){if(document.documentElement.dataset.rm)return;var d=document.createElement('div');d.className='savechk';d.innerHTML='<svg viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="22" fill="none" stroke="var(--acc)" stroke-width="3"/><path d="M14 27l8 8 16-16" fill="none" stroke="var(--acc)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>';document.body.appendChild(d);setTimeout(function(){d.classList.add('out')},700);setTimeout(function(){d.remove()},1250)}
 (function(){
   var M="Claude Sonnet 5.5 · owner's Claude account";
-  APP_VERSION='11.3.0';
+  APP_VERSION='11.4.0';
   VERS.unshift({v:'11.2.0',d:'2026-10-30',t:'Executive Header Bar Redesign, Islamic Prayer Integration & Corner Clipping Fix',by:'Antigravity',n:['Fixed shop computer icon upper corner clipping by eliminating border-radius and setting object-fit contain','Executive 3-column header layout: Left (Brand), Center (Bismillah, Live Watch, Calendar), Right (Weather, Prayer, Tools, Sync)','Integrated Bismillah calligraphy, large 24px live clock, and Gregorian + Bengali calendar into unified center command cluster','Balanced typography: Shop Title and Live Clock scaled to matching 24px bold visual weight with brand role badge','Moved Prayer Schedule into Header: Interactive quick pill showing next prayer and live countdown','Prayer hover popover: hovering reveals a glimpse of all 6 prayer slots for Dhaka (UTC+6)','Prayer interactive modal: clicking opens the full prayer schedule card with audio alarm test','Live Sync status pill placed on the rightmost header edge for persistent cross-tab visibility','Overview dashboard streamlined: freed vertical space by relocating the static prayer card to the top bar']});
   VERS.unshift({v:'11.1.0',d:'2026-10-30',t:'Bug Report System v12: Contextual In-Tab Bug & Requirement Reporting',by:'Antigravity',n:['Floating [ 🪲 Bug ] action pill at the bottom of every tab for instant issue reporting','Contextual auto-detection: automatically binds report to the active tab (Overview, Task Schedule, Ledger, Counter, Accounts, More)','Two structured input fields: 1. Bugs & Errors and 2. Requirements & Solutions','Automatic capture of metadata: reporter role, staff name, date, time, and app version','Standalone Markdown (.md) document generation with 1-tap download and clipboard export','Admin Bug Inspection Hub in More tab: filter by tab, review status (Open/Resolved), copy markdown, and bulk download all reports as a combined .md file','Storage in app state (localStorage + IndexedDB) with automatic cloud sync via whole-state sync engine','Previous diagnostics & WhatsApp bug reporter retained intact']});
   VERS.unshift({v:'11.0.0-beta',d:'2026-10-29',t:'Phase 3: Overview Dashboard Redesign, Icon Filters & Salat Times',by:'Antigravity',n:['Icon-based period filters across Home/Overview: Today, Yesterday, 7 Days, 1 Month, 3 Months, 6 Months, Overall, Custom','Custom day range selector with Nov 2020 clamp and future date ban','Aladhan Salat API integration for Dhaka with daily session caching and offline resilience','Salat Times Card with 6 prayer slots, highlighting active/next prayer with real-time countdown','Short pop-up Salat alarm toast with soft audio chime on prayer arrival','Removed obsolete Recent Bills section from Overview dashboard for clean aesthetics']});
@@ -5575,6 +5641,7 @@ function saveCheck(){if(document.documentElement.dataset.rm)return;var d=documen
   VERS.unshift({v:'10.4.4',d:'2026-10-29',t:'Vertically Centered Floating Tab Dock & Minimal Card Design',by:'Antigravity',n:['Vertically Centered Tab Dock: Replaced full-height sidebar with a sleek, vertically centered floating dock (top: 50%, translateY(-50%)) that does not monopolize screen height','Compact Card Footprint: Navigation tabs sit inside an elegant 54px pill card with subtle depth, rounded corners (18px) and smooth hover expansion to 190px','Consistent Left Margin: Dynamic body padding (84px) ensures top header and views align gracefully beside the floating dock']});
   
   VERS.unshift({v:'11.3.0',d:'2026-10-30',t:'Refined Header Redesign: Centered Weather, Icon-Only Prayer & Lighter Surface',by:'Manus',n:['Moved Dhaka weather into the centered date/time cluster alongside Bismillah, live clock, Gregorian date, and Bengali calendar','Refined desktop header with transparent surface, restrained divider/shadow, and theme-token brand accent','Added a theme-aware framed shop mark while preserving the original logo artwork and unclipped aspect ratio','Simplified the right zone to an accessible prayer icon, theme, refresh, and rightmost sync controls','Prayer icon exposes next-prayer context to assistive technology; hover/focus preview and click-to-open schedule remain available']});
+  VERS.unshift({v:'11.4.0',d:'2026-10-31',t:'Executive Header Polish & Responsive Layout',by:'Manus',n:['Reworked the app header to follow the supplied executive reference while retaining existing account-app controls and behavior','Kept the original shop logo artwork unchanged, reduced its display size and removed the prominent frame; softened shop-name weight and scale','Retained the live clock, Gregorian and Bengali dates, Dhaka weather, prayer preview and schedule, theme toggle, refresh, and sync status','Added a compact two-row layout for tablet and phone widths, with theme-aware translucent surfaces and visible prayer/weather details']});
   UPC.unshift({v:'10.4.4',s:'Done',t:['Vertically centered floating tab dock on desktop','Minimal card footprint replacing full-height sidebar','Smooth hover expand from 54px icon pill to 190px full dock']});
   UPC.unshift({v:'10.4.3',s:'Done',t:['Counter top-cart layout (single-screen ergonomics without 74% zoom)','Collapsible hover-expand desktop tab rail (icon-only default, 68px width)','Minimal outline SVG icon system across entire app','Stable Counter header layout eliminating view-switch jump','Minimal eye-catching More tab without MFS/recharge cards']});
   UPC.unshift({v:'10.4.2',s:'Done',t:['5-Tab navigation layout (Overview, Ledger, Counter, Accounts, More)','Unified Counter view with Billing and Stock toggle','Unified More & Settings hub with Wallets quick view, Staff, Reports, Presets, and System suite']});
@@ -5603,6 +5670,7 @@ function saveCheck(){if(document.documentElement.dataset.rm)return;var d=documen
   UPC.unshift({v:'10.4.0',s:'Done',t:['Enterprise-Grade Theme (Light/Dark)', 'Cohesive financial color palette & chart tokens', 'Component & tabular typography polish', 'Rule 39: Two-tree synchronization contract']});
   
   UPC.unshift({v:'11.3.0',s:'Done',t:['Three-zone header with weather centered alongside live clock and calendar','Icon-only accessible prayer shortcut with optional hover/focus preview and full schedule modal','Lighter theme-aware header surface and colorful shop identity']});
+  UPC.unshift({v:'11.4.0',s:'Done',t:['Executive header styling adapted to the existing NCS app','Original logo artwork retained with a smaller, unframed and less prominent presentation','Responsive two-row tablet/mobile header showing the date, weather and prayer control','Existing prayer, theme, refresh and live sync interactions preserved']});
   var sl=UPC.find(function(x){return x.v==='9.23'&&x.s==='Planned'});if(sl)sl.v='9.24';
   var sp=UPC.find(function(x){return x.v==='9.22'&&x.s==='Planned'});if(sp)sp.v='9.23';
   })();
