@@ -805,50 +805,9 @@ function selfTest(){
 
 /* ---------- v9.21: clock, Accounts void section ---------- */
 /* ---------- v11.0: Desktop Watch, Weather, Bengali Calendar & Clock ---------- */
-function getWeatherIcon(code){
-  if(code===0)return'☀️';
-  if(code===1||code===2)return'🌤️';
-  if(code===3)return'☁️';
-  if(code>=45&&code<=48)return'🌫️';
-  if(code>=51&&code<=67)return'🌧️';
-  if(code>=71&&code<=77)return'❄️';
-  if(code>=80&&code<=82)return'🌦️';
-  if(code>=95)return'⛈️';
-  return'☀️';
-}
+function getWeatherIcon(code){ return getWeatherIconSvg(code, 18); }
+function renderWeather(cur){ renderWeatherHeader(cur); }
 
-function renderWeather(cur){
-  var iconEl=$('hwIcon'),tempEl=$('hwTemp');
-  if(!iconEl||!tempEl||!cur)return;
-  var temp=Math.round(cur.temperature_2m);
-  iconEl.textContent=getWeatherIcon(cur.weather_code);
-  tempEl.textContent=S.lang==='bn'?(toBnNum(temp)+'°সে'):(temp+'°C');
-}
-
-function fetchDhakaWeather(){
-  try{
-    var cached=sessionStorage.getItem('ncs_weather_v1');
-    if(cached){
-      var parsed=JSON.parse(cached);
-      if(Date.now()-parsed.ts<1800000){
-        renderWeather(parsed.data);
-        return;
-      }
-    }
-  }catch(e){}
-  if(typeof navigator!=='undefined'&&navigator.onLine===false)return;
-  try{
-    fetch('https://api.open-meteo.com/v1/forecast?latitude=23.8103&longitude=90.4125&current=temperature_2m,weather_code&timezone=Asia%2FDhaka')
-      .then(function(r){return r.json()})
-      .then(function(data){
-        if(data&&data.current){
-          try{sessionStorage.setItem('ncs_weather_v1',JSON.stringify({ts:Date.now(),data:data.current}))}catch(e){}
-          renderWeather(data.current);
-        }
-      })
-      .catch(function(){});
-  }catch(e){}
-}
 
 function updateLiveWatch(now){
   var h=now.getHours(),m=now.getMinutes(),s=now.getSeconds();

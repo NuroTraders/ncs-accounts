@@ -370,7 +370,12 @@ function setSt(x){st=x;var c=x==='ok'?'ok':x==='pend'?'pend':(x==='offl'||x==='c
   var txt=S.lang==='bn'?labBn:lab;
   var syncEl=$('sync'), topSync=$('topSync');
   if(syncEl){
-    syncEl.innerHTML='<i class="sdot '+c+'" aria-hidden="true"></i>'+txt;
+    var descEl = syncEl.querySelector ? syncEl.querySelector('.more-item-text small') : null;
+    if(descEl){
+      descEl.textContent = txt;
+    } else {
+      syncEl.innerHTML='<i class="sdot '+c+'" aria-hidden="true"></i>'+txt;
+    }
     syncEl.setAttribute('aria-label',lb('Sync status: ','সিঙ্ক অবস্থা: ')+txt);
     syncEl.title=c==='ok'?'All changes are synced':c==='pend'?'Saving changes…':x==='conf'?'Sync conflict — tap to resolve':c==='bad'?'Offline — will sync when back online':'Sync is not set up on this device';
   }
@@ -380,16 +385,36 @@ function setSt(x){st=x;var c=x==='ok'?'ok':x==='pend'?'pend':(x==='offl'||x==='c
     topSync.title=syncEl?syncEl.title:'';
   }
 }
+let isManualSyncing = false;
+async function triggerSync(){
+  if(isManualSyncing || busy) return;
+  if(st === 'conf'){
+    ask('Sync conflict', '<p>This device and the Google Sheet both have new changes. Choose which to keep.</p><div class="oa" style="justify-content:flex-start"><button class="ghost" id="scp">Use Sheet data</button><button class="ghost" id="scf">Keep this device</button></div>', ()=>{}, 'Close');
+    return;
+  }
+  if(!SY()){
+    if($('set')) $('set').onclick();
+    return;
+  }
+  isManualSyncing = true;
+  setSt('pend');
+  if(typeof ltoast === 'function') ltoast(lb('Syncing with Google…', 'গুগলের সাথে সিঙ্ক হচ্ছে…'));
+  try{
+    await push(true);
+    await pull(true);
+  }catch(err){
+    console.error('Manual sync failed:', err);
+    setSt('offl');
+  }finally{
+    isManualSyncing = false;
+  }
+}
+
 if(typeof document!=='undefined'){
   document.addEventListener('click',function(e){
     var b=e.target.closest('#topSync');
     if(!b)return;
-    if(SY()){
-      try{pull(true)}catch(err){}
-      if(typeof ltoast==='function')ltoast(lb('Checking Google sync…','গুগল সিঙ্ক পরীক্ষা হচ্ছে…'));
-    }else{
-      if($('set'))$('set').onclick();
-    }
+    triggerSync();
   });
 }
 
@@ -456,8 +481,7 @@ async function pull(force){
     if(r.rev>(S.synced||0)){if(isDirty()){if(mergeRemoteFrom(r))push();else setSt('conf');return}applyRemote(r)}
     else if(isDirty()||(!r.rev&&S.entries.length))push();else setSt('ok');importPos();importCatalog()
   }catch(e){setSt('offl')}}
-$('sync').onclick=()=>{
-  if(st==='conf')ask('Sync conflict','<p>This device and the Google Sheet both have new changes. Choose which to keep.</p><div class="oa" style="justify-content:flex-start"><button class="ghost" id="scp">Use Sheet data</button><button class="ghost" id="scf">Keep this device</button></div>',()=>{},'Close');else if(SY()){setSt('pend');push(true).then(()=>pull());}else setSt('off')};
+if($('sync')) $('sync').onclick = triggerSync;
 $('ob').addEventListener('click',e=>{if(e.target.id!=='sfr')return;
   ask('Start fresh','<p>Daily entries and bills are cleared from the active day view. Cash and wallets carry forward, ledger history and stock are retained, and an Admin reconciliation item is created.</p><div class="f"><label>Admin PIN</label><input id="sfp" type="password" inputmode="numeric" autocomplete="off"></div>',async()=>{
     if(!(await ck(S.users.admin,$('sfp').value))){$('sfp').value='';$('sfp').placeholder='Wrong PIN';return false}
@@ -489,4 +513,3 @@ function resume(){try{const q=JSON.parse(localStorage.getItem(SESS)||'null');if(
   try{enter()}catch(e){console.error('Session enter failed',e)}
   return true}catch(e){console.error('Session restore failed',e);return false}}
 async function start(){if(ENC&&!SY()){lockUI('connect');return}if(!S.users&&SY()){try{const r=await getRemote();if(r.ok&&r.rev&&r.state)applyRemote(r)}catch(e){}}if(S.users&&resume())return;S.users?lockUI('login'):lockUI('first')}
-

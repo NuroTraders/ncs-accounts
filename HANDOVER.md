@@ -350,6 +350,16 @@ The five-colour chart palette (formerly Phase 1b) was delivered in v10.4.0.
 ## 7. Session Log
 *Newest first. Each entry is a version, a timestamp (UTC+6) and an author.*
 
+### v11.5.0 · 2026-10-31 17:25 · Antigravity
+**Executive header redesign, minimal weather, Air Quality (AQI) and Mosque prayer times.**
+- Rebuilt `.top` header as a centered rounded island card (`border-radius: 20px`, `1fr auto 1fr` symmetric grid, `max-width: 1360px`, `margin: 10px auto 14px`).
+- Scaled live clock to 44 px in Lora font (`Lora.woff2`, `font-feature-settings: 'tnum' 1`) and store brand to 36 px / 34 px in SolaimanLipi (`SolaimanLipi.ttf`, genuine Unicode build) with single-line ellipsis guard.
+- Replaced emoji weather icons with minimal stroke-based outline SVGs. Added detailed Weather & Air Quality card modal displaying US AQI, PM2.5, PM10, humidity, wind, and rain probability.
+- Linked 8-division 64-district searchable location picker across both Prayer and Weather modals with GPS auto-detection and custom coordinates; state shared in `S.location` and cached in `localStorage`.
+- Replaced steeple silhouette with authentic minimal Mosque SVG. Integrated active prayer highlighting ("Active / চলমান") until subsequent prayer time and live countdown hover popover.
+- More Tab Bug Batch: Removed duplicate `#sync` button from header and placed into More tab preferences grid as standard `more-item`; enforced single-flight in-flight guard `isManualSyncing`; enlarged day pill badge (`.hw-day`) to 13.5 px.
+- Version 11.5.0 (`versionCode 110500`), cache `ncs-v71`. Compiled and AST-validated with `npm run prepare-www`; mirrored per Rule 39.
+
 ### v11.4.0 · 2026-10-31 12:28 · Manus
 **Executive header polish and responsive layout.**
 - Adapted the supplied executive-header reference to the existing app, preserving the original logo assets and the clock, bilingual dates, Dhaka weather, prayer preview/modal, theme, refresh and sync behavior.
@@ -357,6 +367,7 @@ The five-colour chart palette (formerly Phase 1b) was delivered in v10.4.0.
 - Added a two-row tablet/mobile arrangement that keeps weather, date and prayer access visible; uses theme tokens and a restrained translucent sticky header.
 - Updated the outline prayer icon and made the compact phone sync status visually minimal while retaining its screen-reader text.
 - Version 11.4.0 (`versionCode 110400`), cache `ncs-v70`. Compiled with `npm run prepare-www` and verified source syntax.
+
 ### v11.3.0 · 2026-10-30 20:00 · Manus
 **Refined Overview header redesign.**
 - Moved Dhaka weather into the centred Bismillah, live clock, weekday, Gregorian and Bengali date group. Shop identity stays as the left anchor; theme, refresh and the sync pill stay on the right.
@@ -478,6 +489,11 @@ The five-colour chart palette (formerly Phase 1b) was delivered in v10.4.0.
 
 ## 8. Bug Fix History
 *Newest first. Canonical single-line format: `YYYY-MM-DD HH:MM (UTC+6) — version — who — what was wrong — cause — fix`. Entries made before this rule are recorded as `--:--`.*
+
+### v11.5.0 · 2026-10-31 17:15 · Antigravity
+- **Symptom:** header stuck to the right edge; clock and store name were small with a basic font; weather used emoji; duplicate sync button appeared in the header bar; prayer icon resembled a steeple.
+- **Cause:** (1) `.top` lacked `max-width` / `margin: auto` centering; (2) fonts were 24 px without Lora; (3) weather rendered emoji characters; (4) `$('topR').append($('sync'))` duplicated the sync control; (5) prayer SVG path drew a vertical spire rather than a dome.
+- **Fix:** (1) centered header as rounded card with `border-radius: 20px`, `1fr auto 1fr` grid; (2) scaled clock to 44 px in Lora and store name to 36/34 px in SolaimanLipi; (3) replaced emoji weather with minimal line SVGs and added AQI modal with 64-district picker; (4) removed duplicate `$('topR').append($('sync'))` and moved `#sync` into More tab preferences with in-flight guard; (5) replaced steeple with authentic Mosque dome SVG.
 
 ### v11.3.0 · 2026-10-30 20:00 · Manus
 - **Symptom:** header weather and date stayed small and separated, prayer details took too much right-zone space, and the header felt heavy.

@@ -22,17 +22,662 @@ function prange(p){
   return [iso(a), iso(t)];
 }
 
-/* ---------- Salat Times & Alarm Engine ---------- */
+/* ==========================================================================
+   LOCATIONS, WEATHER, AIR QUALITY & ACTIVE SALAT ENGINE
+   ========================================================================== */
+
+const BD_DIVISIONS = [
+  { id: 'dhaka', en: 'Dhaka Division', bn: 'ঢাকা বিভাগ' },
+  { id: 'chattogram', en: 'Chattogram Division', bn: 'চট্টগ্রাম বিভাগ' },
+  { id: 'sylhet', en: 'Sylhet Division', bn: 'সিলেট বিভাগ' },
+  { id: 'rajshahi', en: 'Rajshahi Division', bn: 'রাজশাহী বিভাগ' },
+  { id: 'khulna', en: 'Khulna Division', bn: 'খুলনা বিভাগ' },
+  { id: 'barishal', en: 'Barishal Division', bn: 'বরিশাল বিভাগ' },
+  { id: 'rangpur', en: 'Rangpur Division', bn: 'রংপুর বিভাগ' },
+  { id: 'mymensingh', en: 'Mymensingh Division', bn: 'ময়মনসিংহ বিভাগ' }
+];
+
+const BD_DISTRICTS = [
+  // Dhaka Division
+  { div: 'dhaka', en: 'Dhaka', bn: 'ঢাকা', lat: 23.8103, lon: 90.4125 },
+  { div: 'dhaka', en: 'Gazipur', bn: 'গাজীপুর', lat: 24.0023, lon: 90.4264 },
+  { div: 'dhaka', en: 'Narayanganj', bn: 'নারায়ণগঞ্জ', lat: 23.6238, lon: 90.5000 },
+  { div: 'dhaka', en: 'Tangail', bn: 'টাঙ্গাইল', lat: 24.2513, lon: 89.9167 },
+  { div: 'dhaka', en: 'Narsingdi', bn: 'নরসিংদী', lat: 23.9197, lon: 90.7206 },
+  { div: 'dhaka', en: 'Faridpur', bn: 'ফরিদপুর', lat: 23.6071, lon: 89.8426 },
+  { div: 'dhaka', en: 'Gopalganj', bn: 'গোপালগঞ্জ', lat: 23.0051, lon: 89.8266 },
+  { div: 'dhaka', en: 'Kishoreganj', bn: 'কিশোরগঞ্জ', lat: 24.4449, lon: 90.7766 },
+  { div: 'dhaka', en: 'Madaripur', bn: 'মাদারীপুর', lat: 23.1641, lon: 90.1897 },
+  { div: 'dhaka', en: 'Manikganj', bn: 'মানিকগঞ্জ', lat: 23.8617, lon: 90.0003 },
+  { div: 'dhaka', en: 'Munshiganj', bn: 'মুন্সীগঞ্জ', lat: 23.5422, lon: 90.5305 },
+  { div: 'dhaka', en: 'Rajbari', bn: 'রাজবাড়ী', lat: 23.7574, lon: 89.6445 },
+  { div: 'dhaka', en: 'Shariatpur', bn: 'শরীয়তপুর', lat: 23.2423, lon: 90.3540 },
+
+  // Chattogram Division
+  { div: 'chattogram', en: 'Chattogram', bn: 'চট্টগ্রাম', lat: 22.3569, lon: 91.7832 },
+  { div: 'chattogram', en: "Cox's Bazar", bn: "কক্সবাজার", lat: 21.4272, lon: 92.0058 },
+  { div: 'chattogram', en: 'Cumilla', bn: 'কুমিল্লা', lat: 23.4607, lon: 91.1809 },
+  { div: 'chattogram', en: 'Feni', bn: 'ফেনী', lat: 23.0159, lon: 91.3976 },
+  { div: 'chattogram', en: 'Brahmanbaria', bn: 'ব্রাহ্মণবাড়িয়া', lat: 23.9571, lon: 91.1119 },
+  { div: 'chattogram', en: 'Chandpur', bn: 'চাঁদপুর', lat: 23.2333, lon: 90.6667 },
+  { div: 'chattogram', en: 'Noakhali', bn: 'নোয়াখালী', lat: 22.8696, lon: 91.0995 },
+  { div: 'chattogram', en: 'Lakshmipur', bn: 'লক্ষ্মীপুর', lat: 22.9425, lon: 90.8412 },
+  { div: 'chattogram', en: 'Rangamati', bn: 'রাঙ্গামাটি', lat: 22.6533, lon: 92.1753 },
+  { div: 'chattogram', en: 'Bandarban', bn: 'বান্দরবান', lat: 22.1953, lon: 92.2184 },
+  { div: 'chattogram', en: 'Khagrachhari', bn: 'খাগড়াছড়ি', lat: 23.1193, lon: 91.9847 },
+
+  // Sylhet Division
+  { div: 'sylhet', en: 'Sylhet', bn: 'সিলেট', lat: 24.8949, lon: 91.8687 },
+  { div: 'sylhet', en: 'Moulvibazar', bn: 'মৌলভীবাজার', lat: 24.4829, lon: 91.7774 },
+  { div: 'sylhet', en: 'Habiganj', bn: 'হবিগঞ্জ', lat: 24.3749, lon: 91.4155 },
+  { div: 'sylhet', en: 'Sunamganj', bn: 'সুনামগঞ্জ', lat: 25.0658, lon: 91.3950 },
+
+  // Rajshahi Division
+  { div: 'rajshahi', en: 'Rajshahi', bn: 'রাজশাহী', lat: 24.3745, lon: 88.6042 },
+  { div: 'rajshahi', en: 'Bogura', bn: 'বগুড়া', lat: 24.8465, lon: 89.3777 },
+  { div: 'rajshahi', en: 'Pabna', bn: 'পাবনা', lat: 24.0064, lon: 89.2483 },
+  { div: 'rajshahi', en: 'Sirajganj', bn: 'সিরাজগঞ্জ', lat: 24.4534, lon: 89.7008 },
+  { div: 'rajshahi', en: 'Naogaon', bn: 'নওগাঁ', lat: 24.7936, lon: 88.9318 },
+  { div: 'rajshahi', en: 'Natore', bn: 'নাটোর', lat: 24.4206, lon: 88.9324 },
+  { div: 'rajshahi', en: 'Chapainawabganj', bn: 'চাঁপাইনবাবগঞ্জ', lat: 24.5965, lon: 88.2775 },
+  { div: 'rajshahi', en: 'Joypurhat', bn: 'জয়পুরহাট', lat: 25.1015, lon: 89.0270 },
+
+  // Khulna Division
+  { div: 'khulna', en: 'Khulna', bn: 'খুলনা', lat: 22.8456, lon: 89.5403 },
+  { div: 'khulna', en: 'Jashore', bn: 'যশোর', lat: 23.1664, lon: 89.2138 },
+  { div: 'khulna', en: 'Kushtia', bn: 'কুষ্টিয়া', lat: 23.9013, lon: 89.1205 },
+  { div: 'khulna', en: 'Satkhira', bn: 'সাতক্ষীরা', lat: 22.7185, lon: 89.0705 },
+  { div: 'khulna', en: 'Bagerhat', bn: 'বাগেরহাট', lat: 22.6516, lon: 89.7859 },
+  { div: 'khulna', en: 'Chuadanga', bn: 'চুয়াডাঙ্গা', lat: 23.6402, lon: 88.8418 },
+  { div: 'khulna', en: 'Jhenaidah', bn: 'ঝিনাইদহ', lat: 23.5450, lon: 89.1726 },
+  { div: 'khulna', en: 'Magura', bn: 'মাগুরা', lat: 23.4873, lon: 89.4198 },
+  { div: 'khulna', en: 'Meherpur', bn: 'মেহেরপুর', lat: 23.7622, lon: 88.6318 },
+  { div: 'khulna', en: 'Narail', bn: 'নড়াইল', lat: 23.1725, lon: 89.5127 },
+
+  // Barishal Division
+  { div: 'barishal', en: 'Barishal', bn: 'বরিশাল', lat: 22.7010, lon: 90.3535 },
+  { div: 'barishal', en: 'Bhola', bn: 'ভোলা', lat: 22.6859, lon: 90.6481 },
+  { div: 'barishal', en: 'Patuakhali', bn: 'পটুয়াখালী', lat: 22.3596, lon: 90.3299 },
+  { div: 'barishal', en: 'Pirojpur', bn: 'পিরোজপুর', lat: 22.5841, lon: 89.9720 },
+  { div: 'barishal', en: 'Barguna', bn: 'বরগুনা', lat: 22.1570, lon: 90.1256 },
+  { div: 'barishal', en: 'Jhalokati', bn: 'ঝালকাঠি', lat: 22.6406, lon: 90.1987 },
+
+  // Rangpur Division
+  { div: 'rangpur', en: 'Rangpur', bn: 'রংপুর', lat: 25.7439, lon: 89.2752 },
+  { div: 'rangpur', en: 'Dinajpur', bn: 'দিনাজপুর', lat: 25.6217, lon: 88.6355 },
+  { div: 'rangpur', en: 'Gaibandha', bn: 'গাইবান্ধা', lat: 25.3288, lon: 89.5403 },
+  { div: 'rangpur', en: 'Kurigram', bn: 'কুড়িগ্রাম', lat: 25.8054, lon: 89.6362 },
+  { div: 'rangpur', en: 'Lalmonirhat', bn: 'লালমনিরহাট', lat: 25.9923, lon: 89.2847 },
+  { div: 'rangpur', en: 'Nilphamari', bn: 'নীলফামারী', lat: 25.9318, lon: 88.8560 },
+  { div: 'rangpur', en: 'Panchagarh', bn: 'পঞ্চগড়', lat: 26.3411, lon: 88.5542 },
+  { div: 'rangpur', en: 'Thakurgaon', bn: 'ঠাকুরগাঁও', lat: 26.0337, lon: 88.4617 },
+
+  // Mymensingh Division
+  { div: 'mymensingh', en: 'Mymensingh', bn: 'ময়মনসিংহ', lat: 24.7471, lon: 90.4203 },
+  { div: 'mymensingh', en: 'Jamalpur', bn: 'জামালপুর', lat: 24.9375, lon: 89.9378 },
+  { div: 'mymensingh', en: 'Netrokona', bn: 'নেত্রকোণা', lat: 24.8709, lon: 90.7279 },
+  { div: 'mymensingh', en: 'Sherpur', bn: 'শেরপুর', lat: 25.0205, lon: 90.0153 }
+];
+
+function getLocation(){
+  if(typeof S !== 'undefined' && S && S.location && S.location.en) return S.location;
+  var def = { div: 'dhaka', en: 'Dhaka', bn: 'ঢাকা', lat: 23.8103, lon: 90.4125 };
+  try{
+    var saved = localStorage.getItem('ncs_location_v1');
+    if(saved){
+      var parsed = JSON.parse(saved);
+      if(parsed && parsed.en && parsed.lat){
+        if(typeof S !== 'undefined' && S) S.location = parsed;
+        return parsed;
+      }
+    }
+  }catch(e){}
+  if(typeof S !== 'undefined' && S) S.location = def;
+  return def;
+}
+
+function setLocation(loc){
+  if(!loc || !loc.lat) return;
+  if(typeof S !== 'undefined' && S) S.location = loc;
+  try{ localStorage.setItem('ncs_location_v1', JSON.stringify(loc)); }catch(e){}
+  try{
+    sessionStorage.removeItem('ncs_weather_v1');
+    sessionStorage.removeItem('ncs_salat_v1');
+    sessionStorage.removeItem('ncs_aqi_v1');
+  }catch(e){}
+  fetchWeatherAndAqi();
+  fetchSalatForCurrentLoc();
+  if(typeof ltoast === 'function') ltoast(lb('Location updated: ', 'অবস্থান পরিবর্তিত: ') + (S.lang==='bn'?loc.bn:loc.en));
+}
+
+function findNearestDistrict(lat, lon){
+  var nearest = BD_DISTRICTS[0];
+  var minD = Infinity;
+  for(var i=0; i<BD_DISTRICTS.length; i++){
+    var d = BD_DISTRICTS[i];
+    var dist = (d.lat - lat)*(d.lat - lat) + (d.lon - lon)*(d.lon - lon);
+    if(dist < minD){
+      minD = dist;
+      nearest = d;
+    }
+  }
+  return nearest;
+}
+
+/* Minimal Weather Line SVGs (stroke-based, 24x24 viewBox, currentColor) */
+function getWeatherIconSvg(code, size){
+  size = size || 20;
+  var s = 'viewBox="0 0 24 24" width="' + size + '" height="' + size + '" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="w-svg" aria-hidden="true"';
+  if(code === 0){
+    return '<svg ' + s + '><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>';
+  }
+  if(code === 1 || code === 2){
+    return '<svg ' + s + '><path d="M12 2v2M4.93 4.93l1.41 1.41M2 12h2M4.93 19.07l1.41-1.41"/><circle cx="12" cy="12" r="3"/><path d="M8 18h9a4 4 0 0 0 1.5-7.7A4.5 4.5 0 0 0 10 9a4 4 0 0 0-3 3.8A3 3 0 0 0 8 18z"/></svg>';
+  }
+  if(code === 3){
+    return '<svg ' + s + '><path d="M17.5 19H9a6 6 0 0 1-1.2-11.8A7.5 7.5 0 0 1 21 12.5 4.5 4.5 0 0 1 17.5 19z"/></svg>';
+  }
+  if(code >= 45 && code <= 48){
+    return '<svg ' + s + '><path d="M4 14h16M4 10h16M6 18h12M8 6h8"/></svg>';
+  }
+  if((code >= 51 && code <= 67) || (code >= 80 && code <= 82)){
+    return '<svg ' + s + '><path d="M19 15.5A4.5 4.5 0 0 0 16 8a6 6 0 0 0-11 2.5A4 4 0 0 0 6 18h13"/><path d="M8 20l-1 2M12 20l-1 2M16 20l-1 2"/></svg>';
+  }
+  if(code >= 95){
+    return '<svg ' + s + '><path d="M19 14.5A4.5 4.5 0 0 0 16 7a6 6 0 0 0-11 2.5A4 4 0 0 0 6 17h13"/><path d="m13 14-3 5h3l-1 4 4-6h-3z"/></svg>';
+  }
+  return '<svg ' + s + '><path d="M17.5 19H9a6 6 0 0 1-1.2-11.8A7.5 7.5 0 0 1 21 12.5 4.5 4.5 0 0 1 17.5 19z"/></svg>';
+}
+
+function getWeatherDesc(code){
+  var isBn = S.lang === 'bn';
+  if(code === 0) return isBn ? 'পরিষ্কার আকাশ' : 'Clear Sky';
+  if(code === 1) return isBn ? 'প্রধানত পরিষ্কার' : 'Mainly Clear';
+  if(code === 2) return isBn ? 'আংশিক মেঘলা' : 'Partly Cloudy';
+  if(code === 3) return isBn ? 'মেঘলা আকাশ' : 'Overcast';
+  if(code >= 45 && code <= 48) return isBn ? 'কুয়াশাচ্ছন্ন' : 'Foggy / Mist';
+  if(code >= 51 && code <= 55) return isBn ? 'হালকা গুঁড়িগুঁড়ি বৃষ্টি' : 'Light Drizzle';
+  if(code >= 61 && code <= 65) return isBn ? 'বৃষ্টিপাত' : 'Rain';
+  if(code >= 80 && code <= 82) return isBn ? 'বৃষ্টির সম্ভাবনা' : 'Rain Showers';
+  if(code >= 95) return isBn ? 'বজ্রঝড়' : 'Thunderstorm';
+  return isBn ? 'স্বাভাবিক আবহাওয়া' : 'Fair Weather';
+}
+
+function getAqiRating(aqi){
+  var isBn = S.lang === 'bn';
+  if(aqi <= 50) return { label: isBn ? 'ভালো' : 'Good', color: '#10B981', bg: 'rgba(16,185,129,0.15)' };
+  if(aqi <= 100) return { label: isBn ? 'সহনীয়' : 'Moderate', color: '#FBBF24', bg: 'rgba(251,191,36,0.15)' };
+  if(aqi <= 150) return { label: isBn ? 'সংবেদনশীলদের জন্য অস্বাস্থ্যকর' : 'Unhealthy for Sensitive', color: '#F97316', bg: 'rgba(249,115,22,0.15)' };
+  if(aqi <= 200) return { label: isBn ? 'অস্বাস্থ্যকর' : 'Unhealthy', color: '#EF4444', bg: 'rgba(239,68,68,0.15)' };
+  if(aqi <= 300) return { label: isBn ? 'খুবই অস্বাস্থ্যকর' : 'Very Unhealthy', color: '#A855F7', bg: 'rgba(168,85,247,0.15)' };
+  return { label: isBn ? 'ঝুঁকিপূর্ণ' : 'Hazardous', color: '#881337', bg: 'rgba(136,19,55,0.2)' };
+}
+
+let weatherCache = null;
+let aqiCache = null;
+
+function renderWeatherHeader(cur){
+  var iconEl = $('hwIcon'), tempEl = $('hwTemp'), wrapEl = $('hdrWeather');
+  if(!iconEl || !tempEl || !cur) return;
+  var isBn = S.lang === 'bn';
+  var temp = Math.round(cur.temperature_2m);
+  iconEl.innerHTML = getWeatherIconSvg(cur.weather_code, 18);
+  tempEl.textContent = isBn ? (toBnNum(temp) + '°সে') : (temp + '°C');
+  var loc = getLocation();
+  if(wrapEl){
+    var locName = isBn ? loc.bn : loc.en;
+    wrapEl.title = (isBn ? 'আবহাওয়া ও বায়ুমান' : 'Weather & Air Quality') + ' — ' + locName + ' (' + getWeatherDesc(cur.weather_code) + ')';
+  }
+}
+
+async function fetchWeatherAndAqi(callback){
+  var loc = getLocation();
+  try{
+    var cachedW = sessionStorage.getItem('ncs_weather_v1');
+    var cachedA = sessionStorage.getItem('ncs_aqi_v1');
+    if(cachedW){
+      var pW = JSON.parse(cachedW);
+      if(pW && pW.lat === loc.lat && Date.now() - pW.ts < 1800000){
+        weatherCache = pW.data;
+        renderWeatherHeader(weatherCache);
+        if(cachedA){
+          var pA = JSON.parse(cachedA);
+          if(pA && pA.lat === loc.lat) aqiCache = pA.data;
+        }
+        if(callback) callback(weatherCache, aqiCache);
+        return;
+      }
+    }
+  }catch(e){}
+
+  if(typeof navigator !== 'undefined' && navigator.onLine === false){
+    if(callback) callback(weatherCache, aqiCache);
+    return;
+  }
+
+  try{
+    var wUrl = 'https://api.open-meteo.com/v1/forecast?latitude=' + loc.lat + '&longitude=' + loc.lon + '&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation_probability,weather_code,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min&timezone=Asia%2FDhaka';
+    var aUrl = 'https://air-quality-api.open-meteo.com/v1/air-quality?latitude=' + loc.lat + '&longitude=' + loc.lon + '&current=us_aqi,pm10,pm2_5&timezone=Asia%2FDhaka';
+
+    var results = await Promise.allSettled([
+      fetch(wUrl).then(r => r.json()),
+      fetch(aUrl).then(r => r.json())
+    ]);
+
+    if(results[0].status === 'fulfilled' && results[0].value && results[0].value.current){
+      var curW = results[0].value.current;
+      if(results[0].value.daily){
+        curW.max = (results[0].value.daily.temperature_2m_max || [])[0];
+        curW.min = (results[0].value.daily.temperature_2m_min || [])[0];
+      }
+      weatherCache = curW;
+      try{ sessionStorage.setItem('ncs_weather_v1', JSON.stringify({ ts: Date.now(), lat: loc.lat, data: curW })); }catch(e){}
+      renderWeatherHeader(curW);
+    }
+
+    if(results[1].status === 'fulfilled' && results[1].value && results[1].value.current){
+      aqiCache = results[1].value.current;
+      try{ sessionStorage.setItem('ncs_aqi_v1', JSON.stringify({ ts: Date.now(), lat: loc.lat, data: aqiCache })); }catch(e){}
+    }
+
+    if(callback) callback(weatherCache, aqiCache);
+  }catch(err){
+    console.error('Weather/AQI fetch failed:', err);
+    if(callback) callback(weatherCache, aqiCache);
+  }
+}
+
+function renderDistrictListHtml(filterQuery, selectedEn){
+  filterQuery = (filterQuery || '').trim().toLowerCase();
+  var isBn = S.lang === 'bn';
+  var html = '';
+
+  BD_DIVISIONS.forEach(div => {
+    var dList = BD_DISTRICTS.filter(d => {
+      if(d.div !== div.id) return false;
+      if(!filterQuery) return true;
+      return d.en.toLowerCase().includes(filterQuery) || d.bn.includes(filterQuery) || div.en.toLowerCase().includes(filterQuery) || div.bn.includes(filterQuery);
+    });
+
+    if(dList.length > 0){
+      html += '<div class="loc-group-title">' + (isBn ? div.bn : div.en) + '</div>';
+      dList.forEach(d => {
+        var isSel = (d.en === selectedEn) ? ' selected' : '';
+        html += '<button type="button" class="loc-option-btn' + isSel + '" data-loc-en="' + d.en + '">' +
+          '<span>' + (isBn ? d.bn : d.en) + '</span>' +
+          '<small style="color:var(--mut)">' + (isBn ? d.en : d.bn) + '</small>' +
+        '</button>';
+      });
+    }
+  });
+
+  return html || ('<div style="padding:10px;text-align:center;color:var(--mut);font-size:12px">' + (isBn ? 'কোন জেলা পাওয়া যায়নি' : 'No district found') + '</div>');
+}
+
+function buildLocationPickerHtml(currentLoc){
+  var isBn = S.lang === 'bn';
+  return '' +
+    '<div class="loc-panel" id="locPickerPanel">' +
+      '<div class="loc-bar" id="locBarBtn" role="button" tabindex="0">' +
+        '<span>📍 ' + (isBn ? 'বর্তমান অবস্থান: ' : 'Location: ') + '<b style="color:var(--acc)">' + (isBn ? currentLoc.bn : currentLoc.en) + '</b></span>' +
+        '<span style="font-size:11.5px;color:var(--mut)">' + (isBn ? 'পরিবর্তন করুন ▾' : 'Change ▾') + '</span>' +
+      '</div>' +
+      '<div class="loc-dropdown" id="locDropdown" style="display:none">' +
+        '<input type="text" class="loc-search-inp" id="locSearchInp" placeholder="' + (isBn ? 'জেলা খুঁজুন (যেমন: ঢাকা, কুমিল্লা, Sylhet)...' : 'Search district (e.g. Dhaka, Sylhet)...') + '" autocomplete="off">' +
+        '<div class="loc-scroll-list" id="locScrollList">' +
+          renderDistrictListHtml('', currentLoc.en) +
+        '</div>' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">' +
+          '<span class="loc-adv-link" id="locAdvToggle">⚙ ' + (isBn ? 'অ্যাডভান্সড / জিপিএস' : 'Advanced / GPS') + '</span>' +
+          '<button type="button" class="ghost" id="locGpsBtn" style="height:26px;font-size:11px;padding:0 8px">🎯 ' + (isBn ? 'ডিভাইস জিপিএস' : 'Use GPS') + '</button>' +
+        '</div>' +
+        '<div class="loc-adv-box" id="locAdvBox" style="display:none">' +
+          '<div style="display:flex;gap:6px;align-items:center">' +
+            '<input type="number" id="locLatInp" step="0.0001" placeholder="Lat (23.81)" value="' + currentLoc.lat + '" style="height:28px;font-size:12px;width:90px">' +
+            '<input type="number" id="locLonInp" step="0.0001" placeholder="Lon (90.41)" value="' + currentLoc.lon + '" style="height:28px;font-size:12px;width:90px">' +
+            '<button type="button" class="go" id="locSaveCoordsBtn" style="height:28px;font-size:11px;padding:0 8px">' + (isBn ? 'সেভ' : 'Set') + '</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+}
+
+function wireLocationPickerEvents(onLocationChanged){
+  var barBtn = $('locBarBtn');
+  var dropdown = $('locDropdown');
+  var searchInp = $('locSearchInp');
+  var scrollList = $('locScrollList');
+  var advToggle = $('locAdvToggle');
+  var advBox = $('locAdvBox');
+  var gpsBtn = $('locGpsBtn');
+  var saveCoordsBtn = $('locSaveCoordsBtn');
+
+  if(barBtn && dropdown){
+    barBtn.onclick = function(){
+      var isHidden = dropdown.style.display === 'none';
+      dropdown.style.display = isHidden ? 'block' : 'none';
+      if(isHidden && searchInp) searchInp.focus();
+    };
+  }
+
+  if(searchInp && scrollList){
+    searchInp.oninput = function(){
+      var curLoc = getLocation();
+      scrollList.innerHTML = renderDistrictListHtml(searchInp.value, curLoc.en);
+    };
+  }
+
+  if(scrollList){
+    scrollList.onclick = function(e){
+      var btn = e.target.closest('[data-loc-en]');
+      if(!btn) return;
+      var enName = btn.dataset.locEn;
+      var found = BD_DISTRICTS.find(d => d.en === enName);
+      if(found){
+        setLocation(found);
+        if(onLocationChanged) onLocationChanged(found);
+      }
+    };
+  }
+
+  if(advToggle && advBox){
+    advToggle.onclick = function(){
+      advBox.style.display = (advBox.style.display === 'none') ? 'block' : 'none';
+    };
+  }
+
+  if(gpsBtn){
+    gpsBtn.onclick = function(){
+      if(!navigator.geolocation){
+        if(typeof ltoast === 'function') ltoast(lb('Geolocation not supported by device', 'ডিভাইসে জিপিএস সাপোর্ট নেই'));
+        return;
+      }
+      gpsBtn.textContent = '...';
+      navigator.geolocation.getCurrentPosition(function(pos){
+        var lat = pos.coords.latitude;
+        var lon = pos.coords.longitude;
+        var nearest = findNearestDistrict(lat, lon);
+        var customLoc = {
+          div: nearest.div,
+          en: nearest.en + ' (GPS)',
+          bn: nearest.bn + ' (জিপিএস)',
+          lat: Math.round(lat*10000)/10000,
+          lon: Math.round(lon*10000)/10000
+        };
+        setLocation(customLoc);
+        if(onLocationChanged) onLocationChanged(customLoc);
+      }, function(err){
+        gpsBtn.textContent = '🎯 GPS';
+        if(typeof ltoast === 'function') ltoast(lb('Location permission denied or unavailable', 'অবস্থান অনুমতি বাতিল বা ব্যর্থ হয়েছে'));
+      }, { timeout: 10000 });
+    };
+  }
+
+  if(saveCoordsBtn){
+    saveCoordsBtn.onclick = function(){
+      var latInp = $('locLatInp'), lonInp = $('locLonInp');
+      var lat = parseFloat(latInp ? latInp.value : '');
+      var lon = parseFloat(lonInp ? lonInp.value : '');
+      if(isNaN(lat) || isNaN(lon)){
+        if(typeof ltoast === 'function') ltoast(lb('Please enter valid coordinates', 'সঠিক স্থানাঙ্ক লিখুন'));
+        return;
+      }
+      var nearest = findNearestDistrict(lat, lon);
+      var customLoc = {
+        div: nearest.div,
+        en: nearest.en + ' (Custom)',
+        bn: nearest.bn + ' (কাস্টম)',
+        lat: Math.round(lat*10000)/10000,
+        lon: Math.round(lon*10000)/10000
+      };
+      setLocation(customLoc);
+      if(onLocationChanged) onLocationChanged(customLoc);
+    };
+  }
+}
+
+function openWeatherCardModal(){
+  var loc = getLocation();
+  var isBn = S.lang === 'bn';
+
+  function buildModalBody(w, a){
+    var temp = w ? Math.round(w.temperature_2m) : '--';
+    var maxT = (w && w.max != null) ? Math.round(w.max) : '--';
+    var minT = (w && w.min != null) ? Math.round(w.min) : '--';
+    var feels = (w && w.apparent_temperature != null) ? Math.round(w.apparent_temperature) : temp;
+    var humidity = (w && w.relative_humidity_2m != null) ? w.relative_humidity_2m + '%' : '--';
+    var wind = (w && w.wind_speed_10m != null) ? Math.round(w.wind_speed_10m) + ' km/h' : '--';
+    var rainProb = (w && w.precipitation_probability != null) ? w.precipitation_probability + '%' : '0%';
+    var wCode = w ? w.weather_code : 0;
+    var wDesc = getWeatherDesc(wCode);
+    var wSvg = getWeatherIconSvg(wCode, 52);
+
+    var aqiVal = (a && a.us_aqi != null) ? a.us_aqi : null;
+    var aqiRating = aqiVal != null ? getAqiRating(aqiVal) : null;
+    var pm25 = (a && a.pm2_5 != null) ? a.pm2_5 : '--';
+    var pm10 = (a && a.pm10 != null) ? a.pm10 : '--';
+
+    var aqiHtml = aqiVal != null ? (
+      '<div class="wm-aqi-box">' +
+        '<div class="wm-aqi-head">' +
+          '<div style="font-size:13px;font-weight:600;color:var(--ink)">🍃 ' + (isBn ? 'বায়ুমান সূচক (Air Quality)' : 'Air Quality Index (AQI)') + '</div>' +
+          '<span class="wm-aqi-pill" style="color:' + aqiRating.color + ';background:' + aqiRating.bg + '">' +
+            'AQI ' + (isBn ? toBnNum(aqiVal) : aqiVal) + ' · ' + aqiRating.label +
+          '</span>' +
+        '</div>' +
+        '<div class="wm-aqi-meta">' +
+          '<span><b>PM2.5:</b> ' + (isBn && typeof pm25 === 'number' ? toBnNum(pm25) : pm25) + ' µg/m³</span>' +
+          '<span><b>PM10:</b> ' + (isBn && typeof pm10 === 'number' ? toBnNum(pm10) : pm10) + ' µg/m³</span>' +
+        '</div>' +
+      '</div>'
+    ) : (
+      '<div class="wm-aqi-box" style="text-align:center;color:var(--mut);font-size:12px">' +
+        (isBn ? 'বায়ুমান ডেটা লোড হচ্ছে...' : 'Loading Air Quality...') +
+      '</div>'
+    );
+
+    return '' +
+      '<div class="wm-card">' +
+        buildLocationPickerHtml(loc) +
+        '<div class="wm-hero">' +
+          '<div class="wm-hero-left">' +
+            '<div class="wm-temp">' + (isBn && temp !== '--' ? toBnNum(temp) + '°সে' : temp + '°C') + '</div>' +
+            '<div class="wm-cond">' + wDesc + '</div>' +
+            '<div class="wm-sub">' +
+              (isBn ? 'অনুভূত: ' : 'Feels like: ') + (isBn && feels !== '--' ? toBnNum(feels) + '°' : feels + '°') +
+              ' · ' + (isBn ? 'সর্বোচ্চ: ' : 'H: ') + (isBn && maxT !== '--' ? toBnNum(maxT) + '°' : maxT + '°') +
+              ' · ' + (isBn ? 'সর্বনিম্ন: ' : 'L: ') + (isBn && minT !== '--' ? toBnNum(minT) + '°' : minT + '°') +
+            '</div>' +
+          '</div>' +
+          '<div class="wm-hero-icon">' + wSvg + '</div>' +
+        '</div>' +
+        '<div class="wm-grid">' +
+          '<div class="wm-metric">' +
+            '<div class="wm-metric-lbl">💧 ' + (isBn ? 'আর্দ্রতা' : 'Humidity') + '</div>' +
+            '<div class="wm-metric-val">' + (isBn ? toBnNum(humidity) : humidity) + '</div>' +
+          '</div>' +
+          '<div class="wm-metric">' +
+            '<div class="wm-metric-lbl">💨 ' + (isBn ? 'বাতাসের গতি' : 'Wind Speed') + '</div>' +
+            '<div class="wm-metric-val">' + (isBn ? toBnNum(wind) : wind) + '</div>' +
+          '</div>' +
+          '<div class="wm-metric">' +
+            '<div class="wm-metric-lbl">🌧️ ' + (isBn ? 'বৃষ্টির সম্ভাবনা' : 'Rain Chance') + '</div>' +
+            '<div class="wm-metric-val">' + (isBn ? toBnNum(rainProb) : rainProb) + '</div>' +
+          '</div>' +
+          '<div class="wm-metric">' +
+            '<div class="wm-metric-lbl">🌡️ ' + (isBn ? 'তাপমাত্রা পরিসীমা' : 'Range') + '</div>' +
+            '<div class="wm-metric-val">' + (isBn && minT !== '--' ? toBnNum(minT) : minT) + '° - ' + (isBn && maxT !== '--' ? toBnNum(maxT) : maxT) + '°</div>' +
+          '</div>' +
+        '</div>' +
+        aqiHtml +
+        '<div style="text-align:center;font-size:11.5px;color:var(--mut);border-top:1px dashed var(--line);padding-top:8px">' +
+          (isBn ? '⚡ এখানে জেলা পরিবর্তন করলে নামাজের সময়সূচীও স্বয়ংক্রিয়ভাবে আপডেট হবে' : '⚡ Changing location here also updates Prayer Times') +
+        '</div>' +
+      '</div>';
+  }
+
+  ask(
+    (isBn ? '🌤️ আবহাওয়া ও বায়ুমান — ' : '🌤️ Weather & Air Quality — ') + (isBn ? loc.bn : loc.en),
+    buildModalBody(weatherCache, aqiCache),
+    function(){ return true; },
+    lb('Close', 'বন্ধ করুন'),
+    true
+  );
+
+  wireLocationPickerEvents(function(newLoc){
+    loc = newLoc;
+    fetchWeatherAndAqi(function(freshW, freshA){
+      $('ot').textContent = (S.lang==='bn' ? '🌤️ আবহাওয়া ও বায়ুমান — ' : '🌤️ Weather & Air Quality — ') + (S.lang==='bn' ? loc.bn : loc.en);
+      $('ob').innerHTML = buildModalBody(freshW, freshA);
+      wireLocationPickerEvents(null);
+    });
+  });
+
+  if(!weatherCache || !aqiCache){
+    fetchWeatherAndAqi(function(freshW, freshA){
+      if(!$('ov').hidden){
+        $('ob').innerHTML = buildModalBody(freshW, freshA);
+        wireLocationPickerEvents(null);
+      }
+    });
+  }
+}
+
+/* ---------- Active Prayer Period & Mosque Times Engine ---------- */
+
 let salatTimingsCache = null;
 const salatAlertedToday = {};
 
-function fetchDhakaSalat(callback){
-  const today = todayIso();
+function computeActiveSalat(timings, now){
+  if(!timings) return null;
+  now = now || new Date();
+  var curMins = now.getHours() * 60 + now.getMinutes();
+
+  var parseMins = function(tStr){
+    if(!tStr) return 0;
+    var p = tStr.split(':').map(Number);
+    return p[0]*60 + p[1];
+  };
+
+  var fMins = parseMins(timings.Fajr);
+  var sMins = parseMins(timings.Sunrise);
+  var dMins = parseMins(timings.Dhuhr);
+  var aMins = parseMins(timings.Asr);
+  var mMins = parseMins(timings.Maghrib);
+  var iMins = parseMins(timings.Isha);
+
+  var prayerSlots = [
+    { id: 'Fajr', en: 'Fajr', bn: 'ফজর', t: timings.Fajr, mins: fMins, icon: '🌅' },
+    { id: 'Sunrise', en: 'Sunrise', bn: 'সূর্যোদয়', t: timings.Sunrise, mins: sMins, icon: '☀️', isSun: true },
+    { id: 'Dhuhr', en: 'Dhuhr', bn: 'যোহর', t: timings.Dhuhr, mins: dMins, icon: '☀️' },
+    { id: 'Asr', en: 'Asr', bn: 'আসর', t: timings.Asr, mins: aMins, icon: '🌤️' },
+    { id: 'Maghrib', en: 'Maghrib', bn: 'মাগরিব', t: timings.Maghrib, mins: mMins, icon: '🌇' },
+    { id: 'Isha', en: 'Isha', bn: 'ইশা', t: timings.Isha, mins: iMins, icon: '🌙' }
+  ];
+
+  var activePrayer = null;
+  var nextPrayer = null;
+  var isSunriseGap = false;
+
+  if(curMins >= fMins && curMins < sMins){
+    activePrayer = prayerSlots[0];
+    nextPrayer = prayerSlots[1];
+  } else if(curMins >= sMins && curMins < dMins){
+    activePrayer = null;
+    isSunriseGap = true;
+    nextPrayer = prayerSlots[2];
+  } else if(curMins >= dMins && curMins < aMins){
+    activePrayer = prayerSlots[2];
+    nextPrayer = prayerSlots[3];
+  } else if(curMins >= aMins && curMins < mMins){
+    activePrayer = prayerSlots[3];
+    nextPrayer = prayerSlots[4];
+  } else if(curMins >= mMins && curMins < iMins){
+    activePrayer = prayerSlots[4];
+    nextPrayer = prayerSlots[5];
+  } else {
+    activePrayer = prayerSlots[5];
+    nextPrayer = prayerSlots[0];
+  }
+
+  var diffMins = 0;
+  if(nextPrayer){
+    diffMins = nextPrayer.mins - curMins;
+    if(diffMins < 0) diffMins += 24 * 60;
+  }
+
+  return {
+    active: activePrayer,
+    next: nextPrayer,
+    isSunriseGap: isSunriseGap,
+    diffMins: diffMins,
+    slots: prayerSlots
+  };
+}
+
+function updateHeaderSalat(timings){
+  if(!timings) return;
+  var isBn = S.lang === 'bn';
+  var salatState = computeActiveSalat(timings);
+  if(!salatState) return;
+
+  var prayerBtn = $('hdrPrayerBtn');
+  var popover = $('hdrPrayerPopover');
+  var loc = getLocation();
+  var locName = isBn ? loc.bn : loc.en;
+
+  var nextP = salatState.next;
+  var activeP = salatState.active;
+  var diffH = Math.floor(salatState.diffMins / 60);
+  var diffM = salatState.diffMins % 60;
+  var diffStr = isBn
+    ? (diffH > 0 ? toBnNum(diffH) + ' ঘণ্টা ' : '') + toBnNum(diffM) + ' মিনিট বাকি'
+    : (diffH > 0 ? diffH + 'h ' : '') + diffM + 'm left';
+
+  var headerLabel = isBn ? 'নামাজের সময়সূচী' : 'Prayer Times';
+  if(prayerBtn){
+    var activeDesc = activeP ? (isBn ? activeP.bn + ' চলমান' : activeP.en + ' Active') : (isBn ? 'সূর্যোদয় সম্পন্ন' : 'Sunrise Passed');
+    var nextDesc = nextP ? ((isBn ? nextP.bn : nextP.en) + ' ' + t12(nextP.t)) : '';
+    prayerBtn.setAttribute('aria-label', headerLabel + ' · ' + activeDesc + ' · ' + (isBn ? 'পরবর্তী: ' : 'Next: ') + nextDesc);
+    prayerBtn.title = headerLabel + ' (' + locName + ') — ' + activeDesc + ' · ' + (isBn ? 'পরবর্তী: ' : 'Next: ') + nextDesc;
+  }
+
+  if(popover){
+    var headSubtitle = activeP
+      ? ('<span style="color:var(--pos);font-weight:600">' + (isBn ? activeP.bn + ' চলমান' : activeP.en + ' Active') + '</span>')
+      : ('<span style="color:var(--mut)">' + (isBn ? 'সূর্যোদয় সম্পন্ন' : 'Sunrise Passed') + '</span>');
+
+    popover.innerHTML = '' +
+      '<div class="hp-pop-head">' +
+        '<div><b>' + headerLabel + '</b><small class="mut" style="display:block;font-size:11px">' + locName + '</small></div>' +
+        '<div style="text-align:right">' + headSubtitle + '<small class="mut" style="display:block;font-size:11px">' + (nextP ? ((isBn?nextP.bn:nextP.en) + ' ' + diffStr) : '') + '</small></div>' +
+      '</div>' +
+      '<div class="hp-pop-grid">' +
+        salatState.slots.map(function(p){
+          var isActive = activeP && activeP.id === p.id;
+          var isNext = nextP && nextP.id === p.id;
+          var cls = isActive ? ' active' : (isNext ? ' upcoming' : '');
+          var statusBadge = isActive ? (isBn ? 'চলমান' : 'NOW') : (isNext ? (isBn ? 'পরবর্তী' : 'NEXT') : '');
+          return '<div class="hp-pop-item' + cls + '">' +
+            '<span>' + p.icon + ' ' + (isBn ? p.bn : p.en) + '</span>' +
+            '<div><b>' + t12(p.t) + '</b>' + (statusBadge ? ' <small style="font-size:9.5px;text-transform:uppercase;color:var(--acc)">' + statusBadge + '</small>' : '') + '</div>' +
+          '</div>';
+        }).join('') +
+      '</div>' +
+      '<div class="hp-pop-foot">' +
+        '<small class="mut">' + (isBn ? 'সম্পূর্ণ সময়সূচী দেখতে ক্লিক করুন' : 'Click to view full prayer card & alarms') + '</small>' +
+      '</div>';
+  }
+}
+
+function fetchSalatForCurrentLoc(callback){
+  var today = todayIso();
+  var loc = getLocation();
   try{
-    const cached = sessionStorage.getItem('ncs_salat_v1');
+    var cached = sessionStorage.getItem('ncs_salat_v1');
     if(cached){
-      const parsed = JSON.parse(cached);
-      if(parsed && parsed.date === today && parsed.timings){
+      var parsed = JSON.parse(cached);
+      if(parsed && parsed.date === today && parsed.lat === loc.lat && parsed.timings){
         salatTimingsCache = parsed.timings;
         updateHeaderSalat(parsed.timings);
         if(callback) callback(parsed.timings);
@@ -42,166 +687,107 @@ function fetchDhakaSalat(callback){
   }catch(e){}
 
   if(typeof navigator !== 'undefined' && navigator.onLine === false){
-    if(callback) callback(null);
+    if(callback) callback(salatTimingsCache);
     return;
   }
 
-  fetch('https://api.aladhan.com/v1/timingsByCity?city=Dhaka&country=Bangladesh&method=1')
+  var sUrl = 'https://api.aladhan.com/v1/timings?latitude=' + loc.lat + '&longitude=' + loc.lon + '&method=1';
+  fetch(sUrl)
     .then(r => r.json())
     .then(data => {
       if(data && data.data && data.data.timings){
         salatTimingsCache = data.data.timings;
         try{
-          sessionStorage.setItem('ncs_salat_v1', JSON.stringify({ date: today, timings: data.data.timings }));
+          sessionStorage.setItem('ncs_salat_v1', JSON.stringify({ date: today, lat: loc.lat, timings: data.data.timings }));
         }catch(e){}
         updateHeaderSalat(data.data.timings);
         if(callback) callback(data.data.timings);
       }
     })
     .catch(() => {
-      if(callback) callback(null);
+      if(callback) callback(salatTimingsCache);
     });
 }
 
-function updateHeaderSalat(timings){
-  if(!timings) return;
-  const isBn = S.lang === 'bn';
-  const now = new Date();
-  const curMins = now.getHours() * 60 + now.getMinutes();
+function fetchDhakaSalat(callback){
+  fetchSalatForCurrentLoc(callback);
+}
 
-  const prayerList = [
-    { id: 'Fajr', en: 'Fajr', bn: 'ফজর', t: timings.Fajr, icon: '🌅' },
-    { id: 'Sunrise', en: 'Sunrise', bn: 'সূর্যোদয়', t: timings.Sunrise, icon: '☀️', isSun: true },
-    { id: 'Dhuhr', en: 'Dhuhr', bn: 'যোহর', t: timings.Dhuhr, icon: '☀️' },
-    { id: 'Asr', en: 'Asr', bn: 'আসর', t: timings.Asr, icon: '🌤️' },
-    { id: 'Maghrib', en: 'Maghrib', bn: 'মাগরিব', t: timings.Maghrib, icon: '🌇' },
-    { id: 'Isha', en: 'Isha', bn: 'ইশা', t: timings.Isha, icon: '🌙' }
-  ];
-
-  /* Find next prayer */
-  let nextP = null;
-  let minDiff = Infinity;
-  prayerList.forEach(p => {
-    if(!p.t) return;
-    const [h, m] = p.t.split(':').map(Number);
-    const pMins = h * 60 + m;
-    let diff = pMins - curMins;
-    if(diff < 0) diff += 24 * 60;
-    if(diff < minDiff){
-      minDiff = diff;
-      nextP = { ...p, diffMins: diff };
-    }
-  });
-
-  const hpName = $('hpName'), hpTime = $('hpTime');
-  if(hpName && nextP) hpName.textContent = isBn ? nextP.bn : nextP.en;
-  if(hpTime && nextP) hpTime.textContent = t12(nextP.t);
-  const prayerBtn = $('hdrPrayerBtn');
-  if(prayerBtn){
-    const nextLabel = nextP ? (isBn ? nextP.bn : nextP.en) + ' ' + t12(nextP.t) : '';
-    const prayerLabel = isBn ? 'নামাজের সময়সূচী' : 'Prayer times';
-    prayerBtn.setAttribute('aria-label', prayerLabel + (nextLabel ? ' · ' + nextLabel : ''));
-    prayerBtn.title = prayerLabel + (nextLabel ? ' — ' + nextLabel : '');
-  }
-
-  const popover = $('hdrPrayerPopover');
-  if(popover){
-    const diffH = nextP ? Math.floor(nextP.diffMins / 60) : 0;
-    const diffM = nextP ? (nextP.diffMins % 60) : 0;
-    const diffStr = isBn
-      ? (diffH > 0 ? toBnNum(diffH) + ' ঘণ্টা ' : '') + toBnNum(diffM) + ' মিনিট বাকি'
-      : (diffH > 0 ? diffH + 'h ' : '') + diffM + 'm left';
-
-    popover.innerHTML = '' +
-      '<div class="hp-pop-head">' +
-        '<b>' + (isBn ? 'নামাজের সময়সূচী' : 'Prayer Times') + '</b>' +
-        '<small class="mut">Dhaka · ' + (nextP ? (isBn ? nextP.bn : nextP.en) + ' (' + diffStr + ')' : '') + '</small>' +
-      '</div>' +
-      '<div class="hp-pop-grid">' +
-        prayerList.map(p => {
-          const isNext = nextP && nextP.id === p.id;
-          return '<div class="hp-pop-item' + (isNext ? ' on' : '') + '">' +
-            '<span>' + p.icon + ' ' + (isBn ? p.bn : p.en) + '</span>' +
-            '<b>' + t12(p.t) + '</b>' +
-          '</div>';
-        }).join('') +
-      '</div>' +
-      '<div class="hp-pop-foot">' +
-        '<small class="mut">' + (isBn ? 'সম্পূর্ণ সময়সূচী দেখতে ক্লিক করুন' : 'Click to view full prayer card & test alarm') + '</small>' +
-      '</div>';
-  }
+function fetchDhakaWeather(){
+  fetchWeatherAndAqi();
 }
 
 function openFullSalatModal(){
-  fetchDhakaSalat(timings => {
+  var loc = getLocation();
+  fetchSalatForCurrentLoc(function(timings){
     if(!timings){
       if(typeof ltoast === 'function') ltoast(lb('Prayer timings unavailable offline', 'নামাজের সময়সূচী অফলাইনে পাওয়া যায়নি'));
       return;
     }
-    const isBn = S.lang === 'bn';
-    const now = new Date();
-    const curMins = now.getHours() * 60 + now.getMinutes();
+    var isBn = S.lang === 'bn';
+    var salatState = computeActiveSalat(timings);
+    var activeP = salatState ? salatState.active : null;
+    var nextP = salatState ? salatState.next : null;
 
-    const prayerList = [
-      { id: 'Fajr', en: 'Fajr', bn: 'ফজর', t: timings.Fajr, icon: '🌅' },
-      { id: 'Sunrise', en: 'Sunrise', bn: 'সূর্যোদয়', t: timings.Sunrise, icon: '☀️', isSun: true },
-      { id: 'Dhuhr', en: 'Dhuhr', bn: 'যোহর', t: timings.Dhuhr, icon: '☀️' },
-      { id: 'Asr', en: 'Asr', bn: 'আসর', t: timings.Asr, icon: '🌤️' },
-      { id: 'Maghrib', en: 'Maghrib', bn: 'মাগরিব', t: timings.Maghrib, icon: '🌇' },
-      { id: 'Isha', en: 'Isha', bn: 'ইশা', t: timings.Isha, icon: '🌙' }
-    ];
-
-    let nextP = null;
-    let minDiff = Infinity;
-    prayerList.forEach(p => {
-      if(!p.t) return;
-      const [h, m] = p.t.split(':').map(Number);
-      const pMins = h * 60 + m;
-      let diff = pMins - curMins;
-      if(diff < 0) diff += 24 * 60;
-      if(diff < minDiff){
-        minDiff = diff;
-        nextP = { ...p, diffMins: diff };
-      }
-    });
-
-    const diffH = nextP ? Math.floor(nextP.diffMins / 60) : 0;
-    const diffM = nextP ? (nextP.diffMins % 60) : 0;
-    const diffStr = isBn
+    var diffH = salatState ? Math.floor(salatState.diffMins / 60) : 0;
+    var diffM = salatState ? (salatState.diffMins % 60) : 0;
+    var diffStr = isBn
       ? (diffH > 0 ? toBnNum(diffH) + ' ঘণ্টা ' : '') + toBnNum(diffM) + ' মিনিট বাকি'
       : (diffH > 0 ? diffH + 'h ' : '') + diffM + 'm left';
 
-    const bodyHtml = '' +
+    var activeBanner = activeP
+      ? ('<div style="background:color-mix(in srgb,var(--pos) 14%,var(--card));border:1px solid var(--pos);border-radius:10px;padding:8px 12px;display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">' +
+           '<div><span style="color:var(--pos);font-weight:700">● ' + (isBn ? activeP.bn + ' ওয়াক্ত চলমান' : activeP.en + ' Prayer Active') + '</span><small class="mut" style="display:block;font-size:11.5px">' + (isBn ? 'পরবর্তী নামাজ: ' : 'Next prayer: ') + '<b>' + (isBn ? nextP.bn : nextP.en) + '</b> (' + diffStr + ')</small></div>' +
+           '<b style="font-size:15px;color:var(--pos)">' + t12(activeP.t) + '</b>' +
+         '</div>')
+      : ('<div style="background:var(--soft);border:1px solid var(--acc);border-radius:10px;padding:8px 12px;display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">' +
+           '<div><span style="color:var(--acc);font-weight:700">☀️ ' + (isBn ? 'সূর্যোদয় সম্পন্ন (কোন নামাজ চলমান নেই)' : 'Sunrise Passed (No Active Prayer)') + '</span><small class="mut" style="display:block;font-size:11.5px">' + (isBn ? 'পরবর্তী নামাজ: ' : 'Next prayer: ') + '<b>' + (nextP ? (isBn?nextP.bn:nextP.en) : '') + '</b> (' + diffStr + ')</small></div>' +
+         '</div>');
+
+    var bodyHtml = '' +
       '<div style="margin-bottom:12px">' +
-        '<div style="font-size:12.5px;color:var(--mut);margin-bottom:8px">' +
-          (nextP ? ('▸ ' + (isBn ? 'পরবর্তী নামাজ: ' : 'Next Prayer: ') + '<b style="color:var(--acc)">' + (isBn ? nextP.bn : nextP.en) + '</b> (' + diffStr + ')') : '') +
-        '</div>' +
+        buildLocationPickerHtml(loc) +
+        activeBanner +
         '<div class="salat-grid">' +
-          prayerList.map(p => {
-            const isNext = nextP && nextP.id === p.id;
-            const tFormatted = t12(p.t);
-            return '' +
-              '<div class="salat-box' + (isNext ? ' salat-box-active' : '') + (p.isSun ? ' salat-box-sun' : '') + '">' +
-                '<div class="sb-icon">' + p.icon + '</div>' +
-                '<div class="sb-name">' + (isBn ? p.bn : p.en) + '</div>' +
-                '<b class="sb-time">' + (isBn ? toBnNum(tFormatted) : tFormatted) + '</b>' +
-                (isNext ? '<span class="sb-badge">' + (isBn ? 'পরবর্তী' : 'NEXT') + '</span>' : '') +
-              '</div>';
+          salatState.slots.map(function(p){
+            var isActive = activeP && activeP.id === p.id;
+            var isNext = nextP && nextP.id === p.id;
+            var tFormatted = t12(p.t);
+            var cls = isActive ? ' salat-box-active' : (p.isSun ? ' salat-box-sun' : '');
+            var badge = isActive ? '<span class="sb-badge" style="background:var(--pos)">' + (isBn ? 'চলমান' : 'ACTIVE') + '</span>'
+                                 : (isNext ? '<span class="sb-badge">' + (isBn ? 'পরবর্তী' : 'NEXT') + '</span>' : '');
+            return '<div class="salat-box' + cls + '">' +
+              '<div class="sb-icon">' + p.icon + '</div>' +
+              '<div class="sb-name">' + (isBn ? p.bn : p.en) + '</div>' +
+              '<b class="sb-time">' + (isBn ? toBnNum(tFormatted) : tFormatted) + '</b>' +
+              badge +
+            '</div>';
           }).join('') +
         '</div>' +
       '</div>' +
       '<div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line);padding-top:10px;margin-top:10px">' +
         '<small class="mut">' + (isBn ? 'প্রতি ওয়াক্তে স্বয়ংক্রিয় আযান/অ্যালার্ম বাজবে' : 'Automatic prayer chime plays on arrival') + '</small>' +
-        '<button type="button" class="ghost" id="btnTestSalatAlarmModal" style="height:30px;padding:0 10px;font-size:12px">🔔 ' + (isBn ? 'অ্যালার্ম পরীক্ষা' : 'Test Sound') + '</button>' +
+        '<button type="button" class="ghost" id="btnTestSalatAlarmModal" style="height:32px;padding:0 12px;font-size:12px">🔔 ' + (isBn ? 'অ্যালার্ম পরীক্ষা' : 'Test Sound') + '</button>' +
       '</div>';
 
-    ask(lb('🕌 Salat Times — Dhaka (UTC+6)', '🕌 নামাজের সময়সূচী — ঢাকা'), bodyHtml, function(){ return true; }, lb('Close', 'বন্ধ করুন'), true);
+    ask(
+      lb('🕌 Salat Times — ', '🕌 নামাজের সময়সূচী — ') + (isBn ? loc.bn : loc.en),
+      bodyHtml,
+      function(){ return true; },
+      lb('Close', 'বন্ধ করুন'),
+      true
+    );
 
-    const testBtn = $('btnTestSalatAlarmModal');
+    wireLocationPickerEvents(function(newLoc){
+      loc = newLoc;
+      openFullSalatModal();
+    });
+
+    var testBtn = $('btnTestSalatAlarmModal');
     if(testBtn){
       testBtn.onclick = function(){
-        const pName = isBn ? (nextP ? nextP.bn : 'আসর') : (nextP ? nextP.en : 'Asr');
-        showSalatAlarmToast(pName, nextP ? t12(nextP.t) : '3:45 PM');
+        var pName = isBn ? (activeP ? activeP.bn : (nextP ? nextP.bn : 'যোহর')) : (activeP ? activeP.en : (nextP ? nextP.en : 'Dhuhr'));
+        showSalatAlarmToast(pName, activeP ? t12(activeP.t) : (nextP ? t12(nextP.t) : '1:15 PM'));
       };
     }
   });
@@ -209,13 +795,18 @@ function openFullSalatModal(){
 
 if(typeof document !== 'undefined'){
   document.addEventListener('click', function(e){
-    var b = e.target.closest('#hdrPrayerBtn');
-    if(b) openFullSalatModal();
+    var pBtn = e.target.closest('#hdrPrayerBtn');
+    if(pBtn) openFullSalatModal();
+    var wBtn = e.target.closest('#hdrWeather');
+    if(wBtn) openWeatherCardModal();
   });
 }
 
-fetchDhakaSalat();
-setInterval(function(){ fetchDhakaSalat(); }, 60000);
+fetchSalatForCurrentLoc();
+setInterval(function(){ fetchSalatForCurrentLoc(); }, 60000);
+
+fetchWeatherAndAqi();
+setInterval(function(){ fetchWeatherAndAqi(); }, 1800000);
 
 function showSalatAlarmToast(prayerName, timeFormatted){
   try{ Sound.chime(); }catch(e){}
@@ -255,6 +846,7 @@ function showSalatAlarmToast(prayerName, timeFormatted){
     }
   }, 6000);
 }
+
 
 function checkSalatAlarm(){
   if(!salatTimingsCache) return;

@@ -29,7 +29,7 @@ if (!repo && pkg.repository) {
 // ---- 3. Copy web files ----
 fs.rmSync(www, { recursive: true, force: true });
 fs.mkdirSync(www, { recursive: true });
-const keep = /^(index\.html|config\.js|diag\.js|sync\.js|manifest\.webmanifest|icon-.*\.png|logo-.*\.png|.*\.ttf)$/i;
+const keep = /^(index\.html|config\.js|diag\.js|sync\.js|manifest\.webmanifest|icon-.*\.png|logo-.*\.png|.*\.(ttf|woff2))$/i;
 for (const f of fs.readdirSync(root)) {
   if (keep.test(f) && fs.statSync(path.join(root, f)).isFile()) fs.copyFileSync(path.join(root, f), path.join(www, f));
 }

@@ -27,4 +27,3 @@ async function importCatalog(){if(S.catImported||S.products.length||!SY())return
   try{const r=await(await fetch(S.sync.url+(S.sync.url.includes('?')?'&':'?')+'action=catalog&key='+encodeURIComponent(S.sync.key))).json();
     if(r.ok&&r.items&&r.items.length){r.items.filter(p=>!p.del).forEach(p=>S.products.push({id:p.id,name:p.name,barcode:p.barcode||'',buy:0,price:+p.price||0,img:''}));S.catImported=1;save();if(U)POS.refresh()}
     else{S.catImported=1;persist()}}catch(e){}}
-

@@ -209,7 +209,7 @@ prsSettingBtn.className = 'more-item';
 prsSettingBtn.id = 'prsSettingBtn';
 prsSettingBtn.onclick = function() { if (isA()) openPresetSettings(); };
 
-$('topR').append($('sync'));$('moreList').append($('lang'),sndBtn,secCardBtn,prsSettingBtn,bugBtn,$('set'),$('lockb'));
+$('moreList').append($('sync'),$('lang'),sndBtn,secCardBtn,prsSettingBtn,bugBtn,$('set'),$('lockb'));
 function updateSndBtn(){
   makeMoreItem(sndBtn, '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>', lb('Sound Effects','সাউন্ড ইফেক্ট'), S.sound ? lb('Enabled (ON)','চালু আছে') : lb('Disabled (OFF)','বন্ধ আছে'));
 }
@@ -217,6 +217,10 @@ sndBtn.onclick=function(){S.sound=!S.sound;save();updateSndBtn();if(S.sound){try
 secCardBtn.onclick=function(){if(isA())openCardSectionSettings()};
 function updateMoreTab(){
   updateSndBtn();
+  if($('sync')){
+    var syncTxt=st==='ok'?lb('Synced with Cloud','ক্লাউডে সিঙ্ক সম্পন্ন'):st==='pend'?lb('Syncing in progress…','সিঙ্ক চলমান…'):st==='offl'?lb('Offline — queued','অফলাইন'):lb('Not Configured','সিঙ্ক কনফিগার নেই');
+    makeMoreItem($('sync'), '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>', lb('Cloud Sync Status','ক্লাউড সিঙ্ক অবস্থা'), syncTxt);
+  }
   makeMoreItem(bugBtn, '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><rect width="8" height="14" x="8" y="6" rx="4"/><path d="m19 7-3 2"/><path d="m5 7 3 2"/><path d="m19 19-3-2"/><path d="m5 19 3-2"/><path d="M20 13h-4"/><path d="M4 13h4"/><path d="m10 4 1 2"/><path d="m14 4-1 2"/></svg>', lb('Bug Report & Support','সহায়তা ও সমস্যা রিপোর্ট'), lb('WhatsApp support (+8801765420566)','হোয়াটসঅ্যাপ হেল্পলাইন'));
   makeMoreItem($('lang'), '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20M2 12h20"/></svg>', lb('Language','ভাষা পরিবর্তন'), S.lang==='bn' ? 'বাংলা (Bangla)' : 'English');
   makeMoreItem($('set'), '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>', lb('System Settings','সিস্টেম সেটিংস'), lb('Sync passphrase, security & cash','সিঙ্ক, নিরাপত্তা ও পিন'));
@@ -355,4 +359,3 @@ function refreshCurrentView(){
 }
 $('refresh').onclick=refreshCurrentView;
 function setRefreshLabel(){var t=lb('Refresh current view','বর্তমান ট্যাব রিফ্রেশ করুন');$('refresh').title=t;$('refresh').setAttribute('aria-label',t)}
-

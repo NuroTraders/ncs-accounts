@@ -7,4 +7,3 @@ var WLT_MFS=['bk','ng','rk','bka'],WLT_RCR=['gp','robi','cir'],WLT_BN={bk:'à¦¬à¦
 var ACC_N=150,ACC_D='',LPGN=80,LPGC=null,AV=false;
 function imgCap(c,q){var u=c.toDataURL('image/jpeg',q);while(u.length>24000&&q>.3){q-=.1;u=c.toDataURL('image/jpeg',q)}return u}
 const CATS={Sale:['Printing','Stationery','Computer Service','Other'].concat(Object.keys(WLTC.Sale)),Purchase:['Stock','Rent','Salary','Utilities','Transport','Other'].concat(Object.keys(WLTC.Purchase))};
-

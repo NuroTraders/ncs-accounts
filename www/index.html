@@ -290,7 +290,7 @@ body{padding-bottom:78px}
 /* ===== THEME: Enterprise Surface & Elevation ===== */
 body{background:var(--bg)}
 h1{font-size:24px;font-weight:600}
-.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;max-width:none;margin:0;padding:10px 22px;min-height:78px;background:color-mix(in srgb,var(--card) 82%,transparent);-webkit-backdrop-filter:saturate(1.25) blur(14px);backdrop-filter:saturate(1.25) blur(14px);border-bottom:1px solid var(--line);box-shadow:0 1px 3px rgba(15,23,42,.05)}
+.top{position:sticky;top:max(8px,env(safe-area-inset-top,8px));z-index:40;width:calc(100% - 24px);max-width:1360px;margin:10px auto 14px;padding:12px 22px;min-height:94px;background:color-mix(in srgb,var(--card) 90%,transparent);-webkit-backdrop-filter:saturate(1.25) blur(16px);backdrop-filter:saturate(1.25) blur(16px);border:1px solid var(--line);border-radius:20px;box-shadow:0 4px 20px rgba(0,0,0,0.06),0 1px 3px rgba(0,0,0,0.04);box-sizing:border-box}
 .card,.stat{background:var(--card);border-radius:14px;box-shadow:var(--sh)}
 .stats .stat:nth-child(1){background:var(--t3)}.stats .stat:nth-child(2){background:var(--t2)}.stats .stat:nth-child(3){background:var(--t1)}
 .stats .stat{border-color:transparent}
@@ -304,51 +304,57 @@ th{color:var(--ink);font-weight:500}
 @media (max-width:899px){.tabs{left:10px;right:10px;bottom:calc(8px + env(safe-area-inset-bottom,0px));padding:6px;border-radius:20px}.tabs button .t-lbl{display:block;font-size:11px}.wrap{padding-bottom:104px}.lst{grid-template-columns:1fr 1fr}.lst .stat.main{grid-column:1/-1}.top{padding:10px 14px;display:flex;justify-content:space-between;align-items:center}}
 @media (min-width:900px){
  body:has(.tabs:not([hidden])){padding-left:84px}
- .top{display:grid;grid-template-columns:minmax(220px,1fr) auto minmax(250px,1fr);align-items:center;gap:clamp(10px,1.8vw,24px);padding:10px 18px;position:sticky;top:env(safe-area-inset-top,0px);z-index:40}
- .top-brand{display:flex;align-items:center;gap:10px;min-width:0}
- .top-brand-mark{width:40px;height:40px;flex:none;display:grid;place-items:center;background:transparent;border:0;border-radius:8px}
- .top-brand img{height:32px;width:34px;border-radius:0!important;object-fit:contain;filter:none;transition:transform .2s cubic-bezier(.16,1,.3,1)}
+ .top{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:clamp(12px,1.8vw,24px);padding:12px 22px}
+ .top-brand{grid-column:1;justify-self:start;display:flex;align-items:center;gap:12px;min-width:0;max-width:100%}
+ .top-brand-mark{width:48px;height:48px;flex:none;display:grid;place-items:center;background:transparent;border:0;border-radius:10px}
+ .top-brand img{height:42px;width:44px;border-radius:0!important;object-fit:contain;filter:none;transition:transform .2s cubic-bezier(.16,1,.3,1)}
  .top-brand:hover img{transform:scale(1.02)}
- .shop-name-title{display:block;font-size:20px;font-weight:600;letter-spacing:-.015em;color:var(--ink);line-height:1.15}
- html[lang="bn"] .shop-name-title{font-size:21px;font-family:SolaimanLipi,Inter,sans-serif;font-weight:500}
+ .shop-name-title{display:block;font-size:clamp(24px,2.2vw,36px);font-weight:700;letter-spacing:-.02em;color:var(--ink);line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+ html[lang="bn"] .shop-name-title{font-size:clamp(23px,2.1vw,34px);font-family:SolaimanLipi,Inter,sans-serif;font-weight:600}
  .top-brand-sub{margin-top:3px}
- .tsub-pill{display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border-radius:999px;background:var(--soft);color:var(--acc);font-size:11px;font-weight:500;text-transform:capitalize;border:1px solid color-mix(in srgb,var(--acc) 22%,transparent)}
+ .tsub-pill{display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border-radius:999px;background:var(--soft);color:var(--acc);font-size:11px;font-weight:600;text-transform:capitalize;border:1px solid color-mix(in srgb,var(--acc) 22%,transparent)}
  
- /* Header Center: Bismillah + Large Minimal Watch + Calendar */
- .hdr-center{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:3px;min-width:0}
- .bismillah-txt{font-size:12.5px;font-weight:500;color:var(--mut);letter-spacing:.035em;user-select:none;line-height:1.2;transition:color .2s ease}
- html[lang="bn"] .bismillah-txt{font-size:13px;font-family:SolaimanLipi,Inter,sans-serif;font-weight:600;color:var(--mut)}
+ /* Header Center: Bismillah + Lora Minimal Watch + Calendar */
+ .hdr-center{grid-column:2;justify-self:center;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:3px;min-width:0}
+ .bismillah-txt{font-size:15px;font-weight:500;color:var(--mut);letter-spacing:.035em;user-select:none;line-height:1.2;transition:color .2s ease}
+ html[lang="bn"] .bismillah-txt{font-size:15px;font-family:SolaimanLipi,Inter,sans-serif;font-weight:600;color:var(--mut)}
  .hdr-watch{display:flex;flex-direction:column;align-items:center;text-align:center;user-select:none}
- .hw-time{font-size:22px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:.015em;color:var(--ink);line-height:1.15;font-family:Inter,SolaimanLipi,system-ui,monospace}
- .hw-meta{display:flex;align-items:center;justify-content:center;gap:7px;font-size:12.5px;color:var(--mut);margin-top:3px;white-space:nowrap}
- .hw-day{display:inline-block;padding:1px 7px;border-radius:999px;font-weight:600;font-size:11px;border:1px solid;transition:background .2s,color .2s}
+ .hw-time{font-size:clamp(28px,2.7vw,44px);font-weight:500;font-family:Lora,Georgia,serif;font-feature-settings:'tnum' 1;font-variant-numeric:tabular-nums;letter-spacing:.02em;color:var(--ink);line-height:1.1;min-width:8.5ch;text-align:center}
+ html[lang="bn"] .hw-time{font-family:SolaimanLipi,Lora,serif;font-weight:600}
+ .hw-meta{display:flex;align-items:center;justify-content:center;gap:8px;font-size:13.5px;color:var(--mut);margin-top:3px;white-space:nowrap}
+ .hw-day{display:inline-flex;align-items:center;justify-content:center;padding:3px 12px;border-radius:999px;font-weight:600;font-size:13.5px;border:1px solid;transition:background .2s,color .2s}
  .hw-date{font-weight:500;color:var(--ink)}
  .hw-sep{color:var(--line);font-weight:bold}
- .hw-bng{color:var(--mut);font-family:SolaimanLipi,Inter,sans-serif;font-size:12px}
+ .hw-bng{color:var(--mut);font-family:SolaimanLipi,Inter,sans-serif;font-size:13px}
  
- /* Header Right: Prayer Shortcut + Actions + Sync */
- .top #topR{display:flex;align-items:center;justify-content:flex-end;gap:8px;justify-self:end}
- .hdr-weather{display:inline-flex;align-items:center;gap:5px;padding:0 0 0 7px;background:transparent;border:0;border-left:1px solid var(--line);border-radius:0;font-size:13px;font-weight:500;color:var(--ink);cursor:default;user-select:none}
+ /* Header Right: Minimal Weather + Mosque Prayer + Actions + Sync */
+ .top #topR{grid-column:3;justify-self:end;display:flex;align-items:center;justify-content:flex-end;gap:8px}
+ .hdr-weather{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;background:var(--soft);border:1px solid color-mix(in srgb,var(--acc) 22%,transparent);border-radius:999px;font-size:13px;font-weight:600;color:var(--ink);cursor:pointer;user-select:none;transition:all .18s ease}
+ .hdr-weather:hover{border-color:var(--acc);transform:translateY(-1px);box-shadow:0 2px 8px rgba(0,0,0,0.06)}
  .hw-weather-sep{display:none}
- .hw-icon{font-size:19px;line-height:1}
+ .hw-icon{display:inline-flex;align-items:center;justify-content:center;color:var(--acc);line-height:1}
+ .hw-icon svg{display:block}
  .hdr-prayer-wrap{position:relative}
- .hdr-prayer-btn{display:grid;place-items:center;width:40px;height:40px;padding:0;background:var(--card);border:1px solid var(--line);border-radius:12px;cursor:pointer;transition:all .18s ease;user-select:none}
+ .hdr-prayer-btn{display:grid;place-items:center;width:44px;height:44px;min-width:44px;padding:0;background:var(--card);border:1px solid var(--line);border-radius:12px;cursor:pointer;transition:all .18s ease;user-select:none}
  .hdr-prayer-btn:hover,.hdr-prayer-btn:focus-visible{border-color:var(--acc);background:var(--soft);outline:2px solid var(--acc);outline-offset:2px}
- .hp-icon{width:20px;height:20px;display:block;stroke:var(--acc);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+ .hp-icon{width:22px;height:22px;display:block;stroke:var(--acc);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
  .hp-info{display:none}
- .hdr-prayer-popover{position:absolute;top:calc(100% + 8px);right:0;z-index:105;width:280px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;box-shadow:0 10px 30px rgba(0,0,0,0.14),0 2px 6px rgba(0,0,0,0.06);opacity:0;visibility:hidden;transform:translateY(-6px);transition:all .2s cubic-bezier(.16,1,.3,1);pointer-events:none}
- .hdr-prayer-wrap:hover .hdr-prayer-popover{opacity:1;visibility:visible;transform:translateY(0);pointer-events:auto}
+ .hdr-prayer-popover{position:absolute;top:calc(100% + 10px);right:0;z-index:105;width:320px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:0 12px 36px rgba(0,0,0,0.18),0 2px 8px rgba(0,0,0,0.08);opacity:0;visibility:hidden;transform:translateY(-6px);transition:all .2s cubic-bezier(.16,1,.3,1);pointer-events:none}
+ @media (hover:hover) and (pointer:fine){
+   .hdr-prayer-wrap:hover .hdr-prayer-popover{opacity:1;visibility:visible;transform:translateY(0);pointer-events:auto}
+ }
  .hdr-prayer-wrap:focus-within .hdr-prayer-popover{opacity:1;visibility:visible;transform:translateY(0);pointer-events:auto}
- .hp-pop-head{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:6px;margin-bottom:8px}
- .hp-pop-head b{font-size:13px;color:var(--ink)}
- .hp-pop-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
- .hp-pop-item{display:flex;justify-content:space-between;align-items:center;padding:5px 8px;background:var(--bg);border:1px solid var(--line);border-radius:8px;font-size:12px}
- .hp-pop-item.on{background:var(--soft);border-color:var(--acc);color:var(--acc);font-weight:700}
- .hp-pop-foot{margin-top:8px;border-top:1px dashed var(--line);padding-top:6px;text-align:center}
+ .hp-pop-head{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:10px}
+ .hp-pop-head b{font-size:13.5px;color:var(--ink)}
+ .hp-pop-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+ .hp-pop-item{display:flex;justify-content:space-between;align-items:center;padding:7px 9px;background:var(--bg);border:1px solid var(--line);border-radius:10px;font-size:12px;transition:all .15s ease}
+ .hp-pop-item.active{background:color-mix(in srgb,var(--pos) 14%,var(--card));border-color:var(--pos);color:var(--ink);font-weight:700;box-shadow:0 0 0 1px var(--pos) inset}
+ .hp-pop-item.upcoming{background:var(--soft);border-color:var(--acc);color:var(--acc);font-weight:600}
+ .hp-pop-foot{margin-top:10px;border-top:1px dashed var(--line);padding-top:8px;text-align:center}
  .top-actions{display:flex;align-items:center;gap:6px}
- .top .ic{height:40px;width:40px;display:grid;place-items:center;padding:0;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);transition:all .15s ease}
+ .top .ic{height:44px;width:44px;min-width:44px;display:grid;place-items:center;padding:0;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);transition:all .15s ease}
  .top .ic:hover,.top .ic:focus-visible{border-color:var(--acc);color:var(--acc);background:var(--soft);outline:none}
- .top-sync-pill{display:inline-flex;align-items:center;gap:7px;height:40px;padding:0 12px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:12px;font-weight:500;cursor:pointer;user-select:none;transition:all .15s ease}
+ .top-sync-pill{display:inline-flex;align-items:center;gap:7px;height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:13px;font-weight:500;cursor:pointer;user-select:none;transition:all .15s ease}
  .top-sync-pill:hover{border-color:var(--acc);transform:translateY(-1px)}
  .top-sync-pill .sdot{margin:0}
  .top-sync-ok{border-color:color-mix(in srgb,var(--pos) 28%,transparent);background:color-mix(in srgb,var(--pos) 8%,var(--card));color:var(--pos)}
@@ -356,18 +362,18 @@ th{color:var(--ink);font-weight:500}
  .top-sync-pend{border-color:color-mix(in srgb,var(--warn) 30%,transparent);background:color-mix(in srgb,var(--warn) 8%,var(--card));color:var(--warn)}
  .day-chip{display:inline-block;padding:2px 8px;border-radius:6px;font-size:13.5px;font-weight:600;vertical-align:middle}
 @media (min-width:981px) and (max-width:1120px){
- .top{grid-template-columns:minmax(190px,1fr) auto minmax(210px,1fr);gap:8px;padding:9px 12px}
- .top-brand{min-width:0;gap:8px}
+ .top{gap:12px;padding:10px 16px}
+ .top-brand{min-width:0;gap:10px}
  .top-brand-mark{width:44px;height:44px}
- .top-brand img{width:38px;height:34px}
- .shop-name-title{font-size:20px}
- html[lang="bn"] .shop-name-title{font-size:21px}
- .hw-meta{gap:4px;font-size:11.5px}
- .hw-day{padding:1px 5px;font-size:10px}
- .hw-bng{font-size:11px}
+ .top-brand img{width:38px;height:38px}
+ .shop-name-title{font-size:28px}
+ html[lang="bn"] .shop-name-title{font-size:26px}
+ .hw-meta{gap:6px;font-size:12.5px}
+ .hw-day{padding:2px 7px;font-size:11.5px}
+ .hw-bng{font-size:12px}
  .top #topR{gap:6px}
  .top-actions{gap:4px}
- .top-sync-pill{padding:0 8px}
+ .top-sync-pill{padding:0 10px}
 }
   .tabs{
    top: 50%;
@@ -400,84 +406,120 @@ th{color:var(--ink);font-weight:500}
  .wrap{max-width:1240px;padding-top:20px}}
 
 @media (max-width:980px){
- .top{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"brand tools" "center center";align-items:center;gap:8px 12px;padding:10px 16px;min-height:0}
- .top-brand{grid-area:brand;min-width:0;gap:8px}
- .top-brand-mark{width:36px;height:36px;background:transparent;border:0}
- .top-brand img{width:31px;height:29px}
- .shop-name-title{font-size:18px;overflow-wrap:anywhere}
- html[lang="bn"] .shop-name-title{font-size:19px}
- .top-brand-sub{margin-top:3px}
- .tsub-pill{display:inline-flex;align-items:center;padding:2px 8px;border-radius:999px;background:var(--soft);color:var(--acc);font-size:11px;font-weight:500;text-transform:capitalize;border:1px solid color-mix(in srgb,var(--acc) 22%,transparent)}
- .hdr-center{grid-area:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;width:100%;min-width:0;text-align:center}
- .bismillah-txt{font-size:12px;font-weight:500;color:var(--mut);letter-spacing:.035em;line-height:1.2}
+ .top{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"brand tools" "center center";align-items:center;gap:10px 14px;padding:12px 16px;min-height:auto}
+ .top-brand{grid-area:brand;min-width:0;gap:10px}
+ .top-brand-mark{width:40px;height:40px}
+ .top-brand img{width:36px;height:36px}
+ .shop-name-title{font-size:24px;overflow-wrap:anywhere}
+ html[lang="bn"] .shop-name-title{font-size:23px}
+ .top-brand-sub{margin-top:2px}
+ .tsub-pill{display:inline-flex;align-items:center;padding:2px 8px;border-radius:999px;background:var(--soft);color:var(--acc);font-size:11px;font-weight:600}
+ .hdr-center{grid-area:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;width:100%;min-width:0;text-align:center;margin-top:2px}
+ .bismillah-txt{font-size:13.5px;font-weight:500;color:var(--mut);letter-spacing:.035em;line-height:1.2}
  html[lang="bn"] .bismillah-txt{font-family:SolaimanLipi,Inter,sans-serif}
  .hdr-watch{display:flex;flex-direction:column;align-items:center;text-align:center;user-select:none}
- .hw-time{font-size:21px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:.015em;color:var(--ink);line-height:1.15}
- .hw-meta{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;white-space:normal;gap:3px 8px;margin-top:2px;font-size:12px;color:var(--mut)}
- .hw-day{display:inline-block;padding:1px 7px;border-radius:999px;font-weight:600;font-size:11px;border:1px solid}
+ .hw-time{font-size:32px;font-weight:500;font-family:Lora,Georgia,serif;font-feature-settings:'tnum' 1;font-variant-numeric:tabular-nums;line-height:1.15}
+ html[lang="bn"] .hw-time{font-family:SolaimanLipi,Lora,serif;font-weight:600}
+ .hw-meta{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;white-space:normal;gap:4px 8px;margin-top:2px;font-size:12.5px;color:var(--mut)}
+ .hw-day{display:inline-block;padding:2px 8px;border-radius:999px;font-weight:600;font-size:11.5px;border:1px solid}
  .hw-date{font-weight:500;color:var(--ink)}
  .hw-sep{color:var(--line);font-weight:bold}
  .hw-bng{color:var(--mut);font-family:SolaimanLipi,Inter,sans-serif;font-size:12px}
- .hdr-weather{display:inline-flex;align-items:center;gap:5px;color:var(--ink);font-size:13px;font-weight:500;user-select:none}
+ .hdr-weather{display:inline-flex;align-items:center;gap:5px;color:var(--ink);font-size:13px;font-weight:600;user-select:none}
  .hw-icon{font-size:18px;line-height:1}
  .hdr-prayer-wrap{position:relative}
- .hdr-prayer-btn{display:grid;place-items:center;width:38px;height:38px;min-width:38px;padding:0;background:var(--card);border:1px solid var(--line);border-radius:12px;cursor:pointer;transition:all .18s ease}
+ .hdr-prayer-btn{display:grid;place-items:center;width:40px;height:40px;min-width:40px;padding:0;background:var(--card);border:1px solid var(--line);border-radius:12px;cursor:pointer;transition:all .18s ease}
  .hdr-prayer-btn:hover,.hdr-prayer-btn:focus-visible{border-color:var(--acc);background:var(--soft);outline:2px solid var(--acc);outline-offset:2px}
- .hp-icon{width:20px;height:20px;display:block;stroke:var(--acc);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
- .hdr-prayer-popover{position:absolute;top:calc(100% + 8px);right:0;z-index:105;width:min(280px,calc(100vw - 24px));background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;box-shadow:0 10px 30px rgba(0,0,0,.14);opacity:0;visibility:hidden;transform:translateY(-6px);transition:all .2s ease;pointer-events:none}
+ .hp-icon{width:20px;height:20px;display:block;stroke:var(--acc);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+ .hdr-prayer-popover{position:absolute;top:calc(100% + 8px);right:0;z-index:105;width:min(320px,calc(100vw - 24px));background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px;box-shadow:0 12px 36px rgba(0,0,0,.18);opacity:0;visibility:hidden;transform:translateY(-6px);transition:all .2s ease;pointer-events:none}
  .hdr-prayer-wrap:hover .hdr-prayer-popover,.hdr-prayer-wrap:focus-within .hdr-prayer-popover{opacity:1;visibility:visible;transform:translateY(0);pointer-events:auto}
  .hp-pop-head{display:flex;justify-content:space-between;align-items:center;gap:6px;border-bottom:1px solid var(--line);padding-bottom:6px;margin-bottom:8px}
  .hp-pop-head b{font-size:13px;color:var(--ink)}
  .hp-pop-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
- .hp-pop-item{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:5px 8px;background:var(--bg);border:1px solid var(--line);border-radius:8px;font-size:12px}
- .hp-pop-item.on{background:var(--soft);border-color:var(--acc);color:var(--acc);font-weight:600}
+ .hp-pop-item{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:6px 8px;background:var(--bg);border:1px solid var(--line);border-radius:8px;font-size:12px}
+ .hp-pop-item.active{background:color-mix(in srgb,var(--pos) 14%,var(--card));border-color:var(--pos);color:var(--ink);font-weight:700}
+ .hp-pop-item.upcoming{background:var(--soft);border-color:var(--acc);color:var(--acc);font-weight:600}
  .hp-pop-foot{margin-top:8px;border-top:1px dashed var(--line);padding-top:6px;text-align:center}
  .top #topR{grid-area:tools;gap:5px}
  .top-actions{gap:4px}
- .top .ic{width:38px;height:38px;min-width:38px;padding:0;border-radius:12px;background:var(--card);color:var(--ink)}
- .top-sync-pill{position:relative;display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 10px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:12px;font-weight:500;cursor:pointer;user-select:none}
+ .top .ic{width:40px;height:40px;min-width:40px;padding:0;border-radius:12px;background:var(--card);color:var(--ink)}
+ .top-sync-pill{position:relative;display:inline-flex;align-items:center;gap:7px;height:40px;padding:0 10px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:12px;font-weight:500;cursor:pointer;user-select:none}
  .top-sync-ok{border-color:color-mix(in srgb,var(--pos) 28%,transparent);background:color-mix(in srgb,var(--pos) 8%,var(--card));color:var(--pos)}
  .top-sync-bad{border-color:color-mix(in srgb,var(--neg) 30%,transparent);background:color-mix(in srgb,var(--neg) 8%,var(--card));color:var(--neg)}
  .top-sync-pend{border-color:color-mix(in srgb,var(--warn) 30%,transparent);background:color-mix(in srgb,var(--warn) 8%,var(--card));color:var(--warn)}
 }
 @media (max-width:520px){
- .top{padding:8px 12px;gap:7px 8px}
+ .top{padding:10px 12px;gap:8px 10px;margin:8px auto 12px;width:calc(100% - 16px);border-radius:16px}
  .top-brand{gap:6px}
- .top-brand-mark{width:30px;height:30px}
- .top-brand img{width:26px;height:25px}
- .shop-name-title{font-size:15px;line-height:1.12}
- html[lang="bn"] .shop-name-title{font-size:16px}
+ .top-brand-mark{width:32px;height:32px}
+ .top-brand img{width:28px;height:28px}
+ .shop-name-title{font-size:18px;line-height:1.15}
+ html[lang="bn"] .shop-name-title{font-size:18px}
  .top-brand-sub{margin-top:2px}
  .tsub-pill{padding:1px 6px;font-size:10px}
  .top #topR{gap:3px}
  .top-actions{gap:3px}
- .top .ic,.hdr-prayer-btn{width:34px;height:34px;min-width:34px;padding:0;border-radius:10px}
- .top-sync-pill{width:34px;height:34px;padding:0;justify-content:center;border-radius:10px}
+ .top .ic,.hdr-prayer-btn{width:36px;height:36px;min-width:36px;padding:0;border-radius:10px}
+ .top-sync-pill{width:36px;height:36px;padding:0;justify-content:center;border-radius:10px}
  .top-sync-pill>span{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
  .top-sync-pill .sdot{margin:0}
- .hw-time{font-size:19px}
+ .hw-time{font-size:24px}
  .hw-meta{font-size:11.5px;gap:3px 6px}
  .hw-bng{font-size:11px}
- .hw-day{font-size:10px}
- .hdr-weather{font-size:12px;padding-left:5px}
+ .hw-day{font-size:10.5px}
+ .hdr-weather{font-size:12px;padding:2px 6px}
  .hw-icon{font-size:16px}
 }
 @media (max-width:360px){
- .top{padding-left:9px;padding-right:9px;gap:6px}
+ .top{padding-left:8px;padding-right:8px;gap:6px}
  .top-brand{gap:4px}
  .top-brand-mark{width:26px;height:26px}
  .top-brand img{width:23px;height:22px}
- .shop-name-title{font-size:13.5px}
- html[lang="bn"] .shop-name-title{font-size:14px}
+ .shop-name-title{font-size:15px}
+ html[lang="bn"] .shop-name-title{font-size:15px}
  .tsub-pill{font-size:9px}
  .top #topR{gap:2px}
  .top-actions{gap:2px}
- .top .ic,.hdr-prayer-btn{width:31px;height:31px;min-width:31px;padding:0}
- .top-sync-pill{width:31px;height:31px}
+ .top .ic,.hdr-prayer-btn{width:32px;height:32px;min-width:32px;padding:0}
+ .top-sync-pill{width:32px;height:32px}
  .hw-meta{font-size:10.5px;gap:2px 5px}
- .hw-time{font-size:18px}
+ .hw-time{font-size:21px}
 }
 @media print{body{background:#fff!important;padding-left:0!important}}
+
+/* Weather & Air Quality Card Modal Styles */
+.wm-card{display:flex;flex-direction:column;gap:12px}
+.wm-hero{background:linear-gradient(135deg,color-mix(in srgb,var(--acc) 14%,var(--card)),var(--card));border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between}
+.wm-hero-left{display:flex;flex-direction:column}
+.wm-temp{font-size:36px;font-weight:700;font-family:Lora,Georgia,serif;font-feature-settings:'tnum' 1;font-variant-numeric:tabular-nums;color:var(--ink);line-height:1}
+.wm-cond{font-size:14.5px;font-weight:600;color:var(--ink);margin-top:4px}
+.wm-sub{font-size:12px;color:var(--mut);margin-top:2px}
+.wm-hero-icon{display:flex;align-items:center;justify-content:center;color:var(--acc)}
+.wm-hero-icon svg{width:54px;height:54px}
+.wm-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+@media (max-width:560px){.wm-grid{grid-template-columns:1fr 1fr}}
+.wm-metric{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 10px;text-align:center}
+.wm-metric-val{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--ink);margin:2px 0}
+.wm-metric-lbl{font-size:11px;color:var(--mut)}
+.wm-aqi-box{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.wm-aqi-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px;flex-wrap:wrap}
+.wm-aqi-pill{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:700}
+.wm-aqi-meta{display:flex;gap:14px;font-size:12px;color:var(--mut);flex-wrap:wrap}
+
+/* Searchable Location Picker in Modals */
+.loc-panel{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px;margin-bottom:12px}
+.loc-bar{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:13px;font-weight:600}
+.loc-bar:hover{border-color:var(--acc)}
+.loc-dropdown{margin-top:8px}
+.loc-search-inp{width:100%;height:36px;padding:0 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:13px;box-sizing:border-box;margin-bottom:6px}
+.loc-scroll-list{max-height:160px;overflow-y:auto;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+.loc-group-title{padding:4px 8px;font-size:10.5px;font-weight:700;text-transform:uppercase;color:var(--mut);background:var(--bg);position:sticky;top:0;z-index:2}
+.loc-option-btn{width:100%;text-align:left;padding:6px 10px;background:none;border:none;border-bottom:1px solid var(--line);color:var(--ink);font-size:12.5px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.loc-option-btn:last-child{border-bottom:none}
+.loc-option-btn:hover{background:var(--soft);color:var(--acc)}
+.loc-option-btn.selected{background:var(--soft);color:var(--acc);font-weight:700}
+.loc-adv-link{font-size:11.5px;color:var(--acc);cursor:pointer;margin-top:6px;display:inline-block}
+.loc-adv-box{margin-top:6px;padding:8px;background:var(--card);border:1px solid var(--line);border-radius:8px;font-size:12px}
 #mb{display:none;padding:0 9px}
 .dr[hidden]{display:none}.dr{position:fixed;inset:0;z-index:30}.drb{position:absolute;inset:0;background:rgba(0,0,0,.36)}
 .drp{position:absolute;left:0;top:0;bottom:0;width:min(266px,88vw);background:var(--card);padding:calc(14px + env(safe-area-inset-top,0px)) 18px 18px;overflow:auto;animation:drin .18s ease}
@@ -492,9 +534,8 @@ th{color:var(--ink);font-weight:500}
 .pct{display:grid;grid-template-columns:1fr 1fr;gap:10px}.pt2{display:flex;gap:10px;align-items:center;border-radius:8px;padding:10px 12px;min-width:0}.pt2>div{min-width:0}.pt2 b{display:block;font-size:12px;font-weight:500}.pt2 small{display:block;font-size:12px;color:var(--mut);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pti{flex:none;width:38px;height:38px;border-radius:4px;background:rgba(127,127,127,.14);display:flex;align-items:center;justify-content:center}.pt2.a{background:var(--t2)}.pt2.b{background:var(--t3)}.pt2.c{background:var(--t1)}.pt2.d{background:var(--t4)}
 @media (max-width:899px){.pc{grid-template-columns:1fr}}
-@font-face{font-family:SolaimanLipi;src:url(SolaimanLipi-Normal.ttf) format("truetype");font-weight:400;font-display:swap}
-@font-face{font-family:SolaimanLipi;src:url(SolaimanLipi-Bold.ttf) format("truetype");font-weight:600 700;font-display:swap}
-@font-face{font-family:SolaimanLipi;src:url(SolaimanLipi-Thin.ttf) format("truetype");font-weight:100 300;font-display:swap}
+@font-face{font-family:'SolaimanLipi';src:url('SolaimanLipi.ttf') format('truetype');font-weight:100 900;font-display:swap}
+@font-face{font-family:'Lora';src:url('Lora.woff2') format('woff2');font-weight:400 700;font-display:swap}
 html[lang=bn] body{font-family:SolaimanLipi,Inter,system-ui,sans-serif}
 body.kp #mS{display:none}body.ro #pdNew,body.ro #pdL [data-ad],body.ro #pdL [data-ed]{display:none}
 @media (min-width:900px){.tabs::before{content:"Nur Computer & Stationery"!important;font-size:21px!important;line-height:1.25!important}html[lang=bn] .tabs::before{content:"নুর কম্পিউটার এন্ড স্টেশনারী"!important}}
@@ -894,14 +935,11 @@ body:has(#vHome.on){background:linear-gradient(180deg,var(--dhg) 0,var(--bg) 340
 .tclk[hidden]{display:none}
 .tclk b{font-size:14px;font-weight:700;font-variant-numeric:tabular-nums}
 .tclk small{font-size:11px;color:var(--mut)}
-.top #sync{height:32px;display:inline-flex;align-items:center;justify-content:center}
 .top .tt{min-width:0}
 @media(max-width:899px){
  .top{gap:6px;padding:10px 10px}
  .top .tt{font-size:13.5px;line-height:1.2}
- .top #sync{font-size:0;width:36px;padding:0}
- .top #sync .sdot{margin:0}
- .top .ic,.top #sync{flex:none}
+ .top .ic{flex:none}
  .tclk{margin-right:4px}
 }
 @media(max-width:520px){.top>img{display:none!important}.tclk small{display:none}}
@@ -1076,6 +1114,7 @@ body.locked .tab-bug-fab,#lk:not([hidden]) ~ .tab-bug-fab{display:none !importan
 </style>
 <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0F766E"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes">
 <script src="native-bridge.js"></script><script src="config.js"></script>
+<link rel="preload" href="Lora.woff2" as="font" type="font/woff2" crossorigin>
 </head>
 <body>
 
@@ -1101,8 +1140,8 @@ body.locked .tab-bug-fab,#lk:not([hidden]) ~ .tab-bug-fab{display:none !importan
         <span class="hw-sep">·</span>
         <span class="hw-bng" id="hwBng"></span>
         <span class="hw-sep hw-weather-sep" aria-hidden="true">·</span>
-        <span class="hdr-weather" id="hdrWeather" title="Dhaka Weather">
-          <span class="hw-icon" id="hwIcon">🌤️</span>
+        <span class="hdr-weather" id="hdrWeather" title="Click for weather & air quality" role="button" tabindex="0">
+          <span class="hw-icon" id="hwIcon"></span>
           <span class="hw-temp" id="hwTemp">--°C</span>
         </span>
       </div>
@@ -1111,7 +1150,7 @@ body.locked .tab-bug-fab,#lk:not([hidden]) ~ .tab-bug-fab{display:none !importan
   <div class="sp" id="topR">
     <div class="hdr-prayer-wrap" id="hdrPrayerWrap">
       <button type="button" class="hdr-prayer-btn" id="hdrPrayerBtn" aria-label="Prayer Times" aria-haspopup="dialog" title="Click to view full prayer times">
-        <svg class="hp-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h18M5 21v-9l7-5 7 5v9M8 12h.01M16 12h.01M10 21v-4a2 2 0 0 1 4 0v4M12 7V3m-2 2 2-2 2 2"/></svg>
+        <svg class="hp-icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 21h20M7 21v-8c0-3.2 2.2-6 5-6.8 2.8.8 5 3.6 5 6.8v8M10 21v-3.8a2 2 0 0 1 4 0V21M12 2.5a1.8 1.8 0 1 0 1.5 1.7M4 21V9.5L5 7l1 2.5V21M18 21V9.5L19 7l1 2.5V21"/></svg>
       </button>
       <div class="hdr-prayer-popover" id="hdrPrayerPopover"></div>
     </div>
@@ -1612,7 +1651,6 @@ function imgCap(c,q){var u=c.toDataURL('image/jpeg',q);while(u.length>24000&&q>.
 const CATS={Sale:['Printing','Stationery','Computer Service','Other'].concat(Object.keys(WLTC.Sale)),Purchase:['Stock','Rent','Salary','Utilities','Transport','Other'].concat(Object.keys(WLTC.Purchase))};
 
 
-
 /* --- Module: 03-accounts.js --- */
 function renderAccPresets(){
   const el=$('accPresets');
@@ -1986,7 +2024,12 @@ function setSt(x){st=x;var c=x==='ok'?'ok':x==='pend'?'pend':(x==='offl'||x==='c
   var txt=S.lang==='bn'?labBn:lab;
   var syncEl=$('sync'), topSync=$('topSync');
   if(syncEl){
-    syncEl.innerHTML='<i class="sdot '+c+'" aria-hidden="true"></i>'+txt;
+    var descEl = syncEl.querySelector ? syncEl.querySelector('.more-item-text small') : null;
+    if(descEl){
+      descEl.textContent = txt;
+    } else {
+      syncEl.innerHTML='<i class="sdot '+c+'" aria-hidden="true"></i>'+txt;
+    }
     syncEl.setAttribute('aria-label',lb('Sync status: ','সিঙ্ক অবস্থা: ')+txt);
     syncEl.title=c==='ok'?'All changes are synced':c==='pend'?'Saving changes…':x==='conf'?'Sync conflict — tap to resolve':c==='bad'?'Offline — will sync when back online':'Sync is not set up on this device';
   }
@@ -1996,16 +2039,36 @@ function setSt(x){st=x;var c=x==='ok'?'ok':x==='pend'?'pend':(x==='offl'||x==='c
     topSync.title=syncEl?syncEl.title:'';
   }
 }
+let isManualSyncing = false;
+async function triggerSync(){
+  if(isManualSyncing || busy) return;
+  if(st === 'conf'){
+    ask('Sync conflict', '<p>This device and the Google Sheet both have new changes. Choose which to keep.</p><div class="oa" style="justify-content:flex-start"><button class="ghost" id="scp">Use Sheet data</button><button class="ghost" id="scf">Keep this device</button></div>', ()=>{}, 'Close');
+    return;
+  }
+  if(!SY()){
+    if($('set')) $('set').onclick();
+    return;
+  }
+  isManualSyncing = true;
+  setSt('pend');
+  if(typeof ltoast === 'function') ltoast(lb('Syncing with Google…', 'গুগলের সাথে সিঙ্ক হচ্ছে…'));
+  try{
+    await push(true);
+    await pull(true);
+  }catch(err){
+    console.error('Manual sync failed:', err);
+    setSt('offl');
+  }finally{
+    isManualSyncing = false;
+  }
+}
+
 if(typeof document!=='undefined'){
   document.addEventListener('click',function(e){
     var b=e.target.closest('#topSync');
     if(!b)return;
-    if(SY()){
-      try{pull(true)}catch(err){}
-      if(typeof ltoast==='function')ltoast(lb('Checking Google sync…','গুগল সিঙ্ক পরীক্ষা হচ্ছে…'));
-    }else{
-      if($('set'))$('set').onclick();
-    }
+    triggerSync();
   });
 }
 
@@ -2072,8 +2135,7 @@ async function pull(force){
     if(r.rev>(S.synced||0)){if(isDirty()){if(mergeRemoteFrom(r))push();else setSt('conf');return}applyRemote(r)}
     else if(isDirty()||(!r.rev&&S.entries.length))push();else setSt('ok');importPos();importCatalog()
   }catch(e){setSt('offl')}}
-$('sync').onclick=()=>{
-  if(st==='conf')ask('Sync conflict','<p>This device and the Google Sheet both have new changes. Choose which to keep.</p><div class="oa" style="justify-content:flex-start"><button class="ghost" id="scp">Use Sheet data</button><button class="ghost" id="scf">Keep this device</button></div>',()=>{},'Close');else if(SY()){setSt('pend');push(true).then(()=>pull());}else setSt('off')};
+if($('sync')) $('sync').onclick = triggerSync;
 $('ob').addEventListener('click',e=>{if(e.target.id!=='sfr')return;
   ask('Start fresh','<p>Daily entries and bills are cleared from the active day view. Cash and wallets carry forward, ledger history and stock are retained, and an Admin reconciliation item is created.</p><div class="f"><label>Admin PIN</label><input id="sfp" type="password" inputmode="numeric" autocomplete="off"></div>',async()=>{
     if(!(await ck(S.users.admin,$('sfp').value))){$('sfp').value='';$('sfp').placeholder='Wrong PIN';return false}
@@ -2107,7 +2169,6 @@ function resume(){try{const q=JSON.parse(localStorage.getItem(SESS)||'null');if(
 async function start(){if(ENC&&!SY()){lockUI('connect');return}if(!S.users&&SY()){try{const r=await getRemote();if(r.ok&&r.rev&&r.state)applyRemote(r)}catch(e){}}if(S.users&&resume())return;S.users?lockUI('login'):lockUI('first')}
 
 
-
 /* --- Module: 04-sync-handlers.js --- */
 /* ---------- merge ---------- */
 function mergeById(L,R){const m=new Map();(R||[]).forEach(x=>m.set(x.id,x));(L||[]).forEach(x=>{const o=m.get(x.id);if(!o||(x.u||0)>(o.u||0))m.set(x.id,x)});return[...m.values()]}
@@ -2138,7 +2199,6 @@ async function importCatalog(){if(S.catImported||S.products.length||!SY())return
   try{const r=await(await fetch(S.sync.url+(S.sync.url.includes('?')?'&':'?')+'action=catalog&key='+encodeURIComponent(S.sync.key))).json();
     if(r.ok&&r.items&&r.items.length){r.items.filter(p=>!p.del).forEach(p=>S.products.push({id:p.id,name:p.name,barcode:p.barcode||'',buy:0,price:+p.price||0,img:''}));S.catImported=1;save();if(U)POS.refresh()}
     else{S.catImported=1;persist()}}catch(e){}}
-
 
 
 /* --- Module: 05-shell.js --- */
@@ -2353,7 +2413,7 @@ prsSettingBtn.className = 'more-item';
 prsSettingBtn.id = 'prsSettingBtn';
 prsSettingBtn.onclick = function() { if (isA()) openPresetSettings(); };
 
-$('topR').append($('sync'));$('moreList').append($('lang'),sndBtn,secCardBtn,prsSettingBtn,bugBtn,$('set'),$('lockb'));
+$('moreList').append($('sync'),$('lang'),sndBtn,secCardBtn,prsSettingBtn,bugBtn,$('set'),$('lockb'));
 function updateSndBtn(){
   makeMoreItem(sndBtn, '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>', lb('Sound Effects','সাউন্ড ইফেক্ট'), S.sound ? lb('Enabled (ON)','চালু আছে') : lb('Disabled (OFF)','বন্ধ আছে'));
 }
@@ -2361,6 +2421,10 @@ sndBtn.onclick=function(){S.sound=!S.sound;save();updateSndBtn();if(S.sound){try
 secCardBtn.onclick=function(){if(isA())openCardSectionSettings()};
 function updateMoreTab(){
   updateSndBtn();
+  if($('sync')){
+    var syncTxt=st==='ok'?lb('Synced with Cloud','ক্লাউডে সিঙ্ক সম্পন্ন'):st==='pend'?lb('Syncing in progress…','সিঙ্ক চলমান…'):st==='offl'?lb('Offline — queued','অফলাইন'):lb('Not Configured','সিঙ্ক কনফিগার নেই');
+    makeMoreItem($('sync'), '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>', lb('Cloud Sync Status','ক্লাউড সিঙ্ক অবস্থা'), syncTxt);
+  }
   makeMoreItem(bugBtn, '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><rect width="8" height="14" x="8" y="6" rx="4"/><path d="m19 7-3 2"/><path d="m5 7 3 2"/><path d="m19 19-3-2"/><path d="m5 19 3-2"/><path d="M20 13h-4"/><path d="M4 13h4"/><path d="m10 4 1 2"/><path d="m14 4-1 2"/></svg>', lb('Bug Report & Support','সহায়তা ও সমস্যা রিপোর্ট'), lb('WhatsApp support (+8801765420566)','হোয়াটসঅ্যাপ হেল্পলাইন'));
   makeMoreItem($('lang'), '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20M2 12h20"/></svg>', lb('Language','ভাষা পরিবর্তন'), S.lang==='bn' ? 'বাংলা (Bangla)' : 'English');
   makeMoreItem($('set'), '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>', lb('System Settings','সিস্টেম সেটিংস'), lb('Sync passphrase, security & cash','সিঙ্ক, নিরাপত্তা ও পিন'));
@@ -2499,7 +2563,6 @@ function refreshCurrentView(){
 }
 $('refresh').onclick=refreshCurrentView;
 function setRefreshLabel(){var t=lb('Refresh current view','বর্তমান ট্যাব রিফ্রেশ করুন');$('refresh').title=t;$('refresh').setAttribute('aria-label',t)}
-
 
 
 /* --- Module: 05c-bug-v12.js --- */
@@ -2866,17 +2929,662 @@ function prange(p){
   return [iso(a), iso(t)];
 }
 
-/* ---------- Salat Times & Alarm Engine ---------- */
+/* ==========================================================================
+   LOCATIONS, WEATHER, AIR QUALITY & ACTIVE SALAT ENGINE
+   ========================================================================== */
+
+const BD_DIVISIONS = [
+  { id: 'dhaka', en: 'Dhaka Division', bn: 'ঢাকা বিভাগ' },
+  { id: 'chattogram', en: 'Chattogram Division', bn: 'চট্টগ্রাম বিভাগ' },
+  { id: 'sylhet', en: 'Sylhet Division', bn: 'সিলেট বিভাগ' },
+  { id: 'rajshahi', en: 'Rajshahi Division', bn: 'রাজশাহী বিভাগ' },
+  { id: 'khulna', en: 'Khulna Division', bn: 'খুলনা বিভাগ' },
+  { id: 'barishal', en: 'Barishal Division', bn: 'বরিশাল বিভাগ' },
+  { id: 'rangpur', en: 'Rangpur Division', bn: 'রংপুর বিভাগ' },
+  { id: 'mymensingh', en: 'Mymensingh Division', bn: 'ময়মনসিংহ বিভাগ' }
+];
+
+const BD_DISTRICTS = [
+  // Dhaka Division
+  { div: 'dhaka', en: 'Dhaka', bn: 'ঢাকা', lat: 23.8103, lon: 90.4125 },
+  { div: 'dhaka', en: 'Gazipur', bn: 'গাজীপুর', lat: 24.0023, lon: 90.4264 },
+  { div: 'dhaka', en: 'Narayanganj', bn: 'নারায়ণগঞ্জ', lat: 23.6238, lon: 90.5000 },
+  { div: 'dhaka', en: 'Tangail', bn: 'টাঙ্গাইল', lat: 24.2513, lon: 89.9167 },
+  { div: 'dhaka', en: 'Narsingdi', bn: 'নরসিংদী', lat: 23.9197, lon: 90.7206 },
+  { div: 'dhaka', en: 'Faridpur', bn: 'ফরিদপুর', lat: 23.6071, lon: 89.8426 },
+  { div: 'dhaka', en: 'Gopalganj', bn: 'গোপালগঞ্জ', lat: 23.0051, lon: 89.8266 },
+  { div: 'dhaka', en: 'Kishoreganj', bn: 'কিশোরগঞ্জ', lat: 24.4449, lon: 90.7766 },
+  { div: 'dhaka', en: 'Madaripur', bn: 'মাদারীপুর', lat: 23.1641, lon: 90.1897 },
+  { div: 'dhaka', en: 'Manikganj', bn: 'মানিকগঞ্জ', lat: 23.8617, lon: 90.0003 },
+  { div: 'dhaka', en: 'Munshiganj', bn: 'মুন্সীগঞ্জ', lat: 23.5422, lon: 90.5305 },
+  { div: 'dhaka', en: 'Rajbari', bn: 'রাজবাড়ী', lat: 23.7574, lon: 89.6445 },
+  { div: 'dhaka', en: 'Shariatpur', bn: 'শরীয়তপুর', lat: 23.2423, lon: 90.3540 },
+
+  // Chattogram Division
+  { div: 'chattogram', en: 'Chattogram', bn: 'চট্টগ্রাম', lat: 22.3569, lon: 91.7832 },
+  { div: 'chattogram', en: "Cox's Bazar", bn: "কক্সবাজার", lat: 21.4272, lon: 92.0058 },
+  { div: 'chattogram', en: 'Cumilla', bn: 'কুমিল্লা', lat: 23.4607, lon: 91.1809 },
+  { div: 'chattogram', en: 'Feni', bn: 'ফেনী', lat: 23.0159, lon: 91.3976 },
+  { div: 'chattogram', en: 'Brahmanbaria', bn: 'ব্রাহ্মণবাড়িয়া', lat: 23.9571, lon: 91.1119 },
+  { div: 'chattogram', en: 'Chandpur', bn: 'চাঁদপুর', lat: 23.2333, lon: 90.6667 },
+  { div: 'chattogram', en: 'Noakhali', bn: 'নোয়াখালী', lat: 22.8696, lon: 91.0995 },
+  { div: 'chattogram', en: 'Lakshmipur', bn: 'লক্ষ্মীপুর', lat: 22.9425, lon: 90.8412 },
+  { div: 'chattogram', en: 'Rangamati', bn: 'রাঙ্গামাটি', lat: 22.6533, lon: 92.1753 },
+  { div: 'chattogram', en: 'Bandarban', bn: 'বান্দরবান', lat: 22.1953, lon: 92.2184 },
+  { div: 'chattogram', en: 'Khagrachhari', bn: 'খাগড়াছড়ি', lat: 23.1193, lon: 91.9847 },
+
+  // Sylhet Division
+  { div: 'sylhet', en: 'Sylhet', bn: 'সিলেট', lat: 24.8949, lon: 91.8687 },
+  { div: 'sylhet', en: 'Moulvibazar', bn: 'মৌলভীবাজার', lat: 24.4829, lon: 91.7774 },
+  { div: 'sylhet', en: 'Habiganj', bn: 'হবিগঞ্জ', lat: 24.3749, lon: 91.4155 },
+  { div: 'sylhet', en: 'Sunamganj', bn: 'সুনামগঞ্জ', lat: 25.0658, lon: 91.3950 },
+
+  // Rajshahi Division
+  { div: 'rajshahi', en: 'Rajshahi', bn: 'রাজশাহী', lat: 24.3745, lon: 88.6042 },
+  { div: 'rajshahi', en: 'Bogura', bn: 'বগুড়া', lat: 24.8465, lon: 89.3777 },
+  { div: 'rajshahi', en: 'Pabna', bn: 'পাবনা', lat: 24.0064, lon: 89.2483 },
+  { div: 'rajshahi', en: 'Sirajganj', bn: 'সিরাজগঞ্জ', lat: 24.4534, lon: 89.7008 },
+  { div: 'rajshahi', en: 'Naogaon', bn: 'নওগাঁ', lat: 24.7936, lon: 88.9318 },
+  { div: 'rajshahi', en: 'Natore', bn: 'নাটোর', lat: 24.4206, lon: 88.9324 },
+  { div: 'rajshahi', en: 'Chapainawabganj', bn: 'চাঁপাইনবাবগঞ্জ', lat: 24.5965, lon: 88.2775 },
+  { div: 'rajshahi', en: 'Joypurhat', bn: 'জয়পুরহাট', lat: 25.1015, lon: 89.0270 },
+
+  // Khulna Division
+  { div: 'khulna', en: 'Khulna', bn: 'খুলনা', lat: 22.8456, lon: 89.5403 },
+  { div: 'khulna', en: 'Jashore', bn: 'যশোর', lat: 23.1664, lon: 89.2138 },
+  { div: 'khulna', en: 'Kushtia', bn: 'কুষ্টিয়া', lat: 23.9013, lon: 89.1205 },
+  { div: 'khulna', en: 'Satkhira', bn: 'সাতক্ষীরা', lat: 22.7185, lon: 89.0705 },
+  { div: 'khulna', en: 'Bagerhat', bn: 'বাগেরহাট', lat: 22.6516, lon: 89.7859 },
+  { div: 'khulna', en: 'Chuadanga', bn: 'চুয়াডাঙ্গা', lat: 23.6402, lon: 88.8418 },
+  { div: 'khulna', en: 'Jhenaidah', bn: 'ঝিনাইদহ', lat: 23.5450, lon: 89.1726 },
+  { div: 'khulna', en: 'Magura', bn: 'মাগুরা', lat: 23.4873, lon: 89.4198 },
+  { div: 'khulna', en: 'Meherpur', bn: 'মেহেরপুর', lat: 23.7622, lon: 88.6318 },
+  { div: 'khulna', en: 'Narail', bn: 'নড়াইল', lat: 23.1725, lon: 89.5127 },
+
+  // Barishal Division
+  { div: 'barishal', en: 'Barishal', bn: 'বরিশাল', lat: 22.7010, lon: 90.3535 },
+  { div: 'barishal', en: 'Bhola', bn: 'ভোলা', lat: 22.6859, lon: 90.6481 },
+  { div: 'barishal', en: 'Patuakhali', bn: 'পটুয়াখালী', lat: 22.3596, lon: 90.3299 },
+  { div: 'barishal', en: 'Pirojpur', bn: 'পিরোজপুর', lat: 22.5841, lon: 89.9720 },
+  { div: 'barishal', en: 'Barguna', bn: 'বরগুনা', lat: 22.1570, lon: 90.1256 },
+  { div: 'barishal', en: 'Jhalokati', bn: 'ঝালকাঠি', lat: 22.6406, lon: 90.1987 },
+
+  // Rangpur Division
+  { div: 'rangpur', en: 'Rangpur', bn: 'রংপুর', lat: 25.7439, lon: 89.2752 },
+  { div: 'rangpur', en: 'Dinajpur', bn: 'দিনাজপুর', lat: 25.6217, lon: 88.6355 },
+  { div: 'rangpur', en: 'Gaibandha', bn: 'গাইবান্ধা', lat: 25.3288, lon: 89.5403 },
+  { div: 'rangpur', en: 'Kurigram', bn: 'কুড়িগ্রাম', lat: 25.8054, lon: 89.6362 },
+  { div: 'rangpur', en: 'Lalmonirhat', bn: 'লালমনিরহাট', lat: 25.9923, lon: 89.2847 },
+  { div: 'rangpur', en: 'Nilphamari', bn: 'নীলফামারী', lat: 25.9318, lon: 88.8560 },
+  { div: 'rangpur', en: 'Panchagarh', bn: 'পঞ্চগড়', lat: 26.3411, lon: 88.5542 },
+  { div: 'rangpur', en: 'Thakurgaon', bn: 'ঠাকুরগাঁও', lat: 26.0337, lon: 88.4617 },
+
+  // Mymensingh Division
+  { div: 'mymensingh', en: 'Mymensingh', bn: 'ময়মনসিংহ', lat: 24.7471, lon: 90.4203 },
+  { div: 'mymensingh', en: 'Jamalpur', bn: 'জামালপুর', lat: 24.9375, lon: 89.9378 },
+  { div: 'mymensingh', en: 'Netrokona', bn: 'নেত্রকোণা', lat: 24.8709, lon: 90.7279 },
+  { div: 'mymensingh', en: 'Sherpur', bn: 'শেরপুর', lat: 25.0205, lon: 90.0153 }
+];
+
+function getLocation(){
+  if(typeof S !== 'undefined' && S && S.location && S.location.en) return S.location;
+  var def = { div: 'dhaka', en: 'Dhaka', bn: 'ঢাকা', lat: 23.8103, lon: 90.4125 };
+  try{
+    var saved = localStorage.getItem('ncs_location_v1');
+    if(saved){
+      var parsed = JSON.parse(saved);
+      if(parsed && parsed.en && parsed.lat){
+        if(typeof S !== 'undefined' && S) S.location = parsed;
+        return parsed;
+      }
+    }
+  }catch(e){}
+  if(typeof S !== 'undefined' && S) S.location = def;
+  return def;
+}
+
+function setLocation(loc){
+  if(!loc || !loc.lat) return;
+  if(typeof S !== 'undefined' && S) S.location = loc;
+  try{ localStorage.setItem('ncs_location_v1', JSON.stringify(loc)); }catch(e){}
+  try{
+    sessionStorage.removeItem('ncs_weather_v1');
+    sessionStorage.removeItem('ncs_salat_v1');
+    sessionStorage.removeItem('ncs_aqi_v1');
+  }catch(e){}
+  fetchWeatherAndAqi();
+  fetchSalatForCurrentLoc();
+  if(typeof ltoast === 'function') ltoast(lb('Location updated: ', 'অবস্থান পরিবর্তিত: ') + (S.lang==='bn'?loc.bn:loc.en));
+}
+
+function findNearestDistrict(lat, lon){
+  var nearest = BD_DISTRICTS[0];
+  var minD = Infinity;
+  for(var i=0; i<BD_DISTRICTS.length; i++){
+    var d = BD_DISTRICTS[i];
+    var dist = (d.lat - lat)*(d.lat - lat) + (d.lon - lon)*(d.lon - lon);
+    if(dist < minD){
+      minD = dist;
+      nearest = d;
+    }
+  }
+  return nearest;
+}
+
+/* Minimal Weather Line SVGs (stroke-based, 24x24 viewBox, currentColor) */
+function getWeatherIconSvg(code, size){
+  size = size || 20;
+  var s = 'viewBox="0 0 24 24" width="' + size + '" height="' + size + '" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="w-svg" aria-hidden="true"';
+  if(code === 0){
+    return '<svg ' + s + '><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>';
+  }
+  if(code === 1 || code === 2){
+    return '<svg ' + s + '><path d="M12 2v2M4.93 4.93l1.41 1.41M2 12h2M4.93 19.07l1.41-1.41"/><circle cx="12" cy="12" r="3"/><path d="M8 18h9a4 4 0 0 0 1.5-7.7A4.5 4.5 0 0 0 10 9a4 4 0 0 0-3 3.8A3 3 0 0 0 8 18z"/></svg>';
+  }
+  if(code === 3){
+    return '<svg ' + s + '><path d="M17.5 19H9a6 6 0 0 1-1.2-11.8A7.5 7.5 0 0 1 21 12.5 4.5 4.5 0 0 1 17.5 19z"/></svg>';
+  }
+  if(code >= 45 && code <= 48){
+    return '<svg ' + s + '><path d="M4 14h16M4 10h16M6 18h12M8 6h8"/></svg>';
+  }
+  if((code >= 51 && code <= 67) || (code >= 80 && code <= 82)){
+    return '<svg ' + s + '><path d="M19 15.5A4.5 4.5 0 0 0 16 8a6 6 0 0 0-11 2.5A4 4 0 0 0 6 18h13"/><path d="M8 20l-1 2M12 20l-1 2M16 20l-1 2"/></svg>';
+  }
+  if(code >= 95){
+    return '<svg ' + s + '><path d="M19 14.5A4.5 4.5 0 0 0 16 7a6 6 0 0 0-11 2.5A4 4 0 0 0 6 17h13"/><path d="m13 14-3 5h3l-1 4 4-6h-3z"/></svg>';
+  }
+  return '<svg ' + s + '><path d="M17.5 19H9a6 6 0 0 1-1.2-11.8A7.5 7.5 0 0 1 21 12.5 4.5 4.5 0 0 1 17.5 19z"/></svg>';
+}
+
+function getWeatherDesc(code){
+  var isBn = S.lang === 'bn';
+  if(code === 0) return isBn ? 'পরিষ্কার আকাশ' : 'Clear Sky';
+  if(code === 1) return isBn ? 'প্রধানত পরিষ্কার' : 'Mainly Clear';
+  if(code === 2) return isBn ? 'আংশিক মেঘলা' : 'Partly Cloudy';
+  if(code === 3) return isBn ? 'মেঘলা আকাশ' : 'Overcast';
+  if(code >= 45 && code <= 48) return isBn ? 'কুয়াশাচ্ছন্ন' : 'Foggy / Mist';
+  if(code >= 51 && code <= 55) return isBn ? 'হালকা গুঁড়িগুঁড়ি বৃষ্টি' : 'Light Drizzle';
+  if(code >= 61 && code <= 65) return isBn ? 'বৃষ্টিপাত' : 'Rain';
+  if(code >= 80 && code <= 82) return isBn ? 'বৃষ্টির সম্ভাবনা' : 'Rain Showers';
+  if(code >= 95) return isBn ? 'বজ্রঝড়' : 'Thunderstorm';
+  return isBn ? 'স্বাভাবিক আবহাওয়া' : 'Fair Weather';
+}
+
+function getAqiRating(aqi){
+  var isBn = S.lang === 'bn';
+  if(aqi <= 50) return { label: isBn ? 'ভালো' : 'Good', color: '#10B981', bg: 'rgba(16,185,129,0.15)' };
+  if(aqi <= 100) return { label: isBn ? 'সহনীয়' : 'Moderate', color: '#FBBF24', bg: 'rgba(251,191,36,0.15)' };
+  if(aqi <= 150) return { label: isBn ? 'সংবেদনশীলদের জন্য অস্বাস্থ্যকর' : 'Unhealthy for Sensitive', color: '#F97316', bg: 'rgba(249,115,22,0.15)' };
+  if(aqi <= 200) return { label: isBn ? 'অস্বাস্থ্যকর' : 'Unhealthy', color: '#EF4444', bg: 'rgba(239,68,68,0.15)' };
+  if(aqi <= 300) return { label: isBn ? 'খুবই অস্বাস্থ্যকর' : 'Very Unhealthy', color: '#A855F7', bg: 'rgba(168,85,247,0.15)' };
+  return { label: isBn ? 'ঝুঁকিপূর্ণ' : 'Hazardous', color: '#881337', bg: 'rgba(136,19,55,0.2)' };
+}
+
+let weatherCache = null;
+let aqiCache = null;
+
+function renderWeatherHeader(cur){
+  var iconEl = $('hwIcon'), tempEl = $('hwTemp'), wrapEl = $('hdrWeather');
+  if(!iconEl || !tempEl || !cur) return;
+  var isBn = S.lang === 'bn';
+  var temp = Math.round(cur.temperature_2m);
+  iconEl.innerHTML = getWeatherIconSvg(cur.weather_code, 18);
+  tempEl.textContent = isBn ? (toBnNum(temp) + '°সে') : (temp + '°C');
+  var loc = getLocation();
+  if(wrapEl){
+    var locName = isBn ? loc.bn : loc.en;
+    wrapEl.title = (isBn ? 'আবহাওয়া ও বায়ুমান' : 'Weather & Air Quality') + ' — ' + locName + ' (' + getWeatherDesc(cur.weather_code) + ')';
+  }
+}
+
+async function fetchWeatherAndAqi(callback){
+  var loc = getLocation();
+  try{
+    var cachedW = sessionStorage.getItem('ncs_weather_v1');
+    var cachedA = sessionStorage.getItem('ncs_aqi_v1');
+    if(cachedW){
+      var pW = JSON.parse(cachedW);
+      if(pW && pW.lat === loc.lat && Date.now() - pW.ts < 1800000){
+        weatherCache = pW.data;
+        renderWeatherHeader(weatherCache);
+        if(cachedA){
+          var pA = JSON.parse(cachedA);
+          if(pA && pA.lat === loc.lat) aqiCache = pA.data;
+        }
+        if(callback) callback(weatherCache, aqiCache);
+        return;
+      }
+    }
+  }catch(e){}
+
+  if(typeof navigator !== 'undefined' && navigator.onLine === false){
+    if(callback) callback(weatherCache, aqiCache);
+    return;
+  }
+
+  try{
+    var wUrl = 'https://api.open-meteo.com/v1/forecast?latitude=' + loc.lat + '&longitude=' + loc.lon + '&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation_probability,weather_code,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min&timezone=Asia%2FDhaka';
+    var aUrl = 'https://air-quality-api.open-meteo.com/v1/air-quality?latitude=' + loc.lat + '&longitude=' + loc.lon + '&current=us_aqi,pm10,pm2_5&timezone=Asia%2FDhaka';
+
+    var results = await Promise.allSettled([
+      fetch(wUrl).then(r => r.json()),
+      fetch(aUrl).then(r => r.json())
+    ]);
+
+    if(results[0].status === 'fulfilled' && results[0].value && results[0].value.current){
+      var curW = results[0].value.current;
+      if(results[0].value.daily){
+        curW.max = (results[0].value.daily.temperature_2m_max || [])[0];
+        curW.min = (results[0].value.daily.temperature_2m_min || [])[0];
+      }
+      weatherCache = curW;
+      try{ sessionStorage.setItem('ncs_weather_v1', JSON.stringify({ ts: Date.now(), lat: loc.lat, data: curW })); }catch(e){}
+      renderWeatherHeader(curW);
+    }
+
+    if(results[1].status === 'fulfilled' && results[1].value && results[1].value.current){
+      aqiCache = results[1].value.current;
+      try{ sessionStorage.setItem('ncs_aqi_v1', JSON.stringify({ ts: Date.now(), lat: loc.lat, data: aqiCache })); }catch(e){}
+    }
+
+    if(callback) callback(weatherCache, aqiCache);
+  }catch(err){
+    console.error('Weather/AQI fetch failed:', err);
+    if(callback) callback(weatherCache, aqiCache);
+  }
+}
+
+function renderDistrictListHtml(filterQuery, selectedEn){
+  filterQuery = (filterQuery || '').trim().toLowerCase();
+  var isBn = S.lang === 'bn';
+  var html = '';
+
+  BD_DIVISIONS.forEach(div => {
+    var dList = BD_DISTRICTS.filter(d => {
+      if(d.div !== div.id) return false;
+      if(!filterQuery) return true;
+      return d.en.toLowerCase().includes(filterQuery) || d.bn.includes(filterQuery) || div.en.toLowerCase().includes(filterQuery) || div.bn.includes(filterQuery);
+    });
+
+    if(dList.length > 0){
+      html += '<div class="loc-group-title">' + (isBn ? div.bn : div.en) + '</div>';
+      dList.forEach(d => {
+        var isSel = (d.en === selectedEn) ? ' selected' : '';
+        html += '<button type="button" class="loc-option-btn' + isSel + '" data-loc-en="' + d.en + '">' +
+          '<span>' + (isBn ? d.bn : d.en) + '</span>' +
+          '<small style="color:var(--mut)">' + (isBn ? d.en : d.bn) + '</small>' +
+        '</button>';
+      });
+    }
+  });
+
+  return html || ('<div style="padding:10px;text-align:center;color:var(--mut);font-size:12px">' + (isBn ? 'কোন জেলা পাওয়া যায়নি' : 'No district found') + '</div>');
+}
+
+function buildLocationPickerHtml(currentLoc){
+  var isBn = S.lang === 'bn';
+  return '' +
+    '<div class="loc-panel" id="locPickerPanel">' +
+      '<div class="loc-bar" id="locBarBtn" role="button" tabindex="0">' +
+        '<span>📍 ' + (isBn ? 'বর্তমান অবস্থান: ' : 'Location: ') + '<b style="color:var(--acc)">' + (isBn ? currentLoc.bn : currentLoc.en) + '</b></span>' +
+        '<span style="font-size:11.5px;color:var(--mut)">' + (isBn ? 'পরিবর্তন করুন ▾' : 'Change ▾') + '</span>' +
+      '</div>' +
+      '<div class="loc-dropdown" id="locDropdown" style="display:none">' +
+        '<input type="text" class="loc-search-inp" id="locSearchInp" placeholder="' + (isBn ? 'জেলা খুঁজুন (যেমন: ঢাকা, কুমিল্লা, Sylhet)...' : 'Search district (e.g. Dhaka, Sylhet)...') + '" autocomplete="off">' +
+        '<div class="loc-scroll-list" id="locScrollList">' +
+          renderDistrictListHtml('', currentLoc.en) +
+        '</div>' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">' +
+          '<span class="loc-adv-link" id="locAdvToggle">⚙ ' + (isBn ? 'অ্যাডভান্সড / জিপিএস' : 'Advanced / GPS') + '</span>' +
+          '<button type="button" class="ghost" id="locGpsBtn" style="height:26px;font-size:11px;padding:0 8px">🎯 ' + (isBn ? 'ডিভাইস জিপিএস' : 'Use GPS') + '</button>' +
+        '</div>' +
+        '<div class="loc-adv-box" id="locAdvBox" style="display:none">' +
+          '<div style="display:flex;gap:6px;align-items:center">' +
+            '<input type="number" id="locLatInp" step="0.0001" placeholder="Lat (23.81)" value="' + currentLoc.lat + '" style="height:28px;font-size:12px;width:90px">' +
+            '<input type="number" id="locLonInp" step="0.0001" placeholder="Lon (90.41)" value="' + currentLoc.lon + '" style="height:28px;font-size:12px;width:90px">' +
+            '<button type="button" class="go" id="locSaveCoordsBtn" style="height:28px;font-size:11px;padding:0 8px">' + (isBn ? 'সেভ' : 'Set') + '</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+}
+
+function wireLocationPickerEvents(onLocationChanged){
+  var barBtn = $('locBarBtn');
+  var dropdown = $('locDropdown');
+  var searchInp = $('locSearchInp');
+  var scrollList = $('locScrollList');
+  var advToggle = $('locAdvToggle');
+  var advBox = $('locAdvBox');
+  var gpsBtn = $('locGpsBtn');
+  var saveCoordsBtn = $('locSaveCoordsBtn');
+
+  if(barBtn && dropdown){
+    barBtn.onclick = function(){
+      var isHidden = dropdown.style.display === 'none';
+      dropdown.style.display = isHidden ? 'block' : 'none';
+      if(isHidden && searchInp) searchInp.focus();
+    };
+  }
+
+  if(searchInp && scrollList){
+    searchInp.oninput = function(){
+      var curLoc = getLocation();
+      scrollList.innerHTML = renderDistrictListHtml(searchInp.value, curLoc.en);
+    };
+  }
+
+  if(scrollList){
+    scrollList.onclick = function(e){
+      var btn = e.target.closest('[data-loc-en]');
+      if(!btn) return;
+      var enName = btn.dataset.locEn;
+      var found = BD_DISTRICTS.find(d => d.en === enName);
+      if(found){
+        setLocation(found);
+        if(onLocationChanged) onLocationChanged(found);
+      }
+    };
+  }
+
+  if(advToggle && advBox){
+    advToggle.onclick = function(){
+      advBox.style.display = (advBox.style.display === 'none') ? 'block' : 'none';
+    };
+  }
+
+  if(gpsBtn){
+    gpsBtn.onclick = function(){
+      if(!navigator.geolocation){
+        if(typeof ltoast === 'function') ltoast(lb('Geolocation not supported by device', 'ডিভাইসে জিপিএস সাপোর্ট নেই'));
+        return;
+      }
+      gpsBtn.textContent = '...';
+      navigator.geolocation.getCurrentPosition(function(pos){
+        var lat = pos.coords.latitude;
+        var lon = pos.coords.longitude;
+        var nearest = findNearestDistrict(lat, lon);
+        var customLoc = {
+          div: nearest.div,
+          en: nearest.en + ' (GPS)',
+          bn: nearest.bn + ' (জিপিএস)',
+          lat: Math.round(lat*10000)/10000,
+          lon: Math.round(lon*10000)/10000
+        };
+        setLocation(customLoc);
+        if(onLocationChanged) onLocationChanged(customLoc);
+      }, function(err){
+        gpsBtn.textContent = '🎯 GPS';
+        if(typeof ltoast === 'function') ltoast(lb('Location permission denied or unavailable', 'অবস্থান অনুমতি বাতিল বা ব্যর্থ হয়েছে'));
+      }, { timeout: 10000 });
+    };
+  }
+
+  if(saveCoordsBtn){
+    saveCoordsBtn.onclick = function(){
+      var latInp = $('locLatInp'), lonInp = $('locLonInp');
+      var lat = parseFloat(latInp ? latInp.value : '');
+      var lon = parseFloat(lonInp ? lonInp.value : '');
+      if(isNaN(lat) || isNaN(lon)){
+        if(typeof ltoast === 'function') ltoast(lb('Please enter valid coordinates', 'সঠিক স্থানাঙ্ক লিখুন'));
+        return;
+      }
+      var nearest = findNearestDistrict(lat, lon);
+      var customLoc = {
+        div: nearest.div,
+        en: nearest.en + ' (Custom)',
+        bn: nearest.bn + ' (কাস্টম)',
+        lat: Math.round(lat*10000)/10000,
+        lon: Math.round(lon*10000)/10000
+      };
+      setLocation(customLoc);
+      if(onLocationChanged) onLocationChanged(customLoc);
+    };
+  }
+}
+
+function openWeatherCardModal(){
+  var loc = getLocation();
+  var isBn = S.lang === 'bn';
+
+  function buildModalBody(w, a){
+    var temp = w ? Math.round(w.temperature_2m) : '--';
+    var maxT = (w && w.max != null) ? Math.round(w.max) : '--';
+    var minT = (w && w.min != null) ? Math.round(w.min) : '--';
+    var feels = (w && w.apparent_temperature != null) ? Math.round(w.apparent_temperature) : temp;
+    var humidity = (w && w.relative_humidity_2m != null) ? w.relative_humidity_2m + '%' : '--';
+    var wind = (w && w.wind_speed_10m != null) ? Math.round(w.wind_speed_10m) + ' km/h' : '--';
+    var rainProb = (w && w.precipitation_probability != null) ? w.precipitation_probability + '%' : '0%';
+    var wCode = w ? w.weather_code : 0;
+    var wDesc = getWeatherDesc(wCode);
+    var wSvg = getWeatherIconSvg(wCode, 52);
+
+    var aqiVal = (a && a.us_aqi != null) ? a.us_aqi : null;
+    var aqiRating = aqiVal != null ? getAqiRating(aqiVal) : null;
+    var pm25 = (a && a.pm2_5 != null) ? a.pm2_5 : '--';
+    var pm10 = (a && a.pm10 != null) ? a.pm10 : '--';
+
+    var aqiHtml = aqiVal != null ? (
+      '<div class="wm-aqi-box">' +
+        '<div class="wm-aqi-head">' +
+          '<div style="font-size:13px;font-weight:600;color:var(--ink)">🍃 ' + (isBn ? 'বায়ুমান সূচক (Air Quality)' : 'Air Quality Index (AQI)') + '</div>' +
+          '<span class="wm-aqi-pill" style="color:' + aqiRating.color + ';background:' + aqiRating.bg + '">' +
+            'AQI ' + (isBn ? toBnNum(aqiVal) : aqiVal) + ' · ' + aqiRating.label +
+          '</span>' +
+        '</div>' +
+        '<div class="wm-aqi-meta">' +
+          '<span><b>PM2.5:</b> ' + (isBn && typeof pm25 === 'number' ? toBnNum(pm25) : pm25) + ' µg/m³</span>' +
+          '<span><b>PM10:</b> ' + (isBn && typeof pm10 === 'number' ? toBnNum(pm10) : pm10) + ' µg/m³</span>' +
+        '</div>' +
+      '</div>'
+    ) : (
+      '<div class="wm-aqi-box" style="text-align:center;color:var(--mut);font-size:12px">' +
+        (isBn ? 'বায়ুমান ডেটা লোড হচ্ছে...' : 'Loading Air Quality...') +
+      '</div>'
+    );
+
+    return '' +
+      '<div class="wm-card">' +
+        buildLocationPickerHtml(loc) +
+        '<div class="wm-hero">' +
+          '<div class="wm-hero-left">' +
+            '<div class="wm-temp">' + (isBn && temp !== '--' ? toBnNum(temp) + '°সে' : temp + '°C') + '</div>' +
+            '<div class="wm-cond">' + wDesc + '</div>' +
+            '<div class="wm-sub">' +
+              (isBn ? 'অনুভূত: ' : 'Feels like: ') + (isBn && feels !== '--' ? toBnNum(feels) + '°' : feels + '°') +
+              ' · ' + (isBn ? 'সর্বোচ্চ: ' : 'H: ') + (isBn && maxT !== '--' ? toBnNum(maxT) + '°' : maxT + '°') +
+              ' · ' + (isBn ? 'সর্বনিম্ন: ' : 'L: ') + (isBn && minT !== '--' ? toBnNum(minT) + '°' : minT + '°') +
+            '</div>' +
+          '</div>' +
+          '<div class="wm-hero-icon">' + wSvg + '</div>' +
+        '</div>' +
+        '<div class="wm-grid">' +
+          '<div class="wm-metric">' +
+            '<div class="wm-metric-lbl">💧 ' + (isBn ? 'আর্দ্রতা' : 'Humidity') + '</div>' +
+            '<div class="wm-metric-val">' + (isBn ? toBnNum(humidity) : humidity) + '</div>' +
+          '</div>' +
+          '<div class="wm-metric">' +
+            '<div class="wm-metric-lbl">💨 ' + (isBn ? 'বাতাসের গতি' : 'Wind Speed') + '</div>' +
+            '<div class="wm-metric-val">' + (isBn ? toBnNum(wind) : wind) + '</div>' +
+          '</div>' +
+          '<div class="wm-metric">' +
+            '<div class="wm-metric-lbl">🌧️ ' + (isBn ? 'বৃষ্টির সম্ভাবনা' : 'Rain Chance') + '</div>' +
+            '<div class="wm-metric-val">' + (isBn ? toBnNum(rainProb) : rainProb) + '</div>' +
+          '</div>' +
+          '<div class="wm-metric">' +
+            '<div class="wm-metric-lbl">🌡️ ' + (isBn ? 'তাপমাত্রা পরিসীমা' : 'Range') + '</div>' +
+            '<div class="wm-metric-val">' + (isBn && minT !== '--' ? toBnNum(minT) : minT) + '° - ' + (isBn && maxT !== '--' ? toBnNum(maxT) : maxT) + '°</div>' +
+          '</div>' +
+        '</div>' +
+        aqiHtml +
+        '<div style="text-align:center;font-size:11.5px;color:var(--mut);border-top:1px dashed var(--line);padding-top:8px">' +
+          (isBn ? '⚡ এখানে জেলা পরিবর্তন করলে নামাজের সময়সূচীও স্বয়ংক্রিয়ভাবে আপডেট হবে' : '⚡ Changing location here also updates Prayer Times') +
+        '</div>' +
+      '</div>';
+  }
+
+  ask(
+    (isBn ? '🌤️ আবহাওয়া ও বায়ুমান — ' : '🌤️ Weather & Air Quality — ') + (isBn ? loc.bn : loc.en),
+    buildModalBody(weatherCache, aqiCache),
+    function(){ return true; },
+    lb('Close', 'বন্ধ করুন'),
+    true
+  );
+
+  wireLocationPickerEvents(function(newLoc){
+    loc = newLoc;
+    fetchWeatherAndAqi(function(freshW, freshA){
+      $('ot').textContent = (S.lang==='bn' ? '🌤️ আবহাওয়া ও বায়ুমান — ' : '🌤️ Weather & Air Quality — ') + (S.lang==='bn' ? loc.bn : loc.en);
+      $('ob').innerHTML = buildModalBody(freshW, freshA);
+      wireLocationPickerEvents(null);
+    });
+  });
+
+  if(!weatherCache || !aqiCache){
+    fetchWeatherAndAqi(function(freshW, freshA){
+      if(!$('ov').hidden){
+        $('ob').innerHTML = buildModalBody(freshW, freshA);
+        wireLocationPickerEvents(null);
+      }
+    });
+  }
+}
+
+/* ---------- Active Prayer Period & Mosque Times Engine ---------- */
+
 let salatTimingsCache = null;
 const salatAlertedToday = {};
 
-function fetchDhakaSalat(callback){
-  const today = todayIso();
+function computeActiveSalat(timings, now){
+  if(!timings) return null;
+  now = now || new Date();
+  var curMins = now.getHours() * 60 + now.getMinutes();
+
+  var parseMins = function(tStr){
+    if(!tStr) return 0;
+    var p = tStr.split(':').map(Number);
+    return p[0]*60 + p[1];
+  };
+
+  var fMins = parseMins(timings.Fajr);
+  var sMins = parseMins(timings.Sunrise);
+  var dMins = parseMins(timings.Dhuhr);
+  var aMins = parseMins(timings.Asr);
+  var mMins = parseMins(timings.Maghrib);
+  var iMins = parseMins(timings.Isha);
+
+  var prayerSlots = [
+    { id: 'Fajr', en: 'Fajr', bn: 'ফজর', t: timings.Fajr, mins: fMins, icon: '🌅' },
+    { id: 'Sunrise', en: 'Sunrise', bn: 'সূর্যোদয়', t: timings.Sunrise, mins: sMins, icon: '☀️', isSun: true },
+    { id: 'Dhuhr', en: 'Dhuhr', bn: 'যোহর', t: timings.Dhuhr, mins: dMins, icon: '☀️' },
+    { id: 'Asr', en: 'Asr', bn: 'আসর', t: timings.Asr, mins: aMins, icon: '🌤️' },
+    { id: 'Maghrib', en: 'Maghrib', bn: 'মাগরিব', t: timings.Maghrib, mins: mMins, icon: '🌇' },
+    { id: 'Isha', en: 'Isha', bn: 'ইশা', t: timings.Isha, mins: iMins, icon: '🌙' }
+  ];
+
+  var activePrayer = null;
+  var nextPrayer = null;
+  var isSunriseGap = false;
+
+  if(curMins >= fMins && curMins < sMins){
+    activePrayer = prayerSlots[0];
+    nextPrayer = prayerSlots[1];
+  } else if(curMins >= sMins && curMins < dMins){
+    activePrayer = null;
+    isSunriseGap = true;
+    nextPrayer = prayerSlots[2];
+  } else if(curMins >= dMins && curMins < aMins){
+    activePrayer = prayerSlots[2];
+    nextPrayer = prayerSlots[3];
+  } else if(curMins >= aMins && curMins < mMins){
+    activePrayer = prayerSlots[3];
+    nextPrayer = prayerSlots[4];
+  } else if(curMins >= mMins && curMins < iMins){
+    activePrayer = prayerSlots[4];
+    nextPrayer = prayerSlots[5];
+  } else {
+    activePrayer = prayerSlots[5];
+    nextPrayer = prayerSlots[0];
+  }
+
+  var diffMins = 0;
+  if(nextPrayer){
+    diffMins = nextPrayer.mins - curMins;
+    if(diffMins < 0) diffMins += 24 * 60;
+  }
+
+  return {
+    active: activePrayer,
+    next: nextPrayer,
+    isSunriseGap: isSunriseGap,
+    diffMins: diffMins,
+    slots: prayerSlots
+  };
+}
+
+function updateHeaderSalat(timings){
+  if(!timings) return;
+  var isBn = S.lang === 'bn';
+  var salatState = computeActiveSalat(timings);
+  if(!salatState) return;
+
+  var prayerBtn = $('hdrPrayerBtn');
+  var popover = $('hdrPrayerPopover');
+  var loc = getLocation();
+  var locName = isBn ? loc.bn : loc.en;
+
+  var nextP = salatState.next;
+  var activeP = salatState.active;
+  var diffH = Math.floor(salatState.diffMins / 60);
+  var diffM = salatState.diffMins % 60;
+  var diffStr = isBn
+    ? (diffH > 0 ? toBnNum(diffH) + ' ঘণ্টা ' : '') + toBnNum(diffM) + ' মিনিট বাকি'
+    : (diffH > 0 ? diffH + 'h ' : '') + diffM + 'm left';
+
+  var headerLabel = isBn ? 'নামাজের সময়সূচী' : 'Prayer Times';
+  if(prayerBtn){
+    var activeDesc = activeP ? (isBn ? activeP.bn + ' চলমান' : activeP.en + ' Active') : (isBn ? 'সূর্যোদয় সম্পন্ন' : 'Sunrise Passed');
+    var nextDesc = nextP ? ((isBn ? nextP.bn : nextP.en) + ' ' + t12(nextP.t)) : '';
+    prayerBtn.setAttribute('aria-label', headerLabel + ' · ' + activeDesc + ' · ' + (isBn ? 'পরবর্তী: ' : 'Next: ') + nextDesc);
+    prayerBtn.title = headerLabel + ' (' + locName + ') — ' + activeDesc + ' · ' + (isBn ? 'পরবর্তী: ' : 'Next: ') + nextDesc;
+  }
+
+  if(popover){
+    var headSubtitle = activeP
+      ? ('<span style="color:var(--pos);font-weight:600">' + (isBn ? activeP.bn + ' চলমান' : activeP.en + ' Active') + '</span>')
+      : ('<span style="color:var(--mut)">' + (isBn ? 'সূর্যোদয় সম্পন্ন' : 'Sunrise Passed') + '</span>');
+
+    popover.innerHTML = '' +
+      '<div class="hp-pop-head">' +
+        '<div><b>' + headerLabel + '</b><small class="mut" style="display:block;font-size:11px">' + locName + '</small></div>' +
+        '<div style="text-align:right">' + headSubtitle + '<small class="mut" style="display:block;font-size:11px">' + (nextP ? ((isBn?nextP.bn:nextP.en) + ' ' + diffStr) : '') + '</small></div>' +
+      '</div>' +
+      '<div class="hp-pop-grid">' +
+        salatState.slots.map(function(p){
+          var isActive = activeP && activeP.id === p.id;
+          var isNext = nextP && nextP.id === p.id;
+          var cls = isActive ? ' active' : (isNext ? ' upcoming' : '');
+          var statusBadge = isActive ? (isBn ? 'চলমান' : 'NOW') : (isNext ? (isBn ? 'পরবর্তী' : 'NEXT') : '');
+          return '<div class="hp-pop-item' + cls + '">' +
+            '<span>' + p.icon + ' ' + (isBn ? p.bn : p.en) + '</span>' +
+            '<div><b>' + t12(p.t) + '</b>' + (statusBadge ? ' <small style="font-size:9.5px;text-transform:uppercase;color:var(--acc)">' + statusBadge + '</small>' : '') + '</div>' +
+          '</div>';
+        }).join('') +
+      '</div>' +
+      '<div class="hp-pop-foot">' +
+        '<small class="mut">' + (isBn ? 'সম্পূর্ণ সময়সূচী দেখতে ক্লিক করুন' : 'Click to view full prayer card & alarms') + '</small>' +
+      '</div>';
+  }
+}
+
+function fetchSalatForCurrentLoc(callback){
+  var today = todayIso();
+  var loc = getLocation();
   try{
-    const cached = sessionStorage.getItem('ncs_salat_v1');
+    var cached = sessionStorage.getItem('ncs_salat_v1');
     if(cached){
-      const parsed = JSON.parse(cached);
-      if(parsed && parsed.date === today && parsed.timings){
+      var parsed = JSON.parse(cached);
+      if(parsed && parsed.date === today && parsed.lat === loc.lat && parsed.timings){
         salatTimingsCache = parsed.timings;
         updateHeaderSalat(parsed.timings);
         if(callback) callback(parsed.timings);
@@ -2886,166 +3594,107 @@ function fetchDhakaSalat(callback){
   }catch(e){}
 
   if(typeof navigator !== 'undefined' && navigator.onLine === false){
-    if(callback) callback(null);
+    if(callback) callback(salatTimingsCache);
     return;
   }
 
-  fetch('https://api.aladhan.com/v1/timingsByCity?city=Dhaka&country=Bangladesh&method=1')
+  var sUrl = 'https://api.aladhan.com/v1/timings?latitude=' + loc.lat + '&longitude=' + loc.lon + '&method=1';
+  fetch(sUrl)
     .then(r => r.json())
     .then(data => {
       if(data && data.data && data.data.timings){
         salatTimingsCache = data.data.timings;
         try{
-          sessionStorage.setItem('ncs_salat_v1', JSON.stringify({ date: today, timings: data.data.timings }));
+          sessionStorage.setItem('ncs_salat_v1', JSON.stringify({ date: today, lat: loc.lat, timings: data.data.timings }));
         }catch(e){}
         updateHeaderSalat(data.data.timings);
         if(callback) callback(data.data.timings);
       }
     })
     .catch(() => {
-      if(callback) callback(null);
+      if(callback) callback(salatTimingsCache);
     });
 }
 
-function updateHeaderSalat(timings){
-  if(!timings) return;
-  const isBn = S.lang === 'bn';
-  const now = new Date();
-  const curMins = now.getHours() * 60 + now.getMinutes();
+function fetchDhakaSalat(callback){
+  fetchSalatForCurrentLoc(callback);
+}
 
-  const prayerList = [
-    { id: 'Fajr', en: 'Fajr', bn: 'ফজর', t: timings.Fajr, icon: '🌅' },
-    { id: 'Sunrise', en: 'Sunrise', bn: 'সূর্যোদয়', t: timings.Sunrise, icon: '☀️', isSun: true },
-    { id: 'Dhuhr', en: 'Dhuhr', bn: 'যোহর', t: timings.Dhuhr, icon: '☀️' },
-    { id: 'Asr', en: 'Asr', bn: 'আসর', t: timings.Asr, icon: '🌤️' },
-    { id: 'Maghrib', en: 'Maghrib', bn: 'মাগরিব', t: timings.Maghrib, icon: '🌇' },
-    { id: 'Isha', en: 'Isha', bn: 'ইশা', t: timings.Isha, icon: '🌙' }
-  ];
-
-  /* Find next prayer */
-  let nextP = null;
-  let minDiff = Infinity;
-  prayerList.forEach(p => {
-    if(!p.t) return;
-    const [h, m] = p.t.split(':').map(Number);
-    const pMins = h * 60 + m;
-    let diff = pMins - curMins;
-    if(diff < 0) diff += 24 * 60;
-    if(diff < minDiff){
-      minDiff = diff;
-      nextP = { ...p, diffMins: diff };
-    }
-  });
-
-  const hpName = $('hpName'), hpTime = $('hpTime');
-  if(hpName && nextP) hpName.textContent = isBn ? nextP.bn : nextP.en;
-  if(hpTime && nextP) hpTime.textContent = t12(nextP.t);
-  const prayerBtn = $('hdrPrayerBtn');
-  if(prayerBtn){
-    const nextLabel = nextP ? (isBn ? nextP.bn : nextP.en) + ' ' + t12(nextP.t) : '';
-    const prayerLabel = isBn ? 'নামাজের সময়সূচী' : 'Prayer times';
-    prayerBtn.setAttribute('aria-label', prayerLabel + (nextLabel ? ' · ' + nextLabel : ''));
-    prayerBtn.title = prayerLabel + (nextLabel ? ' — ' + nextLabel : '');
-  }
-
-  const popover = $('hdrPrayerPopover');
-  if(popover){
-    const diffH = nextP ? Math.floor(nextP.diffMins / 60) : 0;
-    const diffM = nextP ? (nextP.diffMins % 60) : 0;
-    const diffStr = isBn
-      ? (diffH > 0 ? toBnNum(diffH) + ' ঘণ্টা ' : '') + toBnNum(diffM) + ' মিনিট বাকি'
-      : (diffH > 0 ? diffH + 'h ' : '') + diffM + 'm left';
-
-    popover.innerHTML = '' +
-      '<div class="hp-pop-head">' +
-        '<b>' + (isBn ? 'নামাজের সময়সূচী' : 'Prayer Times') + '</b>' +
-        '<small class="mut">Dhaka · ' + (nextP ? (isBn ? nextP.bn : nextP.en) + ' (' + diffStr + ')' : '') + '</small>' +
-      '</div>' +
-      '<div class="hp-pop-grid">' +
-        prayerList.map(p => {
-          const isNext = nextP && nextP.id === p.id;
-          return '<div class="hp-pop-item' + (isNext ? ' on' : '') + '">' +
-            '<span>' + p.icon + ' ' + (isBn ? p.bn : p.en) + '</span>' +
-            '<b>' + t12(p.t) + '</b>' +
-          '</div>';
-        }).join('') +
-      '</div>' +
-      '<div class="hp-pop-foot">' +
-        '<small class="mut">' + (isBn ? 'সম্পূর্ণ সময়সূচী দেখতে ক্লিক করুন' : 'Click to view full prayer card & test alarm') + '</small>' +
-      '</div>';
-  }
+function fetchDhakaWeather(){
+  fetchWeatherAndAqi();
 }
 
 function openFullSalatModal(){
-  fetchDhakaSalat(timings => {
+  var loc = getLocation();
+  fetchSalatForCurrentLoc(function(timings){
     if(!timings){
       if(typeof ltoast === 'function') ltoast(lb('Prayer timings unavailable offline', 'নামাজের সময়সূচী অফলাইনে পাওয়া যায়নি'));
       return;
     }
-    const isBn = S.lang === 'bn';
-    const now = new Date();
-    const curMins = now.getHours() * 60 + now.getMinutes();
+    var isBn = S.lang === 'bn';
+    var salatState = computeActiveSalat(timings);
+    var activeP = salatState ? salatState.active : null;
+    var nextP = salatState ? salatState.next : null;
 
-    const prayerList = [
-      { id: 'Fajr', en: 'Fajr', bn: 'ফজর', t: timings.Fajr, icon: '🌅' },
-      { id: 'Sunrise', en: 'Sunrise', bn: 'সূর্যোদয়', t: timings.Sunrise, icon: '☀️', isSun: true },
-      { id: 'Dhuhr', en: 'Dhuhr', bn: 'যোহর', t: timings.Dhuhr, icon: '☀️' },
-      { id: 'Asr', en: 'Asr', bn: 'আসর', t: timings.Asr, icon: '🌤️' },
-      { id: 'Maghrib', en: 'Maghrib', bn: 'মাগরিব', t: timings.Maghrib, icon: '🌇' },
-      { id: 'Isha', en: 'Isha', bn: 'ইশা', t: timings.Isha, icon: '🌙' }
-    ];
-
-    let nextP = null;
-    let minDiff = Infinity;
-    prayerList.forEach(p => {
-      if(!p.t) return;
-      const [h, m] = p.t.split(':').map(Number);
-      const pMins = h * 60 + m;
-      let diff = pMins - curMins;
-      if(diff < 0) diff += 24 * 60;
-      if(diff < minDiff){
-        minDiff = diff;
-        nextP = { ...p, diffMins: diff };
-      }
-    });
-
-    const diffH = nextP ? Math.floor(nextP.diffMins / 60) : 0;
-    const diffM = nextP ? (nextP.diffMins % 60) : 0;
-    const diffStr = isBn
+    var diffH = salatState ? Math.floor(salatState.diffMins / 60) : 0;
+    var diffM = salatState ? (salatState.diffMins % 60) : 0;
+    var diffStr = isBn
       ? (diffH > 0 ? toBnNum(diffH) + ' ঘণ্টা ' : '') + toBnNum(diffM) + ' মিনিট বাকি'
       : (diffH > 0 ? diffH + 'h ' : '') + diffM + 'm left';
 
-    const bodyHtml = '' +
+    var activeBanner = activeP
+      ? ('<div style="background:color-mix(in srgb,var(--pos) 14%,var(--card));border:1px solid var(--pos);border-radius:10px;padding:8px 12px;display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">' +
+           '<div><span style="color:var(--pos);font-weight:700">● ' + (isBn ? activeP.bn + ' ওয়াক্ত চলমান' : activeP.en + ' Prayer Active') + '</span><small class="mut" style="display:block;font-size:11.5px">' + (isBn ? 'পরবর্তী নামাজ: ' : 'Next prayer: ') + '<b>' + (isBn ? nextP.bn : nextP.en) + '</b> (' + diffStr + ')</small></div>' +
+           '<b style="font-size:15px;color:var(--pos)">' + t12(activeP.t) + '</b>' +
+         '</div>')
+      : ('<div style="background:var(--soft);border:1px solid var(--acc);border-radius:10px;padding:8px 12px;display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">' +
+           '<div><span style="color:var(--acc);font-weight:700">☀️ ' + (isBn ? 'সূর্যোদয় সম্পন্ন (কোন নামাজ চলমান নেই)' : 'Sunrise Passed (No Active Prayer)') + '</span><small class="mut" style="display:block;font-size:11.5px">' + (isBn ? 'পরবর্তী নামাজ: ' : 'Next prayer: ') + '<b>' + (nextP ? (isBn?nextP.bn:nextP.en) : '') + '</b> (' + diffStr + ')</small></div>' +
+         '</div>');
+
+    var bodyHtml = '' +
       '<div style="margin-bottom:12px">' +
-        '<div style="font-size:12.5px;color:var(--mut);margin-bottom:8px">' +
-          (nextP ? ('▸ ' + (isBn ? 'পরবর্তী নামাজ: ' : 'Next Prayer: ') + '<b style="color:var(--acc)">' + (isBn ? nextP.bn : nextP.en) + '</b> (' + diffStr + ')') : '') +
-        '</div>' +
+        buildLocationPickerHtml(loc) +
+        activeBanner +
         '<div class="salat-grid">' +
-          prayerList.map(p => {
-            const isNext = nextP && nextP.id === p.id;
-            const tFormatted = t12(p.t);
-            return '' +
-              '<div class="salat-box' + (isNext ? ' salat-box-active' : '') + (p.isSun ? ' salat-box-sun' : '') + '">' +
-                '<div class="sb-icon">' + p.icon + '</div>' +
-                '<div class="sb-name">' + (isBn ? p.bn : p.en) + '</div>' +
-                '<b class="sb-time">' + (isBn ? toBnNum(tFormatted) : tFormatted) + '</b>' +
-                (isNext ? '<span class="sb-badge">' + (isBn ? 'পরবর্তী' : 'NEXT') + '</span>' : '') +
-              '</div>';
+          salatState.slots.map(function(p){
+            var isActive = activeP && activeP.id === p.id;
+            var isNext = nextP && nextP.id === p.id;
+            var tFormatted = t12(p.t);
+            var cls = isActive ? ' salat-box-active' : (p.isSun ? ' salat-box-sun' : '');
+            var badge = isActive ? '<span class="sb-badge" style="background:var(--pos)">' + (isBn ? 'চলমান' : 'ACTIVE') + '</span>'
+                                 : (isNext ? '<span class="sb-badge">' + (isBn ? 'পরবর্তী' : 'NEXT') + '</span>' : '');
+            return '<div class="salat-box' + cls + '">' +
+              '<div class="sb-icon">' + p.icon + '</div>' +
+              '<div class="sb-name">' + (isBn ? p.bn : p.en) + '</div>' +
+              '<b class="sb-time">' + (isBn ? toBnNum(tFormatted) : tFormatted) + '</b>' +
+              badge +
+            '</div>';
           }).join('') +
         '</div>' +
       '</div>' +
       '<div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line);padding-top:10px;margin-top:10px">' +
         '<small class="mut">' + (isBn ? 'প্রতি ওয়াক্তে স্বয়ংক্রিয় আযান/অ্যালার্ম বাজবে' : 'Automatic prayer chime plays on arrival') + '</small>' +
-        '<button type="button" class="ghost" id="btnTestSalatAlarmModal" style="height:30px;padding:0 10px;font-size:12px">🔔 ' + (isBn ? 'অ্যালার্ম পরীক্ষা' : 'Test Sound') + '</button>' +
+        '<button type="button" class="ghost" id="btnTestSalatAlarmModal" style="height:32px;padding:0 12px;font-size:12px">🔔 ' + (isBn ? 'অ্যালার্ম পরীক্ষা' : 'Test Sound') + '</button>' +
       '</div>';
 
-    ask(lb('🕌 Salat Times — Dhaka (UTC+6)', '🕌 নামাজের সময়সূচী — ঢাকা'), bodyHtml, function(){ return true; }, lb('Close', 'বন্ধ করুন'), true);
+    ask(
+      lb('🕌 Salat Times — ', '🕌 নামাজের সময়সূচী — ') + (isBn ? loc.bn : loc.en),
+      bodyHtml,
+      function(){ return true; },
+      lb('Close', 'বন্ধ করুন'),
+      true
+    );
 
-    const testBtn = $('btnTestSalatAlarmModal');
+    wireLocationPickerEvents(function(newLoc){
+      loc = newLoc;
+      openFullSalatModal();
+    });
+
+    var testBtn = $('btnTestSalatAlarmModal');
     if(testBtn){
       testBtn.onclick = function(){
-        const pName = isBn ? (nextP ? nextP.bn : 'আসর') : (nextP ? nextP.en : 'Asr');
-        showSalatAlarmToast(pName, nextP ? t12(nextP.t) : '3:45 PM');
+        var pName = isBn ? (activeP ? activeP.bn : (nextP ? nextP.bn : 'যোহর')) : (activeP ? activeP.en : (nextP ? nextP.en : 'Dhuhr'));
+        showSalatAlarmToast(pName, activeP ? t12(activeP.t) : (nextP ? t12(nextP.t) : '1:15 PM'));
       };
     }
   });
@@ -3053,13 +3702,18 @@ function openFullSalatModal(){
 
 if(typeof document !== 'undefined'){
   document.addEventListener('click', function(e){
-    var b = e.target.closest('#hdrPrayerBtn');
-    if(b) openFullSalatModal();
+    var pBtn = e.target.closest('#hdrPrayerBtn');
+    if(pBtn) openFullSalatModal();
+    var wBtn = e.target.closest('#hdrWeather');
+    if(wBtn) openWeatherCardModal();
   });
 }
 
-fetchDhakaSalat();
-setInterval(function(){ fetchDhakaSalat(); }, 60000);
+fetchSalatForCurrentLoc();
+setInterval(function(){ fetchSalatForCurrentLoc(); }, 60000);
+
+fetchWeatherAndAqi();
+setInterval(function(){ fetchWeatherAndAqi(); }, 1800000);
 
 function showSalatAlarmToast(prayerName, timeFormatted){
   try{ Sound.chime(); }catch(e){}
@@ -3099,6 +3753,7 @@ function showSalatAlarmToast(prayerName, timeFormatted){
     }
   }, 6000);
 }
+
 
 function checkSalatAlarm(){
   if(!salatTimingsCache) return;
@@ -5386,50 +6041,9 @@ function selfTest(){
 
 /* ---------- v9.21: clock, Accounts void section ---------- */
 /* ---------- v11.0: Desktop Watch, Weather, Bengali Calendar & Clock ---------- */
-function getWeatherIcon(code){
-  if(code===0)return'☀️';
-  if(code===1||code===2)return'🌤️';
-  if(code===3)return'☁️';
-  if(code>=45&&code<=48)return'🌫️';
-  if(code>=51&&code<=67)return'🌧️';
-  if(code>=71&&code<=77)return'❄️';
-  if(code>=80&&code<=82)return'🌦️';
-  if(code>=95)return'⛈️';
-  return'☀️';
-}
+function getWeatherIcon(code){ return getWeatherIconSvg(code, 18); }
+function renderWeather(cur){ renderWeatherHeader(cur); }
 
-function renderWeather(cur){
-  var iconEl=$('hwIcon'),tempEl=$('hwTemp');
-  if(!iconEl||!tempEl||!cur)return;
-  var temp=Math.round(cur.temperature_2m);
-  iconEl.textContent=getWeatherIcon(cur.weather_code);
-  tempEl.textContent=S.lang==='bn'?(toBnNum(temp)+'°সে'):(temp+'°C');
-}
-
-function fetchDhakaWeather(){
-  try{
-    var cached=sessionStorage.getItem('ncs_weather_v1');
-    if(cached){
-      var parsed=JSON.parse(cached);
-      if(Date.now()-parsed.ts<1800000){
-        renderWeather(parsed.data);
-        return;
-      }
-    }
-  }catch(e){}
-  if(typeof navigator!=='undefined'&&navigator.onLine===false)return;
-  try{
-    fetch('https://api.open-meteo.com/v1/forecast?latitude=23.8103&longitude=90.4125&current=temperature_2m,weather_code&timezone=Asia%2FDhaka')
-      .then(function(r){return r.json()})
-      .then(function(data){
-        if(data&&data.current){
-          try{sessionStorage.setItem('ncs_weather_v1',JSON.stringify({ts:Date.now(),data:data.current}))}catch(e){}
-          renderWeather(data.current);
-        }
-      })
-      .catch(function(){});
-  }catch(e){}
-}
 
 function updateLiveWatch(now){
   var h=now.getHours(),m=now.getMinutes(),s=now.getSeconds();
@@ -5607,7 +6221,8 @@ function animateCounts(){
 function saveCheck(){if(document.documentElement.dataset.rm)return;var d=document.createElement('div');d.className='savechk';d.innerHTML='<svg viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="22" fill="none" stroke="var(--acc)" stroke-width="3"/><path d="M14 27l8 8 16-16" fill="none" stroke="var(--acc)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>';document.body.appendChild(d);setTimeout(function(){d.classList.add('out')},700);setTimeout(function(){d.remove()},1250)}
 (function(){
   var M="Claude Sonnet 5.5 · owner's Claude account";
-  APP_VERSION='11.4.0';
+  APP_VERSION='11.5.0';
+  VERS.unshift({v:'11.5.0',d:'2026-10-31',t:'Executive Header Redesign, Minimal Weather, Air Quality & Mosque Times',by:'Antigravity',n:['Rounded card island header (.top) with 20px radius, subtle border and dual-layer shadow','Centered header geometry with symmetric 1fr auto 1fr grid across desktop and mobile','Typography scale: 44px Lora live clock with tabular figures and 36px/34px SolaimanLipi store brand','Minimal outline SVG weather icon system replacing emojis','Interactive Weather & Air Quality card modal with US AQI, PM2.5 and PM10 metrics','Linked 8-division 64-district location selector with GPS and custom coordinates in Prayer & Weather cards','Mosque outline icon replacing steeple silhouette across header and modals','Active prayer period highlighting with green status and live countdown popover','More tab Bug Batch: Single-flight sync guard, sync item in More preferences, and 13.5px day badge']});
   VERS.unshift({v:'11.2.0',d:'2026-10-30',t:'Executive Header Bar Redesign, Islamic Prayer Integration & Corner Clipping Fix',by:'Antigravity',n:['Fixed shop computer icon upper corner clipping by eliminating border-radius and setting object-fit contain','Executive 3-column header layout: Left (Brand), Center (Bismillah, Live Watch, Calendar), Right (Weather, Prayer, Tools, Sync)','Integrated Bismillah calligraphy, large 24px live clock, and Gregorian + Bengali calendar into unified center command cluster','Balanced typography: Shop Title and Live Clock scaled to matching 24px bold visual weight with brand role badge','Moved Prayer Schedule into Header: Interactive quick pill showing next prayer and live countdown','Prayer hover popover: hovering reveals a glimpse of all 6 prayer slots for Dhaka (UTC+6)','Prayer interactive modal: clicking opens the full prayer schedule card with audio alarm test','Live Sync status pill placed on the rightmost header edge for persistent cross-tab visibility','Overview dashboard streamlined: freed vertical space by relocating the static prayer card to the top bar']});
   VERS.unshift({v:'11.1.0',d:'2026-10-30',t:'Bug Report System v12: Contextual In-Tab Bug & Requirement Reporting',by:'Antigravity',n:['Floating [ 🪲 Bug ] action pill at the bottom of every tab for instant issue reporting','Contextual auto-detection: automatically binds report to the active tab (Overview, Task Schedule, Ledger, Counter, Accounts, More)','Two structured input fields: 1. Bugs & Errors and 2. Requirements & Solutions','Automatic capture of metadata: reporter role, staff name, date, time, and app version','Standalone Markdown (.md) document generation with 1-tap download and clipboard export','Admin Bug Inspection Hub in More tab: filter by tab, review status (Open/Resolved), copy markdown, and bulk download all reports as a combined .md file','Storage in app state (localStorage + IndexedDB) with automatic cloud sync via whole-state sync engine','Previous diagnostics & WhatsApp bug reporter retained intact']});
   VERS.unshift({v:'11.0.0-beta',d:'2026-10-29',t:'Phase 3: Overview Dashboard Redesign, Icon Filters & Salat Times',by:'Antigravity',n:['Icon-based period filters across Home/Overview: Today, Yesterday, 7 Days, 1 Month, 3 Months, 6 Months, Overall, Custom','Custom day range selector with Nov 2020 clamp and future date ban','Aladhan Salat API integration for Dhaka with daily session caching and offline resilience','Salat Times Card with 6 prayer slots, highlighting active/next prayer with real-time countdown','Short pop-up Salat alarm toast with soft audio chime on prayer arrival','Removed obsolete Recent Bills section from Overview dashboard for clean aesthetics']});
@@ -5669,12 +6284,14 @@ function saveCheck(){if(document.documentElement.dataset.rm)return;var d=documen
   UPC.unshift({v:'10.3.1',s:'Done',t:['Five-colour chart palette (5 distinct CSS chart variables), 5-segment donut, category breakdown bar, gradient bar fills']});
   UPC.unshift({v:'10.4.0',s:'Done',t:['Enterprise-Grade Theme (Light/Dark)', 'Cohesive financial color palette & chart tokens', 'Component & tabular typography polish', 'Rule 39: Two-tree synchronization contract']});
   
+  UPC.unshift({v:'11.5.0',s:'Done',t:['Rounded island card header with centered geometry','44px Lora clock & 36px/34px SolaimanLipi store brand','Minimal weather icons, Air Quality Index (AQI) & linked 64-district picker','Mosque outline icon & active prayer highlighting until next prayer time','More tab sync streamlining and single-flight in-flight guard']});
   UPC.unshift({v:'11.3.0',s:'Done',t:['Three-zone header with weather centered alongside live clock and calendar','Icon-only accessible prayer shortcut with optional hover/focus preview and full schedule modal','Lighter theme-aware header surface and colorful shop identity']});
   UPC.unshift({v:'11.4.0',s:'Done',t:['Executive header styling adapted to the existing NCS app','Original logo artwork retained with a smaller, unframed and less prominent presentation','Responsive two-row tablet/mobile header showing the date, weather and prayer control','Existing prayer, theme, refresh and live sync interactions preserved']});
   var sl=UPC.find(function(x){return x.v==='9.23'&&x.s==='Planned'});if(sl)sl.v='9.24';
   var sp=UPC.find(function(x){return x.v==='9.22'&&x.s==='Planned'});if(sp)sp.v='9.23';
   })();
 BUGS.unshift(
+  {d:'2026-10-31 17:15 (UTC+6)',v:'11.5.0',w:'Antigravity',a:'Header stuck to right edge, clock/store title small with basic font, emoji weather, and duplicate sync button in header',b:'1) Header lacked max-width/margin:auto centering and used 24px font; 2) Weather used emoji characters instead of minimal SVGs; 3) topR had duplicate sync appended via $(\'topR\').append($(\'sync\')); 4) Prayer icon silhouette resembled a steeple rather than a mosque',c:'1) Centered header as rounded card (border-radius: 20px) with 1fr auto 1fr grid; 2) Scaled clock to 44px in Lora font and store name to 36px/34px in SolaimanLipi; 3) Replaced emoji weather with minimal line SVGs and added Air Quality (AQI) modal with 64-district picker; 4) Replaced church glyph with authentic Mosque SVG; 5) Moved sync button into More tab preferences with in-flight single-flight guard'},
   {d:'2026-10-30 19:57 (UTC+6)',v:'11.3.0',w:'Manus',a:'Header weather and date remained visually small/separated, prayer details occupied excess right-zone space, and the overall header surface felt heavy',b:'Weather rendered as a separate right-side chip, prayer name/time were always visible, and the full header used a solid card background',c:'Moved weather into the centered date/time cluster; reduced the prayer control to a 44px accessible icon with preserved hover/focus preview and modal; replaced the solid header background with a transparent theme-aware surface and subtle divider/elevation; added a framed, accent-colored shop mark'},
   {d:'2026-10-30 19:10 (UTC+6)',v:'11.2.0',w:'Antigravity',a:'Shop monitor icon top corners clipped; prayer times dominated Overview tab; header lacked unified center alignment',b:'border-radius:10px clipped rect monitor casing; prayer times rendered as large static 6-box card in vHome; Bismillah was in separate detached top strip',c:'Removed border-radius from top-brand img; transformed prayer times into interactive header widget with hover preview and modal; rebuilt top header as 3-column grid with centered Bismillah/Clock/Date and rightmost live sync pill'},
   {d:'2026-10-29 17:20 (UTC+6)',v:'10.4.0',w:'Antigravity',a:'Home dashboard metrics, sales, and bills showed 0 for today and click handlers duplicated',b:'GPT-OSS 120B commit ed82eee changed e.d>=a&&e.d<=b to strict e.d>a&&e.d<b which made single-day range impossible, changed role accountant to accountor, and moved click event listeners inside homeUI()',c:'Restored inclusive date inequalities e.d>=a&&e.d<=b, restored accountant role, moved event listeners outside homeUI(), and synchronized verified build to GitHub'},
