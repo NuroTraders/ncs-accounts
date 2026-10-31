@@ -357,7 +357,6 @@ The five-colour chart palette (formerly Phase 1b) was delivered in v10.4.0.
 - Added a two-row tablet/mobile arrangement that keeps weather, date and prayer access visible; uses theme tokens and a restrained translucent sticky header.
 - Updated the outline prayer icon and made the compact phone sync status visually minimal while retaining its screen-reader text.
 - Version 11.4.0 (`versionCode 110400`), cache `ncs-v70`. Compiled with `npm run prepare-www` and verified source syntax.
-
 ### v11.3.0 · 2026-10-30 20:00 · Manus
 **Refined Overview header redesign.**
 - Moved Dhaka weather into the centred Bismillah, live clock, weekday, Gregorian and Bengali date group. Shop identity stays as the left anchor; theme, refresh and the sync pill stay on the right.
